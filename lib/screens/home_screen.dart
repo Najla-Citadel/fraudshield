@@ -35,51 +35,48 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadProfile() async {
-  final supabase = Supabase.instance.client;
-  final user = supabase.auth.currentUser;
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
 
-  if (user == null) {
-    setState(() {
-      _userName = 'User';
-      _loadingProfile = false;
-    });
-    return;
-  }
-
-  try {
-    final row = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
-        .maybeSingle();
-
-    // 🔹 If profile exists and name is valid
-    if (row != null && (row['full_name'] as String?)?.trim().isNotEmpty == true) {
-      _userName = row['full_name'];
-      print('Greeting username: $_userName');
-
-    } 
-    
-    else {
-      // 🔹 Fallback to email prefix
-      _userName = user.email?.split('@').first ?? 'User';
-
-      // 🔹 OPTIONAL: auto-create / update profile
-      await supabase.from('profiles').upsert({
-        'id': user.id,
-        'full_name': _userName,
-        'updated_at': DateTime.now().toIso8601String(),
+    if (user == null) {
+      setState(() {
+        _userName = 'User';
+        _loadingProfile = false;
       });
+      return;
     }
-  } catch (e) {
-    _userName = user.email?.split('@').first ?? 'User';
-  }
 
-  if (mounted) {
-    setState(() => _loadingProfile = false);
-  }
-}
+    try {
+      final row = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .maybeSingle();
 
+      // 🔹 If profile exists and name is valid
+      if (row != null &&
+          (row['full_name'] as String?)?.trim().isNotEmpty == true) {
+        _userName = row['full_name'];
+        print('Greeting username: $_userName');
+      } else {
+        // 🔹 Fallback to email prefix
+        _userName = user.email?.split('@').first ?? 'User';
+
+        // 🔹 OPTIONAL: auto-create / update profile
+        await supabase.from('profiles').upsert({
+          'id': user.id,
+          'full_name': _userName,
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
+    } catch (e) {
+      _userName = user.email?.split('@').first ?? 'User';
+    }
+
+    if (mounted) {
+      setState(() => _loadingProfile = false);
+    }
+  }
 
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
@@ -90,36 +87,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: IndexedStack(
-      index: _selectedIndex,
-      children: [
-        _HomeTab(
-          userName: _userName,
-          loading: _loadingProfile,
-        ),
-        const SubscriptionScreen(),
-        const PointsScreen(),
-        const AccountScreen(),
-      ],
-    ),
-    bottomNavigationBar: BottomNavigationBar(
-      currentIndex: _selectedIndex,
-      onTap: _onNavTap,
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: AppColors.primaryBlue,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.subscriptions), label: 'Subscription'),
-        BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
-      ],
-    ),
-  );
-}
-
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _HomeTab(
+            userName: _userName,
+            loading: _loadingProfile,
+          ),
+          const SubscriptionScreen(),
+          const PointsScreen(),
+          const AccountScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onNavTap,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).iconTheme.color,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.subscriptions), label: 'Subscription'),
+          BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+        ],
+      ),
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -127,7 +124,7 @@ Widget build(BuildContext context) {
 ////////////////////////////////////////////////////////////////
 
 class _HomeTab extends StatelessWidget {
-   final String userName;
+  final String userName;
   final bool loading;
 
   const _HomeTab({
@@ -138,9 +135,9 @@ class _HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         title: Row(
           children: [
@@ -148,13 +145,13 @@ class _HomeTab extends StatelessWidget {
             const SizedBox(width: 8),
             const Text(
               'FraudShield',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
+            icon: const Icon(Icons.notifications_none),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('No new notifications')),
@@ -175,29 +172,32 @@ class _HomeTab extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  loading
-                    ? const Text(
-                      'Hi',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    )
-                    : Text(
-                      'Hi $userName,',
-                  style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+                    loading
+                        ? const Text(
+                            'Hi',
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            loading ? 'Hi' : 'Hi $userName,',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                  ],
                 ),
                 SizedBox(
                   height: 120,
-                  child: Lottie.asset('assets/animations/greeting_bot.json',
-                  repeat: true,
-                  animate: true,
-                  fit: BoxFit.contain,
+                  child: Lottie.asset(
+                    'assets/animations/greeting_bot.json',
+                    repeat: true,
+                    animate: true,
+                    fit: BoxFit.contain,
                   ),
                 ),
-
               ],
             ),
 
@@ -213,7 +213,7 @@ class _HomeTab extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            
+
             Row(
               children: [
                 _quickAction(
@@ -232,7 +232,8 @@ class _HomeTab extends StatelessWidget {
                   'Phishing',
                   () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const PhishingProtectionScreen()),
                   ),
                 ),
               ],
@@ -291,7 +292,8 @@ class _HomeTab extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const AwarenessTipsScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const AwarenessTipsScreen()),
                   ),
                   child: const Text(
                     'Learn More',
@@ -306,7 +308,7 @@ class _HomeTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -352,15 +354,20 @@ Widget _quickAction(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor.withOpacity(0.15),
+              blurRadius: 6,
+            ),
+          ],
         ),
         child: Column(
           children: [
             Image.asset(imagePath, width: 26, height: 26),
             const SizedBox(height: 6),
-            Text(label, style: const TextStyle(fontSize: 13)),
+            Text(label),
           ],
         ),
       ),
@@ -383,7 +390,9 @@ Widget _situationCard(
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isPrimary ? AppColors.primaryBlue : Colors.white,
+          color: isPrimary
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
         ),
@@ -391,7 +400,9 @@ Widget _situationCard(
           children: [
             CircleAvatar(
               radius: 26,
-              backgroundColor: isPrimary ? Colors.white : Colors.grey.shade100,
+              backgroundColor: isPrimary
+                  ? Theme.of(context).cardColor
+                  : Colors.grey.shade100,
               child: Image.asset(imagePath, width: 28),
             ),
             const SizedBox(width: 14),
@@ -404,7 +415,9 @@ Widget _situationCard(
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isPrimary ? Colors.white : Colors.black,
+                      color: isPrimary
+                          ? Theme.of(context).cardColor
+                          : Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -412,7 +425,9 @@ Widget _situationCard(
                     subtitle,
                     style: TextStyle(
                       fontSize: 13,
-                      color: isPrimary ? Colors.white70 : Colors.black54,
+                      color: isPrimary
+                          ? Theme.of(context).cardColor
+                          : Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
                 ],
@@ -421,7 +436,9 @@ Widget _situationCard(
             Icon(
               Icons.arrow_forward_ios,
               size: 14,
-              color: isPrimary ? Colors.white70 : Colors.black38,
+              color: isPrimary
+                  ? Theme.of(context).cardColor
+                  : Theme.of(context).textTheme.bodyLarge!.color,
             ),
           ],
         ),

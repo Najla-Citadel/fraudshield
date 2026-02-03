@@ -39,8 +39,17 @@ class FraudShieldApp extends StatelessWidget {
 
             // ✅ THEME CONNECTION
             themeMode: theme.mode,
-            theme: ThemeData.light(),
-            darkTheme: ThemeData.dark(),
+            theme: ThemeData(
+              brightness: Brightness.light,
+              scaffoldBackgroundColor: const Color(0xFFF0F7FF),
+              cardColor: Colors.white,
+            ),
+
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              scaffoldBackgroundColor: const Color(0xFF0F172A),
+              cardColor: const Color(0xFF1E293B),
+            ),
 
             // ✅ ROUTING
             onGenerateRoute: AppRouter.generate,
