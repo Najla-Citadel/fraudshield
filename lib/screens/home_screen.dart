@@ -1,7 +1,15 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lottie/lottie.dart';
-import '../constants/colors.dart';
+
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
+import '../widgets/core/info_card.dart';
+import '../widgets/core/section_header.dart';
+import '../widgets/latest_news_widget.dart';
+
 import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
@@ -11,7 +19,6 @@ import 'phishing_protection_screen.dart';
 import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
 import 'awareness_tips_screen.dart';
-import '../widgets/latest_news_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,11 +29,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   String _userName = 'User';
   bool _loadingProfile = true;
-
-  late final List<Widget> _pages;
 
   @override
   void initState() {
@@ -39,10 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
-      setState(() {
-        _userName = 'User';
-        _loadingProfile = false;
-      });
+      if (mounted) setState(() { _userName = 'User'; _loadingProfile = false; });
       return;
     }
 
@@ -53,37 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
           .eq('id', user.id)
           .maybeSingle();
 
-      // 🔹 If profile exists and name is valid
-      if (row != null &&
-          (row['full_name'] as String?)?.trim().isNotEmpty == true) {
+      if (row != null && (row['full_name'] as String?)?.trim().isNotEmpty == true) {
         _userName = row['full_name'];
-        print('Greeting username: $_userName');
       } else {
-        // 🔹 Fallback to email prefix
         _userName = user.email?.split('@').first ?? 'User';
-
-        // 🔹 OPTIONAL: auto-create / update profile
-        await supabase.from('profiles').upsert({
-          'id': user.id,
-          'full_name': _userName,
-          'updated_at': DateTime.now().toIso8601String(),
-        });
       }
     } catch (e) {
       _userName = user.email?.split('@').first ?? 'User';
     }
 
-    if (mounted) {
-      setState(() => _loadingProfile = false);
-    }
+    if (mounted) setState(() => _loadingProfile = false);
   }
 
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
-
-    if (index == 0) {
-      _loadProfile(); // refresh greeting
-    }
+    if (index == 0) _loadProfile();
   }
 
   @override
@@ -92,10 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          _HomeTab(
-            userName: _userName,
-            loading: _loadingProfile,
-          ),
+          _HomeTab(userName: _userName, loading: _loadingProfile),
           const SubscriptionScreen(),
           const PointsScreen(),
           const AccountScreen(),
@@ -104,64 +86,46 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).iconTheme.color,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.subscriptions), label: 'Subscription'),
-          BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.verified_user_outlined), label: 'Protect'),
+          BottomNavigationBarItem(icon: Icon(Icons.stars_rounded), label: 'Points'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Account'),
         ],
       ),
     );
   }
 }
 
-////////////////////////////////////////////////////////////////
-/// HOME TAB CONTENT (UI ONLY)
-////////////////////////////////////////////////////////////////
-
 class _HomeTab extends StatelessWidget {
   final String userName;
   final bool loading;
 
-  const _HomeTab({
-    required this.userName,
-    required this.loading,
-  });
+  const _HomeTab({required this.userName, required this.loading});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        elevation: 0,
+        titleSpacing: AppSpacing.l,
         title: Row(
           children: [
-            Image.asset('assets/images/logo.png', height: 36),
+            Image.asset('assets/images/logo.png', height: 32),
             const SizedBox(width: 8),
-            const Text(
-              'FraudShield',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            const Text('FraudShield', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No new notifications')),
-              );
-            },
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {},
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: AppSpacing.screenPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -169,166 +133,177 @@ class _HomeTab extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    loading
-                        ? const Text(
-                            'Hi',
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
-                          )
-                        : Text(
-                            loading ? 'Hi' : 'Hi $userName,',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                  ],
-                ),
-                SizedBox(
-                  height: 120,
-                  child: Lottie.asset(
-                    'assets/animations/greeting_bot.json',
-                    repeat: true,
-                    animate: true,
-                    fit: BoxFit.contain,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        loading ? 'Hi there,' : 'Hi $userName,',
+                        style: AppTypography.h2,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Stay protected from online frauds.',
+                        style: AppTypography.bodyM,
+                      ),
+                    ],
                   ),
+                ),
+                Lottie.asset(
+                  'assets/animations/greeting_bot.json',
+                  height: 100,
+                  width: 100,
+                  fit: BoxFit.contain,
                 ),
               ],
             ),
 
-            const Text(
-              'Stay protected from online frauds.',
-              style: TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 15),
+            const SizedBox(height: AppSpacing.xl),
 
-            // ⚡ QUICK ACTIONS
-            const Text(
-              'What just happened?',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+            // ⚡ QUICK ACTIONS HEADER
+            const SectionHeader(title: 'Quick Actions', actionLabel: ''),
 
+            const SizedBox(height: AppSpacing.s),
+
+            // ⚡ QUICK GRID
             Row(
               children: [
-                _quickAction(
-                  context,
-                  'assets/icons/fraud_check.png',
-                  'Fraud Check',
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+                Expanded(
+                  child: _QuickActionCard(
+                    title: 'Check Fraud',
+                    icon: Icons.search,
+                    color: AppColors.primary,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FraudCheckScreen())),
                   ),
                 ),
-                const SizedBox(width: 12),
-                _quickAction(
-                  context,
-                  'assets/icons/shield.png',
-                  'Phishing',
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const PhishingProtectionScreen()),
+                const SizedBox(width: AppSpacing.m),
+                Expanded(
+                  child: _QuickActionCard(
+                    title: 'Phishing',
+                    icon: Icons.shield,
+                    color: AppColors.accentPurple,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhishingProtectionScreen())),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.xl),
 
-            // 📞 SITUATION CARDS
-            _situationCard(
-              context,
-              imagePath: 'assets/icons/mic.png',
-              title: 'Someone called me',
-              subtitle: 'Check suspicious calls & voices',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
-              ),
+            // 🛡️ SITUATIONS
+            const SectionHeader(title: 'What just happened?', actionLabel: ''),
+            const SizedBox(height: AppSpacing.s),
+
+            InfoCard(
+              title: 'Suspicious Call?',
+              subtitle: 'Analyze voice patterns for scams',
+              iconData: Icons.mic_rounded,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VoiceDetectionScreen())),
+            ),
+            
+            InfoCard(
+              title: 'Received a QR?',
+              subtitle: 'Scan safely for malicious links',
+              iconData: Icons.qr_code_scanner_rounded,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QRDetectionScreen())),
             ),
 
-            _situationCard(
-              context,
-              imagePath: 'assets/icons/qr.png',
-              title: 'I received a QR',
-              subtitle: 'Scan QR codes safely',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
-              ),
+            InfoCard(
+              title: 'Report a Scam',
+              subtitle: 'Help the community stay safe',
+              iconData: Icons.report_problem_rounded, // or custom asset
+              isPrimary: true,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScamReportingScreen())),
             ),
 
-            _situationCard(
-              context,
-              imagePath: 'assets/icons/report.png',
-              title: 'I want to report a scam',
-              subtitle: 'Help protect others',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
-              ),
-            ),
+            const SizedBox(height: AppSpacing.xl),
 
-            const SizedBox(height: 20),
-
+            // 📰 NEWS
             const LatestNewsWidget(limit: 3),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
 
-            // 💡 AWARENESS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Awareness & Tips',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const AwarenessTipsScreen()),
-                  ),
-                  child: const Text(
-                    'Learn More',
-                    style: TextStyle(color: Colors.blueAccent),
-                  ),
-                ),
-              ],
+            // 💡 TIPS
+            SectionHeader(
+              title: 'Awareness', 
+              onAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AwarenessTipsScreen())),
             ),
-
-            const SizedBox(height: 12),
-
+            const SizedBox(height: AppSpacing.s),
+            
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSpacing.m),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusM),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
               ),
               child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/tip_image.png',
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
-                    ),
+                   ClipRRect(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                    child: Image.asset('assets/images/tip_image.png', width: 60, height: 60, fit: BoxFit.cover),
                   ),
-                  const SizedBox(width: 12),
-                  const Expanded(
+                  const SizedBox(width: AppSpacing.m),
+                  Expanded(
                     child: Text(
-                      'Avoid clicking unknown links or downloading attachments from unverified sources.',
+                      'Tip of the day: Never share OTPs with anyone, even bank staff.',
+                      style: AppTypography.bodyM.copyWith(fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
+              ),
+            ),
+             const SizedBox(height: AppSpacing.xxl),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusM),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
           ],
@@ -338,111 +313,3 @@ class _HomeTab extends StatelessWidget {
   }
 }
 
-////////////////////////////////////////////////////////////////
-/// SMALL REUSABLE WIDGETS
-////////////////////////////////////////////////////////////////
-
-Widget _quickAction(
-  BuildContext context,
-  String imagePath,
-  String label,
-  VoidCallback onTap,
-) {
-  return Expanded(
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.15),
-              blurRadius: 6,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Image.asset(imagePath, width: 26, height: 26),
-            const SizedBox(height: 6),
-            Text(label),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _situationCard(
-  BuildContext context, {
-  required String imagePath,
-  required String title,
-  required String subtitle,
-  required VoidCallback onTap,
-  bool isPrimary = false,
-}) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isPrimary
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Colors.grey.shade100,
-              child: Image.asset(imagePath, width: 28),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isPrimary
-                          ? Theme.of(context).cardColor
-                          : Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isPrimary
-                          ? Theme.of(context).cardColor
-                          : Theme.of(context).textTheme.bodyLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Theme.of(context).textTheme.bodyLarge!.color,
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}

@@ -278,4 +278,91 @@ class SupabaseService {
       rethrow;
     }
   }
+
+  // ---------------- SCAM REPORTS ----------------
+
+  Future<Map<String, dynamic>?> createScamReport({
+    required String reportType,
+    required String category,
+    required String description,
+    String? phoneNumber,
+    List<String>? evidenceUrls,
+  }) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) throw Exception('not signed in');
+
+    final payload = {
+      'user_id': uid,
+      'report_type': reportType,
+      'category': category,
+      'description': description,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (evidenceUrls != null) 'evidence_urls': evidenceUrls,
+      'status': 'pending',
+    };
+
+    try {
+      final row = await _client.from('scam_reports').insert(payload).select().maybeSingle();
+      if (row == null) return null;
+      return Map<String, dynamic>.from(row as Map);
+    } catch (e, st) {
+      log('createScamReport error: $e\n$st');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getMyScamReports({int limit = 50}) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return [];
+    try {
+      final res = await _client.from('scam_reports').select().eq('user_id', uid).order('created_at', ascending: false).limit(limit);
+      return (res as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (e, st) {
+      log('getMyScamReports error: $e\n$st');
+      rethrow;
+    }
+  }
+
+  // ---------------- FRAUD CHECKS ----------------
+
+  Future<Map<String, dynamic>?> createFraudCheck({
+    required String checkType,
+    required String value,
+    required int riskScore,
+    required String riskLevel,
+    required List<String> reasons,
+  }) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) throw Exception('not signed in');
+
+    final payload = {
+      'user_id': uid,
+      'check_type': checkType,
+      'value': value,
+      'risk_score': riskScore,
+      'risk_level': riskLevel,
+      'reasons': reasons,
+    };
+
+    try {
+      final row = await _client.from('fraud_checks').insert(payload).select().maybeSingle();
+      if (row == null) return null;
+      return Map<String, dynamic>.from(row as Map);
+    } catch (e, st) {
+      log('createFraudCheck error: $e\n$st');
+      rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getMyFraudChecks({int limit = 50}) async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) return [];
+    try {
+      final res = await _client.from('fraud_checks').select().eq('user_id', uid).order('created_at', ascending: false).limit(limit);
+      return (res as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+    } catch (e, st) {
+      log('getMyFraudChecks error: $e\n$st');
+      rethrow;
+    }
+  }
 }

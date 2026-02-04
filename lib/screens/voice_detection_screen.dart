@@ -1,5 +1,11 @@
+// lib/screens/voice_detection_screen.dart
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
+import '../widgets/core/primary_button.dart';
+import '../widgets/core/section_header.dart';
+import '../widgets/core/status_badge.dart';
 
 class VoiceDetectionScreen extends StatefulWidget {
   const VoiceDetectionScreen({super.key});
@@ -8,9 +14,13 @@ class VoiceDetectionScreen extends StatefulWidget {
   State<VoiceDetectionScreen> createState() => _VoiceDetectionScreenState();
 }
 
-class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
+class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> with SingleTickerProviderStateMixin {
   bool isRecording = false;
-  bool? isSuspicious; // null = no result yet
+  bool? isSuspicious;
+
+  // Animation for the "listening" effect
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   final List<Map<String, dynamic>> recentRecordings = [
     {'name': 'Call_20251101_1805', 'result': 'Safe', 'date': '01 Nov 2025'},
@@ -18,15 +28,32 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
     {'name': 'Voice_20251025_1032', 'result': 'Safe', 'date': '25 Oct 2025'},
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+       vsync: this,
+       duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+    
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(_pulseController);
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
   void _toggleRecording() {
     setState(() {
       if (isRecording) {
-        // Stop and analyze
+        // Stop
         isRecording = false;
-        // Mock random detection
+        // Mock analysis
         isSuspicious = DateTime.now().second % 2 == 0;
       } else {
-        // Start recording
+        // Start
         isRecording = true;
         isSuspicious = null;
       }
@@ -36,186 +63,161 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        title: const Text(
-          'Voice Detection',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      backgroundColor: AppColors.backgroundLight,
+      appBar: AppBar(title: const Text('Voice Detection')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: AppSpacing.screenPadding,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-
-            // 🗣️ Header
-            Text(
-              'Identify scam calls or suspicious voice patterns.',
-              style: TextStyle(
-                color: AppColors.darkText,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 30),
-
-            // 🎙️ Record Button
-            GestureDetector(
-              onTap: _toggleRecording,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: isRecording ? Colors.redAccent : AppColors.primaryBlue,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isRecording
-                              ? Colors.redAccent
-                              : AppColors.primaryBlue)
-                          .withOpacity(0.4),
-                      blurRadius: 12,
-                      spreadRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  isRecording ? Icons.stop : Icons.mic,
-                  color: Colors.white,
-                  size: 50,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-            Text(
-              isRecording
-                  ? 'Listening... Tap to stop'
-                  : 'Tap to start recording',
-              style: TextStyle(
-                color: AppColors.greyText,
-                fontSize: 15,
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // 🟢 Result Section
-            if (isSuspicious != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color:
-                      isSuspicious! ? Colors.red[50] : Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color:
-                        isSuspicious! ? Colors.redAccent : Colors.green,
-                    width: 1.5,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      isSuspicious!
-                          ? Icons.warning_amber_rounded
-                          : Icons.verified_user,
-                      color: isSuspicious!
-                          ? Colors.redAccent
-                          : Colors.green,
-                      size: 70,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      isSuspicious!
-                          ? 'Suspicious Voice Detected!'
-                          : 'Voice is Safe',
-                      style: TextStyle(
-                        color: isSuspicious!
-                            ? Colors.redAccent
-                            : Colors.green[800],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      isSuspicious!
-                          ? 'Potential scam or fake voice identified.'
-                          : 'No suspicious tone detected.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.greyText),
-                    ),
-                  ],
-                ),
-              ),
-
-            const SizedBox(height: 40),
-
-            // 🧾 Recent Recordings
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Recent Recordings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.darkText,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
+            // 🎙️ RECORDING AREA
             Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusL),
+                 boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
-                children: recentRecordings.map((item) {
-                  final isSuspicious = item['result'] == 'Suspicious';
-                  return ListTile(
-                    leading: Icon(
-                      isSuspicious
-                          ? Icons.warning_amber_rounded
-                          : Icons.check_circle,
-                      color: isSuspicious
-                          ? Colors.redAccent
-                          : Colors.green,
+                children: [
+                  Text(
+                    isRecording ? 'Listening...' : 'Tap to Analyze',
+                    style: AppTypography.h2,
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'AI will analyze current audio for scam patterns.',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyM,
                     ),
-                    title: Text(
-                      item['name'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkText,
+                  ),
+                  
+                  const SizedBox(height: 40),
+
+                  GestureDetector(
+                    onTap: _toggleRecording,
+                    child: ScaleTransition(
+                      scale: isRecording ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isRecording ? AppColors.error : AppColors.primary,
+                          boxShadow: [
+                            BoxShadow(
+                              color: (isRecording ? AppColors.error : AppColors.primary).withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isRecording ? Icons.stop : Icons.mic,
+                          color: Colors.white,
+                          size: 40,
+                        ),
                       ),
                     ),
-                    subtitle: Text(item['date']),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isSuspicious
-                            ? Colors.redAccent
-                            : Colors.green,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        item['result'],
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
             ),
+
+            const SizedBox(height: AppSpacing.l),
+
+            // 🟢 RESULT
+            if (isSuspicious != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: AppSpacing.l),
+                padding: const EdgeInsets.all(AppSpacing.m),
+                decoration: BoxDecoration(
+                  color: isSuspicious! ? AppColors.error.withOpacity(0.1) : AppColors.success.withOpacity(0.1),
+                  border: Border.all(color: isSuspicious! ? AppColors.error : AppColors.success),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusM),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isSuspicious! ? Icons.warning_amber : Icons.check_circle,
+                      color: isSuspicious! ? AppColors.error : AppColors.success,
+                      size: 32,
+                    ),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isSuspicious! ? 'Suspicious Voice Detected' : 'Voice Appears Safe',
+                            style: AppTypography.h3.copyWith(fontSize: 16),
+                          ),
+                          Text(
+                            isSuspicious! ? 'Pattern matches known scam scripts.' : 'No scam patterns found.',
+                            style: AppTypography.bodyS,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+
+             const SectionHeader(title: 'Recent Analysis', actionLabel: ''),
+             const SizedBox(height: AppSpacing.s),
+
+             // HISTORY
+             ListView.separated(
+               shrinkWrap: true,
+               physics: const NeverScrollableScrollPhysics(),
+               itemCount: recentRecordings.length,
+               separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.xs),
+               itemBuilder: (ctx, i) {
+                 final item = recentRecordings[i];
+                 final isSus = item['result'] == 'Suspicious';
+                 return Container(
+                   padding: const EdgeInsets.all(AppSpacing.m),
+                   decoration: BoxDecoration(
+                     color: Colors.white,
+                     borderRadius: BorderRadius.circular(AppSpacing.radiusS),
+                   ),
+                   child: Row(
+                     children: [
+                       Container(
+                         padding: const EdgeInsets.all(8),
+                         decoration: BoxDecoration(
+                           color: AppColors.backgroundLight,
+                           shape: BoxShape.circle,
+                         ),
+                         child: const Icon(Icons.history_edu, size: 20, color: AppColors.textSecondary),
+                       ),
+                       const SizedBox(width: AppSpacing.m),
+                       Expanded(
+                         child: Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                             Text(item['name'], style: AppTypography.bodyL.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
+                             Text(item['date'], style: AppTypography.bodyS),
+                           ],
+                         ),
+                       ),
+                       StatusBadge(
+                         label: item['result'], 
+                         status: isSus ? BadgeStatus.danger : BadgeStatus.safe
+                       ),
+                     ],
+                   ),
+                 );
+               },
+             ),
           ],
         ),
       ),

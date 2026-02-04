@@ -2,8 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'signup_screen.dart';
-import '../constants/colors.dart';
 import 'home_screen.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
+import '../widgets/core/custom_text_field.dart';
+import '../widgets/core/primary_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,183 +34,138 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
+      _showSnack('Please enter email and password', isError: true);
       return;
     }
 
     setState(() => _loading = true);
 
     try {
-      // Supabase v2 sign in with password
       final res = await Supabase.instance.client.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      // res.session will be non-null on success; currentUser is also set
       final user = res.user ?? Supabase.instance.client.auth.currentUser;
       if (user != null) {
-        // Success -> navigate to HomeScreen
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       } else {
-        // Unexpected: no user returned
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign-in did not return a user.')),
-        );
+        _showSnack('Sign-in did not return a user.', isError: true);
       }
     } on AuthException catch (ae) {
-      // Supabase auth errors surface as AuthException (or other types)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(ae.message)),
-      );
+      _showSnack(ae.message, isError: true);
     } catch (e) {
-      // general fallback
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed: $e')),
-      );
+      _showSnack('Sign-in failed: $e', isError: true);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
+  void _showSnack(String msg, {bool isError = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: isError ? AppColors.error : AppColors.success,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🧭 Title
-                Text(
-                  'Login',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryBlue,
-                  ),
+          padding: AppSpacing.screenPadding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: AppSpacing.xxl),
+              
+              // 🧭 Title
+              Text('Welcome Back', style: AppTypography.h1),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Secure your digital life with FraudShield.',
+                style: AppTypography.bodyM,
+              ),
+              
+              const SizedBox(height: AppSpacing.xxl),
+
+              // 📧 Email Field
+              CustomTextField(
+                label: 'Email Address',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                hintText: 'john@example.com',
+                prefixIcon: Icons.email_outlined,
+              ),
+              const SizedBox(height: AppSpacing.l),
+
+              // 🔒 Password Field
+              CustomTextField(
+                label: 'Password',
+                controller: _passwordController,
+                obscureText: true,
+                hintText: '••••••••',
+                prefixIcon: Icons.lock_outline,
+              ),
+
+              const SizedBox(height: AppSpacing.s),
+
+              // 🔗 Forgot Password
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => _showSnack('Forgot password flow not implemented'),
+                  child: const Text('Forgot password?'),
                 ),
-                const SizedBox(height: 40),
+              ),
 
-                // 📧 Email Field
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: AppColors.greyText),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
 
-                // 🔒 Password Field
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: AppColors.greyText),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
+              // 🟦 Log In Button
+              PrimaryButton(
+                label: 'Log In',
+                onPressed: _trySignIn,
+                isLoading: _loading,
+              ),
 
-                const SizedBox(height: 10),
+              const SizedBox(height: AppSpacing.l),
 
-                // 🔗 Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Forgot password flow not implemented')),
+              // 👤 Sign Up link
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don’t have an account? ", style: AppTypography.bodyM),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignUpScreen()),
                       );
                     },
-                    child: Text(
-                      'Forgot password?',
-                      style: TextStyle(color: AppColors.primaryBlue),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // 🟦 Log In Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _loading ? null : _trySignIn,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 3,
-                    ),
-                    child: _loading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text(
-                            'Log In',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                // 👤 Sign Up link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don’t have an account? "),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const SignUpScreen()),
-                        );
-                      },
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: AppColors.primaryBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
