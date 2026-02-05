@@ -30,30 +30,34 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.citadel.fraudshield"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-    }
+    applicationId = "com.citadel.fraudshield"
+    minSdk = 23
+    targetSdk = 34
 
-    signingConfigs {
+    // 🔥 FIX: hardcode version
+    versionCode = 1
+    versionName = "1.0.0"
+}
+
+
+    /*signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
             storeFile = file(keystoreProperties["storeFile"] as String)
             storePassword = keystoreProperties["storePassword"] as String
         }
-    }
+    }*/
 
     buildTypes {
-        getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
-        }
+    getByName("release") {
+        signingConfig = signingConfigs.getByName("debug")
+        isMinifyEnabled = false
+        isShrinkResources = false
     }
+}
+
+
 }
 
 flutter {
