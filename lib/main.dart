@@ -19,6 +19,26 @@ Future<void> main() async {
   );
 
   runApp(const FraudShieldApp());
+<<<<<<< Updated upstream
+=======
+  MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ],
+    child: Consumer<ThemeProvider>(
+      builder: (_, theme, __) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          themeMode: theme.mode,
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          home: const RootScreen(),
+        );
+      },
+    ),
+  );
+>>>>>>> Stashed changes
 }
 
 class FraudShieldApp extends StatelessWidget {
