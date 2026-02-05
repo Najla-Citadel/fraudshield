@@ -19,8 +19,7 @@ Future<void> main() async {
   );
 
   runApp(const FraudShieldApp());
-<<<<<<< Updated upstream
-=======
+
   MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => ThemeProvider()),
@@ -38,7 +37,7 @@ Future<void> main() async {
       },
     ),
   );
->>>>>>> Stashed changes
+
 }
 
 class FraudShieldApp extends StatelessWidget {
