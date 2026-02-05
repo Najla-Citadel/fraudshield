@@ -37,7 +37,6 @@ Future<void> main() async {
       },
     ),
   );
-
 }
 
 class FraudShieldApp extends StatelessWidget {
