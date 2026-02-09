@@ -38,7 +38,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await prefs.setBool('onboarding_done', true);
 
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/login');
+    
+    // Check if somehow already authenticated (e.g. from a previous partial run)
+    if (ApiService.instance.isAuthenticated) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override
