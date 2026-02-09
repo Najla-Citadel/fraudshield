@@ -62,7 +62,7 @@ class _TestScreenState extends State<TestScreen> {
 
   Future<void> _insertEvent() async {
     try {
-      await _api.post('/features/events', {
+      await _api.post('/features/behavioral', {
         'type': 'tap_test',
         'metadata': {'button': 'insertEvent'},
       });
@@ -104,7 +104,7 @@ class _TestScreenState extends State<TestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Supabase Test')),
+      appBar: AppBar(title: const Text('Backend Test')),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(children: [

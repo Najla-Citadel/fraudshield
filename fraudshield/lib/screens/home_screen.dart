@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/latest_news_widget.dart';
 import 'fraud_check_screen.dart';
 import 'phishing_protection_screen.dart';
@@ -23,7 +24,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-
   String _userName = 'User';
   bool _loadingProfile = true;
 
@@ -31,6 +31,41 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadProfile();
+    
+    // Listen for real-time alerts
+    NotificationService.instance.addListener(_handleNewAlert);
+  }
+
+  void _handleNewAlert() {
+    if (!mounted) return;
+    final alerts = NotificationService.instance.alerts;
+    if (alerts.isNotEmpty) {
+      final latest = alerts.first;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(latest['title'] ?? 'Fraud Warning', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(latest['message'] ?? 'Suspicious activity detected'),
+            ],
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(label: 'VIEW', textColor: Colors.white, onPressed: () {
+            // Future: Navigate to alert details
+          }),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    NotificationService.instance.removeListener(_handleNewAlert);
+    super.dispose();
   }
 
   Future<void> _loadProfile() async {

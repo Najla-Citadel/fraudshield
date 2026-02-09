@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
 import 'providers/auth_provider.dart';
+import 'services/notification_service.dart';
 import 'app_router.dart';
 import 'screens/root_screen.dart';
 
@@ -26,6 +27,7 @@ class FraudShieldApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationService.instance),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, theme, __) {

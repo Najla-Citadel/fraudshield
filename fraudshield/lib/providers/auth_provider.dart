@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
+import '../services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService api = ApiService.instance;
@@ -25,10 +26,12 @@ class AuthProvider extends ChangeNotifier {
       await api.init();
       if (api.isAuthenticated) {
         await refreshProfile();
+        if (_user != null) {
+          NotificationService.instance.initialize(_user!.id);
+        }
       }
     } catch (e) {
       log('AuthProvider init error: $e');
-      // If token is invalid/expired, clear it
       await api.signOut();
     } finally {
       _loading = false;
@@ -53,6 +56,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final userData = await api.signIn(email: email, password: password);
       _user = UserModel.fromJson(userData);
+      NotificationService.instance.initialize(_user!.id);
       return true;
     } catch (e) {
       log('AuthProvider signIn error: $e');
@@ -77,6 +81,7 @@ class AuthProvider extends ChangeNotifier {
         fullName: fullName,
       );
       _user = UserModel.fromJson(userData);
+      NotificationService.instance.initialize(_user!.id);
       return true;
     } catch (e) {
       log('AuthProvider signUp error: $e');
@@ -89,6 +94,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     await api.signOut();
+    NotificationService.instance.clearAlerts();
     _user = null;
     notifyListeners();
   }

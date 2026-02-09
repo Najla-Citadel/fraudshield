@@ -17,6 +17,7 @@ import authRoutes from './routes/auth.routes';
 import reportRoutes from './routes/report.routes';
 import featureRoutes from './routes/feature.routes';
 import adminRoutes from './routes/admin.routes';
+import uploadRoutes from './routes/upload.routes';
 
 const app: Application = express();
 
@@ -56,12 +57,16 @@ app.get('/health', (req: Request, res: Response) => {
     });
 });
 
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
 // API Routes
 const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
+app.use(`${apiPrefix}/upload`, uploadRoutes);
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {

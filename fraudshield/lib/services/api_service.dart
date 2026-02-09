@@ -243,6 +243,21 @@ class ApiService {
     });
   }
 
+  // ---------------- Behavioral Events ----------------
+ 
+  Future<Map<String, dynamic>> logBehavioralEvent({
+    required String type,
+    Map<String, dynamic>? metadata,
+  }) async {
+    return post('/features/behavioral', {
+      'type': type,
+      'metadata': metadata ?? {},
+    });
+  }
+ 
+  Future<List<dynamic>> getRecentEvents({int limit = 50}) async {
+    return get('/features/behavioral?limit=$limit');
+  }
   // ---------------- CRUD Templates (for other features) ----------------
 
   Future<List<dynamic>> get(String path) async {
@@ -291,6 +306,28 @@ class ApiService {
       }
     } catch (e) {
       print('ApiService PATCH error: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadFile(String filePath) async {
+    try {
+      final url = Uri.parse('$baseUrl/upload/single');
+      final request = http.MultipartRequest('POST', url);
+      
+      request.headers.addAll(_headers);
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 201) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('File upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('ApiService uploadFile error: $e');
       rethrow;
     }
   }
