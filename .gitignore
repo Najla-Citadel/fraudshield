@@ -1,46 +1,56 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# Consolidated .gitignore for Fraudshield
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Environment variables
 .env
+.env.local
+.env.*.local
+frontend-design-*.md
+implementation_plan-*.md
+walkthrough-*.md
+task-*.md
+
+# Node.js (backend)
+fraudshield-backend/node_modules/
+fraudshield-backend/dist/
+fraudshield-backend/logs/
+fraudshield-backend/npm-debug.log*
+fraudshield-backend/coverage/
+fraudshield-backend/prisma/migrations/*_migration_lock.toml
+fraudshield-backend/build/
+fraudshield-backend/src/generated/prisma
+
+# Flutter (frontend)
+fraudshield/*.class
+fraudshield/*.log
+fraudshield/*.pyc
+fraudshield/*.swp
+fraudshield/.DS_Store
+fraudshield/.atom/
+fraudshield/.build/
+fraudshield/.buildlog/
+fraudshield/.history
+fraudshield/.svn/
+fraudshield/.swiftpm/
+fraudshield/migrate_working_dir/
+fraudshield/*.iml
+fraudshield/*.ipr
+fraudshield/*.iws
+fraudshield/.idea/
+fraudshield/.dart_tool/
+fraudshield/.flutter-plugins
+fraudshield/.flutter-plugins-dependencies
+fraudshield/.pub-cache/
+fraudshield/.pub/
+fraudshield/build/
+fraudshield/app.*.symbols
+fraudshield/app.*.map.json
+fraudshield/android/app/debug
+fraudshield/android/app/profile
+fraudshield/android/app/release
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
