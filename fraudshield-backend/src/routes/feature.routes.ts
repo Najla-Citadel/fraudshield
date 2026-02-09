@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { SubscriptionController, PointsController } from '../controllers/feature.controller';
+import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
 import passport from 'passport';
 
 const router = Router();
@@ -15,5 +15,8 @@ router.post('/subscription', SubscriptionController.createSubscription);
 // Points
 router.get('/points', PointsController.getMyPoints);
 router.post('/points', PointsController.addPoints);
+
+router.post('/behavioral', BehavioralController.logEvent);
+router.get('/behavioral', BehavioralController.getMyEvents);
 
 export default router;

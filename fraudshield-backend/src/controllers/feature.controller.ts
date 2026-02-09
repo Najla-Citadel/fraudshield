@@ -92,3 +92,41 @@ export class PointsController {
         }
     }
 }
+
+export class BehavioralController {
+    static async logEvent(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { type, metadata } = req.body;
+            const userId = (req.user as any).id;
+
+            const event = await prisma.behavioralEvent.create({
+                data: {
+                    userId,
+                    type,
+                    metadata: metadata || {},
+                },
+            });
+
+            res.status(201).json(event);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getMyEvents(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any).id;
+            const limit = parseInt(req.query.limit as string) || 50;
+
+            const events = await prisma.behavioralEvent.findMany({
+                where: { userId },
+                orderBy: { createdAt: 'desc' },
+                take: limit,
+            });
+
+            res.json(events);
+        } catch (error) {
+            next(error);
+        }
+    }
+}
