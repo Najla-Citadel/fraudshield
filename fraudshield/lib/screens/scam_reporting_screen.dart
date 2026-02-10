@@ -4,6 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'report_history_screen.dart';
+import '../widgets/selection_sheet.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/adaptive_button.dart';
+import '../widgets/adaptive_text_field.dart';
 
 class ScamReportingScreen extends StatefulWidget {
   const ScamReportingScreen({super.key});
@@ -51,12 +55,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   Widget build(BuildContext context) {
     // ... confirmation screen stays same ...
     if (_reportSent) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.primaryBlue,
-          title: const Text('Report Sent'),
-          iconTheme: const IconThemeData(color: Colors.white),
-        ),
+      return AdaptiveScaffold(
+        title: 'Report Sent',
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -79,7 +79,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 40),
-                ElevatedButton(
+                AdaptiveButton(
+                  text: 'Got It',
                   onPressed: () {
                     setState(() {
                       _reportSent = false;
@@ -89,12 +90,6 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       _selectedFileName = null;
                     });
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 14),
-                  ),
-                  child: const Text('Got It'),
                 ),
               ],
             ),
@@ -103,31 +98,23 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        title: const Text(
-          'Scam Reporting',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return AdaptiveScaffold(
+      title: 'Scam Reporting',
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.history),
+          tooltip: 'Report History',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ReportHistoryScreen(),
+              ),
+            );
+          },
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            tooltip: 'Report History',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ReportHistoryScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+      ],
+      body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,59 +129,48 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DropdownButton<String>(
-                value: _reportType,
-                isExpanded: true,
-                underline: const SizedBox(),
-                items: _reportTypes.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _reportType = value!;
-                  });
-                },
+            GestureDetector(
+              onTap: () async {
+                final selected = await SelectionSheet.show<String>(
+                  context: context,
+                  title: 'Select Report Type',
+                  options: _reportTypes,
+                  labelBuilder: (val) => val,
+                );
+                if (selected != null) {
+                  setState(() => _reportType = selected);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_reportType, style: const TextStyle(fontSize: 16)),
+                    const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),
             if (_reportType == 'Phone') ...[
-              TextField(
+              AdaptiveTextField(
                 controller: _phoneController,
+                label: 'Phone Number',
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  filled: true,
-                  fillColor: Colors.white,
-                  prefixIcon: const Icon(Icons.phone_outlined),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                prefixIcon: Icons.phone_outlined,
               ),
             ],
             if (_reportType == 'Others') ...[
-              TextField(
+              AdaptiveTextField(
                 controller: _descController,
+                label: 'Describe the issue',
                 maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Describe the issue',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
               ),
             ],
             const SizedBox(height: 20),
@@ -207,44 +183,46 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: DropdownButton<String>(
-                value: _selectedCategory,
-                isExpanded: true,
-                underline: const SizedBox(),
-                items: const [
-                  DropdownMenuItem(value: 'Investment Scam', child: Text('Investment Scam')),
-                  DropdownMenuItem(value: 'Fake Giveaway / Promo Scam', child: Text('Fake Giveaway / Promo Scam')),
-                  DropdownMenuItem(value: 'Phishing Scam', child: Text('Phishing Scam')),
-                  DropdownMenuItem(value: 'Job Scam', child: Text('Job Scam')),
-                  DropdownMenuItem(value: 'Love Scam', child: Text('Love Scam')),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                },
+            GestureDetector(
+              onTap: () async {
+                final categories = [
+                  'Investment Scam',
+                  'Fake Giveaway / Promo Scam',
+                  'Phishing Scam',
+                  'Job Scam',
+                  'Love Scam',
+                ];
+                final selected = await SelectionSheet.show<String>(
+                  context: context,
+                  title: 'Select Scam Category',
+                  options: categories,
+                  labelBuilder: (val) => val,
+                );
+                if (selected != null) {
+                  setState(() => _selectedCategory = selected);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_selectedCategory, style: const TextStyle(fontSize: 16)),
+                    const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            TextField(
+            AdaptiveTextField(
               controller: _descController,
+              label: 'Description',
               maxLines: 5,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                alignLabelWithHint: true,
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -281,7 +259,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: AdaptiveButton(
+                text: 'Submit',
                 onPressed: () async {
                   bool isPhoneValid = _reportType != 'Phone' || _phoneController.text.trim().isNotEmpty;
                   if (!isPhoneValid || _descController.text.trim().isEmpty) {
@@ -336,17 +315,6 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  'Submit',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
               ),
             ),
           ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/scam_map_view.dart';
+import '../widgets/adaptive_scaffold.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class CommunityFeedScreen extends StatefulWidget {
   const CommunityFeedScreen({super.key});
@@ -55,9 +57,9 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         ? _reports
         : _reports.where((r) => r['category'] == _selectedCategory).toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Community Scam Feed'),
+    return AnimationLimiter(
+      child: AdaptiveScaffold(
+        title: 'Community Scam Feed',
         actions: [
           IconButton(
             icon: Icon(_isMapMode ? Icons.list : Icons.map_outlined),
@@ -69,70 +71,91 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             onPressed: _fetchFeed,
           ),
         ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50),
-          child: Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = _selectedCategory == category;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(
-                      category,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontSize: 12,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  final category = _categories[index];
+                  final isSelected = _selectedCategory == category;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(
+                        category,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black87,
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
                       ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() => _selectedCategory = category);
-                      }
-                    },
-                    selectedColor: Colors.red,
-                    backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                        color: isSelected ? Colors.red : Colors.grey[300]!,
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() => _selectedCategory = category);
+                        }
+                      },
+                      selectedColor: Colors.red,
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: isSelected ? Colors.red : Colors.grey[300]!,
+                        ),
                       ),
+                      showCheckmark: false,
                     ),
-                    showCheckmark: false,
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
-        ),
+          if (_isLoading)
+            const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (filteredReports.isEmpty)
+            const SliverFillRemaining(
+              child: Center(child: Text('No reports in this category. Stay safe!')),
+            )
+          else if (_isMapMode)
+            SliverFillRemaining(
+              child: ScamMapView(
+                reports: filteredReports,
+                onRefresh: _fetchFeed,
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: ScamCard(
+                            report: filteredReports[index],
+                            onVerify: _fetchFeed,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  childCount: filteredReports.length,
+                ),
+              ),
+            ),
+        ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : filteredReports.isEmpty
-              ? const Center(child: Text('No reports in this category. Stay safe!'))
-              : _isMapMode
-                  ? ScamMapView(
-                      reports: filteredReports,
-                      onRefresh: _fetchFeed,
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: filteredReports.length,
-                      itemBuilder: (context, index) {
-                        return ScamCard(
-                          report: filteredReports[index],
-                          onVerify: _fetchFeed, // Refresh after verify
-                        );
-                      },
-                    ),
     );
   }
 }
