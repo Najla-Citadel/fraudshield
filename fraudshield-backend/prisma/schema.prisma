@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String              @id @default(uuid())
+  email            String              @unique
+  passwordHash     String
+  fullName         String?
+  role             String              @default("user")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  alerts           Alert[]
+  transactions     PointsTransaction[]
+  profile          Profile?
+  reports          ScamReport[]
+  userTransactions Transaction[]
+  subscriptions    UserSubscription[]
+}
+
+model Profile {
+  id       String  @id @default(uuid())
+  bio      String?
+  avatar   String?
+  points   Int     @default(0)
+  userId   String  @unique
+  metadata Json    @default("{}")
+  user     User    @relation(fields: [userId], references: [id])
+}
+
+model SubscriptionPlan {
+  id            String             @id @default(uuid())
+  name          String
+  price         Float
+  features      String[]
+  durationDays  Int
+  subscriptions UserSubscription[]
+}
+
+model UserSubscription {
+  id        String           @id @default(uuid())
+  userId    String
+  planId    String
+  startDate DateTime         @default(now())
+  endDate   DateTime
+  isActive  Boolean          @default(true)
+  plan      SubscriptionPlan @relation(fields: [planId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+}
+
+model ScamReport {
+  id          String   @id @default(uuid())
+  type        String
+  target      String?
+  description String
+  userId      String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+  category    String
+  evidence    Json     @default("{}")
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model PointsTransaction {
+  id          String   @id @default(uuid())
+  amount      Int
+  description String
+  userId      String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model BehavioralEvent {
+  id        String   @id @default(uuid())
+  type      String
+  metadata  Json
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  txId      String?
+  riskScore Int?
+  decision  String?
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id        String   @id @default(uuid())
+  amount    Float
+  merchant  String
+  decision  String
+  riskScore Int
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model FraudLabel {
+  id        String   @id @default(uuid())
+  txId      String
+  label     String
+  labeledBy String
+  createdAt DateTime @default(now())
+}
