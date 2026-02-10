@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/glass_card.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class VoiceDetectionScreen extends StatefulWidget {
   const VoiceDetectionScreen({super.key});
@@ -35,16 +38,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        title: const Text(
-          'Voice Detection',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+    return AdaptiveScaffold(
+      title: 'Voice Detection',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -107,19 +102,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
 
             // 🟢 Result Section
             if (isSuspicious != null)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color:
-                      isSuspicious! ? Colors.red[50] : Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color:
-                        isSuspicious! ? Colors.redAccent : Colors.green,
-                    width: 1.5,
-                  ),
-                ),
+              GlassCard(
+                accentColor: isSuspicious! ? Colors.redAccent : Colors.green,
                 child: Column(
                   children: [
                     Icon(
@@ -172,48 +156,59 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
             ),
             const SizedBox(height: 12),
 
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: recentRecordings.map((item) {
-                  final isSuspicious = item['result'] == 'Suspicious';
-                  return ListTile(
-                    leading: Icon(
-                      isSuspicious
-                          ? Icons.warning_amber_rounded
-                          : Icons.check_circle,
-                      color: isSuspicious
-                          ? Colors.redAccent
-                          : Colors.green,
-                    ),
-                    title: Text(
-                      item['name'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkText,
+            GlassCard(
+              padding: EdgeInsets.zero,
+              child: AnimationLimiter(
+                child: Column(
+                  children: recentRecordings.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+                    final isSuspicious = item['result'] == 'Suspicious';
+                    
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: ListTile(
+                            leading: Icon(
+                              isSuspicious
+                                  ? Icons.warning_amber_rounded
+                                  : Icons.check_circle,
+                              color: isSuspicious
+                                  ? Colors.redAccent
+                                  : Colors.green,
+                            ),
+                            title: Text(
+                              item['name'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.darkText,
+                              ),
+                            ),
+                            subtitle: Text(item['date']),
+                            trailing: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: isSuspicious
+                                    ? Colors.redAccent
+                                    : Colors.green,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                item['result'],
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    subtitle: Text(item['date']),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: isSuspicious
-                            ? Colors.redAccent
-                            : Colors.green,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        item['result'],
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ],
