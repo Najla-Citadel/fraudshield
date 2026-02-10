@@ -27,9 +27,11 @@ model Profile {
   id       String  @id @default(uuid())
   bio      String?
   avatar   String?
-  points   Int     @default(0)
-  userId   String  @unique
-  metadata Json    @default("{}")
+  points     Int     @default(0)
+  reputation Int     @default(0)
+  badges     Json    @default("[]")
+  userId     String  @unique
+  metadata   Json    @default("{}")
   user     User    @relation(fields: [userId], references: [id])
 }
 
@@ -54,16 +56,29 @@ model UserSubscription {
 }
 
 model ScamReport {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   type        String
   target      String?
   description String
   userId      String
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
+  status      String         @default("pending")
+  createdAt   DateTime       @default(now())
   category    String
-  evidence    Json     @default("{}")
-  user        User     @relation(fields: [userId], references: [id])
+  evidence    Json           @default("{}")
+  isPublic    Boolean        @default(false)
+  latitude    Float?
+  longitude   Float?
+  user        User           @relation(fields: [userId], references: [id])
+  verifications Verification[]
+}
+
+model Verification {
+  id        String     @id @default(uuid())
+  reportId  String
+  userId    String
+  isSame    Boolean
+  createdAt DateTime   @default(now())
+  report    ScamReport @relation(fields: [reportId], references: [id])
 }
 
 model PointsTransaction {
