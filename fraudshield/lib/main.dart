@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
@@ -35,12 +36,13 @@ class FraudShieldApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'FraudShield',
 
-            // ✅ THEME CONNECTION
+              // ✅ THEME CONNECTION
             themeMode: theme.mode,
             theme: ThemeData(
               brightness: Brightness.light,
               scaffoldBackgroundColor: const Color(0xFFF0F7FF),
               cardColor: Colors.white,
+              textTheme: GoogleFonts.interTextTheme(),
             ),
 
             darkTheme: ThemeData(

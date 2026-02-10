@@ -15,6 +15,10 @@ import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
 import 'community_feed_screen.dart';
+import '../widgets/adaptive_navigation.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/glass_card.dart';
+import '../widgets/fade_in_list.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -111,19 +115,35 @@ class _HomeScreenState extends State<HomeScreen> {
           const AccountScreen(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: AdaptiveNavigation(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).iconTheme.color,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Community'), // NEW
           BottomNavigationBarItem(
-              icon: Icon(Icons.subscriptions), label: 'Subscription'),
-          BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.group_outlined),
+            activeIcon: Icon(Icons.group),
+            label: 'Community',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.subscriptions_outlined),
+            activeIcon: Icon(Icons.subscriptions),
+            label: 'Plans',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.stars_outlined),
+            activeIcon: Icon(Icons.stars),
+            label: 'Points',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Account',
+          ),
         ],
       ),
     );
@@ -144,53 +164,21 @@ class _HomeTab extends StatelessWidget {
   });
 
   @override
-Widget build(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-
-  return Scaffold(
-    extendBodyBehindAppBar: true,
-    appBar: AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      title: Row(
-        children: [
-          Image.asset('assets/images/logo.png', height: 36),
-          const SizedBox(width: 8),
-          const Text(
-            'FraudShield',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
+  Widget build(BuildContext context) {
+    return AdaptiveScaffold(
+      title: 'FraudShield',
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_none),
           onPressed: () {},
         ),
       ],
-    ),
-
-    body: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(188, 173, 201, 238), // top
-            Color.fromARGB(223, 232, 235, 245), // bottom 
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 👋 GREETING
-              Row(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: FadeInList(
+          children: [
+            // 👋 GREETING
+            Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
@@ -362,13 +350,11 @@ Widget build(BuildContext context) {
                   ],
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
-    ),
-  );
-}
+      );
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -385,44 +371,21 @@ Widget _quickAction(
   final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
   return Expanded(
-    child: GestureDetector(
+    child: GlassCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isFraud
-                ? [
-                    const Color.fromARGB(255, 255, 255, 255),
-                    const Color.fromARGB(255, 255, 255, 255),
-                  ]
-                : [
-                    const Color.fromARGB(255, 255, 255, 255),
-                    const Color.fromARGB(255, 255, 255, 255),
-                  ],
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Column(
+        children: [
+          Image.asset(imagePath, width: 32, height: 32),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.white : const Color(0xFF222222),
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Image.asset(imagePath, width: 28, height: 28),
-            const SizedBox(height: 10),
-            Text(
-              label,
-              style: TextStyle(
-                color: isDark ? Colors.white : const Color(0xFF222222),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     ),
   );
@@ -440,63 +403,49 @@ Widget _situationCard(
   final isDark = Theme.of(context).brightness == Brightness.dark;
   return Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: GestureDetector(
+    child: GlassCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Colors.grey.shade100,
-              child: Image.asset(imagePath, width: 28),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF222222),
-                    ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 26,
+            backgroundColor: isPrimary
+                ? Theme.of(context).cardColor
+                : Colors.grey.shade100,
+            child: Image.asset(imagePath, width: 28),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF222222),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.white70 : const Color(0xFF6B7280),
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.white70 : const Color(0xFF6B7280),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Theme.of(context).textTheme.bodyLarge!.color,
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 14,
+            color: isPrimary
+                ? Theme.of(context).cardColor
+                : Theme.of(context).textTheme.bodyLarge!.color,
+          ),
+        ],
       ),
     ),
   );

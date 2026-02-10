@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/adaptive_button.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -122,12 +124,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // =========================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        title: const Text('Subscription'),
-        backgroundColor: AppColors.primaryBlue,
-      ),
+    return AdaptiveScaffold(
+      title: 'Subscription',
       body: Column(
         children: [
           const SizedBox(height: 16),
@@ -345,23 +343,15 @@ class _ModernPlanCard extends StatelessWidget {
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: AdaptiveButton(
                   onPressed:
                       (loading || disabled || isCurrent) ? null : onPressed,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isCurrent ? Colors.grey : color,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    isCurrent
+                  text: isCurrent
                         ? 'Current Plan'
                         : loading
                             ? 'Processing...'
                             : 'Activate Tier',
-                  ),
+                  isLoading: loading,
                 ),
               ),
             ],
