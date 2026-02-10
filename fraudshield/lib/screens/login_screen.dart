@@ -4,6 +4,8 @@ import '../providers/auth_provider.dart';
 import 'signup_screen.dart';
 import '../constants/colors.dart';
 import 'home_screen.dart';
+import '../widgets/adaptive_text_field.dart';
+import '../widgets/adaptive_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -94,38 +96,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 40),
 
                 // 📧 Email Field
-                TextField(
+                AdaptiveTextField(
                   controller: _emailController,
+                  label: 'Email',
+                  prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: AppColors.greyText),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 20),
 
                 // 🔒 Password Field
-                TextField(
+                AdaptiveTextField(
                   controller: _passwordController,
+                  label: 'Password',
+                  prefixIcon: Icons.lock_outline,
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: AppColors.greyText),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 10),
@@ -149,32 +133,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 30),
 
                 // 🟦 Log In Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _loading ? null : _trySignIn,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 3,
-                    ),
-                    child: _loading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text(
-                            'Log In',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                  ),
+                AdaptiveButton(
+                  text: 'Log In',
+                  isLoading: _loading,
+                  onPressed: _trySignIn,
                 ),
 
-                const SizedBox(height: 25),
+                // 👆 Biometric Placeholder
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: IconButton(
+                      icon: Icon(Icons.fingerprint, size: 40, color: AppColors.primaryBlue),
+                      onPressed: () {
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Biometric Login coming soon!')),
+                        );
+                      },
+                    ),
+                  ),
+                ),
 
                 // 👤 Sign Up link
                 Row(
