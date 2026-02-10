@@ -21,6 +21,7 @@ dependencies:
   xml: ^6.1.0
   html: 0.15.6
   url_launcher: ^6.3.2
+  google_maps_flutter: ^2.10.0
 
   # Flutter core
   cupertino_icons: ^1.0.8

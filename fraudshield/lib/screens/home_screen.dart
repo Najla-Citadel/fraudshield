@@ -14,6 +14,7 @@ import 'awareness_tips_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
+import 'community_feed_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -104,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
             userName: _userName,
             loading: _loadingProfile,
           ),
+          const CommunityFeedScreen(), // NEW
           const SubscriptionScreen(),
           const PointsScreen(),
           const AccountScreen(),
@@ -117,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: Theme.of(context).iconTheme.color,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.group), label: 'Community'), // NEW
           BottomNavigationBarItem(
               icon: Icon(Icons.subscriptions), label: 'Subscription'),
           BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),

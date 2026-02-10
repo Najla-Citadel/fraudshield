@@ -179,18 +179,40 @@ class ApiService {
     required String type,
     required String category,
     required String description,
+    String? target,
+    bool isPublic = false,
+    double? latitude,
+    double? longitude,
     Map<String, dynamic>? evidence,
   }) async {
     return post('/reports', {
       'type': type,
       'category': category,
       'description': description,
+      'target': target,
+      'isPublic': isPublic,
+      'latitude': latitude,
+      'longitude': longitude,
       'evidence': evidence ?? {},
     });
   }
 
   Future<List<dynamic>> getMyReports() async {
-    return get('/reports');
+    return get('/reports/my');
+  }
+
+  Future<List<dynamic>> getPublicFeed() async {
+    return get('/reports/public');
+  }
+
+  Future<Map<String, dynamic>> verifyReport({
+    required String reportId,
+    required bool isSame,
+  }) async {
+    return post('/reports/verify', {
+      'reportId': reportId,
+      'isSame': isSame,
+    });
   }
 
   // ---------------- Subscriptions ----------------

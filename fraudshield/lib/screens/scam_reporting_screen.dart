@@ -20,6 +20,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   String _reportType = 'Phone';
   String? _selectedFilePath;
   String? _selectedFileName;
+  bool _isPublic = true;
 
   final List<String> _reportTypes = [
     'Phone',
@@ -263,6 +264,20 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            SwitchListTile(
+              title: const Text(
+                'Share with the community',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: const Text(
+                'Help others by sharing an anonymized version of this report in the public feed.',
+                style: TextStyle(fontSize: 12),
+              ),
+              value: _isPublic,
+              activeColor: AppColors.primaryBlue,
+              onChanged: (val) => setState(() => _isPublic = val),
+            ),
             const SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
@@ -301,6 +316,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       type: _reportType,
                       category: _selectedCategory,
                       description: _descController.text.trim(),
+                      target: _reportType == 'Phone' ? _phoneController.text.trim() : null, // Captured target
+                      isPublic: _isPublic, // User preference
                       evidence: {
                         if (_reportType == 'Phone') 'phone': _phoneController.text.trim(),
                         if (uploadedUrl != null) 'evidence_url': uploadedUrl,
