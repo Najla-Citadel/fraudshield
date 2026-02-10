@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'glass_card.dart';
 
 class ScamCard extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -23,15 +24,11 @@ class ScamCard extends StatelessWidget {
         verifications = report['_count']['verifications'] ?? 0;
       }
 
-      return Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Colors.red.withOpacity(0.15)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: GlassCard(
+          padding: EdgeInsets.zero, // InkWell needs to span full width
+          child: InkWell(
           onTap: () {}, // Future: Details screen
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -210,15 +207,17 @@ class ScamCard extends StatelessWidget {
             ),
           ),
         ),
-      );
+      ));
     } catch (e, stack) {
       debugPrint('Error rendering ScamCard for report ${report['id']}: $e\n$stack');
-      return Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: ListTile(
-          leading: const Icon(Icons.error_outline, color: Colors.red),
-          title: const Text('Invalid report data'),
-          subtitle: Text('Details: ${e.toString().split('\n').first}'),
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: GlassCard(
+          child: ListTile(
+            leading: const Icon(Icons.error_outline, color: Colors.red),
+            title: const Text('Invalid report data'),
+            subtitle: Text('Details: ${e.toString().split('\n').first}'),
+          ),
         ),
       );
     }

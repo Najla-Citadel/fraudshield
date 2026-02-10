@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/colors.dart';
 import '../models/onboarding_item.dart';
 import '../services/api_service.dart';
+import '../widgets/adaptive_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -143,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: AdaptiveButton(
                     onPressed: () => _currentIndex == _items.length - 1
                         ? _finish()
                         : _controller.animateToPage(
@@ -151,17 +152,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             duration: const Duration(milliseconds: 350),
                             curve: Curves.easeOut,
                           ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Get Started',
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    text: 'Get Started',
                   ),
                 ),
               ),

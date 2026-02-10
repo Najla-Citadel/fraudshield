@@ -4,6 +4,8 @@ import '../constants/colors.dart';
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+import '../widgets/adaptive_text_field.dart';
+import '../widgets/adaptive_button.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -99,75 +101,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 40),
 
                 // 👤 Full Name
-                TextField(
+                AdaptiveTextField(
                   controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    prefixIcon: const Icon(Icons.person_outline),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                  label: 'Full Name',
+                  prefixIcon: Icons.person_outline,
                 ),
                 const SizedBox(height: 20),
 
                 // 📧 Email Field
-                TextField(
+                AdaptiveTextField(
                   controller: _emailController,
+                  label: 'Email',
+                  prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 20),
 
                 // 🔒 Password Field
-                TextField(
+                AdaptiveTextField(
                   controller: _passwordController,
+                  label: 'Password',
+                  prefixIcon: Icons.lock_outline,
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 30),
 
                 // 🟦 Sign Up Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _loading ? null : _signup,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: _loading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Sign Up',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                  ),
+                AdaptiveButton(
+                  text: 'Sign Up',
+                  isLoading: _loading,
+                  onPressed: _signup,
                 ),
 
                 const SizedBox(height: 25),
