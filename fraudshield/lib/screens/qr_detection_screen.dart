@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../constants/colors.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/adaptive_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 enum QRRiskLevel { safe, suspicious, high, unknown }
@@ -104,59 +106,76 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
   void _showResult(String raw, QRScanResult result) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(20),
+      backgroundColor: Colors.transparent, // For glass effect
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor.withOpacity(0.95),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _riskHeader(result),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            Text(
+              'Content:',
+              style: TextStyle(
+                color: AppColors.greyText,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               raw,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14, fontFamily: 'Courier'),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            Text(
+              'Analysis:',
+              style: TextStyle(
+                color: AppColors.greyText,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
             Text(
               result.reason,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: AppColors.darkText),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             // 🔘 Action buttons
             if (result.risk != QRRiskLevel.high)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final uri = Uri.tryParse(raw);
-                    if (uri != null && await canLaunchUrl(uri)) {
-                      await launchUrl(uri,
-                          mode: LaunchMode.externalApplication);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                  ),
-                  child: const Text('Open Link'),
-                ),
+              AdaptiveButton(
+                onPressed: () async {
+                  final uri = Uri.tryParse(raw);
+                  if (uri != null && await canLaunchUrl(uri)) {
+                    await launchUrl(uri,
+                        mode: LaunchMode.externalApplication);
+                  }
+                },
+                text: 'Open Link',
               ),
 
             if (result.risk == QRRiskLevel.high)
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                  ),
-                  child: const Text('Close (Unsafe)'),
-                ),
+              AdaptiveButton(
+                onPressed: () => Navigator.pop(context),
+                text: 'Close (Unsafe)',
+                // Since AdaptiveButton defaults to primary, we'll keep it simple for now
+                // but emphasize the danger in the header
               ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -215,24 +234,21 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
   // 🖼️ UI
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('QR Detection'),
-        backgroundColor: AppColors.primaryBlue,
-        actions: [
-          IconButton(
-            icon: Icon(_isTorchOn ? Icons.flash_on : Icons.flash_off),
-            onPressed: () async {
-              await _controller.toggleTorch();
-              setState(() => _isTorchOn = !_isTorchOn);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.cameraswitch),
-            onPressed: () => _controller.switchCamera(),
-          ),
-        ],
-      ),
+    return AdaptiveScaffold(
+      title: 'QR Detection',
+      actions: [
+        IconButton(
+          icon: Icon(_isTorchOn ? Icons.flash_on : Icons.flash_off),
+          onPressed: () async {
+            await _controller.toggleTorch();
+            setState(() => _isTorchOn = !_isTorchOn);
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.cameraswitch),
+          onPressed: () => _controller.switchCamera(),
+        ),
+      ],
       body: MobileScanner(
         controller: _controller,
         onDetect: _foundBarcode,
