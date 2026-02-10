@@ -1,0 +1,81 @@
+name: fraudshield
+description: "A new Flutter project."
+publish_to: "none"
+version: 1.0.0+3
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  shared_preferences: ^2.2.2
+  lottie: ^3.1.0
+  webview_flutter: ^4.7.0
+  webview_flutter_android: ^3.16.0
+  webview_flutter_wkwebview: ^3.13.0
+  flutter:
+    sdk: flutter
+
+  # Networking / parsing / open links
+  #http: ^1.1.0
+  http: any
+  xml: ^6.1.0
+  html: 0.15.6
+  url_launcher: ^6.3.2
+
+  # Flutter core
+  cupertino_icons: ^1.0.8
+
+  # Environment variables
+  flutter_dotenv: ^6.0.0
+
+  # state, intl (used by admin screen)
+  provider: ^6.0.5
+  intl: ^0.18.0
+  mobile_scanner: ^7.1.3
+  file_picker: ^10.3.10
+  socket_io_client: ^3.1.2
+  flutter_launcher_icons: ^0.14.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/fraudshield_logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/hi_bot.png
+    - assets/images/logo.png
+    - assets/images/tip_image.png
+    - assets/images/tip1.png
+    - assets/images/tip2.png
+    - assets/images/tip3.png
+    - assets/images/tip4.png
+    - assets/images/news_placeholder_1.png
+    - assets/images/news_placeholder_2.png
+    - assets/images/news_placeholder_3.png
+    - assets/images/news_placeholder_4.png
+    - assets/images/onboard_secure.png
+    - assets/images/onboard_report.png
+    - assets/images/onboard_alert.png
+    - assets/icons/qr.png
+    - assets/icons/fraud_check.png
+    - assets/icons/shield.png
+    - assets/icons/mic.png
+    - assets/icons/report.png
+    - assets/animations/onboard_secure.json
+    - assets/animations/onboard_report.json
+    - assets/animations/onboard_alert.json
+    - assets/animations/pet_dog.json
+    - assets/animations/pet_cat.json
+    - assets/animations/pet_owl.json
+    - assets/animations/pet_fish.json
+    - assets/animations/greeting_bot.json
+    - .env
