@@ -36,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _userName = 'User';
   bool _loadingProfile = true;
 
+  // Key to refresh PointsScreen from Home
+  final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
+
+    // Check for daily login reward
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkDailyReward();
+    });
   }
 
   void _handleNewAlert() {
@@ -95,11 +103,41 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _checkDailyReward() async {
+    try {
+      final res = await ApiService.instance.claimDailyReward();
+      if (res['claimed'] == true && mounted) {
+        // Refresh profile to update points in UI
+        context.read<AuthProvider>().refreshProfile();
+        // Also refresh points screen if it's cached
+        _pointsKey.currentState?.refreshData();
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _DailyRewardDialog(
+            points: res['points'],
+            streak: res['streak'],
+            message: res['message'],
+            nextReward: res['nextReward'],
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error checking daily reward: $e');
+    }
+  }
+
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
 
     if (index == 0) {
       _loadProfile(); // refresh greeting
+    }
+
+    // Refresh Points tab when tapped
+    if (index == 3) {
+      _pointsKey.currentState?.refreshData();
     }
   }
 
@@ -118,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const CommunityFeedScreen(),
           // Dynamic Tab: Plans (Sales) vs Alerts (Utility)
           isSubscribed ? const UserAlertsScreen() : const SubscriptionScreen(),
-          const PointsScreen(),
+          PointsScreen(key: _pointsKey),
           const AccountScreen(),
         ],
       ),
@@ -467,4 +505,94 @@ Widget _situationCard(
       ),
     ),
   );
+}
+
+class _DailyRewardDialog extends StatelessWidget {
+  final int points;
+  final int streak;
+  final String message;
+  final int nextReward;
+
+  const _DailyRewardDialog({
+    required this.points,
+    required this.streak,
+    required this.message,
+    required this.nextReward,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.transparent,
+      child: GlassSurface(
+        borderRadius: 20,
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              '🎉 Daily Bonus!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Icon(Icons.stars, size: 64, color: Colors.amber),
+            const SizedBox(height: 16),
+            Text(
+              '+$points Points',
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.bolt, color: Colors.orange, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Streak: $streak Days',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tomorrow\'s Reward: $nextReward Points',
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Awesome!'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

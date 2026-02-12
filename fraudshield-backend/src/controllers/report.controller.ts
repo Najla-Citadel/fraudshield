@@ -199,6 +199,7 @@ export class ReportController {
                 dateFrom,
                 dateTo,
                 minVerifications,
+                sortBy = 'newest',
                 limit = '20',
                 offset = '0',
             } = req.query;
@@ -246,6 +247,24 @@ export class ReportController {
             const limitNum = parseInt(limit as string, 10);
             const offsetNum = parseInt(offset as string, 10);
 
+            // Dynamic sort logic
+            let orderByClause: any;
+            switch (sortBy) {
+                case 'verified':
+                    // Sort by verification count (most verified first)
+                    orderByClause = { verifications: { _count: 'desc' } };
+                    break;
+                case 'trust':
+                    // Sort by reporter trust score (highest first)
+                    orderByClause = { user: { profile: { reputation: 'desc' } } };
+                    break;
+                case 'newest':
+                default:
+                    // Sort by creation date (newest first)
+                    orderByClause = { createdAt: 'desc' };
+                    break;
+            }
+
             // Fetch reports with filters
             const [reports, total] = await Promise.all([
                 (prisma as any).scamReport.findMany({
@@ -265,7 +284,7 @@ export class ReportController {
                             },
                         },
                     },
-                    orderBy: { createdAt: 'desc' },
+                    orderBy: orderByClause,
                     take: limitNum,
                     skip: offsetNum,
                 }),
@@ -383,7 +402,21 @@ export class ReportController {
                 });
 
                 if (reporterProfile) {
-                    let currentBadges = (reporterProfile.badges as any[]) || [];
+                    // Safely handle badges
+                    let currentBadges: string[] = [];
+                    if (Array.isArray(reporterProfile.badges)) {
+                        currentBadges = reporterProfile.badges as string[];
+                    } else if (typeof reporterProfile.badges === 'string') {
+                        try {
+                            const parsed = JSON.parse(reporterProfile.badges);
+                            if (Array.isArray(parsed)) {
+                                currentBadges = parsed;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing badges from DB:', e);
+                        }
+                    }
+
                     if (reporterProfile.reputation >= 50 && !currentBadges.includes('Elite Sentinel')) {
                         currentBadges.push('Elite Sentinel');
                         await (prisma as any).profile.update({

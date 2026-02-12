@@ -218,6 +218,7 @@ class ApiService {
     DateTime? dateFrom,
     DateTime? dateTo,
     int? minVerifications,
+    String sortBy = 'newest',
     int limit = 20,
     int offset = 0,
   }) async {
@@ -226,7 +227,9 @@ class ApiService {
       if (category != null) 'category': category,
       if (dateFrom != null) 'dateFrom': dateFrom.toIso8601String(),
       if (dateTo != null) 'dateTo': dateTo.toIso8601String(),
-      if (minVerifications != null) 'minVerifications': minVerifications.toString(),
+      if (minVerifications != null && minVerifications > 0) 
+        'minVerifications': minVerifications.toString(),
+      'sortBy': sortBy,
       'limit': limit.toString(),
       'offset': offset.toString(),
     };
@@ -316,6 +319,32 @@ class ApiService {
     final response = await get('/features/behavioral?limit=$limit');
     return response as List;
   }
+
+  // ---------------- Rewards ----------------
+
+  Future<List<dynamic>> getRewards() async {
+    final response = await get('/features/rewards');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> redeemReward(String rewardId) async {
+    try {
+      return await post('/features/rewards/redeem', {'rewardId': rewardId});
+    } catch (e) {
+      // Re-throw with more specific error message
+      throw Exception('Failed to redeem reward: $e');
+    }
+  }
+
+  Future<List<dynamic>> getMyRedemptions() async {
+    final response = await get('/features/redemptions');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> claimDailyReward() async {
+    return post('/features/rewards/daily', {});
+  }
+
   // ---------------- CRUD Templates (for other features) ----------------
 
   Future<dynamic> get(String path) async {
