@@ -1,9 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
+import '../widgets/animated_background.dart';
+import '../widgets/glass_surface.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -124,72 +125,79 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // =========================
   @override
   Widget build(BuildContext context) {
-    return AdaptiveScaffold(
-      title: 'Subscription',
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-
-          // 🔹 ACTIVE SUB HEADER
-          if (hasActiveSub) _activeHeader(),
-
-          // 🔹 HERO
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: const [
-                Text(
-                  'Upgrade Security',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  'Choose a protection tier to unlock advanced AI defenses.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // 🔹 PLANS
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              itemCount: _plans.length,
-              itemBuilder: (_, index) {
-                final plan = _plans[index];
-
-                return _ModernPlanCard(
-                  plan: plan,
-                  loading: _loading,
-                  disabled:
-                      hasActiveSub && _activeSub?['planId'] != plan['id'],
-                  isCurrent: _activeSub?['planId'] == plan['id'],
-                  onPressed: () => _subscribe(plan),
-                );
-              },
-            ),
-          ),
-
-          // 🔹 CANCEL
-          if (hasActiveSub)
+    final theme = Theme.of(context);
+    
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'Subscription',
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: [
+            const SizedBox(height: 16),
+  
+            // 🔹 ACTIVE SUB HEADER
+            if (hasActiveSub) _activeHeader(),
+  
+            // 🔹 HERO
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextButton(
-                onPressed: _cancelSubscription,
-                child: const Text(
-                  'Cancel Subscription',
-                  style: TextStyle(color: Colors.red),
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Text(
+                    'Upgrade Security',
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Choose a protection tier to unlock advanced AI defenses.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
-        ],
+  
+            const SizedBox(height: 24),
+  
+            // 🔹 PLANS
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                itemCount: _plans.length,
+                itemBuilder: (_, index) {
+                  final plan = _plans[index];
+  
+                  return _ModernPlanCard(
+                    plan: plan,
+                    loading: _loading,
+                    disabled:
+                        hasActiveSub && _activeSub?['planId'] != plan['id'],
+                    isCurrent: _activeSub?['planId'] == plan['id'],
+                    onPressed: () => _subscribe(plan),
+                  );
+                },
+              ),
+            ),
+  
+            // 🔹 CANCEL
+            if (hasActiveSub)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextButton(
+                  onPressed: _cancelSubscription,
+                  child: Text(
+                    'Cancel Subscription',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -198,40 +206,47 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // ACTIVE HEADER
   // =========================
   Widget _activeHeader() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.verified, color: Colors.green),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Current Active Plan',
-                  style: TextStyle(fontSize: 11, color: Colors.black54),
-                ),
-                Text(
-                  _activeSub!['plan']['name'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: GlassSurface(
+        padding: const EdgeInsets.all(16),
+        borderRadius: 24,
+        child: Row(
+          children: [
+            const Icon(Icons.verified, color: Colors.green),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Current Active Plan',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ],
+                  Text(
+                    _activeSub!['plan']['name'],
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const Chip(
-            label: Text('ACTIVE'),
-            backgroundColor: Colors.greenAccent,
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green),
+              ),
+              child: const Text('ACTIVE', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -258,10 +273,11 @@ class _ModernPlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final color = plan['price'] == 0
         ? Colors.green
         : plan['price'] == 5.90
-            ? AppColors.primaryBlue
+            ? theme.colorScheme.primary
             : Colors.orange;
 
     final isRecommended = plan['price'] == 5.90;
@@ -271,16 +287,11 @@ class _ModernPlanCard extends StatelessWidget {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: disabled ? 0.5 : 1,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: const [
-              BoxShadow(color: Colors.black12, blurRadius: 10),
-            ],
-            border: isRecommended ? Border.all(color: color, width: 2) : null,
-          ),
+        child: GlassSurface(
           padding: const EdgeInsets.all(24),
+          borderRadius: 28,
+          // Highlight recommended plan
+          accentColor: isRecommended ? color : null,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -288,6 +299,7 @@ class _ModernPlanCard extends StatelessWidget {
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
                     color: color,
                     borderRadius: BorderRadius.circular(20),
@@ -301,11 +313,9 @@ class _ModernPlanCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(height: 12),
               Text(
                 plan['name'],
-                style: TextStyle(
-                  fontSize: 20,
+                style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: color,
                 ),
@@ -316,31 +326,31 @@ class _ModernPlanCard extends StatelessWidget {
                 children: [
                   Text(
                     'RM ${plan['price']}',
-                    style: const TextStyle(
-                      fontSize: 34,
+                    style: theme.textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Text('/month', style: TextStyle(color: Colors.black54)),
+                  Text('/month', style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
                 ],
               ),
               const SizedBox(height: 16),
               ...(plan['features'] as List)
                   .map(
                     (f) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          Icon(Icons.check, color: color, size: 18),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text(f)),
+                          Icon(Icons.check_circle, color: color, size: 20),
+                          const SizedBox(width: 10),
+                          Expanded(child: Text(f, style: theme.textTheme.bodyMedium)),
                         ],
                       ),
                     ),
                   )
                   .toList(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: AdaptiveButton(
