@@ -22,6 +22,7 @@ import '../widgets/animated_background.dart';
 import '../widgets/fade_slide_route.dart';
 import '../widgets/fade_in_list.dart';
 import '../widgets/skeleton_loader.dart';
+import 'user_alerts_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -104,6 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSubscribed = context.watch<AuthProvider>().isSubscribed;
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -112,8 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
             userName: _userName,
             loading: _loadingProfile,
           ),
-          const CommunityFeedScreen(), // NEW
-          const SubscriptionScreen(),
+          const CommunityFeedScreen(),
+          // Dynamic Tab: Plans (Sales) vs Alerts (Utility)
+          isSubscribed ? const UserAlertsScreen() : const SubscriptionScreen(),
           const PointsScreen(),
           const AccountScreen(),
         ],
@@ -121,28 +125,28 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: AdaptiveNavigation(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        items: const [
-          BottomNavigationBarItem(
+        items: [
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.group_outlined),
             activeIcon: Icon(Icons.group),
             label: 'Community',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.subscriptions_outlined),
-            activeIcon: Icon(Icons.subscriptions),
-            label: 'Plans',
+            icon: Icon(isSubscribed ? Icons.notifications_outlined : Icons.subscriptions_outlined),
+            activeIcon: Icon(isSubscribed ? Icons.notifications : Icons.subscriptions),
+            label: isSubscribed ? 'Alerts' : 'Plans',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.stars_outlined),
             activeIcon: Icon(Icons.stars),
             label: 'Points',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
             label: 'Account',

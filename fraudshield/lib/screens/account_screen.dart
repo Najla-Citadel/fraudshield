@@ -11,6 +11,7 @@ import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/animated_background.dart';
+import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -176,6 +177,16 @@ class _AccountScreenState extends State<AccountScreen> {
               const SizedBox(height: 20),
               _profileCard(),
               _section('Preferences'),
+              // Subscription Management for active subscribers (since they lose the main nav tab)
+              if (context.watch<AuthProvider>().isSubscribed)
+                _setting(
+                  Icons.card_membership, 
+                  'Manage Subscription', 
+                  () => Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
+                  )
+                ),
               _setting(Icons.notifications, 'Notification Settings',
                   () => _openPlaceholder('Notification Settings')),
               _setting(
