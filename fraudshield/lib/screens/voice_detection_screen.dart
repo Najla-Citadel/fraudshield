@@ -62,27 +62,30 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
             // 🎙️ Record Button
             GestureDetector(
               onTap: _toggleRecording,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: isRecording ? Colors.redAccent : AppColors.primaryBlue,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isRecording
-                              ? Colors.redAccent
-                              : AppColors.primaryBlue)
-                          .withOpacity(0.4),
-                      blurRadius: 12,
-                      spreadRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  isRecording ? Icons.stop : Icons.mic,
-                  color: Colors.white,
-                  size: 50,
+              child: Hero(
+                tag: 'hero_voice',
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: isRecording ? Colors.redAccent : AppColors.primaryBlue,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isRecording
+                                ? Colors.redAccent
+                                : AppColors.primaryBlue)
+                            .withOpacity(0.4),
+                        blurRadius: 12,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isRecording ? Icons.stop : Icons.mic,
+                    color: Colors.white,
+                    size: 50,
+                  ),
                 ),
               ),
             ),

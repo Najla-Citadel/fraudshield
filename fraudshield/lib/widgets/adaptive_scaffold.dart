@@ -15,7 +15,10 @@ class AdaptiveScaffold extends StatelessWidget {
     this.body,
     this.actions,
     this.floatingActionButton,
+    this.backgroundColor,
   });
+
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +53,7 @@ class AdaptiveScaffold extends StatelessWidget {
       ...slivers,
       
       if (body != null)
-        SliverToBoxAdapter(child: body!),
+        SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
         
       // Add padding at bottom for scrolling past FAB
       const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
@@ -58,7 +61,7 @@ class AdaptiveScaffold extends StatelessWidget {
 
     if (isIos) {
       return CupertinoPageScaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: allSlivers,
@@ -66,7 +69,7 @@ class AdaptiveScaffold extends StatelessWidget {
       );
     } else {
       return Scaffold(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(), // Nice feel on Android too
           slivers: allSlivers,

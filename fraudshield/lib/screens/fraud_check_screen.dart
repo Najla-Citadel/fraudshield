@@ -4,7 +4,7 @@ import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_segmented_control.dart';
-import '../widgets/glass_card.dart';
+import '../widgets/glass_surface.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   const FraudCheckScreen({super.key});
@@ -147,7 +147,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen> {
             const SizedBox(height: 30),
 
             // 🧠 Safety tips
-            GlassCard(
+            GlassSurface(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [

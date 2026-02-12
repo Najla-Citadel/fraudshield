@@ -120,6 +120,17 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
+            Center(
+              child: Hero(
+                tag: 'hero_report',
+                child: CircleAvatar(
+                  radius: 40,
+                  backgroundColor: AppColors.primaryBlue.withOpacity(0.1),
+                  child: Image.asset('assets/icons/report.png', width: 40),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               'Reports may be shared with relevant authorities for review',
               style: TextStyle(
