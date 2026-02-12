@@ -16,6 +16,31 @@ async function main() {
         },
     });
 
+    // Create Subscription Plans
+    const proPlan = await prisma.subscriptionPlan.upsert({
+        where: { id: 'pro-plan-id' }, // Hardcoded ID for easier manual sub
+        update: {},
+        create: {
+            id: 'pro-plan-id',
+            name: 'Pro Protection',
+            price: 5.90,
+            features: ['Real-time Monitoring', 'Priority Alerts', 'Basic AI Defenses'],
+            durationDays: 30,
+        },
+    });
+
+    const masterPlan = await prisma.subscriptionPlan.upsert({
+        where: { id: 'master-plan-id' },
+        update: {},
+        create: {
+            id: 'master-plan-id',
+            name: 'Enterprise Master',
+            price: 19.90,
+            features: ['All Pro Features', 'ID Theft Insurance', 'Advanced AI Neural Shield'],
+            durationDays: 30,
+        },
+    });
+
     const reports = [
         {
             type: 'Phone',
