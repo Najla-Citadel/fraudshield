@@ -21,6 +21,7 @@ model User {
   reports          ScamReport[]
   userTransactions Transaction[]
   subscriptions    UserSubscription[]
+  redemptions      Redemption[]
 }
 
 model Profile {
@@ -32,6 +33,8 @@ model Profile {
   badges     Json    @default("[]")
   userId     String  @unique
   metadata   Json    @default("{}")
+  lastLoginDate DateTime?
+  loginStreak Int     @default(0)
   user     User    @relation(fields: [userId], references: [id])
 }
 
@@ -129,4 +132,27 @@ model FraudLabel {
   label     String
   labeledBy String
   createdAt DateTime @default(now())
+}
+
+model Reward {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  pointsCost  Int
+  type        String       // 'subscription', 'badge', 'cosmetic'
+  metadata    Json         @default("{}")
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  redemptions Redemption[]
+}
+
+model Redemption {
+  id         String   @id @default(uuid())
+  userId     String
+  rewardId   String
+  pointsCost Int
+  status     String   @default("completed") // 'pending', 'completed', 'failed'
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  reward     Reward   @relation(fields: [rewardId], references: [id])
 }

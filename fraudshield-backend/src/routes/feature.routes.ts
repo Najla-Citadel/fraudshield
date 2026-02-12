@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
+import { RewardsController } from '../controllers/rewards.controller';
 import passport from 'passport';
 
 const router = Router();
@@ -15,6 +16,13 @@ router.post('/subscription', SubscriptionController.createSubscription);
 // Points
 router.get('/points', PointsController.getMyPoints);
 router.post('/points', PointsController.addPoints);
+
+// Rewards
+router.get('/rewards', RewardsController.getRewards);
+router.post('/rewards/redeem', RewardsController.redeemReward);
+router.get('/redemptions', RewardsController.getMyRedemptions);
+router.post('/rewards/daily', RewardsController.claimDailyReward);
+router.post('/rewards/seed', RewardsController.seedRewards); // Admin/dev only
 
 router.post('/behavioral', BehavioralController.logEvent);
 router.get('/behavioral', BehavioralController.getMyEvents);

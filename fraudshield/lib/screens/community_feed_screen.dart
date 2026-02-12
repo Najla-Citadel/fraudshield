@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/scam_map_view.dart';
 import '../widgets/adaptive_scaffold.dart';
+import '../widgets/search_filter_modal.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class CommunityFeedScreen extends StatefulWidget {
@@ -21,6 +22,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   String _searchQuery = '';
   Timer? _debounceTimer;
   final TextEditingController _searchController = TextEditingController();
+  
+  // Advanced filter state
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
+  int _minVerifications = 0;
+  String _sortBy = 'newest';
 
   final List<String> _categories = [
     'All',
@@ -30,6 +37,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     'Love Scam',
     'Fake Giveaway / Promo Scam',
   ];
+  
+  bool get _hasActiveFilters =>
+      _dateFrom != null ||
+      _dateTo != null ||
+      _minVerifications > 0 ||
+      _sortBy != 'newest';
 
   @override
   void initState() {
@@ -52,6 +65,29 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     });
   }
 
+  void _showFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SearchFilterModal(
+        initialDateFrom: _dateFrom,
+        initialDateTo: _dateTo,
+        initialMinVerifications: _minVerifications,
+        initialSortBy: _sortBy,
+        onApplyFilters: (dateFrom, dateTo, minVerifications, sortBy) {
+          setState(() {
+            _dateFrom = dateFrom;
+            _dateTo = dateTo;
+            _minVerifications = minVerifications;
+            _sortBy = sortBy;
+          });
+          _fetchFeed();
+        },
+      ),
+    );
+  }
+
   void _clearSearch() {
     _searchController.clear();
     setState(() => _searchQuery = '');
@@ -66,11 +102,15 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     }
 
     try {
-      // Use search API if query is present, otherwise use public feed
-      if (_searchQuery.isNotEmpty) {
+      // Use search API if query or filters are present, otherwise use public feed
+      if (_searchQuery.isNotEmpty || _hasActiveFilters) {
         final searchResult = await ApiService.instance.searchReports(
-          query: _searchQuery,
+          query: _searchQuery.isNotEmpty ? _searchQuery : null,
           category: _selectedCategory != 'All' ? _selectedCategory : null,
+          dateFrom: _dateFrom,
+          dateTo: _dateTo,
+          minVerifications: _minVerifications > 0 ? _minVerifications : null,
+          sortBy: _sortBy,
         );
         final reports = searchResult['results'] as List;
         if (mounted) {
@@ -110,6 +150,16 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         child: AdaptiveScaffold(
           title: 'Community Scam Feed',
           actions: [
+            // Filter button with badge
+            IconButton(
+              icon: Badge(
+                isLabelVisible: _hasActiveFilters,
+                label: const Text('•'),
+                child: const Icon(Icons.filter_list),
+              ),
+              onPressed: _showFilterModal,
+              tooltip: 'Filters',
+            ),
             IconButton(
               icon: Icon(_isMapMode ? Icons.list : Icons.map_outlined),
               onPressed: () => setState(() => _isMapMode = !_isMapMode),
