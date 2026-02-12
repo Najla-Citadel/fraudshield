@@ -7,6 +7,7 @@ import 'providers/theme_provider.dart';
 import 'providers/auth_provider.dart';
 import 'services/notification_service.dart';
 import 'app_router.dart';
+import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
 
 Future<void> main() async {
@@ -38,22 +39,8 @@ class FraudShieldApp extends StatelessWidget {
 
               // ✅ THEME CONNECTION
             themeMode: theme.mode,
-            theme: ThemeData(
-              brightness: Brightness.light,
-              scaffoldBackgroundColor: const Color(0xFFF0F7FF),
-              cardColor: Colors.white,
-              textTheme: GoogleFonts.interTextTheme(),
-            ),
-
-            darkTheme: ThemeData(
-              brightness: Brightness.dark,
-              scaffoldBackgroundColor: const Color(0xFF0F172A),
-              cardColor: const Color(0xFF1E293B),
-              appBarTheme: const AppBarTheme(
-                surfaceTintColor: Colors.transparent,
-                backgroundColor: Colors.transparent,
-              ),
-            ),
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
 
             // ✅ ROUTING
             onGenerateRoute: AppRouter.generate,

@@ -9,6 +9,8 @@ import 'login_screen.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/animated_background.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -160,33 +162,39 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    return AdaptiveScaffold(
-      title: 'My Account',
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 40),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _profileCard(),
-            _section('Preferences'),
-            _setting(Icons.notifications, 'Notification Settings',
-                () => _openPlaceholder('Notification Settings')),
-            _setting(
-                Icons.language, 'Language', () => _openPlaceholder('Language')),
-            _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
-            _section('Security'),
-            _setting(
-                Icons.lock_outline, 'Change Password', _openChangePassword),
-            _setting(Icons.shield_outlined, 'Two-Factor Authentication',
-                () => _openPlaceholder('Two-Factor Authentication')),
-            _setting(Icons.devices, 'Device History',
-                () => _openPlaceholder('Device History')),
-            const SizedBox(height: 20),
-            _logoutButton(),
-            const SizedBox(height: 24),
-            const Text('Version 1.0.0',
-                style: TextStyle(fontSize: 11, color: Colors.black26)),
-          ],
+    final theme = Theme.of(context);
+
+    // Using AnimatedBackground and transparent AdaptiveScaffold for premium feel
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'My Account',
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 40),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _profileCard(),
+              _section('Preferences'),
+              _setting(Icons.notifications, 'Notification Settings',
+                  () => _openPlaceholder('Notification Settings')),
+              _setting(
+                  Icons.language, 'Language', () => _openPlaceholder('Language')),
+              _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
+              _section('Security'),
+              _setting(
+                  Icons.lock_outline, 'Change Password', _openChangePassword),
+              _setting(Icons.shield_outlined, 'Two-Factor Authentication',
+                  () => _openPlaceholder('Two-Factor Authentication')),
+              _setting(Icons.devices, 'Device History',
+                  () => _openPlaceholder('Device History')),
+              const SizedBox(height: 20),
+              _logoutButton(),
+              const SizedBox(height: 24),
+              Text('Version 1.0.0',
+                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
         ),
       ),
     );
@@ -293,47 +301,58 @@ class _AccountScreenState extends State<AccountScreen> {
   // ================= COMPONENTS =================
 
   Widget _profileCard() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      padding: const EdgeInsets.fromLTRB(24, 30, 24, 25),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 20),
-        ],
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(40),
-                child: Image.network(
-                  'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: _openAvatarPicker,
-                  child: const CircleAvatar(
-                    radius: 18,
-                    backgroundColor: AppColors.primaryBlue,
-                    child:
-                        Icon(Icons.camera_alt, color: Colors.white, size: 18),
+    final theme = Theme.of(context);
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GlassSurface(
+        padding: const EdgeInsets.fromLTRB(24, 30, 24, 25),
+        borderRadius: 40,
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Image.network(
+                    'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 120, height: 120,
+                        color: theme.colorScheme.surfaceVariant,
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                        width: 120, height: 120,
+                        color: theme.colorScheme.surfaceVariant,
+                        child: const Icon(Icons.person, size: 60),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          _editingName ? _editName() : _displayName(),
-        ],
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _openAvatarPicker,
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: theme.colorScheme.primary,
+                      child:
+                          Icon(Icons.camera_alt, color: theme.colorScheme.onPrimary, size: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            _editingName ? _editName() : _displayName(),
+          ],
+        ),
       ),
     );
   }
@@ -356,13 +375,14 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _displayName() {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Text(_nameController.text,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
         const SizedBox(height: 4),
         Text(_email,
-            style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 14),
         OutlinedButton(
           onPressed: () => setState(() => _editingName = true),
@@ -384,27 +404,34 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _section(String title) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-      child: Text(title.toUpperCase(),
-          style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: Colors.black45,
-              letterSpacing: 1.5)),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Text(title.toUpperCase(),
+            textAlign: TextAlign.start,
+            style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 1.5)),
+      ),
     );
   }
 
   Widget _setting(IconData icon, String title, VoidCallback onTap) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: ListTile(
+      child: GlassSurface(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        borderRadius: 24,
         onTap: onTap,
-        tileColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        leading: Icon(icon, color: AppColors.primaryBlue),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
+        child: ListTile(
+          leading: Icon(icon, color: theme.colorScheme.primary),
+          title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+          trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+        ),
       ),
     );
   }
@@ -430,11 +457,12 @@ class _AvatarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
       ),
       child: GridView.count(
         crossAxisCount: 4,
@@ -442,13 +470,24 @@ class _AvatarPicker extends StatelessWidget {
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
         children: _seeds.map((seed) {
+          final isSelected = selected == seed;
           return GestureDetector(
             onTap: () => onSelect(seed),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
-                fit: BoxFit.cover,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: isSelected ? Border.all(color: theme.colorScheme.primary, width: 3) : null,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(child: CircularProgressIndicator(strokeWidth: 2));
+                  },
+                ),
               ),
             ),
           );
