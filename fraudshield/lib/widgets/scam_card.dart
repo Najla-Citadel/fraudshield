@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../screens/report_details_screen.dart';
 import 'glass_card.dart';
 
 class ScamCard extends StatelessWidget {
@@ -29,7 +30,17 @@ class ScamCard extends StatelessWidget {
         child: GlassCard(
           padding: EdgeInsets.zero, // InkWell needs to span full width
           child: InkWell(
-          onTap: () {}, // Future: Details screen
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReportDetailsScreen(
+                  reportId: report['id'],
+                  initialData: report,
+                ),
+              ),
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
