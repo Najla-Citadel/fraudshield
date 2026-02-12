@@ -19,6 +19,8 @@ class AdaptiveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isIos = Theme.of(context).platform == TargetPlatform.iOS;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     
     if (isLoading) {
       return const Center(child: CircularProgressIndicator.adaptive());
@@ -40,9 +42,9 @@ class AdaptiveButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           child: Text(
             text,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
@@ -54,16 +56,18 @@ class AdaptiveButton extends StatelessWidget {
           onPressed: handledOnPressed,
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16), // Rounded for modern look
             ),
-            backgroundColor: isDestructive ? Colors.red : null,
+            elevation: 0, // Flat design
           ),
           child: Text(
             text,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),

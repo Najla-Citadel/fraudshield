@@ -1,11 +1,14 @@
 // lib/screens/awareness_tips_screen.dart
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/animated_background.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class AwarenessTipsScreen extends StatelessWidget {
   const AwarenessTipsScreen({super.key});
 
-  // 🧠 Tips data (UNCHANGED CONTENT)
+  // 🧠 Tips data
   final List<Map<String, String>> tips = const [
     {
       'image': 'assets/images/tip1.png',
@@ -35,146 +38,126 @@ class AwarenessTipsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        elevation: 0,
-        title: const Text(
-          'Awareness & Tips',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          // 🔷 HEADER SECTION (NEW)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue,
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(28),
+    final theme = Theme.of(context);
+    
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'Awareness & Tips',
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: [
+            // 🔷 HEADER SECTION
+            GlassSurface(
+              borderRadius: 0, // Header style
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.lightbulb_outline, color: theme.colorScheme.primary, size: 28),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Must-Know Security Tips',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Learn how to protect yourself from scams and fraud.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Must-Know Security Tips',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+  
+            // 🔽 CONTENT
+            Expanded(
+              child: AnimationLimiter(
+                child: ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                  itemCount: tips.length,
+                  itemBuilder: (context, index) {
+                    final tip = tips[index];
+                    return AnimationConfiguration.staggeredList(
+                      position: index,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 18),
+                            child: GlassSurface(
+                              padding: EdgeInsets.zero,
+                              borderRadius: 22,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 🖼 IMAGE
+                                  ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(22),
+                                    ),
+                                    child: Image.asset(
+                                      tip['image']!,
+                                      width: double.infinity,
+                                      height: 160,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return Container(
+                                          height: 160,
+                                          color: theme.colorScheme.surfaceVariant,
+                                          child: Center(
+                                            child: Icon(Icons.image_not_supported, 
+                                              color: theme.colorScheme.onSurfaceVariant, size: 40),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                        
+                                  // 📄 CONTENT
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          tip['title']!,
+                                          style: theme.textTheme.titleLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          tip['desc']!,
+                                          style: theme.textTheme.bodyMedium?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
+                                            height: 1.4,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                SizedBox(height: 6),
-                Text(
-                  'Learn how to protect yourself from scams and fraud.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-
-          // 🔽 CONTENT
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-              itemCount: tips.length,
-              itemBuilder: (context, index) {
-                final tip = tips[index];
-                return _TipCard(
-                  image: tip['image']!,
-                  title: tip['title']!,
-                  desc: tip['desc']!,
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-////////////////////////////////////////////////////////////////
-/// TIP CARD (NEW MODERN CARD)
-////////////////////////////////////////////////////////////////
-
-class _TipCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final String desc;
-
-  const _TipCard({
-    required this.image,
-    required this.title,
-    required this.desc,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 14,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 🖼 IMAGE
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(22),
-            ),
-            child: Image.asset(
-              image,
-              width: double.infinity,
-              height: 160,
-              fit: BoxFit.cover,
-            ),
-          ),
-
-          // 📄 CONTENT
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  desc,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.4,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
