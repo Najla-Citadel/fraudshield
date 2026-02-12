@@ -5,6 +5,7 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/animated_background.dart';
 import '../widgets/glass_surface.dart';
+import '../widgets/fade_in_list.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -123,80 +124,79 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // =========================
   // UI
   // =========================
+  // =========================
+  // UI
+  // =========================
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Subscription'),
-        backgroundColor: Colors.blue,
-      ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'Subscription',
+        body: FadeInList(
+          children: [
+            const SizedBox(height: 10),
 
-          // 🔹 ACTIVE SUB HEADER
-          if (hasActiveSub) _activeHeader(),
+            // 🔹 ACTIVE SUB HEADER
+            if (hasActiveSub) _activeHeader(),
 
-          // 🔹 HERO
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              children: [
-                const Text(
-                  'Upgrade Security',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Choose a protection tier to unlock advanced AI defenses.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 🔹 PLANS
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: _plans.length,
-              itemBuilder: (_, index) {
-                final plan = _plans[index];
-
-                return _ModernPlanCard(
-                  plan: plan,
-                  loading: _loading,
-                  disabled:
-                      hasActiveSub && _activeSub?['planId'] != plan['id'],
-                  isCurrent: _activeSub?['planId'] == plan['id'],
-                  onPressed: () => _subscribe(plan),
-                );
-              },
-            ),
-          ),
-
-          // 🔹 CANCEL
-          if (hasActiveSub)
+            // 🔹 HERO
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextButton(
-                onPressed: _cancelSubscription,
-                child: const Text(
-                  'Cancel Subscription',
-                  style: TextStyle(color: Colors.red),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: GlassSurface(
+                borderRadius: 20,
+                child: Column(
+                  children: [
+                    const Text(
+                      'Upgrade Security',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Choose a protection tier to unlock advanced AI defenses.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-        ],
+
+            // 🔹 PLANS
+            ..._plans.map((plan) {
+               return _ModernPlanCard(
+                  plan: plan,
+                  loading: _loading,
+                  disabled: hasActiveSub && _activeSub?['planId'] != plan['id'],
+                  isCurrent: _activeSub?['planId'] == plan['id'],
+                  onPressed: () => _subscribe(plan),
+                );
+            }),
+
+            // 🔹 CANCEL
+            if (hasActiveSub)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  child: TextButton(
+                    onPressed: _cancelSubscription,
+                    child: const Text(
+                      'Cancel Subscription',
+                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+
+             const SizedBox(height: 80), // Bottom padding
+          ],
+        ),
       ),
     );
   }
@@ -205,57 +205,56 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   // ACTIVE HEADER
   // =========================
   Widget _activeHeader() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green[200]!),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.verified, color: Colors.green),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Current Active Plan',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GlassSurface(
+        borderRadius: 16,
+        padding: const EdgeInsets.all(16),
+        borderColor: Colors.green.withOpacity(0.5),
+        child: Row(
+          children: [
+            const Icon(Icons.verified, color: Colors.green),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Current Active Plan',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green[800],
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  _activeSub!['plan']?['name'] ?? 'Premium Tier',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                  Text(
+                    _activeSub!['plan']?['name'] ?? 'Premium Tier',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              'ACTIVE',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+                ],
               ),
             ),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'ACTIVE',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
