@@ -7,6 +7,7 @@ const router = Router();
 const authenticate = passport.authenticate('jwt', { session: false });
 
 // Public routes
+router.get('/search', ReportController.searchReports);
 router.get('/public', ReportController.getPublicFeed);
 
 // Protected routes

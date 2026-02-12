@@ -7,6 +7,19 @@ export class ReportController {
             const { type, category, description, evidence, target, isPublic, latitude, longitude } = req.body;
             const userId = (req.user as any).id;
 
+            // Ensure user has a profile (needed for public feed display)
+            await (prisma as any).profile.upsert({
+                where: { userId },
+                update: {},
+                create: {
+                    userId,
+                    points: 0,
+                    reputation: 0,
+                    badges: [],
+                    avatar: 'Felix', // Default avatar
+                },
+            });
+
             const report = await (prisma as any).scamReport.create({
                 data: {
                     userId,
@@ -21,6 +34,24 @@ export class ReportController {
                     status: 'PENDING',
                 },
             });
+
+            // Award points for submitting a report
+            if (isPublic) {
+                await (prisma as any).profile.update({
+                    where: { userId },
+                    data: {
+                        points: { increment: 10 },
+                    },
+                });
+
+                await (prisma as any).pointsTransaction.create({
+                    data: {
+                        userId,
+                        amount: 10,
+                        description: `Submitted public scam report`,
+                    },
+                });
+            }
 
             res.status(201).json(report);
         } catch (error) {
@@ -48,10 +79,20 @@ export class ReportController {
             const id = req.params.id as string;
             const userId = (req.user as any).id;
 
-            const report = await (prisma as any).scamReport.findFirst({
-                where: { id, userId },
+            const report = await (prisma as any).scamReport.findUnique({
+                where: { id },
                 include: {
                     verifications: true,
+                    user: {
+                        select: {
+                            profile: {
+                                select: {
+                                    reputation: true,
+                                    badges: true,
+                                },
+                            },
+                        },
+                    },
                 },
             });
 
@@ -59,7 +100,35 @@ export class ReportController {
                 return res.status(404).json({ message: 'Report not found' });
             }
 
-            res.json(report);
+            // Authorization: User must own the report OR it must be public
+            if (report.userId !== userId && !report.isPublic) {
+                return res.status(403).json({ message: 'Access denied' });
+            }
+
+            // Anonymize for non-owners if it's a public view
+            const isOwner = report.userId === userId;
+            const profile = report.user?.profile;
+
+            let badges = profile?.badges;
+            if (typeof badges === 'string') {
+                try { badges = JSON.parse(badges); } catch (e) { badges = []; }
+            }
+
+            const response = {
+                ...report,
+                target: (isOwner || !report.isPublic) ? report.target : redactedValue(report.target || ''),
+                reporterTrust: {
+                    score: profile?.reputation ?? 0,
+                    badges: Array.isArray(badges) ? badges : [],
+                },
+                user: undefined, // Don't expose sensitive user info
+                userId: isOwner ? report.userId : undefined,
+                _count: {
+                    verifications: report.verifications.length
+                }
+            };
+
+            res.json(response);
         } catch (error) {
             next(error);
         }
@@ -117,6 +186,133 @@ export class ReportController {
             });
 
             res.json(redactedReports);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async searchReports(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {
+                q: query,
+                category,
+                dateFrom,
+                dateTo,
+                minVerifications,
+                limit = '20',
+                offset = '0',
+            } = req.query;
+
+            // Build dynamic where clause
+            const whereClause: any = {
+                isPublic: true,
+                AND: [],
+            };
+
+            // Text search across multiple fields
+            if (query && typeof query === 'string' && query.trim()) {
+                whereClause.AND.push({
+                    OR: [
+                        { description: { contains: query, mode: 'insensitive' } },
+                        { target: { contains: query, mode: 'insensitive' } },
+                        { category: { contains: query, mode: 'insensitive' } },
+                    ],
+                });
+            }
+
+            // Category filter
+            if (category && typeof category === 'string') {
+                whereClause.AND.push({ category });
+            }
+
+            // Date range filters
+            if (dateFrom && typeof dateFrom === 'string') {
+                whereClause.AND.push({
+                    createdAt: { gte: new Date(dateFrom) },
+                });
+            }
+
+            if (dateTo && typeof dateTo === 'string') {
+                whereClause.AND.push({
+                    createdAt: { lte: new Date(dateTo) },
+                });
+            }
+
+            // Remove empty AND array if no filters
+            if (whereClause.AND.length === 0) {
+                delete whereClause.AND;
+            }
+
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
+
+            // Fetch reports with filters
+            const [reports, total] = await Promise.all([
+                (prisma as any).scamReport.findMany({
+                    where: whereClause,
+                    include: {
+                        _count: {
+                            select: { verifications: true },
+                        },
+                        user: {
+                            select: {
+                                profile: {
+                                    select: {
+                                        reputation: true,
+                                        badges: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).scamReport.count({ where: whereClause }),
+            ]);
+
+            // Filter by minimum verifications if specified
+            let filteredReports = reports;
+            if (minVerifications && typeof minVerifications === 'string') {
+                const minCount = parseInt(minVerifications, 10);
+                filteredReports = reports.filter(
+                    (report: any) => report._count.verifications >= minCount
+                );
+            }
+
+            // Anonymize sensitive fields
+            const redactedReports = filteredReports.map((report: any) => {
+                const profile = report.user?.profile;
+
+                let badges = profile?.badges;
+                if (typeof badges === 'string') {
+                    try {
+                        badges = JSON.parse(badges);
+                    } catch (e) {
+                        badges = [];
+                    }
+                }
+
+                return {
+                    ...report,
+                    target: report.target ? redactedValue(report.target) : null,
+                    reporterTrust: {
+                        score: profile?.reputation ?? 0,
+                        badges: Array.isArray(badges) ? badges : [],
+                    },
+                    user: undefined,
+                    userId: undefined,
+                };
+            });
+
+            res.json({
+                results: redactedReports,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }
