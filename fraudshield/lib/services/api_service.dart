@@ -179,24 +179,84 @@ class ApiService {
     required String type,
     required String category,
     required String description,
+    String? target,
+    bool isPublic = false,
+    double? latitude,
+    double? longitude,
     Map<String, dynamic>? evidence,
   }) async {
     return post('/reports', {
       'type': type,
       'category': category,
       'description': description,
+      'target': target,
+      'isPublic': isPublic,
+      'latitude': latitude,
+      'longitude': longitude,
       'evidence': evidence ?? {},
     });
   }
 
   Future<List<dynamic>> getMyReports() async {
-    return get('/reports');
+    final response = await get('/reports/my');
+    return response as List;
+  }
+
+  Future<List<dynamic>> getPublicFeed() async {
+    final response = await get('/reports/public');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> getReportDetails(String reportId) async {
+    final response = await get('/reports/$reportId');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> searchReports({
+    String? query,
+    String? category,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? minVerifications,
+    String sortBy = 'newest',
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final params = <String, String>{
+      if (query != null && query.isNotEmpty) 'q': query,
+      if (category != null) 'category': category,
+      if (dateFrom != null) 'dateFrom': dateFrom.toIso8601String(),
+      if (dateTo != null) 'dateTo': dateTo.toIso8601String(),
+      if (minVerifications != null && minVerifications > 0) 
+        'minVerifications': minVerifications.toString(),
+      'sortBy': sortBy,
+      'limit': limit.toString(),
+      'offset': offset.toString(),
+    };
+
+    final queryString = params.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+    
+    final response = await get('/reports/search?$queryString');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> verifyReport({
+    required String reportId,
+    required bool isSame,
+  }) async {
+    return post('/reports/verify', {
+      'reportId': reportId,
+      'isSame': isSame,
+    });
   }
 
   // ---------------- Subscriptions ----------------
 
   Future<List<dynamic>> getPlans() async {
-    return get('/features/plans');
+    final response = await get('/features/plans');
+    return response as List;
   }
 
   Future<Map<String, dynamic>> getMySubscription() async {
@@ -256,11 +316,38 @@ class ApiService {
   }
  
   Future<List<dynamic>> getRecentEvents({int limit = 50}) async {
-    return get('/features/behavioral?limit=$limit');
+    final response = await get('/features/behavioral?limit=$limit');
+    return response as List;
   }
+
+  // ---------------- Rewards ----------------
+
+  Future<List<dynamic>> getRewards() async {
+    final response = await get('/features/rewards');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> redeemReward(String rewardId) async {
+    try {
+      return await post('/features/rewards/redeem', {'rewardId': rewardId});
+    } catch (e) {
+      // Re-throw with more specific error message
+      throw Exception('Failed to redeem reward: $e');
+    }
+  }
+
+  Future<List<dynamic>> getMyRedemptions() async {
+    final response = await get('/features/redemptions');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> claimDailyReward() async {
+    return post('/features/rewards/daily', {});
+  }
+
   // ---------------- CRUD Templates (for other features) ----------------
 
-  Future<List<dynamic>> get(String path) async {
+  Future<dynamic> get(String path) async {
     try {
       final response = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
       if (response.statusCode == 200) {

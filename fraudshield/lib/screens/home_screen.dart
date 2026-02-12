@@ -14,6 +14,15 @@ import 'awareness_tips_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
+import 'community_feed_screen.dart';
+import '../widgets/adaptive_navigation.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/animated_background.dart';
+import '../widgets/fade_slide_route.dart';
+import '../widgets/fade_in_list.dart';
+import '../widgets/skeleton_loader.dart';
+import 'user_alerts_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,6 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _userName = 'User';
   bool _loadingProfile = true;
 
+  // Key to refresh PointsScreen from Home
+  final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
+
+    // Check for daily login reward
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkDailyReward();
+    });
   }
 
   void _handleNewAlert() {
@@ -86,16 +103,48 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _checkDailyReward() async {
+    try {
+      final res = await ApiService.instance.claimDailyReward();
+      if (res['claimed'] == true && mounted) {
+        // Refresh profile to update points in UI
+        context.read<AuthProvider>().refreshProfile();
+        // Also refresh points screen if it's cached
+        _pointsKey.currentState?.refreshData();
+
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _DailyRewardDialog(
+            points: res['points'],
+            streak: res['streak'],
+            message: res['message'],
+            nextReward: res['nextReward'],
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error checking daily reward: $e');
+    }
+  }
+
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
 
     if (index == 0) {
       _loadProfile(); // refresh greeting
     }
+
+    // Refresh Points tab when tapped
+    if (index == 3) {
+      _pointsKey.currentState?.refreshData();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isSubscribed = context.watch<AuthProvider>().isSubscribed;
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
@@ -104,23 +153,42 @@ class _HomeScreenState extends State<HomeScreen> {
             userName: _userName,
             loading: _loadingProfile,
           ),
-          const SubscriptionScreen(),
-          const PointsScreen(),
+          const CommunityFeedScreen(),
+          // Dynamic Tab: Plans (Sales) vs Alerts (Utility)
+          isSubscribed ? const UserAlertsScreen() : const SubscriptionScreen(),
+          PointsScreen(key: _pointsKey),
           const AccountScreen(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: AdaptiveNavigation(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Theme.of(context).iconTheme.color,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.group_outlined),
+            activeIcon: Icon(Icons.group),
+            label: 'Community',
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.subscriptions), label: 'Subscription'),
-          BottomNavigationBarItem(icon: Icon(Icons.stars), label: 'Points'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+            icon: Icon(isSubscribed ? Icons.notifications_outlined : Icons.subscriptions_outlined),
+            activeIcon: Icon(isSubscribed ? Icons.notifications : Icons.subscriptions),
+            label: isSubscribed ? 'Alerts' : 'Plans',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.stars_outlined),
+            activeIcon: Icon(Icons.stars),
+            label: 'Points',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Account',
+          ),
         ],
       ),
     );
@@ -141,231 +209,204 @@ class _HomeTab extends StatelessWidget {
   });
 
   @override
-Widget build(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-
-  return Scaffold(
-    extendBodyBehindAppBar: true,
-    appBar: AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      title: Row(
-        children: [
-          Image.asset('assets/images/logo.png', height: 36),
-          const SizedBox(width: 8),
-          const Text(
-            'FraudShield',
-            style: TextStyle(fontWeight: FontWeight.bold),
+  Widget build(BuildContext context) {
+    // Wrap entire HomeTab in AnimatedBackground for that premium feel
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'FraudShield',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
+            onPressed: () {},
           ),
         ],
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none),
-          onPressed: () {},
-        ),
-      ],
-    ),
-
-    body: Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color.fromARGB(188, 173, 201, 238), // top
-            Color.fromARGB(223, 232, 235, 245), // bottom 
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: FadeInList(
             children: [
               // 👋 GREETING
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          loading ? 'Hi' : 'Hi $userName 👋',
-                          style: const TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Let’s keep your digital life safe today!',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 90,
-                    child: Lottie.asset(
-                      'assets/animations/greeting_bot.json',
-                      repeat: true,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 18),
-
-              // ⚡ QUICK ACTIONS
-              const Text(
-                'What just happened?',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  _quickAction(
-                    context,
-                    'assets/icons/fraud_check.png',
-                    'Fraud Check',
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FraudCheckScreen(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  _quickAction(
-                    context,
-                    'assets/icons/shield.png',
-                    'Phishing',
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const PhishingProtectionScreen(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              _situationCard(
-                context,
-                imagePath: 'assets/icons/mic.png',
-                title: 'Someone called me',
-                subtitle: 'Check suspicious calls & voices',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const VoiceDetectionScreen(),
-                  ),
-                ),
-              ),
-
-              _situationCard(
-                context,
-                imagePath: 'assets/icons/qr.png',
-                title: 'I received a QR',
-                subtitle: 'Scan QR codes safely',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const QRDetectionScreen(),
-                  ),
-                ),
-              ),
-
-              _situationCard(
-                context,
-                imagePath: 'assets/icons/report.png',
-                title: 'I want to report a scam',
-                subtitle: 'Help protect others',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ScamReportingScreen(),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-              const LatestNewsWidget(limit: 3),
-              const SizedBox(height: 20),
-
-              // 💡 AWARENESS
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Awareness & Tips',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const AwarenessTipsScreen(),
-                      ),
-                    ),
-                    child: const Text(
-                      'Learn More',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/tip_image.png',
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          loading 
+                          ? const SkeletonLoader(width: 150, height: 36, borderRadius: 8)
+                          : Text(
+                              'Hi $userName 👋',
+                              style: const TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1F2937),
+                              ),
+                            ),
+                        const SizedBox(height: 6),
+                        loading
+                          ? const Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: SkeletonLoader(width: 200, height: 16, borderRadius: 4),
+                            )
+                          : const Text(
+                              'Let’s keep your digital life safe today!',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xFF6B7280),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        'Avoid clicking unknown links or downloading attachments from unverified sources.',
+                    SizedBox(
+                      height: 90,
+                      child: Lottie.asset(
+                        'assets/animations/greeting_bot.json',
+                        repeat: true,
                       ),
                     ),
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 18),
+
+                // ⚡ QUICK ACTIONS
+                const Text(
+                  'What just happened?',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+
+                Row(
+                  children: [
+                    _quickAction(
+                      context,
+                      'assets/icons/fraud_check.png',
+                      'Fraud Check',
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FraudCheckScreen(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    _quickAction(
+                      context,
+                      'assets/icons/shield.png',
+                      'Phishing',
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PhishingProtectionScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                _situationCard(
+                  context,
+                  imagePath: 'assets/icons/mic.png',
+                  title: 'Someone called me',
+                  subtitle: 'Check suspicious calls & voices',
+                  onTap: () => Navigator.push(
+                    context,
+                    FadeSlideRoute(page: const VoiceDetectionScreen()),
+                  ),
+                  heroTag: 'hero_voice',
+                ),
+
+                _situationCard(
+                  context,
+                  imagePath: 'assets/icons/qr.png',
+                  title: 'I received a QR',
+                  subtitle: 'Scan QR codes safely',
+                  onTap: () => Navigator.push(
+                    context,
+                    FadeSlideRoute(page: const QRDetectionScreen()),
+                  ),
+                  heroTag: 'hero_qr',
+                ),
+
+                _situationCard(
+                  context,
+                  imagePath: 'assets/icons/report.png',
+                  title: 'I want to report a scam',
+                  subtitle: 'Help protect others',
+                  onTap: () => Navigator.push(
+                    context,
+                    FadeSlideRoute(page: const ScamReportingScreen()),
+                  ),
+                  heroTag: 'hero_report',
+                ),
+
+                const SizedBox(height: 20),
+                const LatestNewsWidget(limit: 3),
+                const SizedBox(height: 20),
+
+                // 💡 AWARENESS
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Awareness & Tips',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AwarenessTipsScreen(),
+                        ),
+                      ),
+                      child: const Text(
+                        'Learn More',
+                        style: TextStyle(color: Colors.blueAccent),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/images/tip_image.png',
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Avoid clicking unknown links or downloading attachments from unverified sources.',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -378,48 +419,25 @@ Widget _quickAction(
   String label,
   VoidCallback onTap,
 ) {
-  final bool isFraud = label == 'Fraud Check';
-  final bool isDark = Theme.of(context).brightness == Brightness.dark;
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
 
   return Expanded(
-    child: GestureDetector(
+    child: GlassSurface(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isFraud
-                ? [
-                    const Color.fromARGB(255, 255, 255, 255),
-                    const Color.fromARGB(255, 255, 255, 255),
-                  ]
-                : [
-                    const Color.fromARGB(255, 255, 255, 255),
-                    const Color.fromARGB(255, 255, 255, 255),
-                  ],
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      borderRadius: 20,
+      child: Column(
+        children: [
+          Image.asset(imagePath, width: 32, height: 32),
+          const SizedBox(height: 12),
+          Text(
+            label,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Image.asset(imagePath, width: 28, height: 28),
-            const SizedBox(height: 10),
-            Text(
-              label,
-              style: TextStyle(
-                color: isDark ? Colors.white : const Color(0xFF222222),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     ),
   );
@@ -432,69 +450,149 @@ Widget _situationCard(
   required String title,
   required String subtitle,
   required VoidCallback onTap,
+  required String heroTag,
   bool isPrimary = false,
 }) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
+  
   return Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: GestureDetector(
+    child: GlassSurface(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
+      borderRadius: 20,
+      child: Row(
+        children: [
+          Hero(
+            tag: heroTag,
+            child: CircleAvatar(
               radius: 26,
               backgroundColor: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Colors.grey.shade100,
+                  ? theme.cardColor
+                  : (isDark ? Colors.white10 : Colors.grey.shade100),
               child: Image.asset(imagePath, width: 28),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF222222),
-                    ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 4),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                     color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 14,
+            color: isPrimary
+                ? theme.cardColor
+                : theme.colorScheme.onSurface, // Fixed null check
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _DailyRewardDialog extends StatelessWidget {
+  final int points;
+  final int streak;
+  final String message;
+  final int nextReward;
+
+  const _DailyRewardDialog({
+    required this.points,
+    required this.streak,
+    required this.message,
+    required this.nextReward,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.transparent,
+      child: GlassSurface(
+        borderRadius: 20,
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              '🎉 Daily Bonus!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Icon(Icons.stars, size: 64, color: Colors.amber),
+            const SizedBox(height: 16),
+            Text(
+              '+$points Points',
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.bolt, color: Colors.orange, size: 20),
+                  const SizedBox(width: 8),
                   Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isDark ? Colors.white70 : const Color(0xFF6B7280),
-                    ),
+                    'Streak: $streak Days',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 14,
-              color: isPrimary
-                  ? Theme.of(context).cardColor
-                  : Theme.of(context).textTheme.bodyLarge!.color,
+            const SizedBox(height: 8),
+            Text(
+              'Tomorrow\'s Reward: $nextReward Points',
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Awesome!'),
+              ),
             ),
           ],
         ),
       ),
-    ),
-  );
+    );
+  }
 }

@@ -4,11 +4,16 @@ import passport from 'passport';
 
 const router = Router();
 
-// All report routes are protected
-router.use(passport.authenticate('jwt', { session: false }));
+const authenticate = passport.authenticate('jwt', { session: false });
 
-router.post('/', ReportController.submitReport);
-router.get('/', ReportController.getMyReports);
-router.get('/:id', ReportController.getReportDetails);
+// Public routes
+router.get('/search', ReportController.searchReports);
+router.get('/public', ReportController.getPublicFeed);
+
+// Protected routes
+router.post('/', authenticate, ReportController.submitReport);
+router.get('/my', authenticate, ReportController.getMyReports);
+router.get('/:id', authenticate, ReportController.getReportDetails);
+router.post('/verify', authenticate, ReportController.verifyReport);
 
 export default router;

@@ -21,9 +21,12 @@ dependencies:
   xml: ^6.1.0
   html: 0.15.6
   url_launcher: ^6.3.2
+  google_maps_flutter: ^2.10.0
 
   # Flutter core
   cupertino_icons: ^1.0.8
+  google_fonts: ^6.1.0
+  flutter_staggered_animations: ^1.1.1
 
   # Environment variables
   flutter_dotenv: ^6.0.0
@@ -35,6 +38,7 @@ dependencies:
   file_picker: ^10.3.10
   socket_io_client: ^3.1.2
   flutter_launcher_icons: ^0.14.4
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

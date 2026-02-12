@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/adaptive_button.dart';
+import '../widgets/adaptive_segmented_control.dart';
+import '../widgets/glass_surface.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   const FraudCheckScreen({super.key});
@@ -15,17 +19,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        title: const Text(
-          'Fraud Check',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: SingleChildScrollView(
+    return AdaptiveScaffold(
+      title: 'Fraud Check',
+      body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,15 +49,24 @@ class _FraudCheckScreenState extends State<FraudCheckScreen> {
 
             // 💠 Selection buttons
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildTypeButton('Phone No'),
-                _buildTypeButton('URL'),
-                _buildTypeButton('Bank Acc'),
-                _buildTypeButton('Document'),
-
-              ],
+            // 💠 Selection buttons
+            SizedBox(
+              width: double.infinity,
+              child: AdaptiveSegmentedControl<String>(
+                groupValue: _selectedType,
+                onValueChanged: (value) {
+                  setState(() {
+                    _selectedType = value;
+                    _inputController.clear();
+                  });
+                },
+                children: const {
+                  'Phone No': Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('Phone')),
+                  'URL': Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('URL')),
+                  'Bank Acc': Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('Bank')),
+                  'Document': Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('Doc')),
+                },
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -93,60 +98,59 @@ class _FraudCheckScreenState extends State<FraudCheckScreen> {
             const SizedBox(height: 30),
 
             // 🟦 Check Now button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_inputController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+            AdaptiveButton(
+              text: 'Check Now',
+              onPressed: () {
+                if (_inputController.text.isEmpty && _selectedType != 'Document') {
+                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Please enter a value')),
-                    );
+                  );
                   return;
-                  }
+                }
+
+                // Mock result for document since RiskEvaluator might not handle it or file path
+                if (_selectedType == 'Document') {
+                   // Mock delay
+                   Future.delayed(const Duration(seconds: 1), () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CheckResultScreen(
+                            type: _selectedType,
+                            value: 'Uploaded File',
+                            result: RiskResult(level: 'low', score: 10, reasons: ['No malware found']),
+                          ),
+                        ),
+                      );
+                   });
+                   return;
+                }
 
                 final result = RiskEvaluator.evaluate(
-                type: _selectedType,
-                value: _inputController.text.trim(),
+                  type: _selectedType,
+                  value: _inputController.text.trim(),
                 );
 
-            Navigator.push(
-              context,
-             MaterialPageRoute(
-              builder: (_) => CheckResultScreen(
-              type: _selectedType,
-              value: _inputController.text.trim(),
-              result: result,
-              ),
-            ),
-          );
-        },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CheckResultScreen(
+                      type: _selectedType,
+                      value: _inputController.text.trim(),
+                      result: result,
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Check Now',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
+                );
+              },
             ),
 
             const SizedBox(height: 30),
 
             // 🧠 Safety tips
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
+            GlassSurface(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Text(
                     'Stay protected:',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -165,48 +169,6 @@ class _FraudCheckScreenState extends State<FraudCheckScreen> {
   }
 
   // 🔘 Reusable selectable button
-  Widget _buildTypeButton(String label) {
-    final isSelected = _selectedType == label;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedType = label;
-            _inputController.clear();
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primaryBlue : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.primaryBlue),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.primaryBlue.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    )
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.primaryBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 // 🧾 Result Screen

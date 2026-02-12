@@ -5,15 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/api_service.dart';
 import 'points_history_screen.dart';
+import 'rewards_catalog_screen.dart';
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
 
   @override
-  State<PointsScreen> createState() => _PointsScreenState();
+  State<PointsScreen> createState() => PointsScreenState();
 }
 
-class _PointsScreenState extends State<PointsScreen> {
+class PointsScreenState extends State<PointsScreen> {
   final ApiService _api = ApiService.instance;
   bool _loading = true;
   int _balance = 0;
@@ -25,6 +26,12 @@ class _PointsScreenState extends State<PointsScreen> {
   void initState() {
     super.initState();
     _init();
+  }
+
+  // Public method for external refresh (e.g., from HomeScreen tab tap)
+  Future<void> refreshData() async {
+    await _loadPoints();
+    if (mounted) setState(() {});
   }
 
   // ================= INIT =================
@@ -56,169 +63,168 @@ class _PointsScreenState extends State<PointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('Points'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Colors.blue,
         actions: [
           IconButton(
-            icon: const Icon(Icons.pets),
+            icon: const Icon(Icons.pets, color: Colors.white),
             onPressed: _openPetSelector,
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF9ED6FF),
-                    Color(0xFFEAF6FF),
-                  ],
-                ),
-              ),
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 12),
-
-                    // ⭐ CURRENT POINTS
-                    const Text(
-                      'CURRENT POINTS',
-                      style: TextStyle(
-                        fontSize: 14,
-                        letterSpacing: 1.3,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF355C7D),
-                      ),
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // ⭐ CURRENT POINTS
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.blue[50],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.blue[200]!),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '$_balance',
-                      style: const TextStyle(
-                        fontSize: 44,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F3A5F),
-                      ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'CURRENT POINTS',
+                          style: TextStyle(
+                            fontSize: 14,
+                            letterSpacing: 1.3,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '$_balance',
+                          style: const TextStyle(
+                            fontSize: 44,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                    // 🐾 PET + TAP ANIMATION
-                    Expanded(
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() => _petJump = true);
-                            Future.delayed(
-                              const Duration(milliseconds: 500),
-                              () => setState(() => _petJump = false),
-                            );
-                          },
-                          child: AnimatedSlide(
-                            offset: _petJump
-                                ? const Offset(0, -0.12)
-                                : Offset.zero,
-                            duration: const Duration(milliseconds: 450),
-                            curve: Curves.easeOutBack,
-                            child: AnimatedScale(
-                              scale: _petJump ? 1.08 : 1.0,
-                              duration:
-                                  const Duration(milliseconds: 450),
-                              child: Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Lottie.asset(
-                                    _petAnimation(),
-                                    height: 260,
-                                    repeat: true,
-                                  ),
-                                  if (_petJump)
-                                    const Positioned(
-                                      top: 12,
-                                      right: 16,
-                                      child: Text(
-                                        '❤️',
-                                        style:
-                                            TextStyle(fontSize: 36),
-                                      ),
-                                    ),
-                                ],
+                  // 🐾 PET + TAP ANIMATION
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _petJump = true);
+                      Future.delayed(
+                        const Duration(milliseconds: 500),
+                        () => setState(() => _petJump = false),
+                      );
+                    },
+                    child: Container(
+                      height: 260,
+                      alignment: Alignment.center,
+                      child: AnimatedSlide(
+                        offset: _petJump
+                            ? const Offset(0, -0.12)
+                            : Offset.zero,
+                        duration: const Duration(milliseconds: 450),
+                        curve: Curves.easeOutBack,
+                        child: AnimatedScale(
+                          scale: _petJump ? 1.08 : 1.0,
+                          duration: const Duration(milliseconds: 450),
+                          child: Stack(
+                            alignment: Alignment.topRight,
+                            children: [
+                              Lottie.asset(
+                                _petAnimation(),
+                                height: 260,
+                                repeat: true,
                               ),
-                            ),
+                              if (_petJump)
+                                const Positioned(
+                                  top: 12,
+                                  right: 16,
+                                  child: Text(
+                                    '❤️',
+                                    style: TextStyle(fontSize: 36),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
                     ),
+                  ),
 
-                    // 🎁 REDEEM POINTS
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 24),
-                      child: _gradientButton(
-                        icon: Icons.card_giftcard,
-                        text: 'Redeem Points Now',
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFFEC6EAD),
-                            Color(0xFF8F6ED5),
-                          ],
-                        ),
-                        onTap: () {
-                          // TODO: Navigate to redeem / subscription screen
-                        },
+                  const SizedBox(height: 20),
+
+                  // 🎁 REDEEM POINTS
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RewardsCatalogScreen(),
+                          ),
+                        );
+                        _loadPoints(); // Refresh balance when coming back
+                      },
+                      icon: const Icon(Icons.card_giftcard),
+                      label: const Text('Redeem Points Now'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.all(16),
+                        textStyle: const TextStyle(fontSize: 16),
                       ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    // 🕒 VIEW HISTORY
-                    Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 24),
-                      child: _gradientButton(
-                        icon: Icons.history,
-                        text: 'View Points History',
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF6A85F1),
-                            Color(0xFF8F6ED5),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const PointsHistoryScreen(),
-                            ),
-                          );
-                        },
+                  ),
+  
+                  const SizedBox(height: 12),
+  
+                  // 🕒 VIEW HISTORY
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PointsHistoryScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.history),
+                      label: const Text('View Points History'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.all(16),
+                        textStyle: const TextStyle(fontSize: 16),
                       ),
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // ✨ FOOTNOTE
-                    const Text(
-                      '✨ Login daily to keep your pet happy',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF5B7C99),
-                      ),
+                  ),
+  
+                  const SizedBox(height: 16),
+  
+                  // ✨ FOOTNOTE
+                  const Text(
+                    '✨ Login daily to keep your pet happy',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
-
-                    const SizedBox(height: 24),
-                  ],
-                ),
+                  ),
+  
+                  const SizedBox(height: 24),
+                ],
               ),
-            ),
+      ),
     );
   }
 
@@ -226,9 +232,7 @@ class _PointsScreenState extends State<PointsScreen> {
   void _openPetSelector() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      backgroundColor: Colors.transparent, // Important for GlassSurface
       builder: (_) => PetChooser(onSelect: _savePet),
     );
   }
@@ -297,8 +301,12 @@ class PetChooser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
