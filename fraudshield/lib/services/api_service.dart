@@ -198,11 +198,45 @@ class ApiService {
   }
 
   Future<List<dynamic>> getMyReports() async {
-    return get('/reports/my');
+    final response = await get('/reports/my');
+    return response as List;
   }
 
   Future<List<dynamic>> getPublicFeed() async {
-    return get('/reports/public');
+    final response = await get('/reports/public');
+    return response as List;
+  }
+
+  Future<Map<String, dynamic>> getReportDetails(String reportId) async {
+    final response = await get('/reports/$reportId');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> searchReports({
+    String? query,
+    String? category,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? minVerifications,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final params = <String, String>{
+      if (query != null && query.isNotEmpty) 'q': query,
+      if (category != null) 'category': category,
+      if (dateFrom != null) 'dateFrom': dateFrom.toIso8601String(),
+      if (dateTo != null) 'dateTo': dateTo.toIso8601String(),
+      if (minVerifications != null) 'minVerifications': minVerifications.toString(),
+      'limit': limit.toString(),
+      'offset': offset.toString(),
+    };
+
+    final queryString = params.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+    
+    final response = await get('/reports/search?$queryString');
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> verifyReport({
@@ -218,7 +252,8 @@ class ApiService {
   // ---------------- Subscriptions ----------------
 
   Future<List<dynamic>> getPlans() async {
-    return get('/features/plans');
+    final response = await get('/features/plans');
+    return response as List;
   }
 
   Future<Map<String, dynamic>> getMySubscription() async {
@@ -278,11 +313,12 @@ class ApiService {
   }
  
   Future<List<dynamic>> getRecentEvents({int limit = 50}) async {
-    return get('/features/behavioral?limit=$limit');
+    final response = await get('/features/behavioral?limit=$limit');
+    return response as List;
   }
   // ---------------- CRUD Templates (for other features) ----------------
 
-  Future<List<dynamic>> get(String path) async {
+  Future<dynamic> get(String path) async {
     try {
       final response = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
       if (response.statusCode == 200) {
