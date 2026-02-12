@@ -8,6 +8,7 @@ class AuthProvider extends ChangeNotifier {
   final ApiService api = ApiService.instance;
   bool _loading = true;
   UserModel? _user;
+  Map<String, dynamic>? _subscription;
 
   AuthProvider() {
     _init();
@@ -17,6 +18,7 @@ class AuthProvider extends ChangeNotifier {
   UserModel? get user => _user;
   String? get userId => _user?.id;
   bool get isAuthenticated => api.isAuthenticated && _user != null;
+  bool get isSubscribed => _subscription != null && (_subscription!['isActive'] == true || _subscription!['status'] == 'ACTIVE');
 
   /// Compatibility getter for screens expecting 'userProfile'
   UserModel? get userProfile => _user;
@@ -25,7 +27,10 @@ class AuthProvider extends ChangeNotifier {
     try {
       await api.init();
       if (api.isAuthenticated) {
-        await refreshProfile();
+        await Future.wait([
+          refreshProfile(),
+          refreshSubscription(),
+        ]);
         if (_user != null) {
           NotificationService.instance.initialize(_user!.id);
         }
@@ -47,6 +52,17 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       log('AuthProvider refreshProfile error: $e');
       rethrow;
+    }
+  }
+
+  Future<void> refreshSubscription() async {
+    try {
+      _subscription = await api.getMySubscription();
+      notifyListeners();
+    } catch (e) {
+      log('AuthProvider subscription check: No active subscription or error ($e)');
+      _subscription = null;
+      notifyListeners();
     }
   }
 
@@ -96,6 +112,7 @@ class AuthProvider extends ChangeNotifier {
     await api.signOut();
     NotificationService.instance.clearAlerts();
     _user = null;
+    _subscription = null;
     notifyListeners();
   }
 }

@@ -6,6 +6,12 @@ import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../constants/colors.dart';
 import 'login_screen.dart';
+import '../widgets/adaptive_scaffold.dart';
+import '../widgets/adaptive_button.dart';
+import '../widgets/adaptive_text_field.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/animated_background.dart';
+import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -157,33 +163,49 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF0F7FF),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 40),
-        child: Column(
-          children: [
-            _header(),
-            _profileCard(),
-            _section('Preferences'),
-            _setting(Icons.notifications, 'Notification Settings',
-                () => _openPlaceholder('Notification Settings')),
-            _setting(
-                Icons.language, 'Language', () => _openPlaceholder('Language')),
-            _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
-            _section('Security'),
-            _setting(
-                Icons.lock_outline, 'Change Password', _openChangePassword),
-            _setting(Icons.shield_outlined, 'Two-Factor Authentication',
-                () => _openPlaceholder('Two-Factor Authentication')),
-            _setting(Icons.devices, 'Device History',
-                () => _openPlaceholder('Device History')),
-            const SizedBox(height: 20),
-            _logoutButton(),
-            const SizedBox(height: 24),
-            const Text('Version 1.0.0',
-                style: TextStyle(fontSize: 11, color: Colors.black26)),
-          ],
+    final theme = Theme.of(context);
+
+    // Using AnimatedBackground and transparent AdaptiveScaffold for premium feel
+    return AnimatedBackground(
+      child: AdaptiveScaffold(
+        title: 'My Account',
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(bottom: 40),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              _profileCard(),
+              _section('Preferences'),
+              // Subscription Management for active subscribers (since they lose the main nav tab)
+              if (context.watch<AuthProvider>().isSubscribed)
+                _setting(
+                  Icons.card_membership, 
+                  'Manage Subscription', 
+                  () => Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
+                  )
+                ),
+              _setting(Icons.notifications, 'Notification Settings',
+                  () => _openPlaceholder('Notification Settings')),
+              _setting(
+                  Icons.language, 'Language', () => _openPlaceholder('Language')),
+              _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
+              _section('Security'),
+              _setting(
+                  Icons.lock_outline, 'Change Password', _openChangePassword),
+              _setting(Icons.shield_outlined, 'Two-Factor Authentication',
+                  () => _openPlaceholder('Two-Factor Authentication')),
+              _setting(Icons.devices, 'Device History',
+                  () => _openPlaceholder('Device History')),
+              const SizedBox(height: 20),
+              _logoutButton(),
+              const SizedBox(height: 24),
+              Text('Version 1.0.0',
+                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
         ),
       ),
     );
@@ -255,20 +277,19 @@ class _AccountScreenState extends State<AccountScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              TextField(
+              AdaptiveTextField(
                 controller: currentCtrl,
+                label: 'Current Password',
                 obscureText: true,
-                decoration:
-                    const InputDecoration(labelText: 'Current Password'),
               ),
               const SizedBox(height: 12),
-              TextField(
+              AdaptiveTextField(
                 controller: newCtrl,
+                label: 'New Password',
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'New Password'),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
+              AdaptiveButton(
                 onPressed: () async {
                   try {
                     await ApiService.instance.changePassword(newCtrl.text.trim());
@@ -279,7 +300,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     _toast('Failed to update password: $e');
                   }
                 },
-                child: const Text('Update Password'),
+                text: 'Update Password',
               ),
             ],
           ),
@@ -289,33 +310,15 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   // ================= COMPONENTS =================
-  Widget _header() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 60, 24, 100),
-      decoration: const BoxDecoration(
-        color: AppColors.primaryBlue,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(60)),
-      ),
-      alignment: Alignment.centerLeft,
-      child: const Text('My Account',
-          style: TextStyle(
-              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-    );
-  }
 
   Widget _profileCard() {
-    return Transform.translate(
-      offset: const Offset(0, -70),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 50),
-        padding: const EdgeInsets.fromLTRB(68, 30, 68, 25),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(40),
-          boxShadow: const [
-            BoxShadow(color: Colors.black12, blurRadius: 20),
-          ],
-        ),
+    final theme = Theme.of(context);
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GlassSurface(
+        padding: const EdgeInsets.fromLTRB(24, 30, 24, 25),
+        borderRadius: 40,
         child: Column(
           children: [
             Stack(
@@ -327,6 +330,19 @@ class _AccountScreenState extends State<AccountScreen> {
                     width: 120,
                     height: 120,
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        width: 120, height: 120,
+                        color: theme.colorScheme.surfaceVariant,
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) => Container(
+                        width: 120, height: 120,
+                        color: theme.colorScheme.surfaceVariant,
+                        child: const Icon(Icons.person, size: 60),
+                    ),
                   ),
                 ),
                 Positioned(
@@ -334,11 +350,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   right: 0,
                   child: GestureDetector(
                     onTap: _openAvatarPicker,
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: AppColors.primaryBlue,
+                      backgroundColor: theme.colorScheme.primary,
                       child:
-                          Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                          Icon(Icons.camera_alt, color: theme.colorScheme.onPrimary, size: 18),
                     ),
                   ),
                 ),
@@ -355,37 +371,29 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _editName() {
     return Column(
       children: [
-        TextField(
+        AdaptiveTextField(
           controller: _nameController,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[100],
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
-          ),
+          label: 'Full Name',
         ),
         const SizedBox(height: 12),
-        ElevatedButton(
+        AdaptiveButton(
           onPressed: _savingName ? null : _saveName,
-          child: _savingName
-              ? const SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('Save Changes'),
+          text: 'Save Changes',
+          isLoading: _savingName,
         ),
       ],
     );
   }
 
   Widget _displayName() {
+    final theme = Theme.of(context);
     return Column(
       children: [
         Text(_nameController.text,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
         const SizedBox(height: 4),
         Text(_email,
-            style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         const SizedBox(height: 14),
         OutlinedButton(
           onPressed: () => setState(() => _editingName = true),
@@ -398,43 +406,43 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _logoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: ElevatedButton.icon(
+      child: AdaptiveButton(
         onPressed: _logout,
-        icon: const Icon(Icons.logout),
-        label: const Text('Log Out'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red[50],
-          foregroundColor: Colors.red,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        ),
+        text: 'Log Out',
+        isDestructive: true,
       ),
     );
   }
 
   Widget _section(String title) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-      child: Text(title.toUpperCase(),
-          style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: Colors.black45,
-              letterSpacing: 1.5)),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+      child: SizedBox(
+        width: double.infinity,
+        child: Text(title.toUpperCase(),
+            textAlign: TextAlign.start,
+            style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurfaceVariant,
+                letterSpacing: 1.5)),
+      ),
     );
   }
 
   Widget _setting(IconData icon, String title, VoidCallback onTap) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: ListTile(
+      child: GlassSurface(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+        borderRadius: 24,
         onTap: onTap,
-        tileColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        leading: Icon(icon, color: AppColors.primaryBlue),
-        title: Text(title),
-        trailing: const Icon(Icons.chevron_right),
+        child: ListTile(
+          leading: Icon(icon, color: theme.colorScheme.primary),
+          title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+          trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+        ),
       ),
     );
   }
@@ -460,11 +468,12 @@ class _AvatarPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
       ),
       child: GridView.count(
         crossAxisCount: 4,
@@ -472,13 +481,24 @@ class _AvatarPicker extends StatelessWidget {
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
         children: _seeds.map((seed) {
+          final isSelected = selected == seed;
           return GestureDetector(
             onTap: () => onSelect(seed),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
-                fit: BoxFit.cover,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: isSelected ? Border.all(color: theme.colorScheme.primary, width: 3) : null,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(child: CircularProgressIndicator(strokeWidth: 2));
+                  },
+                ),
               ),
             ),
           );

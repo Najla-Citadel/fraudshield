@@ -21,15 +21,20 @@ model User {
   reports          ScamReport[]
   userTransactions Transaction[]
   subscriptions    UserSubscription[]
+  redemptions      Redemption[]
 }
 
 model Profile {
   id       String  @id @default(uuid())
   bio      String?
   avatar   String?
-  points   Int     @default(0)
-  userId   String  @unique
-  metadata Json    @default("{}")
+  points     Int     @default(0)
+  reputation Int     @default(0)
+  badges     Json    @default("[]")
+  userId     String  @unique
+  metadata   Json    @default("{}")
+  lastLoginDate DateTime?
+  loginStreak Int     @default(0)
   user     User    @relation(fields: [userId], references: [id])
 }
 
@@ -54,16 +59,29 @@ model UserSubscription {
 }
 
 model ScamReport {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   type        String
   target      String?
   description String
   userId      String
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
+  status      String         @default("pending")
+  createdAt   DateTime       @default(now())
   category    String
-  evidence    Json     @default("{}")
-  user        User     @relation(fields: [userId], references: [id])
+  evidence    Json           @default("{}")
+  isPublic    Boolean        @default(false)
+  latitude    Float?
+  longitude   Float?
+  user        User           @relation(fields: [userId], references: [id])
+  verifications Verification[]
+}
+
+model Verification {
+  id        String     @id @default(uuid())
+  reportId  String
+  userId    String
+  isSame    Boolean
+  createdAt DateTime   @default(now())
+  report    ScamReport @relation(fields: [reportId], references: [id])
 }
 
 model PointsTransaction {
@@ -114,4 +132,27 @@ model FraudLabel {
   label     String
   labeledBy String
   createdAt DateTime @default(now())
+}
+
+model Reward {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  pointsCost  Int
+  type        String       // 'subscription', 'badge', 'cosmetic'
+  metadata    Json         @default("{}")
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  redemptions Redemption[]
+}
+
+model Redemption {
+  id         String   @id @default(uuid())
+  userId     String
+  rewardId   String
+  pointsCost Int
+  status     String   @default("completed") // 'pending', 'completed', 'failed'
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  reward     Reward   @relation(fields: [rewardId], references: [id])
 }

@@ -20,7 +20,7 @@ export class SubscriptionController {
             const subscription = await prisma.userSubscription.findFirst({
                 where: { userId },
                 include: { plan: true },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { startDate: 'desc' },
             });
 
             res.json(subscription);
@@ -38,11 +38,9 @@ export class SubscriptionController {
                 data: {
                     userId,
                     planId,
-                    status: 'ACTIVE',
+                    isActive: true,
                     startDate: new Date(),
                     endDate: new Date(endDate),
-                    paymentMethod: paymentMethod || 'CREDIT_CARD',
-                    autoRenew: true,
                 },
                 include: { plan: true },
             });
@@ -74,14 +72,13 @@ export class PointsController {
 
     static async addPoints(req: Request, res: Response, next: NextFunction) {
         try {
-            const { amount, type, description } = req.body;
+            const { amount, description } = req.body;
             const userId = (req.user as any).id;
 
             const transaction = await prisma.pointsTransaction.create({
                 data: {
                     userId,
                     amount,
-                    type: type || 'EARN',
                     description: description || '',
                 },
             });
