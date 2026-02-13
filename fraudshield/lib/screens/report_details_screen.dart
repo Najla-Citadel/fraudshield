@@ -263,6 +263,7 @@ Reported via FraudShield - Stay Safe!
                 decoration: BoxDecoration(
                   color: _getStatusColor().withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: _getStatusColor().withOpacity(0.3)),
                 ),
                 child: Text(
                   (_report!['status'] ?? 'PENDING').toString().toUpperCase(),
@@ -275,14 +276,14 @@ Reported via FraudShield - Stay Safe!
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
             children: [
-              Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+              Icon(Icons.calendar_today, size: 16, color: Colors.white.withOpacity(0.5)),
               const SizedBox(width: 8),
               Text(
                 _formatDate(_report!['createdAt']),
-                style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
               ),
             ],
           ),
@@ -290,11 +291,11 @@ Reported via FraudShield - Stay Safe!
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                Icon(Icons.location_on, size: 16, color: Colors.white.withOpacity(0.5)),
                 const SizedBox(width: 8),
                 Text(
                   'Location: ${_report!['latitude']?.toStringAsFixed(4)}, ${_report!['longitude']?.toStringAsFixed(4)}',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                  style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
                 ),
               ],
             ),
@@ -322,7 +323,7 @@ Reported via FraudShield - Stay Safe!
           const SizedBox(height: 12),
           Text(
             _report!['description'] ?? 'No description provided',
-            style: const TextStyle(fontSize: 14, height: 1.5),
+            style: TextStyle(fontSize: 15, height: 1.6, color: Colors.white.withOpacity(0.9)),
           ),
         ],
       ),
@@ -336,36 +337,37 @@ Reported via FraudShield - Stay Safe!
         children: [
           Row(
             children: [
-              const Icon(Icons.link, size: 20, color: Colors.orange),
+              const Icon(Icons.warning_amber_rounded, size: 20, color: Colors.redAccent),
               const SizedBox(width: 8),
               const Text(
-                'Target',
+                'Reported Target',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.withOpacity(0.2)),
+              color: Colors.black.withOpacity(0.2), // Darker inset
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
+                  child: SelectableText( // Allow text selection
                     _report!['target'].toString(),
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.orange,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                      fontFamily: 'monospace',
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.copy, size: 18),
+                  icon: const Icon(Icons.copy, size: 18, color: Colors.white70),
                   onPressed: () => _copyToClipboard(
                     _report!['target'].toString(),
                     'Target',
@@ -475,47 +477,45 @@ Reported via FraudShield - Stay Safe!
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(Icons.person, size: 20, color: Colors.green),
-              const SizedBox(width: 8),
-              const Text(
-                'Reporter Trust',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.verified_user,
-                size: 24,
-                color: _getTrustColor(score),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    'Trust Score: $score',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _getTrustColor(score),
-                    ),
-                  ),
-                  Text(
-                    _getTrustLabel(score),
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  const Icon(Icons.shield_outlined, size: 20, color: Colors.greenAccent),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Reporter Trust',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _getTrustColor(score).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: _getTrustColor(score).withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.verified, size: 14, color: _getTrustColor(score)),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Score: $score',
+                      style: TextStyle(
+                        color: _getTrustColor(score),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
+          
           if (badges.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -523,9 +523,9 @@ Reported via FraudShield - Stay Safe!
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber.withOpacity(0.5)),
+                    color: Colors.amber.withOpacity(0.1), // Subtler background
+                    borderRadius: BorderRadius.circular(8), // Less rounded
+                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -536,8 +536,8 @@ Reported via FraudShield - Stay Safe!
                         badge.toString(),
                         style: const TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
+                          fontWeight: FontWeight.w600, // Semi-bold
+                          color: Colors.amber,
                         ),
                       ),
                     ],
