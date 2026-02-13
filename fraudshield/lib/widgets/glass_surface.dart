@@ -33,7 +33,7 @@ class GlassSurface extends StatelessWidget {
 
     // Premium base color: Surface color with transparency
     final baseColor = isDark 
-        ? colorScheme.surface.withOpacity(0.6)
+        ? Colors.white.withOpacity(0.05) // Subtle glass for dark mode
         : Colors.white.withOpacity(0.65);
 
     // Subtle border color
