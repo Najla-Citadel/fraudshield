@@ -6,11 +6,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   ApiService._privateConstructor();
   static final ApiService instance = ApiService._privateConstructor();
+  static const bool _isAndroidEmulator = true; // This could be determined dynamically if needed
 
-  final String baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
+  late final String baseUrl;
   String? _token;
 
   Future<void> init() async {
+    final String rawBaseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
+    
+    // Use the .env value directly now that firewall is unblocked.
+    // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
+    baseUrl = rawBaseUrl;
+
+    print('ApiService: Initialized with baseUrl: $baseUrl');
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
   }

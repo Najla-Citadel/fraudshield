@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../services/api_service.dart';
+import '../constants/colors.dart';
+import '../constants/app_theme.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/scam_map_view.dart';
 import '../widgets/adaptive_scaffold.dart';
@@ -144,59 +146,73 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         ? _reports
         : _reports.where((r) => r['category'] == _selectedCategory).toList();
 
-    return AnimationLimiter(
-      child: RefreshIndicator(
-        onRefresh: _fetchFeed,
-        child: AdaptiveScaffold(
-          title: 'Community Scam Feed',
-          actions: [
-            // Filter button with badge
-            IconButton(
-              icon: Badge(
-                isLabelVisible: _hasActiveFilters,
-                label: const Text('•'),
-                child: const Icon(Icons.filter_list),
+    return Theme(
+      data: AppTheme.darkTheme.copyWith(
+        scaffoldBackgroundColor: AppColors.deepNavy,
+        textTheme: AppTheme.darkTheme.textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+      ),
+      child: AnimationLimiter(
+        child: RefreshIndicator(
+          onRefresh: _fetchFeed,
+          color: AppColors.accentGreen,
+          backgroundColor: const Color(0xFF1E293B),
+          child: AdaptiveScaffold(
+            title: 'Community Scam Feed',
+            backgroundColor: AppColors.deepNavy,
+            actions: [
+              IconButton(
+                icon: Badge(
+                  isLabelVisible: _hasActiveFilters,
+                  label: const Text('•'),
+                  child: const Icon(Icons.filter_list, color: Colors.white),
+                ),
+                onPressed: _showFilterModal,
+                tooltip: 'Filters',
               ),
-              onPressed: _showFilterModal,
-              tooltip: 'Filters',
-            ),
-            IconButton(
-              icon: Icon(_isMapMode ? Icons.list : Icons.map_outlined),
-              onPressed: () => setState(() => _isMapMode = !_isMapMode),
-              tooltip: _isMapMode ? 'Show List' : 'Show Map',
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _fetchFeed,
-            ),
-          ],
-          slivers: [
+              IconButton(
+                icon: Icon(_isMapMode ? Icons.list : Icons.map_outlined, color: Colors.white),
+                onPressed: () => setState(() => _isMapMode = !_isMapMode),
+                tooltip: _isMapMode ? 'Show List' : 'Show Map',
+              ),
+              IconButton(
+                icon: const Icon(Icons.refresh, color: Colors.white),
+                onPressed: _fetchFeed,
+              ),
+            ],
+            slivers: [
+              // Search Bar
             // Search Bar
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withOpacity(0.2),
                         blurRadius: 10,
-                        offset: const Offset(0, 2),
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
                   child: TextField(
                     controller: _searchController,
                     onChanged: _onSearchChanged,
+                    style: const TextStyle(color: Colors.white),
+                    cursorColor: AppColors.accentGreen,
                     decoration: InputDecoration(
                       hintText: 'Search scams by phone, URL, description...',
-                      hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-                      prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 14),
+                      prefixIcon: Icon(Icons.search, color: Colors.white.withOpacity(0.4)),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.4)),
                               onPressed: _clearSearch,
                             )
                           : null,
@@ -228,7 +244,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                         label: Text(
                           category,
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
+                            color: Colors.white,
                             fontSize: 12,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                           ),
@@ -239,12 +255,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                             setState(() => _selectedCategory = category);
                           }
                         },
-                        selectedColor: Colors.red,
-                        backgroundColor: Colors.white,
+                        selectedColor: AppColors.accentGreen,
+                        backgroundColor: const Color(0xFF1E293B),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                           side: BorderSide(
-                            color: isSelected ? Colors.red : Colors.grey[300]!,
+                            color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.1),
                           ),
                         ),
                         showCheckmark: false,
@@ -256,11 +272,16 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             ),
             if (_isLoading)
               const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: CircularProgressIndicator(color: AppColors.accentGreen)),
               )
             else if (filteredReports.isEmpty)
-              const SliverFillRemaining(
-                child: Center(child: Text('No reports in this category. Stay safe!')),
+              SliverFillRemaining(
+                child: Center(
+                  child: Text(
+                    'No reports in this category. Stay safe!',
+                    style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  ),
+                ),
               )
             else if (_isMapMode)
               SliverFillRemaining(
@@ -296,6 +317,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

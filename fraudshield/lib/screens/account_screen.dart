@@ -5,12 +5,11 @@ import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../constants/colors.dart';
+import '../constants/app_theme.dart';
 import 'login_screen.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
-import '../widgets/glass_surface.dart';
-import '../widgets/animated_background.dart';
 import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 
 class AccountScreen extends StatefulWidget {
@@ -165,47 +164,46 @@ class _AccountScreenState extends State<AccountScreen> {
 
     final theme = Theme.of(context);
 
-    // Using AnimatedBackground and transparent AdaptiveScaffold for premium feel
-    return AnimatedBackground(
-      child: AdaptiveScaffold(
-        title: 'My Account',
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 40),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _profileCard(),
-              _section('Preferences'),
-              // Subscription Management for active subscribers (since they lose the main nav tab)
-              if (context.watch<AuthProvider>().isSubscribed)
-                _setting(
-                  Icons.card_membership, 
-                  'Manage Subscription', 
-                  () => Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
-                  )
-                ),
-              _setting(Icons.notifications, 'Notification Settings',
-                  () => _openPlaceholder('Notification Settings')),
+    // Using standard Scaffold for deep navy background
+    return AdaptiveScaffold(
+      title: 'My Account',
+      backgroundColor: AppColors.deepNavy,
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 40),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            _profileCard(),
+            _section('Preferences'),
+            // Subscription Management for active subscribers (since they lose the main nav tab)
+            if (context.watch<AuthProvider>().isSubscribed)
               _setting(
-                  Icons.language, 'Language', () => _openPlaceholder('Language')),
-              _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
-              _section('Security'),
-              _setting(
-                  Icons.lock_outline, 'Change Password', _openChangePassword),
-              _setting(Icons.shield_outlined, 'Two-Factor Authentication',
-                  () => _openPlaceholder('Two-Factor Authentication')),
-              _setting(Icons.devices, 'Device History',
-                  () => _openPlaceholder('Device History')),
-              const SizedBox(height: 20),
-              _logoutButton(),
-              const SizedBox(height: 24),
-              Text('Version 1.0.0',
-                  style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            ],
-          ),
+                Icons.card_membership, 
+                'Manage Subscription', 
+                () => Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
+                )
+              ),
+            _setting(Icons.notifications, 'Notification Settings',
+                () => _openPlaceholder('Notification Settings')),
+            _setting(
+                Icons.language, 'Language', () => _openPlaceholder('Language')),
+            _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
+            _section('Security'),
+            _setting(
+                Icons.lock_outline, 'Change Password', _openChangePassword),
+            _setting(Icons.shield_outlined, 'Two-Factor Authentication',
+                () => _openPlaceholder('Two-Factor Authentication')),
+            _setting(Icons.devices, 'Device History',
+                () => _openPlaceholder('Device History')),
+            const SizedBox(height: 20),
+            _logoutButton(),
+            const SizedBox(height: 24),
+            // Version text with manual white color for safety
+            Text('Version 1.0.0',
+                style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.white.withOpacity(0.5))),
+          ],
         ),
       ),
     );
@@ -316,9 +314,13 @@ class _AccountScreenState extends State<AccountScreen> {
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GlassSurface(
+      child: Container(
         padding: const EdgeInsets.fromLTRB(24, 30, 24, 25),
-        borderRadius: 40,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B), // Match Home Screen Widget Background
+          borderRadius: BorderRadius.circular(40),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
         child: Column(
           children: [
             Stack(
@@ -352,9 +354,9 @@ class _AccountScreenState extends State<AccountScreen> {
                     onTap: _openAvatarPicker,
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: theme.colorScheme.primary,
+                      backgroundColor: AppColors.accentGreen,
                       child:
-                          Icon(Icons.camera_alt, color: theme.colorScheme.onPrimary, size: 18),
+                          Icon(Icons.camera_alt, color: Colors.white, size: 18),
                     ),
                   ),
                 ),
@@ -386,18 +388,44 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _displayName() {
-    final theme = Theme.of(context);
+    // Force white text since we are on a dark slate card regardless of theme
     return Column(
       children: [
-        Text(_nameController.text,
-            style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+        Text(
+          _nameController.text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(_email,
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 14),
+        Text(
+          _email,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.7),
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 16),
         OutlinedButton(
           onPressed: () => setState(() => _editingName = true),
-          child: const Text('EDIT PROFILE'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: const BorderSide(color: Colors.white),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+          child: const Text(
+            'EDIT PROFILE',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.0,
+            ),
+          ),
         ),
       ],
     );
@@ -422,10 +450,12 @@ class _AccountScreenState extends State<AccountScreen> {
         width: double.infinity,
         child: Text(title.toUpperCase(),
             textAlign: TextAlign.start,
-            style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurfaceVariant,
-                letterSpacing: 1.5)),
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.5),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.0,
+            )),
       ),
     );
   }
@@ -434,14 +464,60 @@ class _AccountScreenState extends State<AccountScreen> {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: GlassSurface(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        borderRadius: 24,
+      child: _AccountItem(
+        icon: icon,
+        title: title,
         onTap: onTap,
-        child: ListTile(
-          leading: Icon(icon, color: theme.colorScheme.primary),
-          title: Text(title, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
-          trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+      ),
+    );
+  }
+}
+
+class _AccountItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _AccountItem({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.blueAccent, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.3)),
+          ],
         ),
       ),
     );

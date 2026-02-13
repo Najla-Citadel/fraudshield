@@ -75,12 +75,12 @@ class _LatestNewsWidgetState extends State<LatestNewsWidget> {
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    const containerHeight = 150.0;
+    const containerHeight = 240.0; // Increased height to prevent overflow
 
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: const Center(child: CircularProgressIndicator()),
+        child: const Center(child: CircularProgressIndicator(color: Colors.blueAccent)),
       );
     }
 
@@ -91,8 +91,8 @@ class _LatestNewsWidgetState extends State<LatestNewsWidget> {
           children: [
             Expanded(
               child: Text(
-                'News error: $_error',
-                style: const TextStyle(color: Colors.red),
+                'Unable to load insights: $_error',
+                style: TextStyle(color: Colors.white.withOpacity(0.7)),
               ),
             ),
             TextButton(onPressed: _loadNews, child: const Text('Retry')),
@@ -106,83 +106,89 @@ class _LatestNewsWidgetState extends State<LatestNewsWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
-            const Expanded(child: Text('No recent scam news found.')),
+            Expanded(child: Text('No recent threat insights.', style: TextStyle(color: Colors.white.withOpacity(0.5)))),
             TextButton(onPressed: _loadNews, child: const Text('Refresh')),
           ],
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            'Latest Scam News',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: containerHeight,
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            scrollDirection: Axis.horizontal,
-            itemCount: _items.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final item = _items[index];
+    return SizedBox(
+      height: containerHeight,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        scrollDirection: Axis.horizontal,
+        itemCount: _items.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final item = _items[index];
 
-              return GestureDetector(
-                onTap: () => _openArticle(item),
-                child: Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 6),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // IMAGE
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(12)),
-                        child: SizedBox(
-                          height: 96,
-                          width: double.infinity,
-                          child: Image.asset(
-                            _placeholderForIndex(index),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+          return GestureDetector(
+            onTap: () => _openArticle(item),
+            child: Container(
+              width: 280,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E293B), // Dark Card
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // IMAGE
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20)),
+                    child: SizedBox(
+                      height: 120, // Increased image height slightly
+                      width: double.infinity,
+                      child: Image.asset(
+                        _placeholderForIndex(index),
+                        fit: BoxFit.cover,
                       ),
+                    ),
+                  ),
 
-                      // TITLE
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-                        child: Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                  // TITLE
+                  Expanded( // Use Expanded to take remaining space
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            item.title,
+                            maxLines: 3, // Allow more lines
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              height: 1.2,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

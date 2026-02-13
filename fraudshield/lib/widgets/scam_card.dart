@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../constants/colors.dart';
 import '../screens/report_details_screen.dart';
 import 'glass_card.dart';
 
@@ -69,7 +70,7 @@ class ScamCard extends StatelessWidget {
                       children: [
                         Text(
                           _formatDate(report['createdAt']),
-                          style: theme.textTheme.bodySmall,
+                          style: theme.textTheme.bodySmall?.copyWith(color: Colors.white.withOpacity(0.5)),
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -155,6 +156,7 @@ class ScamCard extends StatelessWidget {
                   report['description'] ?? 'No description provided',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     height: 1.4,
+                    color: Colors.white.withOpacity(0.9),
                   ),
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
@@ -164,18 +166,19 @@ class ScamCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.05),
+                      color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.link, size: 14, color: Colors.blue),
+                        const Icon(Icons.link, size: 14, color: Colors.blueAccent),
                         const SizedBox(width: 6),
                         Text(
                           report['target'].toString(),
                           style: const TextStyle(
-                            color: Colors.blue,
+                            color: Colors.blueAccent,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -185,19 +188,19 @@ class ScamCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: 16),
-                const Divider(),
+                Divider(color: Colors.white.withOpacity(0.1)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.people_outline, size: 16, color: Colors.grey),
+                        Icon(Icons.people_outline, size: 16, color: Colors.white.withOpacity(0.5)),
                         const SizedBox(width: 6),
                         Text(
                           '$verifications matched',
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
+                            color: Colors.white.withOpacity(0.5),
                           ),
                         ),
                       ],
@@ -266,9 +269,9 @@ class ScamCard extends StatelessWidget {
   }
 
   Color _getTrustColor(num score) {
-    if (score >= 50) return Colors.purple;
-    if (score >= 20) return Colors.blue;
-    if (score > 0) return Colors.green;
+    if (score >= 50) return Colors.purpleAccent; // Lighter purple
+    if (score >= 20) return Colors.lightBlueAccent; // Lighter blue
+    if (score > 0) return AppColors.accentGreen; // Vibrant green
     return Colors.grey;
   }
 }

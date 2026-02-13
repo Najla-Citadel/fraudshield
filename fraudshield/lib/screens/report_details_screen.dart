@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/api_service.dart';
 import '../widgets/glass_card.dart';
+import '../constants/colors.dart';
+import '../constants/app_theme.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final String reportId;
@@ -128,58 +130,76 @@ Reported via FraudShield - Stay Safe!
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Report Details'),
-        actions: [
-          if (_report != null)
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: _handleShare,
-              tooltip: 'Share',
-            ),
-        ],
+    return Theme(
+      data: AppTheme.darkTheme.copyWith(
+        scaffoldBackgroundColor: AppColors.deepNavy,
+        textTheme: AppTheme.darkTheme.textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-              ? _buildErrorView()
-              : _report == null
-                  ? const Center(child: Text('Report not found'))
-                  : RefreshIndicator(
-                      onRefresh: _fetchReportDetails,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildHeaderCard(),
-                            const SizedBox(height: 16),
-                            _buildDescriptionCard(),
-                            if (_report!['target'] != null) ...[
-                              const SizedBox(height: 16),
-                              _buildTargetCard(),
-                            ],
-                            if (_report!['evidence'] != null &&
-                                (_report!['evidence'] as Map).isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              _buildEvidenceCard(),
-                            ],
-                            const SizedBox(height: 16),
-                            _buildReporterCard(),
-                            const SizedBox(height: 16),
-                            _buildVerificationCard(),
-                            const SizedBox(height: 16),
-                            _buildActionButtons(),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                      ),
-                    ),
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return Scaffold(
+            backgroundColor: AppColors.deepNavy,
+            appBar: AppBar(
+              title: const Text('Report Details', style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              centerTitle: true,
+              leading: const BackButton(color: Colors.white),
+              actions: [
+                if (_report != null)
+                  IconButton(
+                    icon: const Icon(Icons.share, color: Colors.white),
+                    onPressed: _handleShare,
+                    tooltip: 'Share',
+                  ),
+              ],
+            ),
+            body: _isLoading
+                ? const Center(child: CircularProgressIndicator(color: AppColors.accentGreen))
+                : _errorMessage != null
+                    ? _buildErrorView()
+                    : _report == null
+                        ? const Center(child: Text('Report not found', style: TextStyle(color: Colors.white)))
+                        : RefreshIndicator(
+                            onRefresh: _fetchReportDetails,
+                            color: AppColors.accentGreen,
+                            backgroundColor: const Color(0xFF1E293B),
+                            child: SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildHeaderCard(),
+                                  const SizedBox(height: 16),
+                                  _buildDescriptionCard(),
+                                  if (_report!['target'] != null) ...[
+                                    const SizedBox(height: 16),
+                                    _buildTargetCard(),
+                                  ],
+                                  if (_report!['evidence'] != null &&
+                                      (_report!['evidence'] as Map).isNotEmpty) ...[
+                                    const SizedBox(height: 16),
+                                    _buildEvidenceCard(),
+                                  ],
+                                  const SizedBox(height: 16),
+                                  _buildReporterCard(),
+                                  const SizedBox(height: 16),
+                                  _buildVerificationCard(),
+                                  const SizedBox(height: 16),
+                                  _buildActionButtons(),
+                                  const SizedBox(height: 32),
+                                ],
+                              ),
+                            ),
+                          ),
+          );
+        }
+      ),
     );
   }
 
