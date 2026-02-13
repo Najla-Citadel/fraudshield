@@ -373,10 +373,6 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: FloatingNavBar(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        onScanTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
-        ),
       ),
     );
   }

@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
-  final VoidCallback onScanTap;
 
   const FloatingNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
-    required this.onScanTap,
   });
 
   @override
@@ -22,7 +20,7 @@ class FloatingNavBar extends StatelessWidget {
         child: Container(
           height: 70,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withOpacity(0.8), // Slate 800 with opacity
+            color: const Color(0xFF1E293B).withOpacity(0.95), // Slightly more opaque for solid feel
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: Colors.white.withOpacity(0.1),
@@ -52,45 +50,25 @@ class FloatingNavBar extends StatelessWidget {
                   _NavItem(
                     icon: Icons.people_rounded,
                     label: 'Community',
-                    isSelected: currentIndex == 1, // Community Feed (Index 1)
+                    isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),
-                  
-                  // Central Scan Action
-                  GestureDetector(
-                    onTap: onScanTap,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF2563EB).withOpacity(0.4),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 24),
-                    ),
+                  _NavItem(
+                    icon: Icons.card_giftcard,
+                    label: 'Rewards',
+                    isSelected: currentIndex == 3, // PointsScreen is index 3
+                    onTap: () => onTap(3),
                   ),
-
                   _NavItem(
                     icon: Icons.history_rounded,
                     label: 'Activity',
-                    isSelected: currentIndex == 2, // Swapped to here
+                    isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
                     icon: Icons.person_rounded,
                     label: 'Account',
-                    isSelected: currentIndex == 4, // Account
+                    isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
                 ],
