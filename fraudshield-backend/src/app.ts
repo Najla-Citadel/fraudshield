@@ -60,6 +60,9 @@ app.get('/health', (req: Request, res: Response) => {
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
 
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
 // API Routes
 const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 app.use(`${apiPrefix}/auth`, authRoutes);
