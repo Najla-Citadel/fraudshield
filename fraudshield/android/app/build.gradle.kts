@@ -15,7 +15,7 @@ plugins {
 }
 
 android {
-    namespace = "com.citadel.fraudshield"
+    namespace = "com.citadel.fraudshield.v2"
     compileSdk = 36
     ndkVersion = "27.0.12077973"
 
@@ -30,32 +30,32 @@ android {
     }
 
     defaultConfig {
-    applicationId = "com.citadel.fraudshield"
+    applicationId = "com.citadel.fraudshield.v2"
     minSdk = flutter.minSdkVersion
-    targetSdk = 34
+    targetSdk = 35
 
     // 🔥 FIX: hardcode version
-    versionCode = 1
-    versionName = "1.0.0"
+    versionCode = 2
+    versionName = "1.0.1"
 }
 
 
-    /*signingConfigs {
+    signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String
             keyPassword = keystoreProperties["keyPassword"] as String
             storeFile = file(keystoreProperties["storeFile"] as String)
             storePassword = keystoreProperties["storePassword"] as String
         }
-    }*/
+    }
 
     buildTypes {
-    getByName("release") {
-        signingConfig = signingConfigs.getByName("debug")
-        isMinifyEnabled = false
-        isShrinkResources = false
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+        }
     }
-}
 
 
 }
