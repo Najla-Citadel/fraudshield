@@ -5,11 +5,15 @@ import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 
+import 'screens/splash_screen.dart';
+
 class AppRouter {
   static Route generate(RouteSettings settings) {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const RootScreen());
+      case '/splash':
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':

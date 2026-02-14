@@ -97,11 +97,19 @@ app.use((req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error('Error:', err);
-    res.status(500).json({
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    // Log the error with more context
+    console.error(`[${new Date().toISOString()}] Error ${req.method} ${req.path}:`, {
+        message: err.message,
+        stack: err.stack,
+        body: req.body, // Be careful with sensitive data in real production apps
+        params: req.params,
+        query: req.query
+    });
+
+    res.status(err.status || 500).json({
         error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong. Please try again later.',
     });
 });
 
