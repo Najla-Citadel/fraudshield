@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _loading = false;
 
@@ -28,6 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -35,10 +37,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final fullName = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match.")),
       );
       return;
     }
@@ -124,8 +134,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // 🛡️ Logo / Icon
-                      const AppLogo(size: 60),
-                      const SizedBox(height: 24),
+                      const AppLogo(size: 80),
+                      const SizedBox(height: 32),
 
                       // 🧭 Title
                       Text(
@@ -175,6 +185,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               controller: _passwordController,
                               label: 'Password',
                               prefixIcon: Icons.lock_outline,
+                              obscureText: true,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // 🔒 Confirm Password Field
+                            AdaptiveTextField(
+                              controller: _confirmPasswordController,
+                              label: 'Confirm Password',
+                              prefixIcon: Icons.lock_reset_outlined,
                               obscureText: true,
                             ),
 
