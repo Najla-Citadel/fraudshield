@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database (Data is persisted in /var/lib/postgresql/data)
+  postgres:
+    image: postgres:16-alpine
+    container_name: fraudshield-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fraudshield}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-fraudshield}
+    # No ports exposed to public for security
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+
+  # Redis Cache (Required for Bull queues)
+  redis:
+    image: redis:7-alpine
+    container_name: fraudshield-redis-prod
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    # No ports exposed to public
+
+  # API Server
+  api:
+    build: .
+    container_name: fraudshield-api-prod
+    restart: always
+    ports:
+      - "3000:3000" # Exposed for the mobile app
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+      NODE_ENV: production
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data_prod:

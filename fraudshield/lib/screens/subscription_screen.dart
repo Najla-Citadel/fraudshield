@@ -1,10 +1,10 @@
+import 'dart:ui';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
-import '../widgets/animated_background.dart';
 import '../widgets/glass_surface.dart';
+import '../constants/colors.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -17,8 +17,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   final ApiService _api = ApiService.instance;
 
   bool _loading = false;
+  bool _isYearly = false;
   Map<String, dynamic>? _activeSub;
   List<Map<String, dynamic>> _plans = [];
+  
+  // Page Controller for cards
+  final PageController _pageController = PageController(viewportFraction: 0.85);
 
   bool get hasActiveSub =>
       _activeSub != null && _activeSub!['status'] == 'ACTIVE';
@@ -30,8 +34,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     _loadActiveSubscription();
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   // =========================
-  // LOAD PLANS
+  // DATA LOADING
   // =========================
   Future<void> _loadPlans() async {
     try {
@@ -40,38 +50,60 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       setState(() => _plans = List<Map<String, dynamic>>.from(res));
     } catch (e) {
       log('Error loading plans: $e');
+      // Fallback mock data if API fails or is empty
+      if (mounted) {
+        setState(() {
+          _plans = [
+            {
+              'id': 'free',
+              'name': 'Basic',
+              'price': 0,
+              'features': ['Essential protection', 'Casual browsing'],
+            },
+            {
+              'id': 'premium',
+              'name': 'Premium',
+              'price': 9.90, // Monthly
+              'priceYearly': 99.00, // Yearly
+              'features': ['Complete protection', 'Real-time alerts', 'Bank Verification', 'Priority Support'],
+            }
+          ];
+        });
+      }
     }
   }
 
-  // =========================
-  // LOAD ACTIVE SUB
-  // =========================
   Future<void> _loadActiveSubscription() async {
     try {
       final res = await _api.getMySubscription();
       if (!mounted) return;
       setState(() => _activeSub = res);
     } catch (e) {
-      log('No active subscription or error: $e');
+      // log('No active subscription or error: $e');
       if (mounted) setState(() => _activeSub = null);
     }
   }
 
   // =========================
-  // SUBSCRIBE
+  // ACTIONS
   // =========================
   Future<void> _subscribe(Map<String, dynamic> plan) async {
+    if (plan['price'] == 0) return; // Can't subscribe to free plan manually usually
+
     setState(() => _loading = true);
 
     try {
+      // Calculate expiry based on toggle
+      final duration = _isYearly ? const Duration(days: 365) : const Duration(days: 30);
+      
       await _api.createSubscription(
         planId: plan['id'],
-        expiresAt: DateTime.now().add(const Duration(days: 30)),
+        expiresAt: DateTime.now().add(duration),
       );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Subscription activated')),
+        const SnackBar(content: Text('Welcome to Premium!')),
       );
 
       await _loadActiveSubscription();
@@ -88,295 +120,443 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   // =========================
-  // CANCEL
+  // UI BUILD
   // =========================
-  Future<void> _cancelSubscription() async {
-    if (_activeSub == null) return;
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Cancel Subscription'),
-        content: const Text('You will keep access until expiry.\n\nProceed?'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('No')),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child:
-                const Text('Yes, Cancel', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true) return;
-
-    // In this MVP, we might just mark it as cancelled or leave it. 
-    // Backend needs a cancel endpoint. For now, we'll just show a message.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Cancellation requested.')),
-    );
-  }
-
   // =========================
-  // UI
+  // UI BUILD
   // =========================
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Subscription'),
-        backgroundColor: Colors.blue,
-      ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-
-          // 🔹 ACTIVE SUB HEADER
-          if (hasActiveSub) _activeHeader(),
-
-          // 🔹 HERO
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              children: [
-                const Text(
-                  'Upgrade Security',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Choose a protection tier to unlock advanced AI defenses.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // 🔹 PLANS
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: _plans.length,
-              itemBuilder: (_, index) {
-                final plan = _plans[index];
-
-                return _ModernPlanCard(
-                  plan: plan,
-                  loading: _loading,
-                  disabled:
-                      hasActiveSub && _activeSub?['planId'] != plan['id'],
-                  isCurrent: _activeSub?['planId'] == plan['id'],
-                  onPressed: () => _subscribe(plan),
-                );
-              },
-            ),
-          ),
-
-          // 🔹 CANCEL
-          if (hasActiveSub)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextButton(
-                onPressed: _cancelSubscription,
-                child: const Text(
-                  'Cancel Subscription',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  // =========================
-  // ACTIVE HEADER
-  // =========================
-  Widget _activeHeader() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green[200]!),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.verified, color: Colors.green),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Current Active Plan',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  _activeSub!['plan']?['name'] ?? 'Premium Tier',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Text(
-              'ACTIVE',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-////////////////////////////////////////////////////////////////
-/// MODERN PLAN CARD
-////////////////////////////////////////////////////////////////
-
-class _ModernPlanCard extends StatelessWidget {
-  final Map<String, dynamic> plan;
-  final VoidCallback onPressed;
-  final bool isCurrent;
-  final bool disabled;
-  final bool loading;
-
-  const _ModernPlanCard({
-    required this.plan,
-    required this.onPressed,
-    required this.isCurrent,
-    required this.disabled,
-    required this.loading,
-  });
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = plan['price'] == 0
-        ? Colors.green
-        : plan['price'] == 5.90
-            ? theme.colorScheme.primary
-            : Colors.orange;
+    
+    return Scaffold(
+      backgroundColor: AppColors.deepNavy,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.textLight),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Stack(
+        children: [
+          // Background Gradient (Subtle)
+          Positioned(
+            top: -100,
+            left: -100,
+             child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue.withOpacity(0.1),
+                ),
+              ),
+            ),
+          ),
 
-    final isRecommended = plan['price'] == 5.90;
+          SafeArea(
+            child: Column(
+              children: [
+                // 1. Header (Refactored to be part of body content but cleaner)
+                _buildHeader(context),
+                
+                // 2. Content (Scrollable)
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.only(bottom: 100),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        
+                        // Toggle
+                        _buildToggle(),
 
+                        const SizedBox(height: 32),
+
+                        // Plan Cards
+                        SizedBox(
+                          height: 420, // Height for cards
+                          child: PageView.builder(
+                            controller: _pageController,
+                            itemCount: _plans.isEmpty ? 2 : _plans.length, // Fallback to 2 for skeleton
+                            itemBuilder: (context, index) {
+                              if (_plans.isEmpty) return _buildSkeletonCard();
+                              final plan = _plans[index];
+                              return _buildPlanCard(plan); 
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Feature Comparison
+                        _buildFeatureComparison(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 3. Sticky Bottom Button
+          Positioned(
+            bottom: 30, // Floating slightly above bottom
+            left: 20,
+            right: 20,
+            child: _buildStickyButton(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: disabled ? 0.5 : 1,
-        child: GlassSurface(
-          padding: const EdgeInsets.all(24),
-          borderRadius: 28,
-          // Highlight recommended plan
-          accentColor: isRecommended ? color : null,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (isRecommended)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Text(
-                    'RECOMMENDED',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: AppColors.accentGreen,
+                  shape: BoxShape.circle,
                 ),
-              Text(
-                plan['name'],
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+                child: const Icon(Icons.shield, color: Colors.black, size: 24),
               ),
-              const SizedBox(height: 6),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'RM ${plan['price']}',
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text('/month', style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ...(plan['features'] as List)
-                  .map(
-                    (f) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.check_circle, color: color, size: 20),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(f, style: theme.textTheme.bodyMedium)),
-                        ],
+              const SizedBox(width: 12),
+              Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                    Text(
+                      'FraudShield',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: AppColors.textLight,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
                       ),
                     ),
-                  )
-                  .toList(),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: AdaptiveButton(
-                  onPressed:
-                      (loading || disabled || isCurrent) ? null : onPressed,
-                  text: isCurrent
-                        ? 'Current Plan'
-                        : loading
-                            ? 'Processing...'
-                            : 'Activate Tier',
-                  isLoading: loading,
-                ),
+                    Text(
+                      'PREMIUM',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.accentGreen,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                 ],
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Text(
+            'Next-gen AI protection for your digital wealth.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textLight.withOpacity(0.6),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildToggle() {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _toggleBtn('Monthly', !_isYearly),
+          _toggleBtn('Yearly', _isYearly, hasBadge: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _toggleBtn(String text, bool isActive, {bool hasBadge = false}) {
+    return GestureDetector(
+      onTap: () => setState(() => _isYearly = text == 'Yearly'),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.accentGreen : Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: Row(
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                color: isActive ? Colors.black : AppColors.textLight,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+            if (hasBadge && !isActive) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'SAVE 20%',
+                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
+
+  Widget _buildPlanCard(Map<String, dynamic> plan) {
+    final bool isPremium = plan['price'] > 0;
+    final bool isCurrent = hasActiveSub && _activeSub!['planId'] == plan['id'];
+    
+    // Determine price display
+    double monthlyPrice = (plan['price'] as num).toDouble();
+    double? yearlyTotal;
+    
+    if (_isYearly && isPremium) {
+       yearlyTotal = (plan['priceYearly'] as num?)?.toDouble() ?? (monthlyPrice * 12 * 0.8);
+       monthlyPrice = yearlyTotal / 12;
+    }
+    
+    String priceStr = isPremium ? '\$${monthlyPrice.toStringAsFixed(2)}' : '\$0';
+    String billingText = _isYearly && isPremium 
+        ? 'Billed \$${yearlyTotal!.toStringAsFixed(2)} yearly' 
+        : 'Billed monthly';
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF162032),
+        borderRadius: BorderRadius.circular(32),
+        border: isPremium 
+            ? Border.all(color: AppColors.accentGreen.withOpacity(0.5), width: 1.5)
+            : Border.all(color: Colors.white.withOpacity(0.05)),
+        gradient: isPremium 
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.accentGreen.withOpacity(0.05),
+                  Colors.transparent,
+                ],
+              )
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            plan['name'].toString().toUpperCase(),
+            style: TextStyle(
+              color: isPremium ? AppColors.accentGreen : AppColors.textLight.withOpacity(0.6),
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                priceStr,
+                style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textLight,
+                  height: 1.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6, left: 4),
+                child: Text(
+                  '/mo',
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          if (isPremium)
+            Text(
+              billingText,
+              style: TextStyle(color: AppColors.textLight.withOpacity(0.4), fontSize: 12),
+            ),
+          const SizedBox(height: 16),
+          Text(
+            isPremium 
+                ? 'Complete protection with real-time AI security.'
+                : 'Essential protection for casual browsing.',
+            style: TextStyle(
+              color: AppColors.textLight.withOpacity(0.7),
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          const Spacer(),
+          
+          // Action Button inside card (Alternative to sticky, or state indicator)
+          SizedBox(
+            width: double.infinity,
+            child: isCurrent 
+              ? OutlinedButton(
+                  onPressed: null,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.textLight.withOpacity(0.2)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: const Text('Current Plan', style: TextStyle(color: AppColors.textLight)),
+                )
+              : ElevatedButton(
+                  onPressed: isPremium ? () {} : null, // If basic, it's usually current or default
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isPremium ? AppColors.accentGreen : const Color(0xFF1E293B),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: Text(
+                    isPremium ? 'Select Premium' : 'Current Plan',
+                    style: TextStyle(
+                      color: isPremium ? Colors.black : AppColors.textLight.withOpacity(0.5),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: AppColors.textLight.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(32),
+      ),
+    );
+  }
+
+  Widget _buildFeatureComparison() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'FEATURE COMPARISON',
+            style: TextStyle(
+              color: AppColors.textLight,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 24),
+          _featureRow('AI Real-time SMS Blocking', true, true),
+          _featureRow('Bank Account Verification', false, true),
+          _featureRow('Priority Threat Insights', false, true),
+          _featureRow('24/7 Support', false, true),
+        ],
+      ),
+    );
+  }
+
+  Widget _featureRow(String label, bool basic, bool premium) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(color: AppColors.textLight.withOpacity(0.8), fontSize: 14),
+            ),
+          ),
+          SizedBox(
+            width: 80,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _checkIcon(basic),
+                const SizedBox(width: 24),
+                _checkIcon(premium, isPremium: true),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _checkIcon(bool enabled, {bool isPremium = false}) {
+    if (!enabled) {
+      return Container(width: 20, height: 2, color: AppColors.textLight.withOpacity(0.2));
+    }
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isPremium ? AppColors.accentGreen : Colors.transparent,
+      ),
+      child: Icon(
+        Icons.check, 
+        size: 16, 
+        color: isPremium ? Colors.black : AppColors.textLight.withOpacity(0.5),
+      ),
+    );
+  }
+
+  Widget _buildStickyButton() {
+    if (hasActiveSub && _activeSub!['planId'] == 'premium') return const SizedBox.shrink();
+
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.accentGreen.withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: AdaptiveButton(
+        onPressed: () {
+          // Find premium plan
+          final premium = _plans.firstWhere((p) => (p['price'] as num) > 0, orElse: () => {});
+          if (premium.isNotEmpty) {
+            _subscribe(premium);
+          }
+        },
+        text: 'Upgrade to Premium',
+        icon: const Icon(Icons.arrow_forward_rounded, size: 20, color: Colors.black),
+      ),
+    );
+  }
 }
+
+

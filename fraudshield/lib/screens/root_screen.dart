@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../constants/colors.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -43,12 +44,17 @@ class _RootScreenState extends State<RootScreen> {
           } else if (auth.isAuthenticated) {
             _navigateTo('/home');
           } else {
-            _navigateTo('/login');
+            _navigateTo('/splash');
           }
         });
 
         return const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
+          backgroundColor: AppColors.deepNavy,
+          body: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          ),
         );
       },
     );

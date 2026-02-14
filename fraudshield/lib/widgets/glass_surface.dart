@@ -10,6 +10,7 @@ class GlassSurface extends StatelessWidget {
   final Color? accentColor;
   final double borderRadius;
   final bool borderGradient;
+  final Color? borderColor;
 
   const GlassSurface({
     super.key,
@@ -21,6 +22,7 @@ class GlassSurface extends StatelessWidget {
     this.accentColor,
     this.borderRadius = 24.0,
     this.borderGradient = false,
+    this.borderColor,
   });
 
   @override
@@ -31,11 +33,11 @@ class GlassSurface extends StatelessWidget {
 
     // Premium base color: Surface color with transparency
     final baseColor = isDark 
-        ? colorScheme.surface.withOpacity(0.6)
+        ? Colors.white.withOpacity(0.05) // Subtle glass for dark mode
         : Colors.white.withOpacity(0.65);
 
     // Subtle border color
-    final borderColor = accentColor?.withOpacity(0.3) ?? 
+    final effectiveBorderColor = borderColor ?? accentColor?.withOpacity(0.3) ?? 
         (isDark 
             ? Colors.white.withOpacity(0.1) 
             : Colors.white.withOpacity(0.6));
@@ -57,7 +59,7 @@ class GlassSurface extends StatelessWidget {
                 color: baseColor,
                 borderRadius: BorderRadius.circular(borderRadius),
                 border: Border.all(
-                  color: borderColor,
+                  color: effectiveBorderColor,
                   width: 1.0,
                 ),
                 boxShadow: [

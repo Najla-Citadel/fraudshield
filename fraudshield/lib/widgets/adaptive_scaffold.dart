@@ -25,54 +25,64 @@ class AdaptiveScaffold extends StatelessWidget {
     final isIos = Theme.of(context).platform == TargetPlatform.iOS;
     final theme = Theme.of(context);
 
-    // Combine custom slivers with body if provided
-    final allSlivers = [
-      if (isIos)
-        CupertinoSliverNavigationBar(
-          largeTitle: Text(title),
-          backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.85),
-          border: null, // Clean look without bottom border
-          trailing: actions != null && actions!.isNotEmpty
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: actions!,
-                )
-              : null,
-        )
-      else
-        SliverAppBar.medium(
-          title: Text(title),
-          centerTitle: false,
-          actions: actions,
-          floating: true,
-          snap: true,
-          surfaceTintColor: Colors.transparent,
-          backgroundColor: theme.scaffoldBackgroundColor,
-        ),
-        
-      ...slivers,
-      
-      if (body != null)
-        SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
-        
-      // Add padding at bottom for scrolling past FAB
-      const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
-    ];
 
     if (isIos) {
       return CupertinoPageScaffold(
         backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
-          slivers: allSlivers,
+          slivers: [
+            CupertinoSliverNavigationBar(
+              largeTitle: Text(title, style: TextStyle(color: (backgroundColor != null && backgroundColor!.computeLuminance() < 0.5) ? Colors.white : theme.textTheme.titleLarge?.color)),
+              backgroundColor: (backgroundColor ?? theme.scaffoldBackgroundColor).withOpacity(0.85),
+              border: null,
+              trailing: actions != null && actions!.isNotEmpty
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: actions!,
+                    )
+                  : null,
+            ),
+            ...slivers,
+             if (body != null)
+              SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
+             const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+          ],
         ),
       );
     } else {
       return Scaffold(
         backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
         body: CustomScrollView(
-          physics: const BouncingScrollPhysics(), // Nice feel on Android too
-          slivers: allSlivers,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverAppBar.medium(
+              title: Text(
+                title,
+                style: TextStyle(
+                  color: (backgroundColor != null && backgroundColor!.computeLuminance() < 0.5) 
+                      ? Colors.white 
+                      : theme.textTheme.titleLarge?.color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: false,
+              actions: actions,
+              floating: true,
+              snap: true,
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: backgroundColor ?? theme.scaffoldBackgroundColor,
+              iconTheme: IconThemeData(
+                color: (backgroundColor != null && backgroundColor!.computeLuminance() < 0.5) 
+                    ? Colors.white 
+                    : theme.iconTheme.color,
+              ),
+            ),
+            ...slivers,
+            if (body != null)
+              SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
+            const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+          ],
         ),
         floatingActionButton: floatingActionButton,
       );

@@ -13,4 +13,8 @@ class AppColors {
   // Text
   static const Color textDark = Color(0xFF111827); // near black
   static const Color textLight = Colors.white;
+
+  // New UI Colors
+  static const Color deepNavy = Color(0xFF0B1121);
+  static const Color accentGreen = Color(0xFF10B981);
 }

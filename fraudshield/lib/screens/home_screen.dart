@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lottie/lottie.dart';
+// import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
@@ -15,14 +16,15 @@ import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
 import 'community_feed_screen.dart';
-import '../widgets/adaptive_navigation.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/glass_surface.dart';
-import '../widgets/animated_background.dart';
+// import '../widgets/animated_background.dart';
 import '../widgets/fade_slide_route.dart';
-import '../widgets/fade_in_list.dart';
+// import '../widgets/fade_in_list.dart';
 import '../widgets/skeleton_loader.dart';
-import 'user_alerts_screen.dart';
+import 'activity_screen.dart';
+import '../constants/colors.dart';
+import '../widgets/security_score_ring.dart';
+import '../widgets/floating_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,10 +41,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // Key to refresh PointsScreen from Home
   final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
 
+  // Customization State
+  List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
+
   @override
   void initState() {
     super.initState();
     _loadProfile();
+    _loadQuickActions();
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
@@ -128,6 +134,206 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _loadQuickActions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList('active_quick_actions');
+    if (saved != null) {
+      setState(() {
+        _activeQuickActions = saved;
+      });
+    }
+  }
+
+  Future<void> _saveQuickActions(List<String> actions) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('active_quick_actions', actions);
+    setState(() {
+      _activeQuickActions = actions;
+    });
+  }
+
+  void _showCustomizationSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.deepNavy,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        // Local state for the sheet
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: const EdgeInsets.all(24),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Customize Quick Actions',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Select which actions to display on your dashboard.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Toggles
+                  _buildToggleItem(
+                    'Fraud Check',
+                    'Scan QR or check ID',
+                    _activeQuickActions.contains('fraud_check'),
+                    (val) {
+                      setSheetState(() {
+                        if (val) {
+                          _activeQuickActions.add('fraud_check');
+                        } else {
+                          _activeQuickActions.remove('fraud_check');
+                        }
+                      });
+                      _saveQuickActions(_activeQuickActions); // Save immediately
+                    },
+                  ),
+                  _buildToggleItem(
+                    'QR Scan',
+                    'Scan any QR code safely',
+                    _activeQuickActions.contains('qr_scan'),
+                    (val) {
+                      setSheetState(() {
+                        if (val) {
+                          _activeQuickActions.add('qr_scan');
+                        } else {
+                          _activeQuickActions.remove('qr_scan');
+                        }
+                      });
+                      _saveQuickActions(_activeQuickActions);
+                    },
+                  ),
+                  _buildToggleItem(
+                    'Report Scam',
+                    'Report a number or a website',
+                    _activeQuickActions.contains('report_scam'),
+                    (val) {
+                      setSheetState(() {
+                        if (val) {
+                          _activeQuickActions.add('report_scam');
+                        } else {
+                          _activeQuickActions.remove('report_scam');
+                        }
+                      });
+                      _saveQuickActions(_activeQuickActions);
+                    },
+                  ),
+                  _buildToggleItem(
+                    'Voice Detection',
+                    'Analyze calls in real-time',
+                    _activeQuickActions.contains('voice_detection'),
+                    (val) {
+                      setSheetState(() {
+                        if (val) {
+                          _activeQuickActions.add('voice_detection');
+                        } else {
+                          _activeQuickActions.remove('voice_detection');
+                        }
+                      });
+                      _saveQuickActions(_activeQuickActions);
+                    },
+                  ),
+                  _buildToggleItem(
+                    'Phishing Protection',
+                    'Check links and messages',
+                    _activeQuickActions.contains('phishing_protection'),
+                    (val) {
+                      setSheetState(() {
+                        if (val) {
+                          _activeQuickActions.add('phishing_protection');
+                        } else {
+                          _activeQuickActions.remove('phishing_protection');
+                        }
+                      });
+                      _saveQuickActions(_activeQuickActions);
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accentGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Done'),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildToggleItem(
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: GlassSurface( // Reusing GlassSurface for consistent look
+        borderRadius: 16,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: AppColors.accentGreen,
+              activeTrackColor: AppColors.accentGreen.withOpacity(0.3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
 
@@ -146,261 +352,461 @@ class _HomeScreenState extends State<HomeScreen> {
     final isSubscribed = context.watch<AuthProvider>().isSubscribed;
 
     return Scaffold(
+      extendBody: true, // Allows content to flow behind the floating nav bar
+      backgroundColor: AppColors.deepNavy,
       body: IndexedStack(
         index: _selectedIndex,
         children: [
           _HomeTab(
             userName: _userName,
             loading: _loadingProfile,
+            activeQuickActions: _activeQuickActions,
+            onCustomize: () => _showCustomizationSheet(),
+            isSubscribed: isSubscribed,
           ),
           const CommunityFeedScreen(),
-          // Dynamic Tab: Plans (Sales) vs Alerts (Utility)
-          isSubscribed ? const UserAlertsScreen() : const SubscriptionScreen(),
+          const ActivityScreen(),
           PointsScreen(key: _pointsKey),
           const AccountScreen(),
         ],
       ),
-      bottomNavigationBar: AdaptiveNavigation(
+      bottomNavigationBar: FloatingNavBar(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.group_outlined),
-            activeIcon: Icon(Icons.group),
-            label: 'Community',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(isSubscribed ? Icons.notifications_outlined : Icons.subscriptions_outlined),
-            activeIcon: Icon(isSubscribed ? Icons.notifications : Icons.subscriptions),
-            label: isSubscribed ? 'Alerts' : 'Plans',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.stars_outlined),
-            activeIcon: Icon(Icons.stars),
-            label: 'Points',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Account',
-          ),
-        ],
       ),
     );
   }
 }
 
-////////////////////////////////////////////////////////////////
-/// HOME TAB CONTENT (UI ONLY)
-////////////////////////////////////////////////////////////////
-
 class _HomeTab extends StatelessWidget {
   final String userName;
   final bool loading;
+  final List<String> activeQuickActions;
+  final VoidCallback onCustomize;
+  final bool isSubscribed;
 
   const _HomeTab({
     required this.userName,
     required this.loading,
+    required this.activeQuickActions,
+    required this.onCustomize,
+    required this.isSubscribed,
   });
 
   @override
   Widget build(BuildContext context) {
     // Wrap entire HomeTab in AnimatedBackground for that premium feel
-    return AnimatedBackground(
-      child: AdaptiveScaffold(
-        title: 'FraudShield',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            onPressed: () {},
-          ),
-        ],
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: FadeInList(
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.deepNavy, // Force Deep Navy background for this tab
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 100), // Extra bottom padding for nav bar
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 👋 GREETING
+              // 1. HEADER
               Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          loading 
-                          ? const SkeletonLoader(width: 150, height: 36, borderRadius: 8)
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Good Evening,',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      loading
+                          ? const SkeletonLoader(width: 100, height: 24, borderRadius: 4)
                           : Text(
-                              'Hi $userName 👋',
+                              userName,
                               style: const TextStyle(
-                                fontSize: 30,
+                                color: Colors.white,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF1F2937),
                               ),
                             ),
-                        const SizedBox(height: 6),
-                        loading
-                          ? const Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: SkeletonLoader(width: 200, height: 16, borderRadius: 4),
-                            )
-                          : const Text(
-                              'Let’s keep your digital life safe today!',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF6B7280),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 90,
-                      child: Lottie.asset(
-                        'assets/animations/greeting_bot.json',
-                        repeat: true,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 18),
-
-                // ⚡ QUICK ACTIONS
-                const Text(
-                  'What just happened?',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    _quickAction(
-                      context,
-                      'assets/icons/fraud_check.png',
-                      'Fraud Check',
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const FraudCheckScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    _quickAction(
-                      context,
-                      'assets/icons/shield.png',
-                      'Phishing',
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const PhishingProtectionScreen(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                _situationCard(
-                  context,
-                  imagePath: 'assets/icons/mic.png',
-                  title: 'Someone called me',
-                  subtitle: 'Check suspicious calls & voices',
-                  onTap: () => Navigator.push(
-                    context,
-                    FadeSlideRoute(page: const VoiceDetectionScreen()),
+                    ],
                   ),
-                  heroTag: 'hero_voice',
-                ),
-
-                _situationCard(
-                  context,
-                  imagePath: 'assets/icons/qr.png',
-                  title: 'I received a QR',
-                  subtitle: 'Scan QR codes safely',
-                  onTap: () => Navigator.push(
-                    context,
-                    FadeSlideRoute(page: const QRDetectionScreen()),
-                  ),
-                  heroTag: 'hero_qr',
-                ),
-
-                _situationCard(
-                  context,
-                  imagePath: 'assets/icons/report.png',
-                  title: 'I want to report a scam',
-                  subtitle: 'Help protect others',
-                  onTap: () => Navigator.push(
-                    context,
-                    FadeSlideRoute(page: const ScamReportingScreen()),
-                  ),
-                  heroTag: 'hero_report',
-                ),
-
-                const SizedBox(height: 20),
-                const LatestNewsWidget(limit: 3),
-                const SizedBox(height: 20),
-
-                // 💡 AWARENESS
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Awareness & Tips',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const AwarenessTipsScreen(),
-                        ),
-                      ),
-                      child: const Text(
-                        'Learn More',
-                        style: TextStyle(color: Colors.blueAccent),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
+                  Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/images/tip_image.png',
-                          width: 70,
-                          height: 70,
-                          fit: BoxFit.cover,
-                        ),
+                      IconButton(
+                        icon: const Icon(Icons.notifications_none, color: Colors.white),
+                        onPressed: () {},
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
+                      const SizedBox(width: 8),
+                      CircleAvatar(
+                        backgroundColor: AppColors.accentGreen,
                         child: Text(
-                          'Avoid clicking unknown links or downloading attachments from unverified sources.',
+                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
+                ],
+              ),
+
+              const SizedBox(height: 40),
+
+              // 2. SECURITY SCORE RING
+              const SecurityScoreRing(
+                score: 98,
+                status: 'Excellent',
+              ),
+
+              const SizedBox(height: 30),
+
+              // 3. MONITORING PILL
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B), // Dark Slate
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
                 ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.circle, color: AppColors.accentGreen, size: 8),
+                    SizedBox(width: 8),
+                    Text(
+                      'AI Watchdog Monitoring Active',
+                      style: TextStyle(
+                        color: AppColors.accentGreen,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // 4. QUICK ACTIONS ROW
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'QUICK ACTIONS',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: onCustomize,
+                    child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              if (activeQuickActions.isEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white.withOpacity(0.1)),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.add_circle_outline, color: Colors.grey, size: 30),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Add Quick Actions',
+                        style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (activeQuickActions.contains('fraud_check'))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BigActionButton(
+                          label: 'Fraud Check',
+                          icon: Icons.health_and_safety,
+                          color: const Color(0xFF3B82F6), // Blue
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+                          ),
+                        ),
+                      ),
+                    if (activeQuickActions.contains('qr_scan'))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BigActionButton(
+                          label: 'QR Scan',
+                          icon: Icons.qr_code_scanner,
+                          color: const Color(0xFF1E293B), // Dark Button
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
+                          ),
+                        ),
+                      ),
+                    if (activeQuickActions.contains('report_scam'))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BigActionButton(
+                          label: 'Report',
+                          icon: Icons.warning_amber_rounded,
+                          color: const Color(0xFF1E293B), // Dark Button
+                          isAlert: true,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                          ),
+                        ),
+                      ),
+                    if (activeQuickActions.contains('voice_detection'))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BigActionButton(
+                          label: 'Voice Check',
+                          icon: Icons.mic,
+                          color: const Color(0xFF1E293B),
+                          isLocked: !isSubscribed,
+                          onTap: () {
+                             if (isSubscribed) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
+                                );
+                             } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Subscribe to unlock Voice Check!'),
+                                    action: SnackBarAction(
+                                      label: 'UPGRADE',
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                             }
+                          },
+                        ),
+                      ),
+                    if (activeQuickActions.contains('phishing_protection'))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _BigActionButton(
+                          label: 'Phishing',
+                          icon: Icons.shield,
+                          color: const Color(0xFF1E293B),
+                          isLocked: !isSubscribed,
+                          onTap: () {
+                             if (isSubscribed) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
+                                );
+                             } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: const Text('Subscribe to unlock Phishing Protection!'),
+                                    action: SnackBarAction(
+                                      label: 'UPGRADE',
+                                      onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                             }
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // 5. ALL SERVICES (Renamed from PROTECTION STATUS)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'ALL SERVICES',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              _StatusItem(
+                icon: Icons.health_and_safety,
+                title: 'Fraud Check',
+                subtitle: 'Scan QR or check ID',
+                isActive: true,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _StatusItem(
+                icon: Icons.qr_code_scanner,
+                title: 'QR Scan',
+                subtitle: 'Scan any QR code safely',
+                isActive: true,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _StatusItem(
+                icon: Icons.warning_amber_rounded,
+                title: 'Report Scam',
+                subtitle: 'Report a number or a website',
+                isActive: true,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // 6. PRO SERVICES
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    Text(
+                      'PRO SERVICES',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1),
+                      ),
+                      child: const Text('PREMIUM', style: TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              _StatusItem(
+                icon: Icons.mic,
+                title: 'Voice Detection',
+                subtitle: 'Analyze suspicious calls in real-time',
+                isActive: isSubscribed,
+                isLocked: !isSubscribed,
+                onTap: () {
+                  if (isSubscribed) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Subscribe to unlock Voice Detection!'),
+                        action: SnackBarAction(
+                          label: 'UPGRADE',
+                          onPressed: () {
+                            // Navigate to subscription screen
+                            // Since we are in HomeTab, we might need a way to switch tabs or push screen
+                            // For now, simpler to push SubscriptionScreen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+              _StatusItem(
+                icon: Icons.shield,
+                title: 'Phishing Protection',
+                subtitle: 'Check links and messages safety',
+                isActive: isSubscribed,
+                isLocked: !isSubscribed,
+                onTap: () {
+                  if (isSubscribed) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Subscribe to unlock Phishing Protection!'),
+                        action: SnackBarAction(
+                          label: 'UPGRADE',
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+              const SizedBox(height: 32),
+
+              // 7. THREAT INSIGHTS
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'THREAT INSIGHTS',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const LatestNewsWidget(),
+              const SizedBox(height: 40), // Bottom padding
             ],
           ),
         ),
@@ -410,101 +816,170 @@ class _HomeTab extends StatelessWidget {
 }
 
 ////////////////////////////////////////////////////////////////
-/// SMALL REUSABLE WIDGETS
+/// WIDGETS
 ////////////////////////////////////////////////////////////////
 
-Widget _quickAction(
-  BuildContext context,
-  String imagePath,
-  String label,
-  VoidCallback onTap,
-) {
-  final theme = Theme.of(context);
-  final isDark = theme.brightness == Brightness.dark;
+class _BigActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+  final bool isAlert;
+  final bool isLocked;
 
-  return Expanded(
-    child: GlassSurface(
+  const _BigActionButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+    this.isAlert = false,
+    this.isLocked = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: 24),
-      borderRadius: 20,
-      child: Column(
-        children: [
-          Image.asset(imagePath, width: 32, height: 32),
-          const SizedBox(height: 12),
-          Text(
-            label,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+      child: Container(
+        width: 100, // Fixed width for uniformity
+        height: 115, // Increased height to prevent overflow
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Reduced horizontal padding
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
             ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-
-Widget _situationCard(
-  BuildContext context, {
-  required String imagePath,
-  required String title,
-  required String subtitle,
-  required VoidCallback onTap,
-  required String heroTag,
-  bool isPrimary = false,
-}) {
-  final theme = Theme.of(context);
-  final isDark = theme.brightness == Brightness.dark;
-  
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: GlassSurface(
-      onTap: onTap,
-      borderRadius: 20,
-      child: Row(
-        children: [
-          Hero(
-            tag: heroTag,
-            child: CircleAvatar(
-              radius: 26,
-              backgroundColor: isPrimary
-                  ? theme.cardColor
-                  : (isDark ? Colors.white10 : Colors.grey.shade100),
-              child: Image.asset(imagePath, width: 28),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                Icon(
+                  icon,
+                  size: 32,
+                  color: isAlert ? Colors.orange : Colors.white,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 12),
                 Text(
-                  subtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                     color: theme.colorScheme.onSurfaceVariant,
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.visible, // Allow wrapping
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12, // Slightly smaller font
+                    height: 1.2,
                   ),
                 ),
               ],
             ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: isPrimary
-                ? theme.cardColor
-                : theme.colorScheme.onSurface, // Fixed null check
-          ),
-        ],
+            if (isLocked)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Icon(Icons.lock, size: 16, color: Colors.white.withOpacity(0.7)),
+              ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class _StatusItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool isActive;
+  final VoidCallback? onTap;
+  final bool isLocked;
+
+  const _StatusItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.isActive,
+    this.onTap,
+    this.isLocked = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(20),
+          border: onTap != null ? Border.all(color: Colors.white.withOpacity(0.05)) : null,
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: Colors.blueAccent),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isLocked)
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Icon(Icons.lock, color: Colors.white.withOpacity(0.5), size: 20),
+              )
+            else if (isActive)
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                     BoxShadow(color: AppColors.accentGreen.withOpacity(0.5), blurRadius: 6)
+                  ],
+                ),
+              )
+            else if (onTap != null)
+              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withOpacity(0.3)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _DailyRewardDialog extends StatelessWidget {
