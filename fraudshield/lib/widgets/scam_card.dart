@@ -7,11 +7,13 @@ import '../screens/report_details_screen.dart';
 class ScamCard extends StatelessWidget {
   final Map<String, dynamic> report;
   final VoidCallback onVerify;
+  final VoidCallback? onTap;
 
   const ScamCard({
     super.key,
     required this.report,
     required this.onVerify,
+    this.onTap,
   });
 
   @override
@@ -19,9 +21,11 @@ class ScamCard extends StatelessWidget {
     // Mock logic for demo verification status
     final isVerified = (report['category'] == 'E-Wallet Phishing' || report['category'] == 'Courier Impersonation'); 
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Dark Slate
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withOpacity(0.08)),
@@ -254,7 +258,8 @@ class ScamCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 
   // --- Helper Methods ---

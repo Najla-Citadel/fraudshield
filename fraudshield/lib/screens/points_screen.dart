@@ -49,8 +49,8 @@ class PointsScreenState extends State<PointsScreen> {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        title: const Text('Rewards Store', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        centerTitle: true,
+        title: const Text('Rewards', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24)),
+        centerTitle: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [

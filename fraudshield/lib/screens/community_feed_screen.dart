@@ -6,6 +6,7 @@ import '../constants/app_theme.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/community_map_card.dart';
 import '../screens/scam_reporting_screen.dart';
+import '../screens/report_details_screen.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class CommunityFeedScreen extends StatefulWidget {
@@ -163,6 +164,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> with SingleTi
         return ScamCard(
           report: report,
           onVerify: _fetchFeed,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ReportDetailsScreen(report: report)),
+            );
+          },
         );
       },
     );
