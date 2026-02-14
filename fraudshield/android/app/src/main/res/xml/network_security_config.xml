@@ -7,7 +7,7 @@
     </base-config>
     <!-- Allow cleartext traffic for our staging server -->
     <domain-config cleartextTrafficPermitted="true">
-        <!-- REPLACE this with your actual Droplet IP -->
+        <domain includeSubdomains="true">152.42.241.157</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>
         <!-- Add your Droplet IP here manually later -->

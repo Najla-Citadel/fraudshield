@@ -1,0 +1,21 @@
+≡ƒÜÇ Starting Signup Tests...
+Testing missing fields...
+Γ£à Correctly caught error: 400 - Email and password are required
+Testing short password...
+Γ£à Correctly caught error: 400 - Password must be at least 6 characters
+Testing valid signup...
+Γ¥î Unexpected error: 500
+{
+  error: 'Internal Server Error',
+  message: '\n' +
+    'Invalid `prisma.user.findUnique()` invocation in\n' +
+    'C:\\Fraudshield\\fraudshield-backend\\src\\controllers\\auth.controller.ts:22:52\n' +
+    '\n' +
+    '  19 }\n' +
+    '  20 \n' +
+    '  21 // Check if user exists\n' +
+    'ΓåÆ 22 const existingUser = await prisma.user.findUnique(\n' +
+    "Can't reach database server at `localhost:5432`\n" +
+    '\n' +
+    'Please make sure your database server is running at `localhost:5432`.'
+}
