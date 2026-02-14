@@ -7,6 +7,7 @@ class AdaptiveButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isDestructive;
   final bool isLoading;
+  final Widget? icon;
 
   const AdaptiveButton({
     super.key,
@@ -14,6 +15,7 @@ class AdaptiveButton extends StatelessWidget {
     required this.onPressed,
     this.isDestructive = false,
     this.isLoading = false,
+    this.icon,
   });
 
   @override
@@ -33,6 +35,14 @@ class AdaptiveButton extends StatelessWidget {
           onPressed!();
         };
 
+    final textWidget = Text(
+      text,
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: isIos ? Colors.white : colorScheme.onPrimary,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+
     if (isIos) {
       return SizedBox(
         width: double.infinity,
@@ -40,37 +50,49 @@ class AdaptiveButton extends StatelessWidget {
           onPressed: handledOnPressed,
           disabledColor: CupertinoColors.quaternarySystemFill,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Text(
-            text,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: icon != null 
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  textWidget,
+                  const SizedBox(width: 8),
+                  icon!,
+                ],
+              )
+            : textWidget,
         ),
       );
     } else {
       return SizedBox(
         width: double.infinity,
-        child: FilledButton(
-          onPressed: handledOnPressed,
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16), // Rounded for modern look
+        child: icon != null 
+          ? FilledButton.icon(
+              onPressed: handledOnPressed,
+              icon: icon!,
+              label: textWidget,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+            )
+          : FilledButton(
+              onPressed: handledOnPressed,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: textWidget,
             ),
-            elevation: 0, // Flat design
-          ),
-          child: Text(
-            text,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colorScheme.onPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
       );
     }
   }

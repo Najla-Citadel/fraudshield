@@ -10,6 +10,7 @@ import 'login_screen.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
+import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 
 class AccountScreen extends StatefulWidget {
@@ -173,30 +174,96 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            _profileCard(),
-            _section('Preferences'),
-            // Subscription Management for active subscribers (since they lose the main nav tab)
-            if (context.watch<AuthProvider>().isSubscribed)
-              _setting(
-                Icons.card_membership, 
-                'Manage Subscription', 
-                () => Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
+            _editingName 
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _editName(),
                 )
-              ),
-            _setting(Icons.notifications, 'Notification Settings',
-                () => _openPlaceholder('Notification Settings')),
-            _setting(
-                Icons.language, 'Language', () => _openPlaceholder('Language')),
-            _setting(Icons.brightness_6, 'Theme', _openThemeSheet),
-            _section('Security'),
-            _setting(
-                Icons.lock_outline, 'Change Password', _openChangePassword),
-            _setting(Icons.shield_outlined, 'Two-Factor Authentication',
-                () => _openPlaceholder('Two-Factor Authentication')),
-            _setting(Icons.devices, 'Device History',
-                () => _openPlaceholder('Device History')),
+              : _compactProfileCard(),
+            
+            const SizedBox(height: 24),
+
+            // Preferences
+            SettingsGroup(
+              title: 'Preferences',
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              items: [
+                SettingsTile(
+                  icon: Icons.card_membership,
+                  title: 'Subscription Plan',
+                  trailing: Row(
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                     Text(
+                       context.watch<AuthProvider>().isSubscribed ? 'Premium' : 'Free', 
+                       style: TextStyle(
+                         color: context.watch<AuthProvider>().isSubscribed ? Colors.amber : Colors.white.withOpacity(0.5), 
+                         fontSize: 13,
+                         fontWeight: FontWeight.bold
+                       )
+                     ),
+                     const SizedBox(width: 8),
+                     Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                   ],
+                 ),
+                  onTap: () => Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
+                  ),
+                ),
+                SettingsTile(
+                  icon: Icons.notifications_rounded,
+                  title: 'Notifications',
+                  onTap: () => _openPlaceholder('Notification Settings'),
+                ),
+                SettingsTile(
+                  icon: Icons.language, 
+                  title: 'Language',
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('English', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
+                      const SizedBox(width: 8),
+                      Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                    ],
+                  ),
+                  onTap: () => _openPlaceholder('Language'),
+                ),
+                SettingsTile(
+                  icon: Icons.dark_mode_rounded,
+                  title: 'Dark Mode',
+                  trailing: Switch(
+                    value: theme.brightness == Brightness.dark,
+                    onChanged: (val) => context.read<ThemeProvider>().toggle(val),
+                    activeColor: AppColors.accentGreen,
+                  ),
+                  onTap: () {}, // Handled by switch
+                ),
+              ],
+            ),
+
+            // Security
+            SettingsGroup(
+              title: 'Security',
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              items: [
+                SettingsTile(
+                  icon: Icons.lock_rounded,
+                  title: 'Change Password',
+                  onTap: _openChangePassword,
+                ),
+                SettingsTile(
+                  icon: Icons.security, 
+                  title: 'Two-Factor Authentication',
+                  onTap: () => _openPlaceholder('Two-Factor Authentication'),
+                ),
+                 SettingsTile(
+                  icon: Icons.devices_rounded,
+                  title: 'Device History',
+                  onTap: () => _openPlaceholder('Device History'),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             _logoutButton(),
             const SizedBox(height: 24),
@@ -309,41 +376,40 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // ================= COMPONENTS =================
 
-  Widget _profileCard() {
+  Widget _compactProfileCard() {
     final theme = Theme.of(context);
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 30, 24, 25),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Match Home Screen Widget Background
-          borderRadius: BorderRadius.circular(40),
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
-        child: Column(
+        child: Row(
           children: [
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
+                ClipOval(
                   child: Image.network(
                     'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
-                    width: 120,
-                    height: 120,
+                    width: 70,
+                    height: 70,
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Container(
-                        width: 120, height: 120,
+                        width: 70, height: 70,
                         color: theme.colorScheme.surfaceVariant,
-                        child: const Center(child: CircularProgressIndicator()),
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                       );
                     },
                     errorBuilder: (context, error, stackTrace) => Container(
-                        width: 120, height: 120,
+                        width: 70, height: 70,
                         color: theme.colorScheme.surfaceVariant,
-                        child: const Icon(Icons.person, size: 60),
+                        child: const Icon(Icons.person, size: 30),
                     ),
                   ),
                 ),
@@ -352,18 +418,55 @@ class _AccountScreenState extends State<AccountScreen> {
                   right: 0,
                   child: GestureDetector(
                     onTap: _openAvatarPicker,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: AppColors.accentGreen,
-                      child:
-                          Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.accentGreen,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 12),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            _editingName ? _editName() : _displayName(),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _nameController.text.isNotEmpty ? _nameController.text : 'User',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _email,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () => setState(() => _editingName = !_editingName),
+              icon: Icon(
+                _editingName ? Icons.check : Icons.edit,
+                color: Colors.white.withOpacity(0.5),
+                size: 20,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.05),
+              ),
+            ),
           ],
         ),
       ),
@@ -387,49 +490,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _displayName() {
-    // Force white text since we are on a dark slate card regardless of theme
-    return Column(
-      children: [
-        Text(
-          _nameController.text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          _email,
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton(
-          onPressed: () => setState(() => _editingName = true),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.white,
-            side: const BorderSide(color: Colors.white),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          ),
-          child: const Text(
-            'EDIT PROFILE',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              letterSpacing: 1.0,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _logoutButton() {
     return Padding(
@@ -442,87 +503,10 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _section(String title) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-      child: SizedBox(
-        width: double.infinity,
-        child: Text(title.toUpperCase(),
-            textAlign: TextAlign.start,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
-            )),
-      ),
-    );
-  }
 
-  Widget _setting(IconData icon, String title, VoidCallback onTap) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      child: _AccountItem(
-        icon: icon,
-        title: title,
-        onTap: onTap,
-      ),
-    );
-  }
 }
 
-class _AccountItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
 
-  const _AccountItem({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.blueAccent, size: 20),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.3)),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 // ================= AVATAR PICKER =================
 class _AvatarPicker extends StatelessWidget {
