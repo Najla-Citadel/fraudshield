@@ -44,7 +44,7 @@ export class AdminController {
         try {
             const { id } = req.params;
             const tx = await prisma.transaction.findUnique({
-                where: { id },
+                where: { id: id as string },
             });
             res.json(tx);
         } catch (error) {
