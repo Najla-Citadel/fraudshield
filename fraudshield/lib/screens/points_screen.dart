@@ -1,15 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../services/api_service.dart';
 import 'points_history_screen.dart';
-import 'rewards_catalog_screen.dart';
-import '../widgets/adaptive_scaffold.dart';
-import '../widgets/adaptive_button.dart';
-import '../widgets/animated_background.dart';
-import '../widgets/glass_surface.dart';
+import 'package:fraudshield/constants/colors.dart';
+import '../widgets/glass_card.dart';
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
@@ -22,9 +16,7 @@ class PointsScreenState extends State<PointsScreen> {
   final ApiService _api = ApiService.instance;
   bool _loading = true;
   int _balance = 0;
-
-  String _petType = 'dog';
-  bool _petJump = false;
+  String _selectedCategory = 'All Rewards';
 
   @override
   void initState() {
@@ -32,24 +24,15 @@ class PointsScreenState extends State<PointsScreen> {
     _init();
   }
 
-  // Public method for external refresh (e.g., from HomeScreen tab tap)
   Future<void> refreshData() async {
     await _loadPoints();
     if (mounted) setState(() {});
   }
 
-  // ================= INIT =================
   Future<void> _init() async {
     setState(() => _loading = true);
-    await _loadPet();
     await _loadPoints();
-    if (!mounted) return;
-    setState(() => _loading = false);
-  }
-
-  Future<void> _loadPet() async {
-    final prefs = await SharedPreferences.getInstance();
-    _petType = prefs.getString('pet_type') ?? 'dog';
+    if (mounted) setState(() => _loading = false);
   }
 
   Future<void> _loadPoints() async {
@@ -61,301 +44,464 @@ class PointsScreenState extends State<PointsScreen> {
     }
   }
 
-  String _petAnimation() => 'assets/animations/pet_$_petType.json';
-
-  // ================= UI =================
-  // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    return AnimatedBackground(
-      child: AdaptiveScaffold(
-        title: 'Points',
+    return Scaffold(
+      backgroundColor: AppColors.deepNavy,
+      appBar: AppBar(
+        title: const Text('Rewards', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24)),
+        centerTitle: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.pets),
-            onPressed: _openPetSelector,
-            tooltip: 'Choose Pet',
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.history_rounded, size: 20, color: Colors.white),
+              onPressed: () {
+                 Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PointsHistoryScreen()),
+                );
+              },
+              tooltip: 'History',
+            ),
           ),
         ],
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    // ⭐ CURRENT POINTS
-                    GlassSurface(
-                      borderRadius: 24,
-                      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                      borderColor: Colors.blue.withOpacity(0.3),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'CURRENT POINTS',
-                            style: TextStyle(
-                              fontSize: 13,
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.blueAccent,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            '$_balance',
-                            style: const TextStyle(
-                              fontSize: 64,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black87,
-                              height: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1. Balance Card
+                  _buildBalanceCard(),
+                  const SizedBox(height: 24),
 
-                    const SizedBox(height: 32),
+                  // 2. Category Selector
+                  _buildCategorySelector(),
+                  const SizedBox(height: 24),
 
-                    // 🐾 PET + TAP ANIMATION
-                    GestureDetector(
-                      onTap: () {
-                        setState(() => _petJump = true);
-                        Future.delayed(
-                          const Duration(milliseconds: 500),
-                          () => setState(() => _petJump = false),
-                        );
-                      },
-                      child: SizedBox(
-                        height: 280,
-                        width: double.infinity,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // Subtle glow behind pet
-                            Container(
-                              width: 220,
-                              height: 220,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.blue.withOpacity(0.08),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blue.withOpacity(0.08),
-                                    blurRadius: 60,
-                                    spreadRadius: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            AnimatedSlide(
-                              offset: _petJump
-                                  ? const Offset(0, -0.12)
-                                  : Offset.zero,
-                              duration: const Duration(milliseconds: 450),
-                              curve: Curves.easeOutBack,
-                              child: AnimatedScale(
-                                scale: _petJump ? 1.08 : 1.0,
-                                duration: const Duration(milliseconds: 450),
-                                child: Lottie.asset(
-                                  _petAnimation(),
-                                  height: 260,
-                                  repeat: true,
-                                ),
-                              ),
-                            ),
-                            if (_petJump)
-                              const Positioned(
-                                top: 0,
-                                right: 60,
-                                child: Text(
-                                  '❤️',
-                                  style: TextStyle(fontSize: 48),
-                                ),
-                              ),
-                          ],
+                  // 3. Sections
+                  _buildSectionHeader('Security Upgrades'),
+                  const SizedBox(height: 12),
+                  _buildFeaturedReward(),
+                  
+                  const SizedBox(height: 32),
+                  
+                  _buildSectionHeader('Digital Vouchers'),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildVoucherCard(
+                          icon: Icons.local_taxi,
+                          amount: 'RM10',
+                          title: 'Grab Voucher',
+                          cost: 1000,
+                          desc: 'RM10 off your next ride or food delivery.',
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // 🎁 REDEEM POINTS
-                    SizedBox(
-                      width: double.infinity,
-                      child: AdaptiveButton(
-                        onPressed: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RewardsCatalogScreen(),
-                            ),
-                          );
-                          _loadPoints(); // Refresh balance when coming back
-                        },
-                        text: 'Redeem Rewards',
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildVoucherCard(
+                          icon: Icons.local_cafe,
+                          amount: 'RM15',
+                          title: 'Starbucks Credit',
+                          cost: 850,
+                          desc: 'A fresh brew on us. Enjoy a drink.',
+                        ),
                       ),
-                    ),
-  
-                    const SizedBox(height: 16),
-  
-                    // 🕒 VIEW HISTORY
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const PointsHistoryScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.history, size: 18),
-                      label: const Text('View Point History'),
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.grey[700],
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                      ),
-                    ),
-  
-                    const SizedBox(height: 24),
-  
-                    // ✨ FOOTNOTE
-                    const Text(
-                      '✨ Login daily to keep your pet happy',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
+                    ],
+                  ),
 
-                    const SizedBox(height: 40),
-                  ],
+                  const SizedBox(height: 32),
+
+                  _buildDonationCard(),
+                  
+                  const SizedBox(height: 100), // Bottom padding for FAB
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildBalanceCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F2633), // Dark Teal/Navy
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0F2633), Color(0xFF0A1A24)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'YOUR BALANCE',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.6),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
                 ),
               ),
-      ),
-    );
-  }
-
-  // ================= PET SELECTOR =================
-  void _openPetSelector() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent, // Important for GlassSurface
-      builder: (_) => PetChooser(onSelect: _savePet),
-    );
-  }
-
-  Future<void> _savePet(String pet) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('pet_type', pet);
-    if (!mounted) return;
-    Navigator.pop(context);
-    await _init();
-  }
-}
-
-////////////////////////////////////////////////////////////
-/// GRADIENT BUTTON
-////////////////////////////////////////////////////////////
-
-Widget _gradientButton({
-  required IconData icon,
-  required String text,
-  required Gradient gradient,
-  required VoidCallback onTap,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+              const SizedBox(width: 8),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.accentGreen,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: '$_balance',
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.0,
+                  ),
+                ),
+                TextSpan(
+                  text: ' PTS',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.accentGreen.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'You\'ve reached Silver Protector status this month. Keep it up!',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget _buildCategorySelector() {
+    return SizedBox(
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
         children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 10),
+          _categoryChip('All Rewards', isActive: _selectedCategory == 'All Rewards'),
+          const SizedBox(width: 12),
+          _categoryChip('Vouchers', isActive: _selectedCategory == 'Vouchers'),
+          const SizedBox(width: 12),
+          _categoryChip('Security', isActive: _selectedCategory == 'Security'),
+        ],
+      ),
+    );
+  }
+
+  Widget _categoryChip(String label, {bool isActive = false}) {
+    return GestureDetector(
+      onTap: () => setState(() => _selectedCategory = label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.black87 : Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
           Text(
-            text,
+            title,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-        ],
-      ),
-    ),
-  );
-}
-
-////////////////////////////////////////////////////////////
-/// PET CHOOSER (BOTTOM SHEET)
-////////////////////////////////////////////////////////////
-
-class PetChooser extends StatelessWidget {
-  final Function(String) onSelect;
-
-  const PetChooser({super.key, required this.onSelect});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Choose Your Companion',
+          Text(
+            'View All',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
+              color: AppColors.accentGreen,
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _pet(context, 'dog', '🐶'),
-              _pet(context, 'cat', '🐱'),
-              _pet(context, 'owl', '🦉'),
-              _pet(context, 'fish', '🐟'),
-            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _pet(BuildContext context, String type, String emoji) {
-    return GestureDetector(
-      onTap: () => onSelect(type),
+  Widget _buildFeaturedReward() {
+    // Large featured card - keeping custom styling as it's unique, but using consistent colors
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B), // Match GlassCard base
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 46)),
-          const SizedBox(height: 6),
-          Text(
-            type.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+          // Image / Icon Area
+          Container(
+            height: 140,
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+               gradient: LinearGradient(
+                  colors: [Colors.blue.withOpacity(0.2), Colors.blue.withOpacity(0.05)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+               ),
+               borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Stack(
+              children: [
+                Center(
+                  child: Icon(Icons.security, size: 80, color: Colors.blue.withOpacity(0.5)),
+                ),
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentGreen,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      '500 PTS',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '1-Month Premium',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Full access to AI-powered transaction monitoring and priority alerts.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.6),
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.accentGreen,
+                      side: const BorderSide(color: AppColors.accentGreen),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text('Redeem Now', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildVoucherCard({
+    required IconData icon,
+    required String amount,
+    required String title,
+    required int cost,
+    required String desc,
+  }) {
+    return GlassCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+           Row(
+             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             children: [
+               Container(
+                 padding: const EdgeInsets.all(10),
+                 decoration: BoxDecoration(
+                   color: Colors.white.withOpacity(0.1),
+                   shape: BoxShape.circle,
+                 ),
+                 child: Icon(icon, color: Colors.white, size: 20),
+               ),
+               Text(
+                 '$cost PTS',
+                 style: const TextStyle(
+                   color: AppColors.accentGreen,
+                   fontSize: 12,
+                   fontWeight: FontWeight.bold,
+                 ),
+               ),
+             ],
+           ),
+           const SizedBox(height: 16),
+           Text(
+             title,
+             style: const TextStyle(
+               color: Colors.white,
+               fontWeight: FontWeight.bold,
+               fontSize: 14,
+             ),
+           ),
+           const SizedBox(height: 4),
+           Text(
+             desc,
+             style: TextStyle(
+               color: Colors.white.withOpacity(0.5),
+               fontSize: 11,
+               height: 1.3,
+             ),
+             maxLines: 2,
+             overflow: TextOverflow.ellipsis,
+           ),
+           const SizedBox(height: 16),
+           SizedBox(
+             width: double.infinity,
+             child: OutlinedButton(
+               onPressed: () {},
+               style: OutlinedButton.styleFrom(
+                 foregroundColor: Colors.white,
+                 side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                 padding: const EdgeInsets.symmetric(vertical: 10),
+               ),
+               child: const Text('Claim', style: TextStyle(fontSize: 12)),
+             ),
+           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDonationCard() {
+    return GlassCard(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppColors.accentGreen.withOpacity(0.2), // Darker teal
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.volunteer_activism, color: AppColors.accentGreen),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Support Cyber Victims',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Donate 200 pts to provide legal aid to victims.',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: (){},
+                    child: Row(
+                      children: const [
+                         Text(
+                          'Donate Now',
+                          style: TextStyle(
+                            color: AppColors.accentGreen,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward, size: 12, color: AppColors.accentGreen),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
   }
 }

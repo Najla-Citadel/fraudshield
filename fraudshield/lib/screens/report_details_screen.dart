@@ -1,654 +1,343 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:share_plus/share_plus.dart';
-import '../services/api_service.dart';
-import '../widgets/glass_card.dart';
+import 'dart:ui';
+import '../constants/colors.dart';
+import '../widgets/adaptive_button.dart';
 
-class ReportDetailsScreen extends StatefulWidget {
-  final String reportId;
-  final Map<String, dynamic>? initialData;
+class ReportDetailsScreen extends StatelessWidget {
+  final Map<String, dynamic> report;
 
-  const ReportDetailsScreen({
-    super.key,
-    required this.reportId,
-    this.initialData,
-  });
-
-  @override
-  State<ReportDetailsScreen> createState() => _ReportDetailsScreenState();
-}
-
-class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
-  Map<String, dynamic>? _report;
-  bool _isLoading = true;
-  String? _errorMessage;
-  bool _isVerifying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialData != null) {
-      _report = widget.initialData;
-      _isLoading = false;
-    } else {
-      _fetchReportDetails();
-    }
-  }
-
-  Future<void> _fetchReportDetails() async {
-    final isInitialLoad = _report == null;
-    
-    if (isInitialLoad) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-    }
-
-    try {
-      final report = await ApiService.instance.getReportDetails(widget.reportId);
-      if (mounted) {
-        setState(() {
-          _report = report;
-          _isLoading = false;
-          _errorMessage = null; // Clear error if successful
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          // Only show full error screen if we don't have data yet
-          if (isInitialLoad) {
-            _errorMessage = e.toString();
-          } else {
-            // Otherwise show a snackbar so current data stays visible
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to refresh: $e')),
-            );
-          }
-        });
-      }
-    }
-  }
-
-  Future<void> _handleVerify() async {
-    if (_isVerifying) return;
-
-    setState(() => _isVerifying = true);
-
-    try {
-      await ApiService.instance.verifyReport(
-        reportId: widget.reportId,
-        isSame: true,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Thank you! +10 Shield Points earned'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        _fetchReportDetails(); // Refresh to show updated verification count
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to verify: $e')),
-        );
-      }
-    } finally {
-      setState(() => _isVerifying = false);
-    }
-  }
-
-  void _handleShare() {
-    if (_report == null) return;
-
-    final text = '''
-🚨 Scam Alert: ${_report!['category']}
-
-${_report!['description']}
-
-${_report!['target'] != null ? 'Target: ${_report!['target']}\n' : ''}
-Reported via FraudShield - Stay Safe!
-''';
-
-    Share.share(text);
-  }
-
-  void _copyToClipboard(String text, String label) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label copied to clipboard')),
-    );
-  }
+  const ReportDetailsScreen({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isVerified = (report['category'] == 'E-Wallet Phishing' || report['category'] == 'Courier Impersonation');
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        title: const Text('Report Details'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'REPORT DETAILS',
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: AppColors.textLight.withOpacity(0.7),
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textLight, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
-          if (_report != null)
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: _handleShare,
-              tooltip: 'Share',
-            ),
+          IconButton(
+            icon: const Icon(Icons.more_horiz_rounded, color: AppColors.textLight),
+            onPressed: () {},
+          ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-              ? _buildErrorView()
-              : _report == null
-                  ? const Center(child: Text('Report not found'))
-                  : RefreshIndicator(
-                      onRefresh: _fetchReportDetails,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildHeaderCard(),
-                            const SizedBox(height: 16),
-                            _buildDescriptionCard(),
-                            if (_report!['target'] != null) ...[
-                              const SizedBox(height: 16),
-                              _buildTargetCard(),
-                            ],
-                            if (_report!['evidence'] != null &&
-                                (_report!['evidence'] as Map).isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              _buildEvidenceCard(),
-                            ],
-                            const SizedBox(height: 16),
-                            _buildReporterCard(),
-                            const SizedBox(height: 16),
-                            _buildVerificationCard(),
-                            const SizedBox(height: 16),
-                            _buildActionButtons(),
-                            const SizedBox(height: 32),
-                          ],
-                        ),
-                      ),
-                    ),
-    );
-  }
-
-  Widget _buildErrorView() {
-    return Center(
-      child: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            const Text(
-              'Failed to load report',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _fetchReportDetails,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeaderCard() {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.red.withOpacity(0.3)),
-                ),
-                child: Text(
-                  (_report!['category'] ?? 'SCAM').toString().toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getStatusColor().withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  (_report!['status'] ?? 'PENDING').toString().toUpperCase(),
-                  style: TextStyle(
-                    color: _getStatusColor(),
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
-              const SizedBox(width: 8),
-              Text(
-                _formatDate(_report!['createdAt']),
-                style: TextStyle(color: Colors.grey[700], fontSize: 13),
-              ),
-            ],
-          ),
-          if (_report!['latitude'] != null && _report!['longitude'] != null) ...[
-            const SizedBox(height: 8),
+            // 1. Title Section
             Row(
-              children: [
-                Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
-                const SizedBox(width: 8),
-                Text(
-                  'Location: ${_report!['latitude']?.toStringAsFixed(4)}, ${_report!['longitude']?.toStringAsFixed(4)}',
-                  style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDescriptionCard() {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.description, size: 20, color: Colors.blue),
-              const SizedBox(width: 8),
-              const Text(
-                'Description',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _report!['description'] ?? 'No description provided',
-            style: const TextStyle(fontSize: 14, height: 1.5),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTargetCard() {
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.link, size: 20, color: Colors.orange),
-              const SizedBox(width: 8),
-              const Text(
-                'Target',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.orange.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.orange.withOpacity(0.2)),
-            ),
-            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
-                    _report!['target'].toString(),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.orange,
+                    report['category'] ?? 'Scam Report',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textLight,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.copy, size: 18),
-                  onPressed: () => _copyToClipboard(
-                    _report!['target'].toString(),
-                    'Target',
+                if (isVerified)
+                  Container(
+                    margin: const EdgeInsets.only(left: 12, top: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentGreen.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.verified_user_rounded, color: AppColors.accentGreen, size: 14),
+                        SizedBox(width: 6),
+                        Text(
+                          'VERIFIED',
+                          style: TextStyle(
+                            color: AppColors.accentGreen,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  tooltip: 'Copy',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.access_time_rounded, size: 16, color: AppColors.textLight.withOpacity(0.5)),
+                const SizedBox(width: 6),
+                Text(
+                  'Reported ${_getTimeAgo(report['createdAt'])}',
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
+                ),
+                const SizedBox(width: 12),
+                Container(width: 4, height: 4, decoration: BoxDecoration(color: AppColors.textLight.withOpacity(0.3), shape: BoxShape.circle)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    report['location'] ?? 'Petaling Jaya',
+                    style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 32),
+
+            // 2. Scam Source Card
+            const Text('SCAM SOURCE', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF162032), // Slightly lighter than bg
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Row(
+                children: [
+                   Container(
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+                       color: const Color(0xFF1E3A8A).withOpacity(0.4),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: const Icon(Icons.sms_rounded, color: Color(0xFF3B82F6), size: 24),
+                   ),
+                   const SizedBox(width: 16),
+                   Expanded(
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(
+                           'SMS from ${report['target'] ?? '+60 12-XXXXXXX'}',
+                           style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
+                         ),
+                         const SizedBox(height: 4),
+                         Text(
+                           'Malaysia Mobile Network',
+                           style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
+                         ),
+                       ],
+                     ),
+                   ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // 3. Message Content
+            const Text('MESSAGE CONTENT', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF162032),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
+              child: Text(
+                '"${report['description'] ?? 'No content available.'}"',
+                style: const TextStyle(
+                  color: AppColors.textLight,
+                  fontSize: 15,
+                  fontStyle: FontStyle.italic,
+                  height: 1.6,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+             // 4. AI Risk Analysis
+            Row(
+              children: const [
+                Icon(Icons.psychology, color: AppColors.accentGreen, size: 20),
+                SizedBox(width: 8),
+                Text('AI RISK ANALYSIS', style: TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.accentGreen.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.accentGreen.withOpacity(0.1)),
+              ),
+              child: Column(
+                children: [
+                  _riskItem('Sense of Urgency', 'Use of "suspended in 2 hours" is a classic social engineering tactic.'),
+                  const SizedBox(height: 16),
+                  _riskItem('Suspicious Link', 'bit.ly URL shortener used to mask a phishing site, not official e-wallet domain.'),
+                  const SizedBox(height: 16),
+                  _riskItem('Sender ID', 'Unknown mobile number used instead of official shortcode.'),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // 5. Actions
+            AdaptiveButton(
+              text: 'Stay Safe: Block This Number',
+              onPressed: () {},
+              icon: const Icon(Icons.block_rounded, color: Colors.white, size: 20),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.share_rounded, size: 20),
+                label: const Text('Share with Friends'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.textLight,
+                  side: BorderSide(color: AppColors.textLight.withOpacity(0.2)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+            
+            // 6. Screenshots (Blurred)
+            Row(
+              children: [
+                Expanded(child: _screenshotPlaceholder()),
+                const SizedBox(width: 12),
+                Expanded(child: _screenshotPlaceholder()),
+                const SizedBox(width: 12),
+                Expanded(child: _screenshotPlaceholder()),
+              ],
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  'Screenshots are anonymized to protect user privacy.',
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.4), fontSize: 11, fontStyle: FontStyle.italic),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _riskItem(String title, String desc) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Container(
+            width: 6,
+            height: 6,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF87171), // Red
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(height: 1.5, fontSize: 14),
+              children: [
+                TextSpan(
+                  text: '$title: ',
+                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold),
+                ),
+                TextSpan(
+                  text: desc,
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.8)),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEvidenceCard() {
-    final evidence = _report!['evidence'] as Map<String, dynamic>;
-
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.folder_open, size: 20, color: Colors.purple),
-              const SizedBox(width: 8),
-              const Text(
-                'Evidence',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...evidence.entries.map((entry) {
-            if (entry.key == 'evidence_url') {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: InkWell(
-                  onTap: () {
-                    // TODO: Open image viewer
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Image viewer coming soon')),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.purple.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.purple.withOpacity(0.2)),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.image, size: 18, color: Colors.purple),
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Text(
-                            'Evidence Image',
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        ),
-                        const Icon(Icons.open_in_new, size: 16),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${entry.key}: ',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        entry.value.toString(),
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          }).toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReporterCard() {
-    final reporterTrust = _report!['reporterTrust'];
-    if (reporterTrust == null) return const SizedBox.shrink();
-
-    final score = reporterTrust['score'] ?? 0;
-    final badges = reporterTrust['badges'] as List? ?? [];
-
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.person, size: 20, color: Colors.green),
-              const SizedBox(width: 8),
-              const Text(
-                'Reporter Trust',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.verified_user,
-                size: 24,
-                color: _getTrustColor(score),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Trust Score: $score',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _getTrustColor(score),
-                    ),
-                  ),
-                  Text(
-                    _getTrustLabel(score),
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          if (badges.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: badges.map((badge) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber.withOpacity(0.5)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.stars, size: 14, color: Colors.amber),
-                      const SizedBox(width: 6),
-                      Text(
-                        badge.toString(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVerificationCard() {
-    final verifications = _report!['_count']?['verifications'] ?? 0;
-
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.people, size: 20, color: Colors.indigo),
-              const SizedBox(width: 8),
-              const Text(
-                'Community Verification',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.indigo.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  verifications.toString(),
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.indigo,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  verifications == 1
-                      ? 'person confirmed this scam'
-                      : 'people confirmed this scam',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: _isVerifying ? null : _handleVerify,
-            icon: _isVerifying
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.check_circle),
-            label: Text(_isVerifying ? 'Verifying...' : 'I Experienced This Too'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Earn +10 Shield Points for verifying',
-          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
         ),
       ],
     );
   }
 
-  String _formatDate(String? dateStr) {
-    if (dateStr == null) return 'N/A';
+  Widget _screenshotPlaceholder() {
+    return AspectRatio(
+      aspectRatio: 3/4,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ClipRRect(
+           borderRadius: BorderRadius.circular(12),
+           child: Stack(
+             fit: StackFit.expand,
+             children: [
+               // Mock Content
+               Column(
+                 mainAxisAlignment: MainAxisAlignment.center,
+                 children: [
+                   Icon(Icons.image, color: Colors.white.withOpacity(0.2), size: 32),
+                 ],
+               ),
+               // Blur it
+               BackdropFilter(
+                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                 child: Container(color: Colors.black.withOpacity(0.1)),
+               ),
+               Center(
+                 child: Icon(Icons.visibility_off, color: Colors.white.withOpacity(0.5), size: 24),
+               ),
+             ],
+           ),
+        ),
+      ),
+    );
+  }
+
+  String _getTimeAgo(String? dateStr) {
+    if (dateStr == null) return '2 hours ago';
     try {
       final date = DateTime.parse(dateStr).toLocal();
-      return DateFormat('MMM dd, yyyy • hh:mm a').format(date);
+      final diff = DateTime.now().difference(date);
+      if (diff.inMinutes < 60) return '${diff.inMinutes} mins ago';
+      if (diff.inHours < 24) return '${diff.inHours} hours ago';
+      return '${diff.inDays} days ago';
     } catch (_) {
-      return 'Invalid date';
+      return '2 hours ago';
     }
-  }
-
-  Color _getStatusColor() {
-    final status = (_report!['status'] ?? 'PENDING').toString().toUpperCase();
-    switch (status) {
-      case 'VERIFIED':
-        return Colors.green;
-      case 'REJECTED':
-        return Colors.red;
-      default:
-        return Colors.orange;
-    }
-  }
-
-  Color _getTrustColor(int score) {
-    if (score >= 50) return Colors.purple;
-    if (score >= 20) return Colors.blue;
-    if (score > 0) return Colors.green;
-    return Colors.grey;
-  }
-
-  String _getTrustLabel(int score) {
-    if (score >= 50) return 'Elite Reporter';
-    if (score >= 20) return 'Trusted Reporter';
-    if (score > 0) return 'New Reporter';
-    return 'Unknown';
   }
 }

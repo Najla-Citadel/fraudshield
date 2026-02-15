@@ -6,6 +6,8 @@ import 'home_screen.dart';
 import 'login_screen.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/app_logo.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _loading = false;
 
@@ -26,6 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,10 +37,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final fullName = _nameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match.")),
       );
       return;
     }
@@ -80,87 +92,159 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBlue,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 60),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🧭 Title
-                Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryBlue,
+    // Force dark theme for the signup screen to match the Deep Navy aesthetic
+    return Theme(
+      data: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: AppColors.deepNavy,
+        primaryColor: AppColors.primaryBlue,
+        colorScheme: const ColorScheme.dark(
+          primary: AppColors.primaryBlue,
+          surface: AppColors.deepNavy,
+          onSurface: Colors.white,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.deepNavy,
+        extendBodyBehindAppBar: true, 
+        body: Stack(
+          children: [
+            // Background Elements (Matching Login Screen)
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF0F172A), // Slate 900
+                      AppColors.deepNavy, // Base
+                      Color(0xFF1E3A8A), // Blue 900
+                    ],
                   ),
                 ),
-                const SizedBox(height: 40),
+              ),
+            ),
 
-                // 👤 Full Name
-                AdaptiveTextField(
-                  controller: _nameController,
-                  label: 'Full Name',
-                  prefixIcon: Icons.person_outline,
-                ),
-                const SizedBox(height: 20),
+            // Content
+            SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 🛡️ Logo / Icon
+                      const AppLogo(size: 80),
+                      const SizedBox(height: 32),
 
-                // 📧 Email Field
-                AdaptiveTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  prefixIcon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 20),
-
-                // 🔒 Password Field
-                AdaptiveTextField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  prefixIcon: Icons.lock_outline,
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 30),
-
-                // 🟦 Sign Up Button
-                AdaptiveButton(
-                  text: 'Sign Up',
-                  isLoading: _loading,
-                  onPressed: _signup,
-                ),
-
-                const SizedBox(height: 25),
-
-                // 🔁 Already have account
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account? "),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        );
-                      },
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: AppColors.primaryBlue,
+                      // 🧭 Title
+                      Text(
+                        'Create Account',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        'Join the community to stay protected',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // 🌫️ Glass Signup Card
+                      GlassSurface(
+                        padding: const EdgeInsets.all(32),
+                        borderRadius: 24,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // 👤 Full Name
+                            AdaptiveTextField(
+                              controller: _nameController,
+                              label: 'Full Name',
+                              prefixIcon: Icons.person_outline,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // 📧 Email Field
+                            AdaptiveTextField(
+                              controller: _emailController,
+                              label: 'Email',
+                              prefixIcon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // 🔒 Password Field
+                            AdaptiveTextField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              prefixIcon: Icons.lock_outline,
+                              obscureText: true,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // 🔒 Confirm Password Field
+                            AdaptiveTextField(
+                              controller: _confirmPasswordController,
+                              label: 'Confirm Password',
+                              prefixIcon: Icons.lock_reset_outlined,
+                              obscureText: true,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // 🟦 Sign Up Button
+                            AdaptiveButton(
+                              text: 'Sign Up',
+                              isLoading: _loading,
+                              onPressed: _signup,
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+
+                      // 🔁 Already have account
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Already have an account? ",
+                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: AppColors.primaryBlue,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
