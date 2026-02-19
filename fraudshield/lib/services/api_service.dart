@@ -3,6 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// import 'package:flutter/foundation.dart'; // Added for kDebugMode if preferred, but debugPrint is enough.
+import 'package:flutter/foundation.dart';
+
 class ApiService {
   ApiService._privateConstructor();
   static final ApiService instance = ApiService._privateConstructor();
@@ -18,7 +21,9 @@ class ApiService {
     // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
     baseUrl = rawBaseUrl;
 
-    print('ApiService: Initialized with baseUrl: $baseUrl');
+    if (kDebugMode) {
+      debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
+    }
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
   }
@@ -49,8 +54,9 @@ class ApiService {
     String? fullName,
   }) async {
     final url = Uri.parse('$baseUrl/auth/signup');
-    print('ApiService: POST $url');
-    print('ApiService: Body: ${jsonEncode({'email': email, 'password': '***', if (fullName != null) 'fullName': fullName})}'); // Sanitize password
+    if (kDebugMode) {
+      debugPrint('ApiService: POST $url');
+    }
 
     try {
       final response = await http
@@ -65,8 +71,9 @@ class ApiService {
           )
           .timeout(const Duration(seconds: 10)); // Force timeout after 10s
       
-      print('ApiService: Response Status: ${response.statusCode}');
-      print('ApiService: Response Body: ${response.body}');
+      if (kDebugMode) {
+        debugPrint('ApiService: Response Status: ${response.statusCode}');
+      }
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 201) {
@@ -102,8 +109,10 @@ class ApiService {
       } else {
         throw Exception(data['message'] ?? 'Login failed');
       }
-    } catch (e, st) {
-      print('ApiService signIn error: $e\n$st');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService signIn error: $e');
+      }
       rethrow;
     }
   }
@@ -125,8 +134,10 @@ class ApiService {
       } else {
         throw Exception(data['message'] ?? 'Failed to fetch profile');
       }
-    } catch (e, st) {
-      print('ApiService getProfile error: $e\n$st');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService getProfile error: $e');
+      }
       rethrow;
     }
   }
@@ -364,7 +375,9 @@ class ApiService {
         throw Exception('GET $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService GET error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService GET error: $e');
+      }
       rethrow;
     }
   }
@@ -382,7 +395,9 @@ class ApiService {
         throw Exception('POST $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService POST error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService POST error: $e');
+      }
       rethrow;
     }
   }
@@ -400,7 +415,9 @@ class ApiService {
         throw Exception('PATCH $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService PATCH error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService PATCH error: $e');
+      }
       rethrow;
     }
   }
@@ -422,7 +439,9 @@ class ApiService {
         throw Exception('File upload failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService uploadFile error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService uploadFile error: $e');
+      }
       rethrow;
     }
   }
