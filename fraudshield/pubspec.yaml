@@ -1,7 +1,7 @@
 name: fraudshield
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.0+3
+version: 1.0.0+6
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -84,4 +84,3 @@ flutter:
     - assets/animations/pet_owl.json
     - assets/animations/pet_fish.json
     - assets/animations/greeting_bot.json
-    - .env
