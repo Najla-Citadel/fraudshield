@@ -19,6 +19,7 @@ class ScamReportingScreen extends StatefulWidget {
 class _ScamReportingScreenState extends State<ScamReportingScreen> {
   final _phoneController = TextEditingController();
   final _descController = TextEditingController();
+  final _locationController = TextEditingController();
   String _selectedCategory = 'Investment Scam';
   bool _reportSent = false;
   String _reportType = 'Phone';
@@ -38,6 +39,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   void dispose() {
     _phoneController.dispose();
     _descController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -98,6 +100,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           if (_reportType == 'Phone') 'phone': _phoneController.text.trim(),
           if (uploadedUrl != null) 'evidence_url': uploadedUrl,
           'desc_issue': _descController.text.trim(),
+          if (_locationController.text.trim().isNotEmpty)
+            'location': _locationController.text.trim(),
         },
       );
       
@@ -123,6 +127,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
       _reportSent = false;
       _phoneController.clear();
       _descController.clear();
+      _locationController.clear();
       _selectedFilePath = null;
       _selectedFileName = null;
       _isPublic = true;
@@ -235,6 +240,17 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                 );
                 if (selected != null) setState(() => _selectedCategory = selected);
               },
+            ),
+            const SizedBox(height: 16),
+
+            // ── Location ────────────────────────────────────
+            AdaptiveTextField(
+              controller: _locationController,
+              label: 'Your City / State (e.g. Johor Bahru, Johor)',
+              prefixIcon: Icons.location_on_outlined,
+              filled: true,
+              fillColor: const Color(0xFF1E293B),
+              textColor: Colors.white,
             ),
             const SizedBox(height: 24),
 

@@ -11,7 +11,7 @@ class ReportDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isVerified = (report['category'] == 'E-Wallet Phishing' || report['category'] == 'Courier Impersonation');
+    final isVerified = report['status'] == 'VERIFIED';
 
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
@@ -112,44 +112,7 @@ class ReportDetailsScreen extends StatelessWidget {
             // 2. Scam Source Card
             const Text('SCAM SOURCE', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
             const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF162032), // Slightly lighter than bg
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
-              child: Row(
-                children: [
-                   Container(
-                     padding: const EdgeInsets.all(12),
-                     decoration: BoxDecoration(
-                       color: const Color(0xFF1E3A8A).withOpacity(0.4),
-                       borderRadius: BorderRadius.circular(12),
-                     ),
-                     child: const Icon(Icons.sms_rounded, color: Color(0xFF3B82F6), size: 24),
-                   ),
-                   const SizedBox(width: 16),
-                   Expanded(
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Text(
-                           'SMS from ${report['target'] ?? '+60 12-XXXXXXX'}',
-                           style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
-                         ),
-                         const SizedBox(height: 4),
-                         Text(
-                           'Malaysia Mobile Network',
-                           style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
-                         ),
-                       ],
-                     ),
-                   ),
-                ],
-              ),
-            ),
+            _buildSourceCard(report),
 
             const SizedBox(height: 24),
 
@@ -195,11 +158,14 @@ class ReportDetailsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _riskItem('Sense of Urgency', 'Use of "suspended in 2 hours" is a classic social engineering tactic.'),
-                  const SizedBox(height: 16),
-                  _riskItem('Suspicious Link', 'bit.ly URL shortener used to mask a phishing site, not official e-wallet domain.'),
-                  const SizedBox(height: 16),
-                  _riskItem('Sender ID', 'Unknown mobile number used instead of official shortcode.'),
+                  ..._buildRiskPoints(report).asMap().entries.map((entry) {
+                    return Column(
+                      children: [
+                        if (entry.key > 0) const SizedBox(height: 16),
+                        _riskItem(entry.value['title']!, entry.value['desc']!),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
@@ -254,6 +220,156 @@ class ReportDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Builds the source card based on report type (Phone / Message / Document / Others)
+  Widget _buildSourceCard(Map<String, dynamic> report) {
+    final type = report['type'] ?? 'Message';
+    final target = report['target'] as String? ?? '';
+
+    final IconData icon;
+    final String label;
+    final String sublabel;
+
+    switch (type) {
+      case 'Phone':
+        icon = Icons.phone_rounded;
+        label = 'Call from $target';
+        sublabel = 'Malaysia Mobile Network';
+        break;
+      case 'Document':
+        icon = Icons.description_rounded;
+        label = 'Document: ${target.isNotEmpty ? target : "Attached file"}';
+        sublabel = 'Uploaded evidence file';
+        break;
+      case 'Message':
+        icon = Icons.sms_rounded;
+        label = target.isNotEmpty ? 'SMS from $target' : 'Suspicious message';
+        sublabel = 'Malaysia Mobile Network';
+        break;
+      default:
+        icon = Icons.warning_amber_rounded;
+        label = target.isNotEmpty ? target : 'Other scam source';
+        sublabel = 'Reported by community';
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF162032),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E3A8A).withOpacity(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  sublabel,
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Generates dynamic AI risk analysis bullets from report fields
+  List<Map<String, String>> _buildRiskPoints(Map<String, dynamic> report) {
+    final points = <Map<String, String>>[];
+    final category = (report['category'] ?? '').toString().toLowerCase();
+    final type = (report['type'] ?? '').toString();
+    final count = (report['_count']?['verifications'] ?? 0) as int;
+    final description = (report['description'] ?? '').toString().toLowerCase();
+
+    // Category-level signal
+    if (category.contains('phishing') || category.contains('wallet')) {
+      points.add({
+        'title': 'Sense of Urgency',
+        'desc': 'Phishing messages often claim accounts are suspended to pressure victims into acting fast.',
+      });
+      if (description.contains('link') || description.contains('url') || description.contains('bit.ly')) {
+        points.add({
+          'title': 'Suspicious Link',
+          'desc': 'URL shortener or unofficial domain used to mask a phishing site.',
+        });
+      }
+    } else if (category.contains('investment')) {
+      points.add({
+        'title': 'Unrealistic Returns',
+        'desc': '"Guaranteed" high-return schemes are always red flags. Check BNM Alert List before investing.',
+      });
+      if (description.contains('telegram') || description.contains('whatsapp') || description.contains('group')) {
+        points.add({
+          'title': 'Social Media Pressure',
+          'desc': 'Scammers often use closed group chats to fabricate testimonials and urgency.',
+        });
+      }
+    } else if (category.contains('courier') || category.contains('delivery')) {
+      points.add({
+        'title': 'Impersonation Tactic',
+        'desc': 'Official couriers never request bank details or fees via phone call.',
+      });
+      points.add({
+        'title': 'Illegal Parcel Threat',
+        'desc': 'Threatening legal action over a parcel is a known social engineering tactic.',
+      });
+    } else if (category.contains('love') || category.contains('romance')) {
+      points.add({
+        'title': 'Emotional Manipulation',
+        'desc': 'Romance scammers build trust over time before making financial requests.',
+      });
+    } else if (category.contains('job')) {
+      points.add({
+        'title': 'Advance Fee',
+        'desc': 'Legitimate employers never ask you to pay upfront to secure a job offer.',
+      });
+    }
+
+    // Source type signal
+    if (type == 'Phone') {
+      points.add({
+        'title': 'Sender ID',
+        'desc': 'Unknown mobile number used instead of an official registered shortcode.',
+      });
+    }
+
+    // Community verification signal
+    if (count > 3) {
+      points.add({
+        'title': 'Community Flagged',
+        'desc': '$count users have independently reported this as a scam — treat with high caution.',
+      });
+    }
+
+    // Fallback
+    if (points.isEmpty) {
+      points.add({
+        'title': 'Unverified Source',
+        'desc': 'Always verify the source before taking any action on unsolicited messages.',
+      });
+    }
+
+    return points;
   }
 
   Widget _riskItem(String title, String desc) {
