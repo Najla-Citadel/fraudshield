@@ -13,7 +13,12 @@ import 'screens/root_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("Error loading .env file: $e");
+    // Continue running app even if .env fails, ApiService has defaults
+  }
 
   // Supabase initialization removed - using custom backend via ApiService
 

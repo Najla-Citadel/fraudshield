@@ -57,6 +57,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/hi_bot.png
     - assets/images/logo.png
     - assets/images/tip_image.png
