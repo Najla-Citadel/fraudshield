@@ -31,7 +31,21 @@ app.use(passport.initialize());
 
 // CORS configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN?.split(',') || '*',
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+
+        // In development, allow no origin (like mobile apps/Postman) or if it's in the list
+        if (process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+
+        // In production, require strict match from CORS_ORIGIN env var
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
 };
 app.use(cors(corsOptions));
