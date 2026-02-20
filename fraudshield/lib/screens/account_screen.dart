@@ -286,6 +286,21 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             const SizedBox(height: 20),
             _logoutButton(),
+            // Delete Account Button
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: TextButton(
+                onPressed: _confirmDeleteAccount,
+                child: Text(
+                  'Delete Account',
+                  style: TextStyle(
+                    color: Colors.red.withOpacity(0.7),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 24),
             // Version text with manual white color for safety
             Text('Version 1.0.0',
@@ -521,6 +536,54 @@ class _AccountScreenState extends State<AccountScreen> {
         isDestructive: true,
       ),
     );
+  }
+
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        title: const Text('Delete Account?', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'This action cannot be undone. Your profile and personal data will be permanently removed. Your reports will remain anonymized.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _executeAccountDeletion();
+    }
+  }
+
+  Future<void> _executeAccountDeletion() async {
+    setState(() => _loading = true);
+    try {
+      await ApiService.instance.deleteAccount();
+      // Logout and redirect
+      if (!mounted) return;
+      await context.read<AuthProvider>().signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        (_) => false,
+      );
+      _toast('Account deleted successfully');
+    } catch (e) {
+      log('Error deleting account: $e');
+      if (mounted) setState(() => _loading = false);
+      _toast('Failed to delete account: $e');
+    }
   }
 
 
