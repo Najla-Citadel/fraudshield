@@ -8,7 +8,7 @@ export class AuthController {
     static async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password, fullName } = req.body;
-            // Input is already validated by express-validator middleware in auth.routes.ts
+            // Basic validation skipped (handled by middleware)
 
             // Check if user exists
             const existingUser = await prisma.user.findUnique({ where: { email } });
