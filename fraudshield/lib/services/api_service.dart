@@ -162,6 +162,10 @@ class ApiService {
     });
   }
 
+  Future<void> deleteAccount() async {
+    await delete('/users/me');
+  }
+
   // ---------------- Admin ----------------
 
   Future<List<Map<String, dynamic>>> getAdminAlerts() async {
@@ -417,6 +421,25 @@ class ApiService {
     } catch (e) {
       if (kDebugMode) {
         debugPrint('ApiService PATCH error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<dynamic> delete(String path) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl$path'),
+        headers: _headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return response.body.isNotEmpty ? jsonDecode(response.body) : null;
+      } else {
+        throw Exception('DELETE $path failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService DELETE error: $e');
       }
       rethrow;
     }
