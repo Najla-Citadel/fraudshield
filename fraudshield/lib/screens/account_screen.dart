@@ -280,7 +280,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   icon: Icons.description_rounded,
                   title: 'Terms of Service',
                   trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
-                  onTap: () => _openPlaceholder('Terms of Service'),
+                  onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
                 ),
               ],
             ),
