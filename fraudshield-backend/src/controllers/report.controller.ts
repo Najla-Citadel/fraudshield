@@ -116,7 +116,7 @@ export class ReportController {
 
             const response = {
                 ...report,
-                target: (isOwner || !report.isPublic) ? report.target : redactedValue(report.target || ''),
+                target: report.target,
                 reporterTrust: {
                     score: profile?.reputation ?? 0,
                     badges: Array.isArray(badges) ? badges : [],
@@ -175,7 +175,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target ? redactedValue(report.target) : null,
+                    target: report.target,
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -315,7 +315,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target ? redactedValue(report.target) : null,
+                    target: report.target,
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],

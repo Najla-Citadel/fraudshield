@@ -1,0 +1,5 @@
+fraudshield-backend/src/controllers/report.controller.ts
+fraudshield/lib/screens/community_feed_screen.dart
+fraudshield/lib/screens/report_details_screen.dart
+fraudshield/lib/screens/scam_reporting_screen.dart
+fraudshield/lib/widgets/scam_card.dart
