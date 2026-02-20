@@ -48,20 +48,32 @@ class UserProfile {
   final String id;
   final String? avatar;
   final String? bio;
+  final int points;
+  final int reputation;
+  final int loginStreak;
+  final List<String> badges;
   final Map<String, dynamic>? metadata;
 
   UserProfile({
     required this.id,
     this.avatar,
     this.bio,
+    this.points = 0,
+    this.reputation = 0,
+    this.loginStreak = 0,
+    this.badges = const [],
     this.metadata,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-      id: json['id'],
+      id: json['id'] ?? '',
       avatar: json['avatar'],
       bio: json['bio'],
+      points: json['points'] ?? 0,
+      reputation: json['reputation'] ?? 0,
+      loginStreak: json['loginStreak'] ?? 0,
+      badges: (json['badges'] as List<dynamic>?)?.cast<String>() ?? [],
       metadata: json['metadata'],
     );
   }
@@ -71,7 +83,12 @@ class UserProfile {
       'id': id,
       'avatar': avatar,
       'bio': bio,
+      'points': points,
+      'reputation': reputation,
+      'loginStreak': loginStreak,
+      'badges': badges,
       'metadata': metadata,
     };
   }
 }
+

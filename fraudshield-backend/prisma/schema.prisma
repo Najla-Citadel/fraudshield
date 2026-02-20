@@ -156,3 +156,14 @@ model Redemption {
   user       User     @relation(fields: [userId], references: [id])
   reward     Reward   @relation(fields: [rewardId], references: [id])
 }
+model BadgeDefinition {
+  id          String   @id @default(uuid())
+  key         String   @unique   // e.g. "elite_sentinel"
+  name        String             // Display name: "Elite Sentinel"
+  description String
+  icon        String             // Emoji or icon name
+  tier        String             // "bronze" | "silver" | "gold" | "platinum"
+  trigger     String             // "reputation" | "reports" | "streak" | "purchase"
+  threshold   Int?               // e.g. reputation >= 50
+  createdAt   DateTime @default(now())
+}

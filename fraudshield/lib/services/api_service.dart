@@ -156,8 +156,9 @@ class ApiService {
     });
   }
 
-  Future<Map<String, dynamic>> changePassword(String newPassword) async {
+  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
     return post('/auth/change-password', {
+      'currentPassword': currentPassword,
       'newPassword': newPassword,
     });
   }
@@ -364,7 +365,13 @@ class ApiService {
     return response as List;
   }
 
+  Future<Map<String, dynamic>> getMyBadges() async {
+    final response = await get('/features/badges');
+    return response as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> claimDailyReward() async {
+
     return post('/features/rewards/daily', {});
   }
 
