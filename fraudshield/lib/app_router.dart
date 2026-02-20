@@ -7,6 +7,7 @@ import 'screens/home_screen.dart';
 
 import 'screens/splash_screen.dart';
 import 'screens/privacy_policy_screen.dart';
+import 'screens/terms_of_service_screen.dart';
 
 class AppRouter {
   static Route generate(RouteSettings settings) {
@@ -17,6 +18,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SplashScreen());
       case '/privacy-policy':
         return MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen());
+      case '/terms-of-service':
+        return MaterialPageRoute(builder: (_) => const TermsOfServiceScreen());
       case '/onboarding':
         return MaterialPageRoute(builder: (_) => const OnboardingScreen());
       case '/login':

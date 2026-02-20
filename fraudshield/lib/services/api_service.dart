@@ -368,6 +368,12 @@ class ApiService {
     return post('/features/rewards/daily', {});
   }
 
+  // ---------------- Safe Browsing ----------------
+
+  Future<Map<String, dynamic>> checkUrl(String url) async {
+    return post('/features/check-url', {'url': url});
+  }
+
   // ---------------- CRUD Templates (for other features) ----------------
 
   Future<dynamic> get(String path) async {

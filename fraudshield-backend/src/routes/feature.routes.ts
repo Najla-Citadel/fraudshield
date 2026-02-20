@@ -1,12 +1,16 @@
 import { Router } from 'express';
 import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
 import { RewardsController } from '../controllers/rewards.controller';
+import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
 import passport from 'passport';
 
 const router = Router();
 
 // Protect all feature routes
 router.use(passport.authenticate('jwt', { session: false }));
+
+// Safe Browsing
+router.post('/check-url', SafeBrowsingController.checkUrl);
 
 // Subscriptions
 router.get('/plans', SubscriptionController.getPlans);
