@@ -112,7 +112,24 @@ export class AuthController {
     static async changePassword(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
-            const { newPassword } = req.body;
+            const { currentPassword, newPassword } = req.body;
+
+            // Fetch user to get current password hash
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                res.status(404).json({ error: 'User not found' });
+                return;
+            }
+
+            // Verify current password
+            const isMatch = await AuthService.comparePasswords(currentPassword, user.passwordHash);
+            if (!isMatch) {
+                res.status(400).json({ error: 'Incorrect current password' });
+                return;
+            }
 
             const passwordHash = await AuthService.hashPassword(newPassword);
 
