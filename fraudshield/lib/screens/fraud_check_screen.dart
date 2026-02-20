@@ -3,6 +3,8 @@ import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_scaffold.dart';
+import '../services/recent_checks_service.dart';
+import '../widgets/recent_checks_widget.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   const FraudCheckScreen({super.key});
@@ -55,6 +57,15 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     } else {
       await Future.delayed(const Duration(milliseconds: 400));
       result = RiskEvaluator.evaluate(type: tab.type, value: _inputController.text.trim());
+    }
+
+    // Save to recent checks
+    if (tab.type != 'Document') {
+      await RecentChecksService.addCheck(RecentCheckItem(
+        type: tab.label, // Use label (Phone, URL, Bank Acc) to match UI
+        value: _inputController.text.trim(),
+        timestamp: DateTime.now(),
+      ));
     }
 
     if (!mounted) return;
@@ -224,6 +235,28 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
             // ── Safety Tips ──────────────────────────────
             _SafetyTipsCard(),
+
+            const SizedBox(height: 32),
+
+            // ── Recent Checks ────────────────────────────
+            RecentChecksWidget(
+              onCheckSelected: (item) {
+                // Find index of tab
+                int index = 0;
+                for (int i = 0; i < _tabs.length; i++) {
+                  // _tabs[i].label is 'Phone', 'URL' etc. item.type should match
+                  if (_tabs[i].label == item.type) {
+                    index = i;
+                    break;
+                  }
+                }
+                
+                setState(() {
+                  _selectedIndex = index;
+                  _inputController.text = item.value;
+                });
+              },
+            ),
 
             const SizedBox(height: 24),
           ],

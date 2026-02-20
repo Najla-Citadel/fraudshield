@@ -25,6 +25,7 @@ import 'activity_screen.dart';
 import '../constants/colors.dart';
 import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
+import '../widgets/security_report_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // Customization State
   List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
 
+  // Security Center State
+  bool _isScanning = false;
+
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +61,69 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check for daily login reward
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyReward();
+    });
+  }
+
+  int _calculateSecurityScore(bool isSubscribed) {
+    int score = 70; // Base score
+    if (isSubscribed) score += 15;
+    if (_userName != 'User') score += 5; // Profile set
+    // Future: Check permissions
+    if (_activeQuickActions.isNotEmpty) score += 5;
+    return score;
+  }
+
+  void _runQuickScan(bool isSubscribed) {
+    if (_isScanning) return;
+    
+    setState(() => _isScanning = true);
+
+    // Simulate system scan
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() => _isScanning = false);
+        _showSecurityReport(isSubscribed);
+      }
+    });
+  }
+
+  void _showSecurityReport(bool isSubscribed) {
+    final profileComplete = _userName != 'User';
+    final activeDefenses = _activeQuickActions.length;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => SecurityReportSheet(
+        score: _calculateSecurityScore(isSubscribed),
+        isSubscribed: isSubscribed,
+        profileComplete: profileComplete,
+        activeDefensesCount: activeDefenses,
+        onFixPremium: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+          );
+        },
+        onUpdateProfile: () {
+          Navigator.pop(context);
+          _onNavTap(4); // Switch to Account Tab
+        },
+        onEnableDefenses: () {
+          Navigator.pop(context);
+          _showCustomizationSheet();
+        },
+      ),
+    );
+  }
+
+  Future<void> _saveQuickActions(List<String> actions) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('active_quick_actions', actions);
+    setState(() {
+      _activeQuickActions = actions;
     });
   }
 
@@ -144,13 +212,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _saveQuickActions(List<String> actions) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('active_quick_actions', actions);
-    setState(() {
-      _activeQuickActions = actions;
-    });
-  }
 
   void _showCustomizationSheet() {
     showModalBottomSheet(
@@ -347,6 +408,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
+
+// ... inside HomeScreen build method ...
+
   @override
   Widget build(BuildContext context) {
     final isSubscribed = context.watch<AuthProvider>().isSubscribed;
@@ -363,6 +428,10 @@ class _HomeScreenState extends State<HomeScreen> {
             activeQuickActions: _activeQuickActions,
             onCustomize: () => _showCustomizationSheet(),
             isSubscribed: isSubscribed,
+            // Pass security state down
+            isScanning: _isScanning,
+            score: _calculateSecurityScore(isSubscribed),
+            onScan: () => _runQuickScan(isSubscribed),
           ),
           const CommunityFeedScreen(),
           const ActivityScreen(),
@@ -384,6 +453,11 @@ class _HomeTab extends StatelessWidget {
   final List<String> activeQuickActions;
   final VoidCallback onCustomize;
   final bool isSubscribed;
+  
+  // New props for security center
+  final bool isScanning;
+  final int score;
+  final VoidCallback onScan;
 
   const _HomeTab({
     required this.userName,
@@ -391,6 +465,9 @@ class _HomeTab extends StatelessWidget {
     required this.activeQuickActions,
     required this.onCustomize,
     required this.isSubscribed,
+    required this.isScanning,
+    required this.score,
+    required this.onScan,
   });
 
   @override
@@ -430,7 +507,10 @@ class _HomeTab extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
+                                height: 1.2, // Fixed: height, not maxHeight
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                     ],
                   ),
@@ -455,40 +535,23 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // 2. SECURITY SCORE RING
-              const SecurityScoreRing(
-                score: 98,
-                status: 'Excellent',
+              // 2. SECURITY SCORE RING (Interactive)
+              GestureDetector(
+                onTap: () {
+                  if (!isScanning) onScan();
+                },
+                child: SecurityScoreRing(
+                  score: score,
+                  status: score >= 90 ? 'Excellent' : 'Good',
+                  isScanning: isScanning,
+                  onTap: onScan,
+                ),
               ),
 
               const SizedBox(height: 30),
 
-              // 3. MONITORING PILL
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B), // Dark Slate
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.circle, color: AppColors.accentGreen, size: 8),
-                    SizedBox(width: 8),
-                    Text(
-                      'AI Watchdog Monitoring Active',
-                      style: TextStyle(
-                        color: AppColors.accentGreen,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
+              // 3. MONITORING PILL (Animated)
+              _buildMonitoringPill(),
 
               // 4. QUICK ACTIONS ROW
               Row(
@@ -811,6 +874,51 @@ class _HomeTab extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+  Widget _buildMonitoringPill() {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.5, end: 1.0),
+      duration: const Duration(milliseconds: 1500),
+      builder: (context, value, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B), // Dark Slate
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.accentGreen.withOpacity(0.3 * value),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.accentGreen.withOpacity(0.1 * value),
+                blurRadius: 8 * value,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.circle,
+                color: AppColors.accentGreen.withOpacity(value),
+                size: 8,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'System Shield Active',
+                style: TextStyle(
+                  color: AppColors.accentGreen,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      onEnd: () {}, 
     );
   }
 }
