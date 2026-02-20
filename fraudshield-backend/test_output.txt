@@ -1,21 +1,76 @@
-≡ƒÜÇ Starting Signup Tests...
-Testing missing fields...
-Γ£à Correctly caught error: 400 - Email and password are required
-Testing short password...
-Γ£à Correctly caught error: 400 - Password must be at least 6 characters
-Testing valid signup...
-Γ¥î Unexpected error: 500
-{
-  error: 'Internal Server Error',
-  message: '\n' +
-    'Invalid `prisma.user.findUnique()` invocation in\n' +
-    'C:\\Fraudshield\\fraudshield-backend\\src\\controllers\\auth.controller.ts:22:52\n' +
-    '\n' +
-    '  19 }\n' +
-    '  20 \n' +
-    '  21 // Check if user exists\n' +
-    'ΓåÆ 22 const existingUser = await prisma.user.findUnique(\n' +
-    "Can't reach database server at `localhost:5432`\n" +
-    '\n' +
-    'Please make sure your database server is running at `localhost:5432`.'
-}
+  console.log
+    [dotenv@17.2.4] injecting env (32) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 400 34 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 149 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 100 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 112 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 125 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 115 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 149 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 100 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 94 "-" "-"
+FAIL tests/auth.controller.test.ts
+  POST /api/v1/auth/signup
+    ├ù Γ£à should create a new user and return 201 with token (39 ms)
+    ├ù Γ£à should sign up without optional fullName (5 ms)
+    ΓêÜ Γ¥î should return 400 if email is already in use (5 ms)
+    ΓêÜ Γ¥î should return 422 if email is missing (4 ms)
+    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
+    ΓêÜ Γ¥î should return 422 if password is shorter than 8 characters (3 ms)
+    ΓêÜ Γ¥î should return 422 if password has no uppercase letter (3 ms)
+    ΓêÜ Γ¥î should return 422 if password has no number (3 ms)
+  POST /api/v1/auth/login
+    ΓêÜ Γ¥î should return 422 if email is missing (4 ms)
+    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
+    ΓêÜ Γ¥î should return 422 if password is missing (3 ms)
+
+  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should create a new user and return 201 with token
+
+    expect(received).toHaveProperty(path, value)
+
+    Expected path: "token"
+    Received path: []
+
+    Expected value: "mock_jwt_token"
+    Received value: {}
+
+      90 |
+      91 |         expect(res.status).toBe(201);
+    > 92 |         expect(res.body).toHaveProperty('token', 'mock_jwt_token');
+         |                          ^
+      93 |         expect(res.body).toHaveProperty('user');
+      94 |         expect(res.body.user).toHaveProperty('email', 'test@example.com');
+      95 |         expect(mockCreate).toHaveBeenCalledTimes(1);
+
+      at Object.<anonymous> (tests/auth.controller.test.ts:92:26)
+
+  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should sign up without optional fullName
+
+    expect(received).toHaveProperty(path)
+
+    Expected path: "token"
+    Received path: []
+
+    Received value: {}
+
+      102 |
+      103 |         expect(res.status).toBe(201);
+    > 104 |         expect(res.body).toHaveProperty('token');
+          |                          ^
+      105 |     });
+      106 |
+      107 |     it('Γ¥î should return 400 if email is already in use', async () => {
+
+      at Object.<anonymous> (tests/auth.controller.test.ts:104:26)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 9 passed, 11 total
+Snapshots:   0 total
+Time:        2.188 s
+Ran all test suites.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?

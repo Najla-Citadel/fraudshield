@@ -16,8 +16,10 @@ import { prisma } from './config/database';
 import authRoutes from './routes/auth.routes';
 import reportRoutes from './routes/report.routes';
 import featureRoutes from './routes/feature.routes';
+// import rewardsRoutes from './routes/rewards.routes'; // File missing
 import adminRoutes from './routes/admin.routes';
 import uploadRoutes from './routes/upload.routes';
+import userRoutes from './routes/user.routes';
 
 const app: Application = express();
 
@@ -68,8 +70,10 @@ const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);
+// app.use(`${apiPrefix}/rewards`, rewardsRoutes); // Commented out as file is missing
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);
+app.use(`${apiPrefix}/users`, userRoutes); // Added user routes
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {

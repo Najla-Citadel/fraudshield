@@ -1,0 +1,187 @@
+
+> fraudshield-backend@1.0.0 test
+> jest --runInBand --forceExit
+
+  console.log
+    [dotenv@17.2.4] injecting env (32) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+
+      at _log (node_modules/dotenv/lib/main.js:142:11)
+
+  console.log
+    DEBUG: AuthService keys: [
+      'hashPassword',
+      'comparePasswords',
+      'generateToken',
+      'findUserById',
+      'findUserByEmail',
+      'toSafeUser'
+    ]
+
+      at signup (src/controllers/auth.controller.ts:12:21)
+
+  console.log
+    DEBUG: AuthService.generateToken: [Function: generateToken]
+
+      at signup (src/controllers/auth.controller.ts:13:21)
+
+  console.log
+    DEBUG: passwordHash: undefined
+
+      at signup (src/controllers/auth.controller.ts:23:21)
+
+  console.log
+    DEBUG: Created user: {
+      id: 'user-id-1',
+      email: 'test@example.com',
+      fullName: 'Test User',
+      passwordHash: 'hashed_password',
+      role: 'USER',
+      createdAt: 2026-01-01T00:00:00.000Z,
+      profile: null
+    }
+
+      at signup (src/controllers/auth.controller.ts:41:21)
+
+  console.log
+    DEBUG: Generated token: undefined
+
+      at signup (src/controllers/auth.controller.ts:45:21)
+
+  console.log
+    DEBUG: Safe user: undefined
+
+      at signup (src/controllers/auth.controller.ts:48:21)
+
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
+  console.log
+    DEBUG: AuthService keys: [
+      'hashPassword',
+      'comparePasswords',
+      'generateToken',
+      'findUserById',
+      'findUserByEmail',
+      'toSafeUser'
+    ]
+
+      at signup (src/controllers/auth.controller.ts:12:21)
+
+  console.log
+    DEBUG: AuthService.generateToken: [Function: generateToken]
+
+      at signup (src/controllers/auth.controller.ts:13:21)
+
+  console.log
+    DEBUG: passwordHash: undefined
+
+      at signup (src/controllers/auth.controller.ts:23:21)
+
+  console.log
+    DEBUG: Created user: {
+      id: 'user-id-1',
+      email: 'test@example.com',
+      fullName: 'Test User',
+      passwordHash: 'hashed_password',
+      role: 'USER',
+      createdAt: 2026-01-01T00:00:00.000Z,
+      profile: null
+    }
+
+      at signup (src/controllers/auth.controller.ts:41:21)
+
+  console.log
+    DEBUG: Generated token: undefined
+
+      at signup (src/controllers/auth.controller.ts:45:21)
+
+  console.log
+    DEBUG: Safe user: undefined
+
+      at signup (src/controllers/auth.controller.ts:48:21)
+
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
+  console.log
+    DEBUG: AuthService keys: [
+      'hashPassword',
+      'comparePasswords',
+      'generateToken',
+      'findUserById',
+      'findUserByEmail',
+      'toSafeUser'
+    ]
+
+      at signup (src/controllers/auth.controller.ts:12:21)
+
+  console.log
+    DEBUG: AuthService.generateToken: [Function: generateToken]
+
+      at signup (src/controllers/auth.controller.ts:13:21)
+
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 400 34 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 149 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 100 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 112 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 125 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 115 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 149 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 100 "-" "-"
+::ffff:127.0.0.1 - - [20/Feb/2026:02:50:12 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 94 "-" "-"
+FAIL tests/auth.controller.test.ts
+  POST /api/v1/auth/signup
+    ├ù Γ£à should create a new user and return 201 with token (51 ms)
+    ├ù Γ£à should sign up without optional fullName (8 ms)
+    ΓêÜ Γ¥î should return 400 if email is already in use (5 ms)
+    ΓêÜ Γ¥î should return 422 if email is missing (4 ms)
+    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
+    ΓêÜ Γ¥î should return 422 if password is shorter than 8 characters (3 ms)
+    ΓêÜ Γ¥î should return 422 if password has no uppercase letter (3 ms)
+    ΓêÜ Γ¥î should return 422 if password has no number (3 ms)
+  POST /api/v1/auth/login
+    ΓêÜ Γ¥î should return 422 if email is missing (5 ms)
+    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
+    ΓêÜ Γ¥î should return 422 if password is missing (3 ms)
+
+  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should create a new user and return 201 with token
+
+    expect(received).toHaveProperty(path, value)
+
+    Expected path: "token"
+    Received path: []
+
+    Expected value: "mock_jwt_token"
+    Received value: {}
+
+       97 |
+       98 |         expect(res.status).toBe(201);
+    >  99 |         expect(res.body).toHaveProperty('token', 'mock_jwt_token');
+          |                          ^
+      100 |         expect(res.body).toHaveProperty('user');
+      101 |         expect(res.body.user).toHaveProperty('email', 'test@example.com');
+      102 |         expect(mockCreate).toHaveBeenCalledTimes(1);
+
+      at Object.<anonymous> (tests/auth.controller.test.ts:99:26)
+
+  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should sign up without optional fullName
+
+    expect(received).toHaveProperty(path)
+
+    Expected path: "token"
+    Received path: []
+
+    Received value: {}
+
+      109 |
+      110 |         expect(res.status).toBe(201);
+    > 111 |         expect(res.body).toHaveProperty('token');
+          |                          ^
+      112 |     });
+      113 |
+      114 |     it('Γ¥î should return 400 if email is already in use', async () => {
+
+      at Object.<anonymous> (tests/auth.controller.test.ts:111:26)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 9 passed, 11 total
+Snapshots:   0 total
+Time:        1.601 s, estimated 2 s
+Ran all test suites.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
