@@ -8,15 +8,7 @@ export class AuthController {
     static async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password, fullName } = req.body;
-
-            // Basic validation
-            if (!email || !password) {
-                return res.status(400).json({ message: 'Email and password are required' });
-            }
-
-            if (password.length < 6) {
-                return res.status(400).json({ message: 'Password must be at least 6 characters' });
-            }
+            // Input is already validated by express-validator middleware in auth.routes.ts
 
             // Check if user exists
             const existingUser = await prisma.user.findUnique({ where: { email } });
