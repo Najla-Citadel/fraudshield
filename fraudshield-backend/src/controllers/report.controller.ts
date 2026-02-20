@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { BadgeService } from '../services/badge.service';
+
 
 export class ReportController {
     static async submitReport(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +38,7 @@ export class ReportController {
             });
 
             // Award points for submitting a report
+            let newBadges: string[] = [];
             if (isPublic) {
                 await (prisma as any).profile.update({
                     where: { userId },
@@ -51,12 +54,16 @@ export class ReportController {
                         description: `Submitted public scam report`,
                     },
                 });
+
+                // Evaluate badges
+                newBadges = await BadgeService.evaluateBadges(userId);
             }
 
-            res.status(201).json(report);
+            res.status(201).json({ ...report, newBadges });
         } catch (error) {
             next(error);
         }
+
     }
 
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
@@ -396,38 +403,10 @@ export class ReportController {
                     },
                 });
 
-                // Check if they earned a new badge (Simple threshold logic)
-                const reporterProfile = await (prisma as any).profile.findUnique({
-                    where: { userId: report.userId },
-                });
-
-                if (reporterProfile) {
-                    // Safely handle badges
-                    let currentBadges: string[] = [];
-                    if (Array.isArray(reporterProfile.badges)) {
-                        currentBadges = reporterProfile.badges as string[];
-                    } else if (typeof reporterProfile.badges === 'string') {
-                        try {
-                            const parsed = JSON.parse(reporterProfile.badges);
-                            if (Array.isArray(parsed)) {
-                                currentBadges = parsed;
-                            }
-                        } catch (e) {
-                            console.error('Error parsing badges from DB:', e);
-                        }
-                    }
-
-                    if (reporterProfile.reputation >= 50 && !currentBadges.includes('Elite Sentinel')) {
-                        currentBadges.push('Elite Sentinel');
-                        await (prisma as any).profile.update({
-                            where: { userId: report.userId },
-                            data: {
-                                badges: currentBadges,
-                            },
-                        });
-                    }
-                }
+                // Evaluate badges for the reporter
+                await BadgeService.evaluateBadges(report.userId);
             }
+
 
             res.json(verification);
         } catch (error) {

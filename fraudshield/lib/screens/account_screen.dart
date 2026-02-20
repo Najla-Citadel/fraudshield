@@ -12,6 +12,8 @@ import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
+import 'badges_screen.dart';
+
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -361,49 +363,84 @@ class _AccountScreenState extends State<AccountScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (_) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            MediaQuery.of(context).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Change Password',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      builder: (sheetCtx) {
+        bool isLoading = false;
+        String? errorMessage;
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                24, 24, 24,
+                MediaQuery.of(sheetCtx).viewInsets.bottom + 24,
               ),
-              const SizedBox(height: 16),
-              AdaptiveTextField(
-                controller: currentCtrl,
-                label: 'Current Password',
-                obscureText: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Change Password',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  if (errorMessage != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      errorMessage!,
+                      style: const TextStyle(color: Colors.red, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  AdaptiveTextField(
+                    controller: currentCtrl,
+                    label: 'Current Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 12),
+                  AdaptiveTextField(
+                    controller: newCtrl,
+                    label: 'New Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 24),
+                  AdaptiveButton(
+                    isLoading: isLoading,
+                    onPressed: isLoading ? null : () {
+                      final current = currentCtrl.text.trim();
+                      final next = newCtrl.text.trim();
+
+                      setSheetState(() => errorMessage = null);
+
+                      if (current.isEmpty) { setSheetState(() => errorMessage = 'Please enter your current password'); return; }
+                      if (next.isEmpty) { setSheetState(() => errorMessage = 'Please enter a new password'); return; }
+                      if (next.length < 8) { setSheetState(() => errorMessage = 'New password must be at least 8 characters'); return; }
+                      if (!next.contains(RegExp(r'[A-Z]'))) { setSheetState(() => errorMessage = 'New password must contain an uppercase letter'); return; }
+                      if (!next.contains(RegExp(r'[0-9]'))) { setSheetState(() => errorMessage = 'New password must contain a number'); return; }
+
+                      setSheetState(() => isLoading = true);
+                      
+                      ApiService.instance.changePassword(current, next).then((_) {
+                        if (mounted) {
+                          Navigator.pop(sheetCtx);
+                          _toast('Password updated successfully');
+                        }
+                      }).catchError((e) {
+                        if (mounted) {
+                          setSheetState(() {
+                            isLoading = false;
+                            errorMessage = e.toString().contains('400') 
+                                ? 'Incorrect current password' 
+                                : 'Failed to update password';
+                          });
+                        }
+                        return <String, dynamic>{};
+                      });
+                    },
+                    text: 'Update Password',
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              AdaptiveTextField(
-                controller: newCtrl,
-                label: 'New Password',
-                obscureText: true,
-              ),
-              const SizedBox(height: 24),
-              AdaptiveButton(
-                onPressed: () async {
-                  try {
-                    await ApiService.instance.changePassword(newCtrl.text.trim());
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                    _toast('Password updated successfully');
-                  } catch (e) {
-                    _toast('Failed to update password: $e');
-                  }
-                },
-                text: 'Update Password',
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -413,6 +450,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _compactProfileCard() {
     final theme = Theme.of(context);
+    final authProvider = context.watch<AuthProvider>();
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -488,9 +526,44 @@ class _AccountScreenState extends State<AccountScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BadgesScreen()),
+                    ),
+                    child: Row(
+                      children: [
+                        if (authProvider.userProfile?.profile?.badges.isNotEmpty ?? false)
+                          ...authProvider.userProfile!.profile!.badges.take(3).map((b) => Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Text(
+                              _getBadgeEmoji(b), 
+                              style: const TextStyle(fontSize: 14)
+                            ),
+                          )).toList()
+                        else
+                          Text(
+                            'No badges yet',
+                            style: TextStyle(
+                              color: AppColors.accentGreen.withOpacity(0.7),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 10,
+                          color: Colors.white.withOpacity(0.3),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
+
             IconButton(
               onPressed: () => setState(() => _editingName = !_editingName),
               icon: Icon(
@@ -586,8 +659,21 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
+  String _getBadgeEmoji(String key) {
+    switch (key) {
+      case 'first_report': return '🎯';
+      case 'community_guardian': return '🛡️';
+      case 'senior_sentinel': return '🥇';
+      case 'first_verify': return '🔍';
+      case 'elite_verifier': return '⚖️';
+      case 'elite_sentinel': return '💎';
+      case 'streak_master': return '🔥';
+      default: return '🏅';
+    }
+  }
 
 }
+
 
 
 
