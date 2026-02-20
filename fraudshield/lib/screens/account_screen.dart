@@ -257,10 +257,30 @@ class _AccountScreenState extends State<AccountScreen> {
                   title: 'Two-Factor Authentication',
                   onTap: () => _openPlaceholder('Two-Factor Authentication'),
                 ),
-                 SettingsTile(
+                SettingsTile(
                   icon: Icons.devices_rounded,
                   title: 'Device History',
                   onTap: () => _openPlaceholder('Device History'),
+                ),
+              ],
+            ),
+
+            // Legal
+             SettingsGroup(
+              title: 'Legal',
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              items: [
+                SettingsTile(
+                  icon: Icons.policy_rounded,
+                  title: 'Privacy Policy',
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
+                ),
+                 SettingsTile(
+                  icon: Icons.description_rounded,
+                  title: 'Terms of Service',
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  onTap: () => _openPlaceholder('Terms of Service'),
                 ),
               ],
             ),
