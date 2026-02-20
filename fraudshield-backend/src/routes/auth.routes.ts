@@ -1,11 +1,16 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import passport from 'passport';
+import { authLimiter, loginLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-router.post('/signup', AuthController.signup);
-router.post('/login', AuthController.login);
+// Apply general rate limiter to all auth routes
+router.use(authLimiter);
+
+// Strict rate limiter on sensitive unauthenticated endpoints
+router.post('/signup', loginLimiter, AuthController.signup);
+router.post('/login', loginLimiter, AuthController.login);
 
 // Protected routes
 router.use(passport.authenticate('jwt', { session: false }));
