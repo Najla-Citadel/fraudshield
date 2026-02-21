@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'points_history_screen.dart';
 import 'badges_screen.dart';
+import 'points_details_screen.dart';
 import '../models/badge_model.dart';
 import 'package:fraudshield/constants/colors.dart';
 
@@ -142,78 +143,86 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildBalanceCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F2633), // Dark Teal/Navy
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F2633), Color(0xFF0A1A24)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                'YOUR BALANCE',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.accentGreen,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PointsDetailsScreen()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF0F2633), // Dark Teal/Navy
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0F2633), Color(0xFF0A1A24)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 8),
-          RichText(
-            text: TextSpan(
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                TextSpan(
-                  text: '$_balance',
-                  style: const TextStyle(
-                    fontSize: 48,
+                Text(
+                  'YOUR BALANCE',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.0,
+                    letterSpacing: 1.0,
                   ),
                 ),
-                TextSpan(
-                  text: ' PTS',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accentGreen.withOpacity(0.8),
+                const SizedBox(width: 8),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.accentGreen,
+                    shape: BoxShape.circle,
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'You\'ve reached Silver Protector status this month. Keep it up!',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 14,
-              height: 1.4,
+            const SizedBox(height: 8),
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$_balance',
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.0,
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' PTS',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.accentGreen.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            Text(
+              'You\'ve reached Silver Protector status this month. Keep it up!',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.7),
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

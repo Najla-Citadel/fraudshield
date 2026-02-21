@@ -92,13 +92,12 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
         : _reports.where((r) => r['category'].toString().toLowerCase().contains(_selectedCategory!.toLowerCase())).toList();
 
     final markers = filteredReports
-        .where((r) => r['latitude'] != null && r['longitude'] != null)
         .map((report) {
       return Marker(
         markerId: MarkerId(report['id'].toString()),
         position: LatLng(
-          (report['latitude'] as num).toDouble(),
-          (report['longitude'] as num).toDouble(),
+          (report['latitude'] as num?)?.toDouble() ?? 3.1390,
+          (report['longitude'] as num?)?.toDouble() ?? 101.6869,
         ),
         infoWindow: InfoWindow(
           title: report['category'] ?? 'Scam Report',
@@ -178,13 +177,15 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
           // 1. MAP
           GoogleMap(
             initialCameraPosition: _initialCameraPosition,
-            onMapCreated: (controller) => _mapController = controller,
+            onMapCreated: (controller) {
+              _mapController = controller;
+              _mapController?.setMapStyle(_mapStyle);
+            },
             markers: _markers,
             myLocationEnabled: true,
             myLocationButtonEnabled: false, // Custom button instead
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
-            style: _mapStyle, // Optional: Dark map style
           ),
 
           // 2. TOP BAR (Filters)
