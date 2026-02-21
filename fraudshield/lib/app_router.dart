@@ -4,6 +4,7 @@ import 'screens/root_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/scam_map_screen.dart';
 
 import 'screens/splash_screen.dart';
 import 'screens/privacy_policy_screen.dart';
@@ -26,6 +27,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case '/scam-map':
+        return MaterialPageRoute(builder: (_) => const ScamMapScreen());
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }
