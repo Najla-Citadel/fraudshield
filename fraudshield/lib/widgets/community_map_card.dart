@@ -21,8 +21,10 @@ class CommunityMapCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
-        children: [
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/scam-map'),
+        child: Stack(
+          children: [
           // 1. Map Background (Placeholder or Image)
           Positioned.fill(
             child: ClipRRect(
@@ -87,6 +89,7 @@ class CommunityMapCard extends StatelessWidget {
 
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
