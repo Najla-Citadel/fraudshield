@@ -8,6 +8,8 @@ import '../widgets/selection_sheet.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart' as geo;
 
 class ScamReportingScreen extends StatefulWidget {
   const ScamReportingScreen({super.key});
@@ -90,12 +92,49 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     }
 
     try {
+      // Determine coordinates
+      double? latitude;
+      double? longitude;
+
+      final manualLocation = _locationController.text.trim();
+      
+      if (manualLocation.isNotEmpty) {
+        try {
+          // Attempt to geocode the keyed-in location
+          final locations = await geo.locationFromAddress(manualLocation);
+          if (locations.isNotEmpty) {
+            latitude = locations.first.latitude;
+            longitude = locations.first.longitude;
+            log('Geocoded "$manualLocation" to: $latitude, $longitude');
+          }
+        } catch (e) {
+          log('Geocoding failed for "$manualLocation": $e');
+        }
+      }
+
+      // Fallback to device GPS if manual geocoding failed or was empty
+      if (latitude == null || longitude == null) {
+        try {
+          final position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+            timeLimit: const Duration(seconds: 5),
+          );
+          latitude = position.latitude;
+          longitude = position.longitude;
+          log('Using GPS fallback: $latitude, $longitude');
+        } catch (e) {
+          log('Could not fetch GPS fallback coordinates: $e');
+        }
+      }
+
       await ApiService.instance.submitScamReport(
         type: _reportType,
         category: _selectedCategory,
         description: _descController.text.trim(),
         target: _reportType == 'Phone' ? _phoneController.text.trim() : null,
         isPublic: _isPublic,
+        latitude: latitude,
+        longitude: longitude,
         evidence: {
           if (_reportType == 'Phone') 'phone': _phoneController.text.trim(),
           if (uploadedUrl != null) 'evidence_url': uploadedUrl,
