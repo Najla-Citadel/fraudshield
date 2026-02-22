@@ -327,6 +327,58 @@ class ApiService {
     });
   }
 
+  // ---------------- Account & Ledger ----------------
+
+  Future<Map<String, dynamic>> getTransactionJournal({
+    String? type,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    String query = '?limit=$limit&offset=$offset';
+    if (type != null) {
+      query += '&type=$type';
+    }
+    
+    final response = await get('/transactions$query');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getJournalDetails(String journalId) async {
+    final response = await get('/transactions/$journalId');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> logTransaction({
+    required double amount,
+    required String merchant,
+    String? target,
+    required String paymentMethod,
+    required String platform,
+    String? notes,
+  }) async {
+    final response = await post('/transactions', {
+      'amount': amount,
+      'merchant': merchant,
+      'target': target,
+      'paymentMethod': paymentMethod,
+      'platform': platform,
+      'notes': notes,
+    });
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> convertToScamReport({
+    required String journalId,
+    required String description,
+    required String category,
+  }) async {
+    final response = await post('/transactions/$journalId/report', {
+      'description': description,
+      'category': category,
+    });
+    return response as Map<String, dynamic>;
+  }
+
   // ---------------- Subscriptions ----------------
 
   Future<List<dynamic>> getPlans() async {

@@ -27,6 +27,8 @@ import '../constants/colors.dart';
 import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
 import '../widgets/security_report_sheet.dart';
+import 'transaction_journal_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,13 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Security Center State
   bool _isScanning = false;
-
+  List<dynamic> _recentTransactions = [];
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
     _loadQuickActions();
+    _loadRecentTransactions();
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
@@ -217,6 +220,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _loadRecentTransactions() async {
+    try {
+      final data = await ApiService.instance.getTransactionJournal(limit: 3);
+      if (mounted) {
+        setState(() {
+          _recentTransactions = data['results'] ?? [];
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load recent transactions on Home: $e');
+    }
+  }
 
   void _showCustomizationSheet() {
     showModalBottomSheet(
@@ -437,6 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
             isScanning: _isScanning,
             score: _calculateSecurityScore(isSubscribed),
             onScan: () => _runQuickScan(isSubscribed),
+            recentTransactions: _recentTransactions,
           ),
           const CommunityFeedScreen(),
           const ActivityScreen(),
@@ -463,6 +479,7 @@ class _HomeTab extends StatelessWidget {
   final bool isScanning;
   final int score;
   final VoidCallback onScan;
+  final List<dynamic> recentTransactions;
 
   const _HomeTab({
     required this.userName,
@@ -473,6 +490,7 @@ class _HomeTab extends StatelessWidget {
     required this.isScanning,
     required this.score,
     required this.onScan,
+    required this.recentTransactions,
   });
 
   @override
@@ -715,6 +733,108 @@ class _HomeTab extends StatelessWidget {
 
               // NEW: TRENDING ALERTS CARD
               _buildTrendingAlertsCard(context),
+
+              const SizedBox(height: 32),
+
+              // NEW: SECURITY JOURNAL
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'SECURITY JOURNAL',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
+                      ),
+                      child: Text(
+                        'View All',
+                        style: TextStyle(
+                          color: AppColors.accentGreen,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (recentTransactions.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                       Icon(LucideIcons.shieldCheck, color: Colors.grey.withOpacity(0.5), size: 32),
+                       const SizedBox(height: 8),
+                       Text('No recent scans recorded.', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                )
+              else
+                ...recentTransactions.map((tx) {
+                   final type = tx['checkType'] ?? 'UNKNOWN';
+                   final target = tx['target'] ?? '';
+                   final status = tx['status'] ?? 'SAFE';
+                   
+                   IconData icon;
+                   switch (type) {
+                     case 'URL': icon = LucideIcons.link; break;
+                     case 'PHONE': icon = LucideIcons.phone; break;
+                     case 'BANK': icon = LucideIcons.building; break;
+                     default: icon = LucideIcons.fileText;
+                   }
+
+                   Color color;
+                   if (status == 'SAFE') color = AppColors.accentGreen;
+                   else if (status == 'SUSPICIOUS') color = Colors.orangeAccent;
+                   else color = Colors.redAccent;
+
+                   return Container(
+                     margin: const EdgeInsets.only(bottom: 8),
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+                       color: const Color(0xFF1E293B),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: Row(
+                       children: [
+                         Container(
+                           padding: const EdgeInsets.all(8),
+                           decoration: BoxDecoration(
+                             color: color.withOpacity(0.1),
+                             borderRadius: BorderRadius.circular(8),
+                           ),
+                           child: Icon(icon, color: color, size: 16),
+                         ),
+                         const SizedBox(width: 12),
+                         Expanded(
+                           child: Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Text(target, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                               Text(status, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
+                   );
+                }),
 
               const SizedBox(height: 32),
 

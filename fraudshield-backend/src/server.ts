@@ -1,6 +1,8 @@
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app';
+import { initializeFirebase } from './config/firebase.config';
+import { AlertEngineService } from './services/alert-engine.service';
 
 const PORT = process.env.PORT || 3000;
 
@@ -29,12 +31,22 @@ io.on('connection', (socket) => {
 // Export io for use in controllers
 export { io };
 
+// Initialize Firebase Admin globally
+initializeFirebase();
+
 const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
     console.log('🚀 FraudShield Backend Server');
     console.log(`📡 Server running on port ${PORT}`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 Health check: http://0.0.0.0:${PORT}/health`);
     console.log(`📊 API Status: http://0.0.0.0:${PORT}/api/${process.env.API_VERSION || 'v1'}/status`);
+
+    // Start background jobs
+    console.log('⏱️ Starting background jobs...');
+    AlertEngineService.dispatchTrendingAlerts().catch(console.error); // Run immediately
+    setInterval(() => {
+        AlertEngineService.dispatchTrendingAlerts().catch(console.error);
+    }, 60 * 1000); // Check for trending alerts every minute (for demo purposes)
 });
 
 // Graceful shutdown

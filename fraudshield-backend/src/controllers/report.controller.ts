@@ -495,6 +495,39 @@ export class ReportController {
                 recommendation,
             });
 
+            // Log to TransactionJournal if user is authenticated
+            const userId = (req.user as any)?.id;
+            if (userId && (type === 'phone' || type === 'bank' || type === 'doc')) {
+                const dbCheckType = type === 'phone' ? 'PHONE' : type === 'bank' ? 'BANK' : 'DOC';
+                let score = 0;
+                let status = 'SAFE';
+
+                if (riskLevel === 'high') {
+                    score = 90;
+                    status = 'BLOCKED';
+                } else if (riskLevel === 'medium') {
+                    score = 60;
+                    status = 'SUSPICIOUS';
+                }
+
+                await prisma.transactionJournal.create({
+                    data: {
+                        userId,
+                        checkType: dbCheckType,
+                        target: value,
+                        riskScore: score,
+                        status: status,
+                        metadata: {
+                            found: true,
+                            riskLevel,
+                            communityReports: totalCount,
+                            verifiedReports: verifiedCount,
+                            categories,
+                        }
+                    }
+                });
+            }
+
         } catch (error) {
             next(error);
         }

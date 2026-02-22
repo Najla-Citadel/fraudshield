@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
+import { prisma } from '../config/database';
+
 const SAFE_BROWSING_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
 
 export class SafeBrowsingController {
@@ -67,13 +69,32 @@ export class SafeBrowsingController {
 
             const data = await response.json() as { matches?: Array<{ threatType: string; threat: { url: string } }> };
 
-            // If matches exist, the URL is flagged as dangerous
             const matches = data.matches || [];
             const threats = matches.map((m) => m.threatType);
+            const isSafe = matches.length === 0;
+
+            const userId = (req.user as any)?.id;
+
+            // Log to TransactionJournal if user is authenticated
+            if (userId) {
+                await prisma.transactionJournal.create({
+                    data: {
+                        userId,
+                        checkType: 'URL',
+                        target: url,
+                        riskScore: isSafe ? 0 : 100,
+                        status: isSafe ? 'SAFE' : 'SUSPICIOUS',
+                        metadata: {
+                            threats,
+                            threatCount: matches.length
+                        }
+                    }
+                });
+            }
 
             res.json({
                 url,
-                safe: matches.length === 0,
+                safe: isSafe,
                 threats,
                 threatCount: matches.length,
                 checkedAt: new Date().toISOString(),
