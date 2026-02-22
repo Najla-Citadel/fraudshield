@@ -13,7 +13,15 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKUP_DIR="${PROJECT_DIR}/backups"
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
-CONTAINER_NAME="fraudshield-postgres-prod"
+
+# Dynamically find the running postgres container 
+# (handles weird prefixes like 2445d6785ff1_fraudshield-postgres-prod)
+CONTAINER_NAME=$(docker ps --filter "ancestor=postgres:16-alpine" --format "{{.Names}}" | head -n 1)
+
+if [ -z "$CONTAINER_NAME" ]; then
+    echo "Error: Could not find any running container based on postgres:16-alpine."
+    exit 1
+fi
 
 # Ensure the backup directory exists
 mkdir -p "$BACKUP_DIR"
