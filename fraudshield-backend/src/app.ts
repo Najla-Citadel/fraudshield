@@ -20,7 +20,7 @@ import featureRoutes from './routes/feature.routes';
 import adminRoutes from './routes/admin.routes';
 import uploadRoutes from './routes/upload.routes';
 import userRoutes from './routes/user.routes';
-
+import alertRoutes from './routes/alert.routes';
 const app: Application = express();
 
 // Security middleware
@@ -93,6 +93,7 @@ app.use(`${apiPrefix}/features`, featureRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);
 app.use(`${apiPrefix}/users`, userRoutes); // Added user routes
+app.use(`${apiPrefix}/alerts`, alertRoutes);
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {

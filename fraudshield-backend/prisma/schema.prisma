@@ -22,6 +22,7 @@ model User {
   userTransactions Transaction[]
   subscriptions    UserSubscription[]
   redemptions      Redemption[]
+  alertSubscription AlertSubscription? @relation("UserAlertSubscription")
 }
 
 model Profile {
@@ -167,4 +168,18 @@ model BadgeDefinition {
   trigger     String             // "reputation" | "reports" | "streak" | "purchase"
   threshold   Int?               // e.g. reputation >= 50
   createdAt   DateTime @default(now())
+}
+
+model AlertSubscription {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  categories  String[]
+  latitude    Float?
+  longitude   Float?
+  radiusKm    Int      @default(15)
+  fcmToken    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
 }
