@@ -26,8 +26,7 @@ if [ -f "$PROJECT_DIR/.env.prod" ]; then
     DB_USER=$(grep -P '^POSTGRES_USER=' "$PROJECT_DIR/.env.prod" | cut -d '=' -f 2)
     DB_NAME=$(grep -P '^POSTGRES_DB=' "$PROJECT_DIR/.env.prod" | cut -d '=' -f 2)
 else
-    echo "Error: .env.prod file not found in $PROJECT_DIR"
-    exit 1
+    echo "Warning: .env.prod file not found in $PROJECT_DIR. Falling back to default credentials."
 fi
 
 # Fallback to default names if the env vars are missing or empty
