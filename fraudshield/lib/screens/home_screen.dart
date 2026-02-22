@@ -145,9 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
           duration: const Duration(seconds: 5),
           action: SnackBarAction(label: 'VIEW', textColor: Colors.white, onPressed: () {
-            // Future: Navigate to alert details
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+            );
           }),
         ),
       );

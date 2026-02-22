@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "668317803810",
+    "project_id": "fraudshield-271b0",
+    "storage_bucket": "fraudshield-271b0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668317803810:android:b01dd040ad7d6d2127317b",
+        "android_client_info": {
+          "package_name": "com.citadel.fraudshield.v2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZeGNvKDVJqQqahtpSGnxrHold0iUOq5U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
