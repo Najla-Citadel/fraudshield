@@ -6,12 +6,20 @@ class RiskResult {
   final String level; // high, medium, low
   final List<String> reasons;
   final bool apiChecked; // Whether Safe Browsing API was consulted
+  
+  // Payment check specific fields
+  final int communityReports;
+  final int verifiedReports;
+  final List<String> categories;
 
   RiskResult({
     required this.score,
     required this.level,
     required this.reasons,
     this.apiChecked = false,
+    this.communityReports = 0,
+    this.verifiedReports = 0,
+    this.categories = const [],
   });
 }
 
@@ -76,6 +84,68 @@ class RiskEvaluator {
       level: level,
       reasons: reasons,
       apiChecked: apiChecked,
+    );
+  }
+
+  // ── Pre-Transaction Check (async, calls backend) ──
+  static Future<RiskResult> evaluatePayment({
+    required String type, // "bank_account", "phone", "url"
+    required String value,
+  }) async {
+    // 1. Run heuristic check for basic patterns
+    RiskResult localCheck = evaluate(type: type, value: value);
+    int score = localCheck.score;
+    List<String> reasons = List.from(localCheck.reasons);
+    
+    int communityReports = 0;
+    int verifiedReports = 0;
+    List<String> categories = [];
+    String level = localCheck.level;
+
+    try {
+      final res = await _api.lookupPaymentRisk(type: type, value: value);
+      
+      if (res['found'] == true) {
+        communityReports = res['communityReports'] ?? 0;
+        verifiedReports = res['verifiedReports'] ?? 0;
+        categories = List<String>.from(res['categories'] ?? []);
+        final String apiLevel = res['riskLevel'] ?? 'low';
+        final String apiRec = res['recommendation'] ?? '';
+        
+        if (apiRec.isNotEmpty) {
+          reasons.insert(0, '🌐 Community: $apiRec');
+        }
+
+        // Backend risk takes priority if higher
+        if (apiLevel == 'high') {
+          score = 90;
+          level = 'high';
+        } else if (apiLevel == 'medium' && score < 70) {
+          score += 40;
+          level = 'medium';
+        }
+      }
+    } catch (e) {
+      log('Payment risk lookup failed: $e');
+      reasons.add('⚡ Could not access community database (offline check only)');
+    }
+
+    if (score >= 70) level = 'high';
+    else if (score >= 40) level = 'medium';
+
+    // Remove "No risks detected" if we added community risks
+    if (score > 0) {
+      reasons.remove('No risks detected');
+    }
+
+    return RiskResult(
+      score: score.clamp(0, 100),
+      level: level,
+      reasons: reasons,
+      apiChecked: true,
+      communityReports: communityReports,
+      verifiedReports: verifiedReports,
+      categories: categories,
     );
   }
 

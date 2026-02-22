@@ -20,9 +20,8 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   bool _isLoading = false;
 
   static const _tabs = [
-    _TabItem(label: 'Phone', icon: Icons.phone_outlined, hint: 'e.g. 012-345 6789', type: 'Phone No'),
+    _TabItem(label: 'Phone / Bank', icon: Icons.payment_rounded, hint: 'Bank acc, phone, or merchant', type: 'Payment'),
     _TabItem(label: 'URL', icon: Icons.link_rounded, hint: 'e.g. https://bank.com', type: 'URL'),
-    _TabItem(label: 'Bank Acc', icon: Icons.account_balance_outlined, hint: 'e.g. 1234567890', type: 'Bank Acc'),
     _TabItem(label: 'Document', icon: Icons.description_outlined, hint: 'Upload a file', type: 'Document'),
   ];
 
@@ -55,8 +54,8 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
       // Use async API-backed evaluation for URLs
       result = await RiskEvaluator.evaluateUrl(_inputController.text.trim());
     } else {
-      await Future.delayed(const Duration(milliseconds: 400));
-      result = RiskEvaluator.evaluate(type: tab.type, value: _inputController.text.trim());
+      // Unified payment (phone/bank/merchant) pre-check
+      result = await RiskEvaluator.evaluatePayment(type: 'Payment', value: _inputController.text.trim());
     }
 
     // Save to recent checks
@@ -487,6 +486,68 @@ class CheckResultScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
+            // ── Community Reports Badge ───────────────────
+            if (result.communityReports > 0)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.people_outline_rounded, color: AppColors.primaryBlue, size: 20),
+                        const SizedBox(width: 8),
+                        Text('Community Insights', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Reports Found', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+                        Text('${result.communityReports}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Verified by Others', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+                        Text('${result.verifiedReports}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      ],
+                    ),
+                    if (result.categories.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: result.categories.map((cat) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                          ),
+                          child: Text(
+                            cat,
+                            style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11),
+                          ),
+                        )).toList(),
+                      ),
+                    ]
+                  ],
+                ),
+              ),
+              
+            if (result.communityReports > 0)
+              const SizedBox(height: 20),
+
             // ── Reasons ───────────────────────────────────
             if (result.reasons.isNotEmpty)
               Container(
@@ -519,17 +580,37 @@ class CheckResultScreen extends StatelessWidget {
 
             const SizedBox(height: 28),
 
-            // ── Back Button ───────────────────────────────
+            // ── Quick Actions ───────────────────────────────
+            if (isHigh) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Calling PDRM (Mock)')),
+                    );
+                  },
+                  icon: const Icon(Icons.local_police_rounded, color: Colors.white),
+                  label: const Text('Call NSRC (997)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
+                  backgroundColor: isHigh ? const Color(0xFF1E293B) : AppColors.primaryBlue,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('Check Another', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                child: Text(isHigh ? 'Go Back' : 'Check Another', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
             ),
           ],
