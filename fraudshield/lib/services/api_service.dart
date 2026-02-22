@@ -439,6 +439,40 @@ class ApiService {
     return await get('/reports/lookup?type=$type&value=$value');
   }
 
+  // ---------------- Alerts ----------------
+
+  Future<Map<String, dynamic>> getTrendingAlerts({int hours = 72, double? lat, double? lng}) async {
+    String query = '?hours=$hours';
+    if (lat != null && lng != null) {
+      query += '&lat=$lat&lng=$lng';
+    }
+    final response = await get('/alerts/trending$query');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getAlertPreferences() async {
+    final response = await get('/alerts/preferences');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> subscribeToAlerts({
+    List<String>? categories,
+    double? latitude,
+    double? longitude,
+    int? radiusKm,
+    String? fcmToken,
+    bool? isActive,
+  }) async {
+    return await post('/alerts/subscribe', {
+      if (categories != null) 'categories': categories,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (radiusKm != null) 'radiusKm': radiusKm,
+      if (fcmToken != null) 'fcmToken': fcmToken,
+      if (isActive != null) 'isActive': isActive,
+    });
+  }
+
   // ---------------- CRUD Templates (for other features) ----------------
 
   Future<dynamic> get(String path) async {
