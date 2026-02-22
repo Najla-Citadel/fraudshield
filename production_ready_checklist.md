@@ -39,13 +39,13 @@
   - **Fix:** Set `CORS_ORIGIN` in `.env.prod` or default to no fallback.
   - ⏱️ 10 min
 
-- [ ] **S4. Add auth middleware to change-password route**
+- [x] **S4. Add auth middleware to change-password route**
   - [auth.routes.ts:21](file:///c:/Fraudshield/fraudshield-backend/src/routes/auth.routes.ts#L21): `router.post('/change-password', AuthController.changePassword)` — no `authenticate` middleware.
   - Anyone can call this endpoint without being logged in (though `req.user` would be undefined).
   - **Fix:** Add `authenticate` middleware before `AuthController.changePassword`.
   - ⏱️ 5 min
 
-- [ ] **S5. Require current password for password changes**
+- [x] **S5. Require current password for password changes**
   - [auth.controller.ts:113](file:///c:/Fraudshield/fraudshield-backend/src/controllers/auth.controller.ts#L112-128): Only accepts `newPassword`, never verifies the current password.
   - **Fix:** Accept `currentPassword`, verify it with `bcrypt.compare`, then allow the change.
   - ⏱️ 30 min
@@ -58,7 +58,7 @@
   - **Fix:** Add an nginx container with Let's Encrypt SSL, or use Cloudflare proxy.
   - ⏱️ 1–2 hrs
 
-- [ ] **D2. Set `NODE_ENV=production` in Docker Compose**
+- [x] **D2. Set `NODE_ENV=production` in Docker Compose**
   - Already done in `docker-compose.prod.yml:37` ✅ — but verify the **actual `.env`** on the droplet matches.
   - ⏱️ 5 min
 
