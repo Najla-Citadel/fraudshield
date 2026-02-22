@@ -3,7 +3,13 @@ import bcrypt from 'bcrypt';
 import { prisma } from '../config/database';
 
 export class AuthService {
-    private static readonly JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
+    private static get JWT_SECRET(): string {
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            throw new Error('FATAL: JWT_SECRET environment variable is missing.');
+        }
+        return secret;
+    }
     private static readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
     static async hashPassword(password: string): Promise<string> {

@@ -23,16 +23,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
 
   void _toggleRecording() {
     setState(() {
-      if (isRecording) {
-        // Stop and analyze
-        isRecording = false;
-        // Mock random detection
-        isSuspicious = DateTime.now().second % 2 == 0;
-      } else {
-        // Start recording
-        isRecording = true;
-        isSuspicious = null;
-      }
+      // Feature is disabled for MVP launch
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Voice Detection is coming soon!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     });
   }
 
@@ -94,7 +91,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen> {
             Text(
               isRecording
                   ? 'Listening... Tap to stop'
-                  : 'Tap to start recording',
+                  : 'Coming Soon - Tap to notify',
               style: TextStyle(
                 color: AppColors.greyText,
                 fontSize: 15,

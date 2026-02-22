@@ -13,6 +13,7 @@ import '../widgets/adaptive_text_field.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 import 'badges_screen.dart';
+import 'status_details_screen.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -176,12 +177,9 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            _editingName 
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _editName(),
-                )
-              : _compactProfileCard(),
+            _premiumProfileHeader(),
+            const SizedBox(height: 16),
+            _statisticsCard(),
             
             const SizedBox(height: 24),
 
@@ -448,132 +446,263 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // ================= COMPONENTS =================
 
-  Widget _compactProfileCard() {
-    final theme = Theme.of(context);
+  Widget _premiumProfileHeader() {
     final authProvider = context.watch<AuthProvider>();
-    
+    final user = authProvider.user;
+    final profile = user?.profile;
+
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          // Avatar
+          Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+                ),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundColor: const Color(0xFF1E293B),
+                  backgroundImage: NetworkImage(
+                    'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: AppColors.accentGreen,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 14),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Name
+          Text(
+            user?.fullName ?? 'Alexander Wright',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Tier Badge
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BadgesScreen()),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.9),
+                    Colors.white.withOpacity(0.6),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.shield_rounded, color: Colors.black, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    context.watch<AuthProvider>().isSubscribed ? 'GOLD PROTECTOR' : 'SILVER PROTECTOR',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 10),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // View Status Benefits
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const StatusDetailsScreen()),
+              );
+            },
+            child: const Text(
+              'View Status Benefits ↗',
+              style: TextStyle(
+                color: AppColors.accentGreen,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statisticsCard() {
+    final authProvider = context.watch<AuthProvider>();
+    final profile = authProvider.user?.profile;
+    final points = profile?.points ?? 1250; // Use real points from profile
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(24),
+          color: const Color(0xFF0F172A),
+          borderRadius: BorderRadius.circular(28),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
-        child: Row(
+        child: Column(
           children: [
-            Stack(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ClipOval(
-                  child: Image.network(
-                    'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        width: 70, height: 70,
-                        color: theme.colorScheme.surfaceVariant,
-                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Container(
-                        width: 70, height: 70,
-                        color: theme.colorScheme.surfaceVariant,
-                        child: const Icon(Icons.person, size: 30),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: _openAvatarPicker,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.accentGreen,
-                        shape: BoxShape.circle,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'TOTAL PROTECTION POINTS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
                       ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 12),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '$points',
+                            style: const TextStyle(
+                              fontSize: 42,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' PTS',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.accentGreen.withOpacity(0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(
+                  Icons.layers_outlined,
+                  size: 48,
+                  color: Colors.white.withOpacity(0.1),
                 ),
               ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _nameController.text.isNotEmpty ? _nameController.text : 'User',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _email,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const BadgesScreen()),
-                    ),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (authProvider.userProfile?.profile?.badges.isNotEmpty ?? false)
-                          ...authProvider.userProfile!.profile!.badges.take(3).map((b) => Padding(
-                            padding: const EdgeInsets.only(right: 6),
-                            child: Text(
-                              _getBadgeEmoji(b), 
-                              style: const TextStyle(fontSize: 14)
-                            ),
-                          )).toList()
-                        else
-                          Text(
-                            'No badges yet',
-                            style: TextStyle(
-                              color: AppColors.accentGreen.withOpacity(0.7),
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          'RANK',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.4),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
                           ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 10,
-                          color: Colors.white.withOpacity(0.3),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Top 5%',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            IconButton(
-              onPressed: () => setState(() => _editingName = !_editingName),
-              icon: Icon(
-                _editingName ? Icons.check : Icons.edit,
-                color: Colors.white.withOpacity(0.5),
-                size: 20,
-              ),
-              style: IconButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.05),
-              ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'SCAMS BLOCKED',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.4),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          '142',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
