@@ -7,22 +7,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CheckType {
+  PHONE
+  URL
+  BANK
+  DOC
+  MANUAL
+}
+
 model User {
-  id               String              @id @default(uuid())
-  email            String              @unique
-  passwordHash     String
-  fullName         String?
-  role             String              @default("user")
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  alerts           Alert[]
-  transactions     PointsTransaction[]
-  profile          Profile?
-  reports          ScamReport[]
-  userTransactions Transaction[]
-  subscriptions    UserSubscription[]
-  redemptions      Redemption[]
-  alertSubscription AlertSubscription? @relation("UserAlertSubscription")
+  id                  String              @id @default(uuid())
+  email               String              @unique
+  passwordHash        String
+  fullName            String?
+  role                String              @default("user")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  alerts              Alert[]
+  transactions        PointsTransaction[]
+  profile             Profile?
+  reports             ScamReport[]
+  userTransactions    Transaction[]
+  subscriptions       UserSubscription[]
+  redemptions         Redemption[]
+  alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
+  transactionJournals TransactionJournal[]
 }
 
 model Profile {
@@ -168,6 +177,30 @@ model BadgeDefinition {
   trigger     String             // "reputation" | "reports" | "streak" | "purchase"
   threshold   Int?               // e.g. reputation >= 50
   createdAt   DateTime @default(now())
+}
+
+model TransactionJournal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  checkType     CheckType
+  target        String?   // the mapped URL/Phone/Num or Recipient
+  riskScore     Int      // 0-100 indicating fraud risk
+  status        String   // SAFE, SUSPICIOUS, BLOCKED, SCAMMED
+  metadata      Json?    // Stores the raw deep-dive data from APIs
+  
+  // Fields for manual transaction logging
+  amount        Float?
+  merchant      String?
+  paymentMethod String?   // "duitnow", "bank_transfer", etc.
+  platform      String?   // "Shopee", "WhatsApp", etc.
+  notes         String?
+  reportId      String?   // Linked if converted to ScamReport
+  
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model AlertSubscription {

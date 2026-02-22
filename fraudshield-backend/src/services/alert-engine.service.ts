@@ -1,4 +1,5 @@
 import { prisma } from '../config/database';
+import * as admin from 'firebase-admin';
 
 export class AlertEngineService {
     /**
@@ -92,5 +93,82 @@ export class AlertEngineService {
         });
 
         return localReports;
+    }
+
+    /**
+     * Identifies trending alerts and dispatches FCM notifications to subscribed users
+     */
+    static async dispatchTrendingAlerts() {
+        console.log('🔍 Running trending alerts analysis...');
+        const trends = await this.getTrendingAlerts(72);
+
+        // Only trigger push notifications for HIGH severity trends
+        // to avoid spamming the user
+        const actionableTrends = trends.filter(trend => trend.severity === 'high');
+
+        if (actionableTrends.length === 0) {
+            console.log('✅ No high-severity trends detected that require push notifications.');
+            return;
+        }
+
+        // Generate a map of category -> trend data for easy lookup
+        const trendMap = new Map(actionableTrends.map(t => [t.category, t]));
+
+        // Find all active subscriptions with an FCM token
+        const subscribers = await (prisma as any).alertSubscription.findMany({
+            where: {
+                isActive: true,
+                fcmToken: { not: null }
+            }
+        });
+
+        console.log(`📡 Found ${subscribers.length} active alert subscribers.`);
+        let dispatchCount = 0;
+
+        for (const sub of subscribers) {
+            // Check if user is subscribed to any of the currently trending categories
+            const userCategories = sub.categories as string[];
+
+            for (const trendingCategory of trendMap.keys()) {
+                const isMatch = userCategories.length === 0 || userCategories.some(cat =>
+                    trendingCategory.toLowerCase().includes(cat.toLowerCase())
+                );
+
+                if (isMatch) {
+                    const trend = trendMap.get(trendingCategory)!;
+
+                    try {
+                        await admin.messaging().send({
+                            token: sub.fcmToken,
+                            notification: {
+                                title: trend.title,
+                                body: trend.description,
+                            },
+                            data: {
+                                type: 'trending_alert',
+                                severity: trend.severity,
+                                category: trend.category,
+                                reportCount: trend.reportCount.toString()
+                            },
+                            android: {
+                                notification: {
+                                    channelId: 'high_importance_channel',
+                                    priority: 'high',
+                                }
+                            }
+                        });
+                        console.log(`✅ Push notification sent to User ${sub.userId} for category: ${trend.category}`);
+                        dispatchCount++;
+                        // Break after sending one alert to avoid bombarding user with multiple alerts at once
+                        break;
+                    } catch (error) {
+                        console.error(`❌ Failed to send push notification to User ${sub.userId}:`, error);
+                        // If token is invalid/unregistered, we might want to clean it up here in a production app
+                    }
+                }
+            }
+        }
+
+        console.log(`🚀 Dispatched ${dispatchCount} trending push notifications.`);
     }
 }
