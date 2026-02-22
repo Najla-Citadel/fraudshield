@@ -23,7 +23,7 @@ If these are not fixed, you risk losing data, leaking passwords, or facing app s
   - Set `CORS_ORIGIN` in `.env.prod` to prevent falling back to `'*'` and allowing unauthorized web origins.
 - [x] **S9. Payload Size Limit (5 min)**
   - Add `express.json({ limit: '1mb' })` in `app.ts` to prevent memory exhaustion from large payloads.
-- [ ] **D3. Set up automated database backups (1 hr)**
+- [x] **D3. Set up automated database backups (1 hr)**
   - Set up a daily automated backup (e.g., pg_dump script to a storage bucket) to prevent complete data loss on failure.
 
 ---
