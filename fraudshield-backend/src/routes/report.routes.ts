@@ -11,6 +11,7 @@ router.get('/search', ReportController.searchReports);
 router.get('/public', ReportController.getPublicFeed);
 
 // Protected routes
+router.get('/lookup', authenticate, ReportController.lookupReport);
 router.post('/', authenticate, ReportController.submitReport);
 router.get('/my', authenticate, ReportController.getMyReports);
 router.get('/:id', authenticate, ReportController.getReportDetails);
