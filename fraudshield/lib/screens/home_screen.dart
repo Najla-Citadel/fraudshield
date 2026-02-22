@@ -11,6 +11,7 @@ import 'phishing_protection_screen.dart';
 import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
 import 'scam_reporting_screen.dart';
+import 'scam_alerts_screen.dart';
 import 'awareness_tips_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
@@ -708,6 +709,11 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 32),
 
+              // NEW: TRENDING ALERTS CARD
+              _buildTrendingAlertsCard(context),
+
+              const SizedBox(height: 32),
+
               // 5. ALL SERVICES (Renamed from PROTECTION STATUS)
               Align(
                 alignment: Alignment.centerLeft,
@@ -876,6 +882,65 @@ class _HomeTab extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildTrendingAlertsCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.orange.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.warning_rounded, color: Colors.orange, size: 20),
+                const SizedBox(width: 8),
+                const Text(
+                  'TRENDING THREATS',
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const Spacer(),
+                Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.5), size: 14),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Stay ahead of the latest scams in your area. Check the threat intelligence dashboard now.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMonitoringPill() {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.5, end: 1.0),
