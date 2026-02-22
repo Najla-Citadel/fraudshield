@@ -62,6 +62,7 @@ model ScamReport {
   id          String         @id @default(uuid())
   type        String
   target      String?
+  targetType  String?        // e.g. "phone", "bank_account", "url"
   description String
   userId      String
   status      String         @default("pending")

@@ -413,6 +413,92 @@ export class ReportController {
             next(error);
         }
     }
+
+    static async lookupReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { type, value } = req.query;
+
+            if (!type || !value || typeof value !== 'string') {
+                return res.status(400).json({ message: 'Missing type or value query parameters' });
+            }
+
+            // Build query based on target match
+            const whereClause: any = {
+                target: { contains: value, mode: 'insensitive' },
+            };
+
+            const reports = await (prisma as any).scamReport.findMany({
+                where: whereClause,
+                include: {
+                    _count: {
+                        select: { verifications: true },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+
+            const totalCount = reports.length;
+
+            if (totalCount === 0) {
+                return res.json({
+                    found: false,
+                    riskLevel: 'unknown',
+                    communityReports: 0,
+                    verifiedReports: 0,
+                    categories: [],
+                    recommendation: 'No community reports found. Proceed with standard caution.',
+                });
+            }
+
+            // Aggregate metrics
+            let verifiedCount = 0;
+            const categorySet = new Set<string>();
+            let highestRisk = false;
+
+            for (const report of reports) {
+                if (report._count.verifications >= 2) {
+                    verifiedCount++;
+                }
+                if (report.category) {
+                    categorySet.add(report.category);
+                }
+
+                // If any report has >= 5 verifications, we consider it high risk immediately
+                if (report._count.verifications >= 5) {
+                    highestRisk = true;
+                }
+            }
+
+            const categories = Array.from(categorySet);
+            const lastReported = reports[0]?.createdAt;
+
+            // Determine Risk Level
+            let riskLevel = 'low';
+            let recommendation = '';
+
+            if (totalCount >= 3 || verifiedCount >= 1 || highestRisk) {
+                riskLevel = 'high';
+                recommendation = `This ${type} has been reported ${totalCount} times. Proceed with extreme caution.`;
+            } else if (totalCount > 0) {
+                riskLevel = 'medium';
+                recommendation = `This ${type} has ${totalCount} unverified report(s). Verify the recipient before paying.`;
+            }
+
+            res.json({
+                found: true,
+                riskLevel,
+                communityReports: totalCount,
+                verifiedReports: verifiedCount,
+                categories,
+                lastReported,
+                sources: ['community'],
+                recommendation,
+            });
+
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 function redactedValue(val: string): string {
