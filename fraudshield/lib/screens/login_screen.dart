@@ -7,8 +7,10 @@ import 'home_screen.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
-import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
+import '../services/api_service.dart';
+import 'forgot_password_screen.dart';
+import 'package:flutter/foundation.dart'; // For kDebugMode
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -174,8 +176,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               alignment: Alignment.centerRight,
                               child: TextButton(
                                 onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Forgot password flow not implemented')),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const ForgotPasswordScreen(),
+                                    ),
                                   );
                                 },
                                 child: const Text(
@@ -200,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
 
                       // 👆 Biometric Placeholder
                       IconButton(

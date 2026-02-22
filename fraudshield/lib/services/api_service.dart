@@ -178,6 +178,57 @@ class ApiService {
     }
   }
 
+  // ==== Password Reset ====
+
+  Future<Map<String, dynamic>> requestPasswordReset(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/forgot-password'),
+        headers: _headers,
+        body: jsonEncode({'email': email}),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return data;
+      } else {
+        throw Exception(data['message'] ?? 'Failed to request password reset');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService requestPasswordReset error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> resetPassword(
+      String email, String otp, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/reset-password'),
+        headers: _headers,
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return data;
+      } else {
+        throw Exception(data['message'] ?? 'Failed to reset password');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService resetPassword error: $e');
+      }
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> getTransactionDetails(String txId) async {
     final response = await http.get(Uri.parse('$baseUrl/admin/transactions/$txId'), headers: _headers);
     if (response.statusCode == 200) {
