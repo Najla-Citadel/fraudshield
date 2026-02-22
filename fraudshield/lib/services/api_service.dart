@@ -429,7 +429,14 @@ class ApiService {
   // ---------------- Safe Browsing ----------------
 
   Future<Map<String, dynamic>> checkUrl(String url) async {
-    return post('/features/check-url', {'url': url});
+    return await post('/features/check-url', {'url': url});
+  }
+
+  Future<Map<String, dynamic>> lookupPaymentRisk({
+    required String type,
+    required String value,
+  }) async {
+    return await get('/reports/lookup?type=$type&value=$value');
   }
 
   // ---------------- CRUD Templates (for other features) ----------------
