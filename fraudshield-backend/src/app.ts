@@ -39,8 +39,13 @@ const corsOptions = {
             return callback(null, true);
         }
 
+        // Mobile apps typically don't send an origin
+        if (!origin) {
+            return callback(null, true);
+        }
+
         // In production, require strict match from CORS_ORIGIN env var
-        if (allowedOrigins.length > 0 && allowedOrigins.includes(origin as string)) {
+        if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
 
