@@ -33,7 +33,7 @@ If these are not fixed, you risk losing data, leaking passwords, or facing app s
 
 The app functions without these, but lacking them will severely hurt early user retention and debugging capabilities.
 
-- [ ] **U1. "Forgot Password" Flow (3-4 hrs)**
+- [x] **U1. "Forgot Password" Flow (3-4 hrs)**
   - Implement an email-based password reset. Without it, early adopters who forget their password are permanently locked out.
 - [ ] **M6. Crash Reporting (1 hr)**
   - Integrate Firebase Crashlytics or Sentry. Real users will experience edge-case crashes that you won't catch in emulators.
