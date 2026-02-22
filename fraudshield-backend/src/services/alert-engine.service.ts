@@ -95,6 +95,9 @@ export class AlertEngineService {
         return localReports;
     }
 
+    // In-memory cache to prevent spamming the exact same trend alert repeatedly
+    private static dispatchedAlertsCache = new Set<string>();
+
     /**
      * Identifies trending alerts and dispatches FCM notifications to subscribed users
      */
@@ -108,6 +111,7 @@ export class AlertEngineService {
 
         if (actionableTrends.length === 0) {
             console.log('✅ No high-severity trends detected that require push notifications.');
+            this.dispatchedAlertsCache.clear(); // Clear cache if no trends exist
             return;
         }
 
@@ -137,6 +141,12 @@ export class AlertEngineService {
                 if (isMatch) {
                     const trend = trendMap.get(trendingCategory)!;
 
+                    // Create a unique cache key for this user and this specific trend scenario
+                    const cacheKey = `${sub.userId}-${trend.category}-${trend.reportCount}`;
+                    if (this.dispatchedAlertsCache.has(cacheKey)) {
+                        continue; // Skip if we already notified this user about this exact trend volume
+                    }
+
                     try {
                         await admin.messaging().send({
                             token: sub.fcmToken,
@@ -158,6 +168,7 @@ export class AlertEngineService {
                             }
                         });
                         console.log(`✅ Push notification sent to User ${sub.userId} for category: ${trend.category}`);
+                        this.dispatchedAlertsCache.add(cacheKey);
                         dispatchCount++;
                         // Break after sending one alert to avoid bombarding user with multiple alerts at once
                         break;
