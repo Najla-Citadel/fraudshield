@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { BadgeService } from '../services/badge.service';
+
 
 export class ReportController {
     static async submitReport(req: Request, res: Response, next: NextFunction) {
@@ -36,6 +38,7 @@ export class ReportController {
             });
 
             // Award points for submitting a report
+            let newBadges: string[] = [];
             if (isPublic) {
                 await (prisma as any).profile.update({
                     where: { userId },
@@ -51,12 +54,16 @@ export class ReportController {
                         description: `Submitted public scam report`,
                     },
                 });
+
+                // Evaluate badges
+                newBadges = await BadgeService.evaluateBadges(userId);
             }
 
-            res.status(201).json(report);
+            res.status(201).json({ ...report, newBadges });
         } catch (error) {
             next(error);
         }
+
     }
 
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
@@ -116,7 +123,7 @@ export class ReportController {
 
             const response = {
                 ...report,
-                target: (isOwner || !report.isPublic) ? report.target : redactedValue(report.target || ''),
+                target: report.target,
                 reporterTrust: {
                     score: profile?.reputation ?? 0,
                     badges: Array.isArray(badges) ? badges : [],
@@ -175,7 +182,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target ? redactedValue(report.target) : null,
+                    target: report.target,
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -315,7 +322,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target ? redactedValue(report.target) : null,
+                    target: report.target,
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -396,40 +403,131 @@ export class ReportController {
                     },
                 });
 
-                // Check if they earned a new badge (Simple threshold logic)
-                const reporterProfile = await (prisma as any).profile.findUnique({
-                    where: { userId: report.userId },
+                // Evaluate badges for the reporter
+                await BadgeService.evaluateBadges(report.userId);
+            }
+
+
+            res.json(verification);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async lookupReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { type, value } = req.query;
+
+            if (!type || !value || typeof value !== 'string') {
+                return res.status(400).json({ message: 'Missing type or value query parameters' });
+            }
+
+            // Build query based on target match
+            const whereClause: any = {
+                target: { contains: value, mode: 'insensitive' },
+            };
+
+            const reports = await (prisma as any).scamReport.findMany({
+                where: whereClause,
+                include: {
+                    _count: {
+                        select: { verifications: true },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+
+            const totalCount = reports.length;
+
+            if (totalCount === 0) {
+                return res.json({
+                    found: false,
+                    riskLevel: 'unknown',
+                    communityReports: 0,
+                    verifiedReports: 0,
+                    categories: [],
+                    recommendation: 'No community reports found. Proceed with standard caution.',
                 });
+            }
 
-                if (reporterProfile) {
-                    // Safely handle badges
-                    let currentBadges: string[] = [];
-                    if (Array.isArray(reporterProfile.badges)) {
-                        currentBadges = reporterProfile.badges as string[];
-                    } else if (typeof reporterProfile.badges === 'string') {
-                        try {
-                            const parsed = JSON.parse(reporterProfile.badges);
-                            if (Array.isArray(parsed)) {
-                                currentBadges = parsed;
-                            }
-                        } catch (e) {
-                            console.error('Error parsing badges from DB:', e);
-                        }
-                    }
+            // Aggregate metrics
+            let verifiedCount = 0;
+            const categorySet = new Set<string>();
+            let highestRisk = false;
 
-                    if (reporterProfile.reputation >= 50 && !currentBadges.includes('Elite Sentinel')) {
-                        currentBadges.push('Elite Sentinel');
-                        await (prisma as any).profile.update({
-                            where: { userId: report.userId },
-                            data: {
-                                badges: currentBadges,
-                            },
-                        });
-                    }
+            for (const report of reports) {
+                if (report._count.verifications >= 2) {
+                    verifiedCount++;
+                }
+                if (report.category) {
+                    categorySet.add(report.category);
+                }
+
+                // If any report has >= 5 verifications, we consider it high risk immediately
+                if (report._count.verifications >= 5) {
+                    highestRisk = true;
                 }
             }
 
-            res.json(verification);
+            const categories = Array.from(categorySet);
+            const lastReported = reports[0]?.createdAt;
+
+            // Determine Risk Level
+            let riskLevel = 'low';
+            let recommendation = '';
+
+            if (totalCount >= 3 || verifiedCount >= 1 || highestRisk) {
+                riskLevel = 'high';
+                recommendation = `This ${type} has been reported ${totalCount} times. Proceed with extreme caution.`;
+            } else if (totalCount > 0) {
+                riskLevel = 'medium';
+                recommendation = `This ${type} has ${totalCount} unverified report(s). Verify the recipient before paying.`;
+            }
+
+            res.json({
+                found: true,
+                riskLevel,
+                communityReports: totalCount,
+                verifiedReports: verifiedCount,
+                categories,
+                lastReported,
+                sources: ['community'],
+                recommendation,
+            });
+
+            // Log to TransactionJournal if user is authenticated
+            const userId = (req.user as any)?.id;
+            if (userId && (type === 'phone' || type === 'bank' || type === 'doc')) {
+                const dbCheckType = type === 'phone' ? 'PHONE' : type === 'bank' ? 'BANK' : 'DOC';
+                let score = 0;
+                let status = 'SAFE';
+
+                if (riskLevel === 'high') {
+                    score = 90;
+                    status = 'BLOCKED';
+                } else if (riskLevel === 'medium') {
+                    score = 60;
+                    status = 'SUSPICIOUS';
+                }
+
+                await prisma.transactionJournal.create({
+                    data: {
+                        userId,
+                        checkType: dbCheckType,
+                        target: value,
+                        riskScore: score,
+                        status: status,
+                        metadata: {
+                            found: true,
+                            riskLevel,
+                            communityReports: totalCount,
+                            verifiedReports: verifiedCount,
+                            categories,
+                        }
+                    }
+                });
+            }
+
         } catch (error) {
             next(error);
         }

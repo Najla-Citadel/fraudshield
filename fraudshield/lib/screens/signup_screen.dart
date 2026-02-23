@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'terms_of_service_screen.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
@@ -23,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
 
   bool _loading = false;
+  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -49,6 +53,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Passwords do not match.")),
+      );
+      return;
+    }
+
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("You must agree to the Terms and Privacy Policy to continue.")),
       );
       return;
     }
@@ -195,6 +206,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               label: 'Confirm Password',
                               prefixIcon: Icons.lock_reset_outlined,
                               obscureText: true,
+                            ),
+                            const SizedBox(height: 16),
+
+                            // 📝 Terms & Conditions Checkbox
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: Checkbox(
+                                    value: _agreedToTerms,
+                                    onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
+                                    activeColor: AppColors.primaryBlue,
+                                    side: const BorderSide(color: Colors.white54, width: 2),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.4),
+                                      children: [
+                                        const TextSpan(text: 'I agree to the '),
+                                        TextSpan(
+                                          text: 'Terms of Service',
+                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
+                                        ),
+                                        const TextSpan(text: ' and '),
+                                        TextSpan(
+                                          text: 'Privacy Policy',
+                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                                        ),
+                                        const TextSpan(text: ', and consent to data collection as per PDPA 2010.'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
 
                             const SizedBox(height: 24),

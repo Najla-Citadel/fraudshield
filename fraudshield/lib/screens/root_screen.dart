@@ -25,38 +25,43 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, _) {
-        // Wait for AuthProvider to finish its initial _init()
-        if (auth.loading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    final auth = Provider.of<AuthProvider>(context);
 
-        // Once loaded, decide where to go
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final prefs = await SharedPreferences.getInstance();
-          final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
+    // Initial Loading State
+    if (auth.loading) {
+      return const Scaffold(
+        backgroundColor: AppColors.deepNavy,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-          if (!onboardingDone) {
-            _navigateTo('/onboarding');
-          } else if (auth.isAuthenticated) {
-            _navigateTo('/home');
-          } else {
-            _navigateTo('/splash');
-          }
-        });
+    // Navigation Check
+    // We use a Future.microtask to avoid calling setState (navigator push) during build
+    Future.microtask(() async {
+      if (!mounted) return;
+      
+      final prefs = await SharedPreferences.getInstance();
+      final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
 
-        return const Scaffold(
-          backgroundColor: AppColors.deepNavy,
-          body: Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
-          ),
-        );
-      },
+      if (!mounted) return;
+
+      if (!onboardingDone) {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else if (auth.isAuthenticated) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/splash'); // Or login
+      }
+    });
+
+    // While deciding/navigating, show spinner
+    return const Scaffold(
+      backgroundColor: AppColors.deepNavy,
+      body: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ),
     );
   }
 }

@@ -3,6 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// import 'package:flutter/foundation.dart'; // Added for kDebugMode if preferred, but debugPrint is enough.
+import 'package:flutter/foundation.dart';
+
 class ApiService {
   ApiService._privateConstructor();
   static final ApiService instance = ApiService._privateConstructor();
@@ -18,7 +21,9 @@ class ApiService {
     // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
     baseUrl = rawBaseUrl;
 
-    print('ApiService: Initialized with baseUrl: $baseUrl');
+    if (kDebugMode) {
+      debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
+    }
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
   }
@@ -49,8 +54,9 @@ class ApiService {
     String? fullName,
   }) async {
     final url = Uri.parse('$baseUrl/auth/signup');
-    print('ApiService: POST $url');
-    print('ApiService: Body: ${jsonEncode({'email': email, 'password': '***', if (fullName != null) 'fullName': fullName})}'); // Sanitize password
+    if (kDebugMode) {
+      debugPrint('ApiService: POST $url');
+    }
 
     try {
       final response = await http
@@ -65,8 +71,9 @@ class ApiService {
           )
           .timeout(const Duration(seconds: 10)); // Force timeout after 10s
       
-      print('ApiService: Response Status: ${response.statusCode}');
-      print('ApiService: Response Body: ${response.body}');
+      if (kDebugMode) {
+        debugPrint('ApiService: Response Status: ${response.statusCode}');
+      }
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 201) {
@@ -102,8 +109,10 @@ class ApiService {
       } else {
         throw Exception(data['message'] ?? 'Login failed');
       }
-    } catch (e, st) {
-      print('ApiService signIn error: $e\n$st');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService signIn error: $e');
+      }
       rethrow;
     }
   }
@@ -125,8 +134,10 @@ class ApiService {
       } else {
         throw Exception(data['message'] ?? 'Failed to fetch profile');
       }
-    } catch (e, st) {
-      print('ApiService getProfile error: $e\n$st');
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService getProfile error: $e');
+      }
       rethrow;
     }
   }
@@ -145,10 +156,15 @@ class ApiService {
     });
   }
 
-  Future<Map<String, dynamic>> changePassword(String newPassword) async {
+  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
     return post('/auth/change-password', {
+      'currentPassword': currentPassword,
       'newPassword': newPassword,
     });
+  }
+
+  Future<void> deleteAccount() async {
+    await delete('/users/me');
   }
 
   // ---------------- Admin ----------------
@@ -159,6 +175,57 @@ class ApiService {
       return List<Map<String, dynamic>>.from(jsonDecode(response.body));
     } else {
       throw Exception('Failed to get alerts');
+    }
+  }
+
+  // ==== Password Reset ====
+
+  Future<Map<String, dynamic>> requestPasswordReset(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/forgot-password'),
+        headers: _headers,
+        body: jsonEncode({'email': email}),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return data;
+      } else {
+        throw Exception(data['message'] ?? 'Failed to request password reset');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService requestPasswordReset error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> resetPassword(
+      String email, String otp, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/reset-password'),
+        headers: _headers,
+        body: jsonEncode({
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+        }),
+      );
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return data;
+      } else {
+        throw Exception(data['message'] ?? 'Failed to reset password');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService resetPassword error: $e');
+      }
+      rethrow;
     }
   }
 
@@ -260,6 +327,60 @@ class ApiService {
     });
   }
 
+  // ---------------- Account & Ledger ----------------
+
+  Future<Map<String, dynamic>> getTransactionJournal({
+    String? type,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    String query = '?limit=$limit&offset=$offset';
+    if (type != null) {
+      query += '&type=$type';
+    }
+    
+    final response = await get('/transactions$query');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getJournalDetails(String journalId) async {
+    final response = await get('/transactions/$journalId');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> logTransaction({
+    required double amount,
+    required String merchant,
+    String? target,
+    required String paymentMethod,
+    required String platform,
+    String? notes,
+    String checkType = 'MANUAL',
+  }) async {
+    final response = await post('/transactions/log', {
+      'amount': amount,
+      'merchant': merchant,
+      'target': target,
+      'paymentMethod': paymentMethod,
+      'platform': platform,
+      'notes': notes,
+      'checkType': checkType,
+    });
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> convertToScamReport({
+    required String journalId,
+    required String description,
+    required String category,
+  }) async {
+    final response = await post('/transactions/$journalId/report', {
+      'description': description,
+      'category': category,
+    });
+    return response as Map<String, dynamic>;
+  }
+
   // ---------------- Subscriptions ----------------
 
   Future<List<dynamic>> getPlans() async {
@@ -349,8 +470,61 @@ class ApiService {
     return response as List;
   }
 
+  Future<Map<String, dynamic>> getMyBadges() async {
+    final response = await get('/features/badges');
+    return response as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> claimDailyReward() async {
+
     return post('/features/rewards/daily', {});
+  }
+
+  // ---------------- Safe Browsing ----------------
+
+  Future<Map<String, dynamic>> checkUrl(String url) async {
+    return await post('/features/check-url', {'url': url});
+  }
+
+  Future<Map<String, dynamic>> lookupPaymentRisk({
+    required String type,
+    required String value,
+  }) async {
+    return await get('/reports/lookup?type=$type&value=$value');
+  }
+
+  // ---------------- Alerts ----------------
+
+  Future<Map<String, dynamic>> getTrendingAlerts({int hours = 72, double? lat, double? lng}) async {
+    String query = '?hours=$hours';
+    if (lat != null && lng != null) {
+      query += '&lat=$lat&lng=$lng';
+    }
+    final response = await get('/alerts/trending$query');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getAlertPreferences() async {
+    final response = await get('/alerts/preferences');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> subscribeToAlerts({
+    List<String>? categories,
+    double? latitude,
+    double? longitude,
+    int? radiusKm,
+    String? fcmToken,
+    bool? isActive,
+  }) async {
+    return await post('/alerts/subscribe', {
+      if (categories != null) 'categories': categories,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (radiusKm != null) 'radiusKm': radiusKm,
+      if (fcmToken != null) 'fcmToken': fcmToken,
+      if (isActive != null) 'isActive': isActive,
+    });
   }
 
   // ---------------- CRUD Templates (for other features) ----------------
@@ -364,7 +538,9 @@ class ApiService {
         throw Exception('GET $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService GET error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService GET error: $e');
+      }
       rethrow;
     }
   }
@@ -382,7 +558,9 @@ class ApiService {
         throw Exception('POST $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService POST error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService POST error: $e');
+      }
       rethrow;
     }
   }
@@ -400,7 +578,28 @@ class ApiService {
         throw Exception('PATCH $path failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService PATCH error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService PATCH error: $e');
+      }
+      rethrow;
+    }
+  }
+
+  Future<dynamic> delete(String path) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl$path'),
+        headers: _headers,
+      );
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return response.body.isNotEmpty ? jsonDecode(response.body) : null;
+      } else {
+        throw Exception('DELETE $path failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService DELETE error: $e');
+      }
       rethrow;
     }
   }
@@ -422,7 +621,9 @@ class ApiService {
         throw Exception('File upload failed: ${response.statusCode}');
       }
     } catch (e) {
-      print('ApiService uploadFile error: $e');
+      if (kDebugMode) {
+        debugPrint('ApiService uploadFile error: $e');
+      }
       rethrow;
     }
   }

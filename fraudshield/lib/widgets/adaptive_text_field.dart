@@ -9,6 +9,9 @@ class AdaptiveTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? placeholder;
   final int maxLines;
+  final bool? filled;
+  final Color? fillColor;
+  final Color? textColor;
 
   const AdaptiveTextField({
     super.key,
@@ -19,6 +22,9 @@ class AdaptiveTextField extends StatelessWidget {
     this.keyboardType,
     this.placeholder,
     this.maxLines = 1,
+    this.filled,
+    this.fillColor,
+    this.textColor,
   });
 
   @override
@@ -55,13 +61,13 @@ class AdaptiveTextField extends StatelessWidget {
                 ) 
               : null,
             decoration: BoxDecoration(
-              color: isDark 
+              color: fillColor ?? (isDark 
                 ? CupertinoColors.systemGrey6.darkColor 
-                : CupertinoColors.systemGrey6,
+                : CupertinoColors.systemGrey6),
               borderRadius: BorderRadius.circular(12),
             ),
             style: TextStyle(
-              color: isDark ? CupertinoColors.white : CupertinoColors.black,
+              color: textColor ?? (isDark ? CupertinoColors.white : CupertinoColors.black),
             ),
           ),
         ],
@@ -72,12 +78,13 @@ class AdaptiveTextField extends StatelessWidget {
         obscureText: obscureText,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        style: TextStyle(color: textColor ?? (isDark ? Colors.white : Colors.black)),
         decoration: InputDecoration(
           labelText: label,
           hintText: placeholder,
           prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-          filled: true,
-          fillColor: isDark ? Colors.grey[900] : Colors.white,
+          filled: filled ?? true,
+          fillColor: fillColor ?? (isDark ? Colors.grey[900] : Colors.white),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none, // Modern "filled" look

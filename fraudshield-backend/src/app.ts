@@ -16,9 +16,12 @@ import { prisma } from './config/database';
 import authRoutes from './routes/auth.routes';
 import reportRoutes from './routes/report.routes';
 import featureRoutes from './routes/feature.routes';
+// import rewardsRoutes from './routes/rewards.routes'; // File missing
 import adminRoutes from './routes/admin.routes';
 import uploadRoutes from './routes/upload.routes';
-
+import userRoutes from './routes/user.routes';
+import alertRoutes from './routes/alert.routes';
+import transactionRoutes from './routes/transaction.routes';
 const app: Application = express();
 
 // Security middleware
@@ -29,13 +32,32 @@ app.use(passport.initialize());
 
 // CORS configuration
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN?.split(',') || '*',
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [];
+
+        // In development, allow no origin (like mobile apps/Postman) or if it's in the list
+        if (process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+
+        // Mobile apps typically don't send an origin
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        // In production, require strict match from CORS_ORIGIN env var
+        if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
 };
 app.use(cors(corsOptions));
 
-// Body parsing middleware
-app.use(express.json());
+// Body parsing middleware with size limit to prevent memory exhaustion
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Compression middleware
@@ -68,8 +90,12 @@ const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);
+// app.use(`${apiPrefix}/rewards`, rewardsRoutes); // Commented out as file is missing
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);
+app.use(`${apiPrefix}/users`, userRoutes); // Added user routes
+app.use(`${apiPrefix}/alerts`, alertRoutes);
+app.use(`${apiPrefix}/transactions`, transactionRoutes);
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
@@ -105,7 +131,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error(`[${new Date().toISOString()}] Error ${req.method} ${req.path}:`, {
         message: err.message,
         stack: err.stack,
-        body: req.body, // Be careful with sensitive data in real production apps
+        // body: req.body, REDACTED: Prevent logging sensitive data like passwords
         params: req.params,
         query: req.query
     });
