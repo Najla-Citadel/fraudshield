@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/adaptive_scaffold.dart';
+import '../widgets/error_state.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -99,23 +100,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     }
 
     if (_error != null || _transaction == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(LucideIcons.alertCircle, color: Colors.redAccent, size: 48),
-            const SizedBox(height: 16),
-            const Text(
-              'Failed to load details',
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-               _error ?? 'Transaction not found',
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
+      return ErrorState(
+        onRetry: _fetchDetails,
+        message: _error ?? 'Transaction not found',
       );
     }
 

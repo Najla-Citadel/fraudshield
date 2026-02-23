@@ -3,6 +3,7 @@ import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'alert_preferences_screen.dart';
+import '../widgets/skeleton_card.dart';
 
 class ScamAlertsScreen extends StatefulWidget {
   const ScamAlertsScreen({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class ScamAlertsScreen extends StatefulWidget {
 
 class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
   bool _isLoading = true;
+  bool _alertsDisabled = false;
   List<dynamic> _trending = [];
   List<dynamic> _nearYou = [];
 
@@ -34,6 +36,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         setState(() {
           _trending = data['trending'] ?? [];
           _nearYou = data['nearYou'] ?? [];
+          _alertsDisabled = data['alertsDisabled'] ?? false;
           _isLoading = false;
         });
       }
@@ -73,11 +76,17 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryBlue))
-          : RefreshIndicator(
-              onRefresh: _fetchAlerts,
-              color: AppColors.primaryBlue,
-              backgroundColor: const Color(0xFF1E293B),
+          ? ListView.builder(
+              padding: const EdgeInsets.all(24),
+              itemCount: 4,
+              itemBuilder: (context, index) => const SkeletonCard(height: 160, margin: EdgeInsets.only(bottom: 16)),
+            )
+          : _alertsDisabled
+              ? _buildDisabledPlaceholder()
+              : RefreshIndicator(
+                  onRefresh: _fetchAlerts,
+                  color: AppColors.primaryBlue,
+                  backgroundColor: const Color(0xFF1E293B),
               child: ListView(
                 padding: const EdgeInsets.all(24),
                 children: [
@@ -118,6 +127,59 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             ),
     );
   }
+
+  Widget _buildDisabledPlaceholder() {
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.03),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.notifications_off_rounded, size: 64, color: Colors.white.withOpacity(0.2)),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Proactive Alerts Disabled',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Enable proactive alerts to see real-time trends and nearby threats in your area.',
+            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 16, height: 1.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 48),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
+                );
+                if (result == true) _fetchAlerts();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Turn on Proactive Alerts', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildNearYouCard(dynamic alert) {
     return Container(

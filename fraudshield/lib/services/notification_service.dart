@@ -13,6 +13,9 @@ class NotificationService extends ChangeNotifier {
   final List<Map<String, dynamic>> _alerts = [];
 
   List<Map<String, dynamic>> get alerts => List.unmodifiable(_alerts);
+  
+  // Callback to handle navigation when a notification is tapped
+  Function(String route, dynamic arguments)? onNavigate;
 
   Future<void> initialize(String userId) async {
     _setupFirebaseMessaging();
@@ -87,14 +90,42 @@ class NotificationService extends ChangeNotifier {
 
         if (message.notification != null) {
           log('Message also contained a notification: ${message.notification}');
-          _alerts.insert(0, {
+          final alert = {
             'title': message.notification!.title ?? 'Alert',
             'message': message.notification!.body ?? '',
             'severity': message.data['severity'] ?? 'high',
-          });
+            'type': message.data['type'],
+            'reportId': message.data['reportId'],
+          };
+          _alerts.insert(0, alert);
           notifyListeners();
         }
       });
+
+      // Handle notification taps when app is in background
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        log('A new onMessageOpenedApp event was published!');
+        _handleNotificationClick(message);
+      });
+
+      // Handle notification taps when app is terminated
+      messaging.getInitialMessage().then((RemoteMessage? message) {
+        if (message != null) {
+          log('App opened from terminated state via notification');
+          _handleNotificationClick(message);
+        }
+      });
+    }
+  }
+
+  void _handleNotificationClick(RemoteMessage message) {
+    final type = message.data['type'];
+    final reportId = message.data['reportId'];
+
+    if (type == 'local_alert' && reportId != null) {
+      onNavigate?.call('/report-details', {'id': reportId});
+    } else if (type == 'trending_alert') {
+      onNavigate?.call('/scam-alerts', null);
     }
   }
 

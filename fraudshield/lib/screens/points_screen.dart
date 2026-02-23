@@ -6,8 +6,9 @@ import 'badges_screen.dart';
 import 'points_details_screen.dart';
 import '../models/badge_model.dart';
 import 'package:fraudshield/constants/colors.dart';
-
 import '../widgets/glass_card.dart';
+import '../widgets/skeleton_card.dart';
+import '../widgets/error_state.dart';
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
@@ -19,6 +20,7 @@ class PointsScreen extends StatefulWidget {
 class PointsScreenState extends State<PointsScreen> {
   final ApiService _api = ApiService.instance;
   bool _loading = true;
+  bool _hasError = false;
   int _balance = 0;
   String _selectedCategory = 'All Rewards';
 
@@ -29,8 +31,12 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Future<void> refreshData() async {
+    setState(() {
+      _loading = true;
+      _hasError = false;
+    });
     await _loadPoints();
-    if (mounted) setState(() {});
+    if (mounted) setState(() => _loading = false);
   }
 
   Future<void> _init() async {
@@ -45,6 +51,7 @@ class PointsScreenState extends State<PointsScreen> {
       _balance = res['totalPoints'] ?? 0;
     } catch (e) {
       log('Error loading points: $e');
+      if (mounted) setState(() => _hasError = true);
     }
   }
 
@@ -78,67 +85,88 @@ class PointsScreenState extends State<PointsScreen> {
           ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Balance Card
-                  _buildBalanceCard(),
-                  const SizedBox(height: 24),
+      body: _buildBody(),
+    );
+  }
 
-                  // 2. Badges Strip
-                  _buildBadgesStrip(),
-                  const SizedBox(height: 24),
+  Widget _buildBody() {
+    if (_hasError) {
+      return ErrorState(onRetry: refreshData);
+    }
 
-                  // 3. Category Selector
-                  _buildCategorySelector(),
-                  const SizedBox(height: 24),
+    if (_loading) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            const SkeletonCard(height: 180, margin: EdgeInsets.zero),
+            const SizedBox(height: 24),
+            const SkeletonCard(height: 100, margin: EdgeInsets.zero),
+            const SizedBox(height: 24),
+            const SkeletonCard(height: 250, margin: EdgeInsets.zero),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Balance Card
+          _buildBalanceCard(),
+          const SizedBox(height: 24),
+
+          // 2. Badges Strip
+          _buildBadgesStrip(),
+          const SizedBox(height: 24),
+
+          // 3. Category Selector
+          _buildCategorySelector(),
+          const SizedBox(height: 24),
 
 
-                  // 3. Sections
-                  _buildSectionHeader('Security Upgrades'),
-                  const SizedBox(height: 12),
-                  _buildFeaturedReward(),
-                  
-                  const SizedBox(height: 32),
-                  
-                  _buildSectionHeader('Digital Vouchers'),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildVoucherCard(
-                          icon: Icons.local_taxi,
-                          amount: 'RM10',
-                          title: 'Grab Voucher',
-                          cost: 1000,
-                          desc: 'RM10 off your next ride or food delivery.',
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildVoucherCard(
-                          icon: Icons.local_cafe,
-                          amount: 'RM15',
-                          title: 'Starbucks Credit',
-                          cost: 850,
-                          desc: 'A fresh brew on us. Enjoy a drink.',
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  _buildDonationCard(),
-                  
-                  const SizedBox(height: 100), // Bottom padding for FAB
-                ],
+          // 3. Sections
+          _buildSectionHeader('Security Upgrades'),
+          const SizedBox(height: 12),
+          _buildFeaturedReward(),
+          
+          const SizedBox(height: 32),
+          
+          _buildSectionHeader('Digital Vouchers'),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildVoucherCard(
+                  icon: Icons.local_taxi,
+                  amount: 'RM10',
+                  title: 'Grab Voucher',
+                  cost: 1000,
+                  desc: 'RM10 off your next ride or food delivery.',
+                ),
               ),
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildVoucherCard(
+                  icon: Icons.local_cafe,
+                  amount: 'RM15',
+                  title: 'Starbucks Credit',
+                  cost: 850,
+                  desc: 'A fresh brew on us. Enjoy a drink.',
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 32),
+
+          _buildDonationCard(),
+          
+          const SizedBox(height: 100), // Bottom padding for FAB
+        ],
+      ),
     );
   }
 

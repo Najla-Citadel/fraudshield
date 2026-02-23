@@ -36,7 +36,13 @@ class FraudShieldApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => NotificationService.instance),
+        ChangeNotifierProvider(create: (context) {
+          final service = NotificationService.instance;
+          service.onNavigate = (route, args) {
+            AppRouter.navigatorKey.currentState?.pushNamed(route, arguments: args);
+          };
+          return service;
+        }),
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, theme, __) {
@@ -50,6 +56,7 @@ class FraudShieldApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
 
             // ✅ ROUTING
+            navigatorKey: AppRouter.navigatorKey,
             onGenerateRoute: AppRouter.generate,
             home: const RootScreen(),
           );

@@ -88,7 +88,7 @@
 ### Mobile App
 
 - [x] **M1. Voice Detection → "Coming Soon"** ✅
-- [ ] **M2. Add proper loading / error states** ⏱️ 2 hrs
+- [x] **M2. Add proper loading / error states** ✅
 - [ ] **M3. Add certificate pinning** ⏱️ 1 hr
 - [ ] **M4. Secure token storage** ⏱️ 1 hr
 - [ ] **M5. Add app versioning check** ⏱️ 1 hr

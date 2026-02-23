@@ -14,6 +14,8 @@ import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
 import 'badges_screen.dart';
 import 'status_details_screen.dart';
+import '../widgets/skeleton_card.dart';
+import '../widgets/error_state.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   // ================= STATE =================
   bool _loading = true;
+  bool _hasError = false;
   bool _savingName = false;
   bool _editingName = false;
 
@@ -64,7 +67,10 @@ class _AccountScreenState extends State<AccountScreen> {
     _avatarSeed = updatedProfile?.profile?.avatar ?? 'Felix';
     _email = authProvider.user?.email ?? '';
 
-    setState(() => _loading = false);
+    setState(() {
+      _loading = false;
+      _hasError = false;
+    });
   }
 
   Future<void> _saveName() async {
@@ -160,9 +166,34 @@ class _AccountScreenState extends State<AccountScreen> {
   // ================= UI =================
   @override
   Widget build(BuildContext context) {
+    if (_hasError) {
+      return Scaffold(
+        backgroundColor: AppColors.deepNavy,
+        body: ErrorState(onRetry: () {
+          setState(() {
+            _loading = true;
+            _hasError = false;
+          });
+          _loadProfile();
+        }),
+      );
+    }
+
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: AppColors.deepNavy,
+        body: Padding(
+          padding: const EdgeInsets.only(top: 100, left: 24, right: 24),
+          child: Column(
+            children: [
+              const SkeletonCard(height: 250, margin: EdgeInsets.zero),
+              const SizedBox(height: 24),
+              const SkeletonCard(height: 150, margin: EdgeInsets.zero),
+              const SizedBox(height: 24),
+              const SkeletonCard(height: 150, margin: EdgeInsets.zero),
+            ],
+          ),
+        ),
       );
     }
 
