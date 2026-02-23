@@ -355,14 +355,16 @@ class ApiService {
     required String paymentMethod,
     required String platform,
     String? notes,
+    String checkType = 'MANUAL',
   }) async {
-    final response = await post('/transactions', {
+    final response = await post('/transactions/log', {
       'amount': amount,
       'merchant': merchant,
       'target': target,
       'paymentMethod': paymentMethod,
       'platform': platform,
       'notes': notes,
+      'checkType': checkType,
     });
     return response as Map<String, dynamic>;
   }

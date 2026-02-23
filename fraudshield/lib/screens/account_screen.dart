@@ -303,7 +303,7 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             const SizedBox(height: 24),
             // Version text with manual white color for safety
-            Text('Version 1.0.0',
+            Text('Version 1.1.0',
                 style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.white.withOpacity(0.5))),
           ],
         ),

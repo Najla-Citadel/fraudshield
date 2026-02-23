@@ -123,9 +123,13 @@ class ActivityScreen extends StatelessWidget {
     final Map<String, List<Map<String, dynamic>>> grouped = {};
 
     for (var activity in activities) {
-      final date = DateTime.parse(activity['timestamp'].toString());
-      final now = DateTime.now();
-      String key;
+      final timestampStr = activity['timestamp']?.toString();
+      if (timestampStr == null || timestampStr.isEmpty) continue; // Skip invalid dates
+      
+      try {
+        final date = DateTime.parse(timestampStr);
+        final now = DateTime.now();
+        String key;
 
       if (date.year == now.year && date.month == now.month && date.day == now.day) {
         key = 'Today';
@@ -139,6 +143,9 @@ class ActivityScreen extends StatelessWidget {
         grouped[key] = [];
       }
       grouped[key]!.add(activity);
+      } catch (e) {
+        debugPrint('Error parsing date: $e');
+      }
     }
     return grouped;
   }
@@ -240,8 +247,13 @@ class _ActivityCard extends StatelessWidget {
     );
   }
 
-  String _formatTime(String timestamp) {
-    final date = DateTime.parse(timestamp);
-    return DateFormat('HH:mm').format(date);
+  String _formatTime(String? timestamp) {
+    if (timestamp == null || timestamp.isEmpty) return '';
+    try {
+      final date = DateTime.parse(timestamp);
+      return DateFormat('HH:mm').format(date);
+    } catch (e) {
+      return '';
+    }
   }
 }
