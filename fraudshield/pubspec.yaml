@@ -1,7 +1,7 @@
 name: fraudshield
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.0+3
+version: 1.1.0+8
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -22,11 +22,15 @@ dependencies:
   html: 0.15.6
   url_launcher: ^6.3.2
   google_maps_flutter: ^2.10.0
+  geolocator: ^11.0.0
+  geocoding: ^3.0.0
+  permission_handler: ^11.3.0
 
   # Flutter core
   cupertino_icons: ^1.0.8
   google_fonts: ^6.1.0
   flutter_staggered_animations: ^1.1.1
+  lucide_icons: ^0.257.0
 
   # Environment variables
   flutter_dotenv: ^6.0.0
@@ -39,6 +43,8 @@ dependencies:
   socket_io_client: ^3.1.2
   flutter_launcher_icons: ^0.14.4
   share_plus: ^7.2.1
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.1.1
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +63,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/hi_bot.png
     - assets/images/logo.png
     - assets/images/tip_image.png
@@ -84,4 +91,3 @@ flutter:
     - assets/animations/pet_owl.json
     - assets/animations/pet_fish.json
     - assets/animations/greeting_bot.json
-    - .env

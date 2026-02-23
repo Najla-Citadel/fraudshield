@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
-import '../constants/app_theme.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/community_map_card.dart';
 import '../screens/scam_reporting_screen.dart';
@@ -38,24 +37,35 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> with SingleTi
 
   Future<void> _fetchFeed() async {
     if (mounted) setState(() => _isLoading = true);
-    
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 100));
 
     try {
-      // Try API first
-      // final reports = await ApiService.instance.getPublicFeed();
-      throw Exception('Force Mock Data'); // Temporarily forcing mock data for UI testing
-    } catch (e) {
-      debugPrint('Error fetching feed, using mock data: $e');
+      // Fetch live data from the backend
+      debugPrint('[CommunityFeed] Fetching public feed...');
+      final reports = await ApiService.instance.getPublicFeed();
+      debugPrint('[CommunityFeed] Got ${reports.length} reports from API');
+      if (reports.isNotEmpty) {
+        debugPrint('[CommunityFeed] First report: ${reports[0]}');
+      }
+      if (mounted) {
+        setState(() {
+          _reports = reports;
+          _isLoading = false;
+        });
+      }
+    } catch (e, stackTrace) {
+      // Backend unavailable — fall back to demo data so the UI is never blank
+      debugPrint('[CommunityFeed] Error fetching feed: $e');
+      debugPrint('[CommunityFeed] Stack trace: $stackTrace');
       if (mounted) {
         setState(() {
           _reports = [
             {
               'id': '1',
               'category': 'E-Wallet Phishing',
+              'type': 'Phone',
               'description': 'Received an SMS claiming my TNG eWallet account was suspended. Link asked for PIN.',
               'target': '+6012-345 6789',
+              'status': 'VERIFIED',
               'createdAt': DateTime.now().subtract(const Duration(minutes: 2)).toIso8601String(),
               'user': 'User42xx',
               'location': 'Petaling Jaya, Selangor',
@@ -65,8 +75,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> with SingleTi
             {
               'id': '2',
               'category': 'Investment Scam',
+              'type': 'Message',
               'description': 'Telegram group promising 200% returns in 3 hours. Admin asked for deposit to "dummy" account.',
               'target': 'https://invest-fast.xy',
+              'status': 'PENDING',
               'createdAt': DateTime.now().subtract(const Duration(minutes: 14)).toIso8601String(),
               'user': 'User99xx',
               'location': 'Kuala Lumpur',
@@ -76,8 +88,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> with SingleTi
             {
               'id': '3',
               'category': 'Courier Impersonation',
+              'type': 'Phone',
               'description': 'Caller claimed to be from J&T stating I have an illegal parcel. Asked for bank details.',
               'target': '+6019-888 7777',
+              'status': 'VERIFIED',
               'createdAt': DateTime.now().subtract(const Duration(minutes: 45)).toIso8601String(),
               'user': 'User01xx',
               'location': 'Johor Bahru, Johor',
@@ -116,7 +130,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> with SingleTi
         automaticallyImplyLeading: false,
         toolbarHeight: 90, // Sufficient height for two lines of text
       ),
-      body: _buildLiveFeed(),
+      body: RefreshIndicator(
+        onRefresh: _fetchFeed,
+        color: AppColors.accentGreen,
+        backgroundColor: const Color(0xFF1E293B),
+        child: _buildLiveFeed(),
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 100),
         child: FloatingActionButton.extended(

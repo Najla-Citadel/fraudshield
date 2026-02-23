@@ -18,8 +18,9 @@ class ScamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock logic for demo verification status
-    final isVerified = (report['category'] == 'E-Wallet Phishing' || report['category'] == 'Courier Impersonation'); 
+    // Use status field from report data (VERIFIED / PENDING)
+    final isVerified = report['status'] == 'VERIFIED';
+    final verificationCount = (report['_count']?['verifications'] ?? 0) as int;
     
     return GestureDetector(
       onTap: onTap,
@@ -111,7 +112,7 @@ class ScamCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'User${report['id'].toString().substring(0, 4)}xx'}', // Mock user ID pattern
+                        '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'Anonymous'}',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 12,
@@ -131,7 +132,7 @@ class ScamCard extends StatelessWidget {
                 Icon(Icons.location_on, size: 16, color: Colors.white.withOpacity(0.6)),
                 const SizedBox(width: 4),
                 Text(
-                  report['location'] ?? 'Kuala Lumpur, Malaysia', // Fallback location
+                  report['evidence']?['location'] ?? report['location'] ?? 'Kuala Lumpur, Malaysia',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.8),
                     fontSize: 13,
@@ -215,20 +216,17 @@ class ScamCard extends StatelessWidget {
                 // Avatar Pile (Mock)
                 Row(
                   children: [
-                    _buildAvatarPile(),
+                    _buildAvatarPile(verificationCount),
                     const SizedBox(width: 8),
-                    if (report['category'] == 'Investment Scam')
-                      Container( // ! 8 people flagged this
-                        padding: const EdgeInsets.only(left: 4),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.priority_high_rounded, color: Colors.redAccent, size: 14),
-                            Text(
-                              ' 8 people flagged this',
-                              style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11),
-                            ),
-                          ],
-                        ),
+                    if (verificationCount > 0)
+                      Row(
+                        children: [
+                          const Icon(Icons.priority_high_rounded, color: Colors.redAccent, size: 14),
+                          Text(
+                            ' $verificationCount people flagged this',
+                            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11),
+                          ),
+                        ],
                       ),
                   ],
                 ),
@@ -264,8 +262,8 @@ class ScamCard extends StatelessWidget {
 
   // --- Helper Methods ---
 
-  Widget _buildAvatarPile() {
-    // Just static colored circles for now
+  Widget _buildAvatarPile(int count) {
+    final label = count > 2 ? '+${count - 2}' : null;
     return SizedBox(
       width: 60,
       height: 24,
@@ -273,7 +271,7 @@ class ScamCard extends StatelessWidget {
         children: [
           _buildAvatar(0, Colors.teal[200]!),
           Positioned(left: 14, child: _buildAvatar(1, Colors.orange[200]!)),
-          Positioned(left: 28, child: _buildAvatar(2, Colors.grey[700]!, text: '+12')),
+          Positioned(left: 28, child: _buildAvatar(2, Colors.grey[700]!, text: label)),
         ],
       ),
     );

@@ -60,8 +60,8 @@ class FloatingNavBar extends StatelessWidget {
                     onTap: () => onTap(3),
                   ),
                   _NavItem(
-                    icon: Icons.history_rounded,
-                    label: 'Activity',
+                    icon: Icons.receipt_long_rounded,
+                    label: 'Journal',
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
