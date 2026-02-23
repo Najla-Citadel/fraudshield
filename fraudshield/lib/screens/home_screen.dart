@@ -736,14 +736,19 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // NEW: SECURITY JOURNAL
+              // NEW: PAYMENT JOURNAL CARD
+              _buildPaymentJournalCard(context),
+
+              const SizedBox(height: 32),
+
+              // NEW: RECENT CHECKS (formerly SECURITY JOURNAL)
               Align(
                 alignment: Alignment.centerLeft,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'SECURITY JOURNAL',
+                      'RECENT CHECKS',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.5),
                         fontSize: 12,
@@ -883,6 +888,17 @@ class _HomeTab extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _StatusItem(
+                icon: Icons.edit_document,
+                title: 'Log Payment',
+                subtitle: 'Securely track your transactions',
+                isActive: true,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
                 ),
               ),
 
@@ -1108,6 +1124,69 @@ class _HomeTab extends StatelessWidget {
         );
       },
       onEnd: () {}, 
+    );
+  }
+
+  Widget _buildPaymentJournalCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B), // Match trending alerts style
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accentGreen.withOpacity(0.3), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.accentGreen.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.menu_book_rounded, color: AppColors.accentGreen, size: 24),
+              const SizedBox(width: 10),
+              const Text(
+                'PAYMENT JOURNAL',
+                style: TextStyle(
+                  color: AppColors.accentGreen,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Unsure about a seller? Log the payment here before you transfer money.',
+            style: TextStyle(color: Colors.white.withOpacity(0.8), height: 1.4),
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
+                );
+              },
+              icon: const Text('Log Now', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.accentGreen,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

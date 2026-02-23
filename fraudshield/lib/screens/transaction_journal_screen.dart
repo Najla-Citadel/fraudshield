@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/adaptive_scaffold.dart';
 import 'transaction_detail_screen.dart';
+import 'log_payment_sheet.dart';
 
 class TransactionJournalScreen extends StatefulWidget {
   const TransactionJournalScreen({super.key});
@@ -199,169 +200,12 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
   }
 
   void _showManualLogForm() {
-    final amountController = TextEditingController();
-    final merchantController = TextEditingController();
-    final notesController = TextEditingController();
-    String selectedMethod = 'Bank Transfer';
-    String selectedPlatform = 'WhatsApp';
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          top: 24,
-          left: 20,
-          right: 20,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.deepNavy,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Log Transaction',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  IconButton(
-                    icon: const Icon(LucideIcons.x, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              TextField(
-                controller: merchantController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Recipient / Merchant Name',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(LucideIcons.user, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Amount (RM)',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(LucideIcons.banknote, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedMethod,
-                dropdownColor: const Color(0xFF0B1121),
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Payment Method',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(LucideIcons.creditCard, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-                items: ['Bank Transfer', 'DuitNow', 'E-Wallet', 'COD'].map((method) {
-                  return DropdownMenuItem(value: method, child: Text(method));
-                }).toList(),
-                onChanged: (val) => selectedMethod = val!,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: selectedPlatform,
-                dropdownColor: const Color(0xFF0B1121),
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'Platform',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(LucideIcons.layout, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-                items: ['WhatsApp', 'Shopee', 'Facebook', 'Carousell', 'Telegram', 'Other'].map((p) {
-                  return DropdownMenuItem(value: p, child: Text(p));
-                }).toList(),
-                onChanged: (val) => selectedPlatform = val!,
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: notesController,
-                maxLines: 3,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                   labelText: 'Notes (Optional)',
-                   labelStyle: const TextStyle(color: Colors.grey),
-                   prefixIcon: const Icon(LucideIcons.fileText, color: Colors.grey),
-                   filled: true,
-                   fillColor: const Color(0xFF1E293B),
-                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (merchantController.text.isEmpty || amountController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please fill in required fields')),
-                      );
-                      return;
-                    }
-
-                    try {
-                      Navigator.pop(context);
-                      setState(() => _isLoading = true);
-                      
-                      await ApiService.instance.logTransaction(
-                        amount: double.parse(amountController.text),
-                        merchant: merchantController.text,
-                        paymentMethod: selectedMethod,
-                        platform: selectedPlatform,
-                        notes: notesController.text,
-                      );
-
-                      _fetchTransactions();
-                    } catch (e) {
-                      setState(() => _isLoading = false);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error: $e')),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentGreen,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text(
-                    'SAVE TO JOURNAL',
-                    style: TextStyle(color: AppColors.deepNavy, fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
+      builder: (context) => LogPaymentSheet(
+        onLogSuccess: () => _fetchTransactions(),
       ),
     );
   }
