@@ -7,12 +7,27 @@ export class RewardsController {
     // Get all available rewards
     static async getRewards(req: Request, res: Response, next: NextFunction) {
         try {
-            const rewards = await (prisma as any).reward.findMany({
-                where: { active: true },
-                orderBy: { pointsCost: 'asc' },
-            });
+            const { limit = '20', offset = '0' } = req.query;
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
 
-            res.json(rewards);
+            const [rewards, total] = await Promise.all([
+                (prisma as any).reward.findMany({
+                    where: { active: true },
+                    orderBy: { pointsCost: 'asc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).reward.count({ where: { active: true } }),
+            ]);
+
+            res.json({
+                results: rewards,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }
@@ -177,16 +192,30 @@ export class RewardsController {
     static async getMyRedemptions(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
+            const { limit = '20', offset = '0' } = req.query;
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
 
-            const redemptions = await (prisma as any).redemption.findMany({
-                where: { userId },
-                include: {
-                    reward: true,
-                },
-                orderBy: { createdAt: 'desc' },
+            const [redemptions, total] = await Promise.all([
+                (prisma as any).redemption.findMany({
+                    where: { userId },
+                    include: {
+                        reward: true,
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).redemption.count({ where: { userId } }),
+            ]);
+
+            res.json({
+                results: redemptions,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
             });
-
-            res.json(redemptions);
         } catch (error) {
             next(error);
         }

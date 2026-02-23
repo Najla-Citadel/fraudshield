@@ -22,7 +22,15 @@ import uploadRoutes from './routes/upload.routes';
 import userRoutes from './routes/user.routes';
 import alertRoutes from './routes/alert.routes';
 import transactionRoutes from './routes/transaction.routes';
+import { requestTimeout } from './middleware/timeout.middleware';
+
 const app: Application = express();
+
+// Trust proxy for rate limiting accuracy behind reverse proxies/LB
+app.set('trust proxy', 1);
+
+// Global Request Timeout (30s)
+app.use(requestTimeout(30000));
 
 // Security middleware
 app.use(helmet());

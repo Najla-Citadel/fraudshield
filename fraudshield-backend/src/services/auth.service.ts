@@ -10,7 +10,16 @@ export class AuthService {
         }
         return secret;
     }
-    private static readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+    private static readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
+
+    private static get JWT_REFRESH_SECRET(): string {
+        const secret = process.env.JWT_REFRESH_SECRET;
+        if (!secret) {
+            throw new Error('FATAL: JWT_REFRESH_SECRET environment variable is missing.');
+        }
+        return secret;
+    }
+    private static readonly JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
 
     static async hashPassword(password: string): Promise<string> {
         return bcrypt.hash(password, 10);
@@ -24,6 +33,26 @@ export class AuthService {
         return jwt.sign({ sub: userId }, this.JWT_SECRET, {
             expiresIn: this.JWT_EXPIRES_IN as any,
         });
+    }
+
+    static generateTokens(userId: string): { accessToken: string; refreshToken: string } {
+        const accessToken = jwt.sign({ sub: userId }, this.JWT_SECRET, {
+            expiresIn: this.JWT_EXPIRES_IN as any,
+        });
+
+        const refreshToken = jwt.sign({ sub: userId }, this.JWT_REFRESH_SECRET, {
+            expiresIn: this.JWT_REFRESH_EXPIRES_IN as any,
+        });
+
+        return { accessToken, refreshToken };
+    }
+
+    static verifyRefreshToken(token: string): any {
+        try {
+            return jwt.verify(token, this.JWT_REFRESH_SECRET);
+        } catch (error) {
+            return null;
+        }
     }
 
     static async findUserByEmail(email: string) {

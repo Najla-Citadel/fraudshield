@@ -148,25 +148,33 @@ export class AlertEngineService {
                     }
 
                     try {
-                        await admin.messaging().send({
-                            token: sub.fcmToken,
-                            notification: {
-                                title: trend.title,
-                                body: trend.description,
-                            },
-                            data: {
-                                type: 'trending_alert',
-                                severity: trend.severity,
-                                category: trend.category,
-                                reportCount: trend.reportCount.toString()
-                            },
-                            android: {
+                        // Simple circuit breaker/timeout (5s) for FCM calls
+                        const fcmTimeout = new Promise((_, reject) =>
+                            setTimeout(() => reject(new Error('FCM timeout')), 5000)
+                        );
+
+                        await Promise.race([
+                            admin.messaging().send({
+                                token: sub.fcmToken,
                                 notification: {
-                                    channelId: 'high_importance_channel',
-                                    priority: 'high',
+                                    title: trend.title,
+                                    body: trend.description,
+                                },
+                                data: {
+                                    type: 'trending_alert',
+                                    severity: trend.severity,
+                                    category: trend.category,
+                                    reportCount: trend.reportCount.toString()
+                                },
+                                android: {
+                                    notification: {
+                                        channelId: 'high_importance_channel',
+                                        priority: 'high',
+                                    }
                                 }
-                            }
-                        });
+                            }),
+                            fcmTimeout
+                        ]);
                         console.log(`✅ Push notification sent to User ${sub.userId} for category: ${trend.category}`);
                         this.dispatchedAlertsCache.add(cacheKey);
                         dispatchCount++;

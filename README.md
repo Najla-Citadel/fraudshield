@@ -49,39 +49,49 @@ git checkout dev-master
    ```
 3. **Environment Variables**:
    Copy `.env.example` to `.env` and fill in the secrets (defaults work with Docker).
+   Make sure you have a `DATABASE_URL` pointing to the dockerized PostgreSQL container.
 4. **Start Database & Redis**:
+   Make sure Docker Desktop is running, then execute:
    ```bash
    docker-compose up -d
    ```
 5. **Run Migrations**:
+   Push the schema to the running database:
    ```bash
-   npx prisma migrate dev
+   npx prisma db push && npx prisma generate
    ```
 6. **Start Backend**:
+   Run the backend locally in dev mode:
    ```bash
    npm run dev
    ```
+   *The backend should now be running on `http://localhost:3000`.*
 
 ### 4. Frontend Setup
 1. **Navigate to frontend folder**:
+   Open a new terminal and navigate to the flutter project:
    ```bash
-   cd ../fraudshield
+   cd fraudshield
    ```
 2. **Install dependencies**:
    ```bash
    flutter pub get
    ```
-3. **Environment Variables**:
-   Ensure `.env` exists with:
-   ```env
-   API_BASE_URL=http://localhost:3000/api/v1
-   ```
-4. **Connect Emulator to Backend**:
-   Since the app runs in an emulator, you must bridge the networking:
+3. **Connect Emulator to Backend**:
+   - Open Android Studio or your preferred IDE and launch your **Android Emulator**.
+   - Make sure your emulator is fully booted.
+   - Run the ADB reverse port forwarding command so the emulator can reach the `localhost:3000` backend on your machine:
    ```bash
    adb reverse tcp:3000 tcp:3000
    ```
+   *(Note: You must re-run this command every time you restart your emulator)*
+4. **Environment Variables**:
+   Ensure `.env` exists in the `fraudshield` folder with:
+   ```env
+   API_BASE_URL=http://localhost:3000/api/v1
+   ```
 5. **Run the App**:
+   Run the application on the active emulator:
    ```bash
    flutter run
    ```
