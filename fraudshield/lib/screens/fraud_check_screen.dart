@@ -548,6 +548,61 @@ class CheckResultScreen extends StatelessWidget {
             if (result.communityReports > 0)
               const SizedBox(height: 20),
 
+            // ── Verification Sources ──────────────────────
+            if (result.sources.isNotEmpty) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.policy_outlined, color: Colors.blueAccent, size: 20),
+                        const SizedBox(width: 8),
+                        Text('Verification Sources', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: result.sources.map((source) {
+                        if (source == 'ccid') {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.blueAccent.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.verified_user_rounded, color: Colors.blueAccent, size: 16),
+                                const SizedBox(width: 6),
+                                const Text('PDRM Semak Mule', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          );
+                        } else if (source == 'community') {
+                          return _buildSourcePill('FraudShield Community', Icons.people_alt_outlined, AppColors.primaryBlue);
+                        } else {
+                          return _buildSourcePill(source, Icons.source_outlined, Colors.grey);
+                        }
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+
             // ── Reasons ───────────────────────────────────
             if (result.reasons.isNotEmpty)
               Container(
@@ -615,6 +670,25 @@ class CheckResultScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSourcePill(String text, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 6),
+          Text(text, style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13)),
+        ],
       ),
     );
   }

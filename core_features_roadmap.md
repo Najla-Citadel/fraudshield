@@ -63,10 +63,10 @@
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2A.1 | Research CCID Semak Mule API | 2 hrs | 🔴 |
-| 2A.2 | Build backend proxy `/api/fraud/phone-lookup` | 3 hrs | 🔴 |
-| 2A.3 | Crowdsource from community ScamReport DB | 2 hrs | 🟠 |
-| 2A.4 | Show source of check in Flutter UI | 2 hrs | 🟠 |
+| 2A.1 | Research CCID Semak Mule API | 2 hrs | ✅ Done |
+| 2A.2 | Build backend proxy `/api/fraud/phone-lookup` | 3 hrs | ✅ Done |
+| 2A.3 | Crowdsource from community ScamReport DB | 2 hrs | ✅ Done |
+| 2A.4 | Show source of check in Flutter UI | 2 hrs | ✅ Done |
 
 ### 2B. Enhanced URL Analysis
 

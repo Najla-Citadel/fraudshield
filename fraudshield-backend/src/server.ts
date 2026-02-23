@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import app from './app';
 import { initializeFirebase } from './config/firebase.config';
 import { AlertEngineService } from './services/alert-engine.service';
+import { AlertWorkerService } from './services/alert-worker.service';
 
 const PORT = process.env.PORT || 3000;
 
@@ -43,23 +44,22 @@ const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
 
     // Start background jobs
     console.log('⏱️ Starting background jobs...');
-    AlertEngineService.dispatchTrendingAlerts().catch(console.error); // Run immediately
-    setInterval(() => {
-        AlertEngineService.dispatchTrendingAlerts().catch(console.error);
-    }, 60 * 1000); // Check for trending alerts every minute (for demo purposes)
+    AlertWorkerService.initialize();
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM signal received: closing HTTP server');
-    server.close(() => {
+    server.close(async () => {
+        await AlertWorkerService.shutdown();
         console.log('HTTP server closed');
     });
 });
 
 process.on('SIGINT', () => {
     console.log('SIGINT signal received: closing HTTP server');
-    server.close(() => {
+    server.close(async () => {
+        await AlertWorkerService.shutdown();
         console.log('HTTP server closed');
         process.exit(0);
     });

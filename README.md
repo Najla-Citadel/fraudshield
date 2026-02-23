@@ -96,6 +96,10 @@ git checkout dev-master
    flutter run
    ```
 
+## 🚢 Deployment
+
+For production deployment instructions using Docker, Nginx, and SSL, see the [DigitalOcean Deployment Guide](deployment_guide.md).
+
 ---
 
 ## 🔒 Security Note

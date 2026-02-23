@@ -39,7 +39,7 @@ class ScamCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -142,12 +142,12 @@ class ScamCard extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
 
             // --- "Stay Safe" Blue Box ---
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFF172554).withOpacity(0.5), // Deep Blue tint
                 borderRadius: BorderRadius.circular(16),
@@ -207,7 +207,7 @@ class ScamCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // --- Footer: Avatars + Action ---
             Row(

@@ -452,7 +452,9 @@ class ApiService {
   // ---------------- Points ----------------
 
   Future<Map<String, dynamic>> getMyPoints() async {
-    final response = await http.get(Uri.parse('$baseUrl/features/points'), headers: _headers);
+    final response = await http
+        .get(Uri.parse('$baseUrl/features/points'), headers: _headers)
+        .timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -577,14 +579,18 @@ class ApiService {
 
   Future<dynamic> get(String path) async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
+      final response = await http
+          .get(Uri.parse('$baseUrl$path'), headers: _headers)
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401 && _refreshToken != null) {
         final success = await refreshToken();
         if (success) {
           // Retry once
-          final retryResponse = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
+          final retryResponse = await http
+              .get(Uri.parse('$baseUrl$path'), headers: _headers)
+              .timeout(const Duration(seconds: 10));
           if (retryResponse.statusCode == 200) {
             return jsonDecode(retryResponse.body);
           }
@@ -603,21 +609,25 @@ class ApiService {
 
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl$path'),
-        headers: _headers,
-        body: jsonEncode(body),
-      );
+      final response = await http
+          .post(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 401 && _refreshToken != null) {
         final success = await refreshToken();
         if (success) {
-          final retryResponse = await http.post(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-            body: jsonEncode(body),
-          );
+          final retryResponse = await http
+              .post(
+                Uri.parse('$baseUrl$path'),
+                headers: _headers,
+                body: jsonEncode(body),
+              )
+              .timeout(const Duration(seconds: 10));
           if (retryResponse.statusCode == 200 || retryResponse.statusCode == 201) {
             return jsonDecode(retryResponse.body);
           }
@@ -636,21 +646,25 @@ class ApiService {
 
   Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) async {
     try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl$path'),
-        headers: _headers,
-        body: jsonEncode(body),
-      );
+      final response = await http
+          .patch(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200 || response.statusCode == 204) {
         return response.body.isNotEmpty ? jsonDecode(response.body) : {};
       } else if (response.statusCode == 401 && _refreshToken != null) {
         final success = await refreshToken();
         if (success) {
-          final retryResponse = await http.patch(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-            body: jsonEncode(body),
-          );
+          final retryResponse = await http
+              .patch(
+                Uri.parse('$baseUrl$path'),
+                headers: _headers,
+                body: jsonEncode(body),
+              )
+              .timeout(const Duration(seconds: 10));
           if (retryResponse.statusCode == 200 || retryResponse.statusCode == 204) {
             return retryResponse.body.isNotEmpty ? jsonDecode(retryResponse.body) : {};
           }
@@ -669,19 +683,23 @@ class ApiService {
 
   Future<dynamic> delete(String path) async {
     try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl$path'),
-        headers: _headers,
-      );
+      final response = await http
+          .delete(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200 || response.statusCode == 204) {
         return response.body.isNotEmpty ? jsonDecode(response.body) : null;
       } else if (response.statusCode == 401 && _refreshToken != null) {
         final success = await refreshToken();
         if (success) {
-          final retryResponse = await http.delete(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-          );
+          final retryResponse = await http
+              .delete(
+                Uri.parse('$baseUrl$path'),
+                headers: _headers,
+              )
+              .timeout(const Duration(seconds: 10));
           if (retryResponse.statusCode == 200 || retryResponse.statusCode == 204) {
             return retryResponse.body.isNotEmpty ? jsonDecode(retryResponse.body) : null;
           }

@@ -1,5 +1,6 @@
 import { prisma } from '../config/database';
 import * as admin from 'firebase-admin';
+import { getRedisClient } from '../config/redis';
 
 export class AlertEngineService {
     /**
@@ -95,8 +96,8 @@ export class AlertEngineService {
         return localReports;
     }
 
-    // In-memory cache to prevent spamming the exact same trend alert repeatedly
-    private static dispatchedAlertsCache = new Set<string>();
+    // NOTE: Deduplication is now handled per-method via Redis TTL (see below).
+    // This in-memory set is kept only as a fast pre-check fallback.
 
     /**
      * Identifies trending alerts and dispatches FCM notifications to subscribed users
@@ -106,19 +107,15 @@ export class AlertEngineService {
         const trends = await this.getTrendingAlerts(72);
 
         // Only trigger push notifications for HIGH severity trends
-        // to avoid spamming the user
         const actionableTrends = trends.filter(trend => trend.severity === 'high');
 
         if (actionableTrends.length === 0) {
-            console.log('✅ No high-severity trends detected that require push notifications.');
-            this.dispatchedAlertsCache.clear(); // Clear cache if no trends exist
+            console.log('✅ No high-severity trends detected.');
             return;
         }
 
-        // Generate a map of category -> trend data for easy lookup
         const trendMap = new Map(actionableTrends.map(t => [t.category, t]));
 
-        // Find all active subscriptions with an FCM token
         const subscribers = await (prisma as any).alertSubscription.findMany({
             where: {
                 isActive: true,
@@ -128,9 +125,11 @@ export class AlertEngineService {
 
         console.log(`📡 Found ${subscribers.length} active alert subscribers.`);
         let dispatchCount = 0;
+        const redis = getRedisClient();
+        // Stable date key — changes once per day, so each user gets at most 1 alert/category/day
+        const today = new Date().toISOString().slice(0, 10); // e.g. "2026-02-23"
 
         for (const sub of subscribers) {
-            // Check if user is subscribed to any of the currently trending categories
             const userCategories = sub.categories as string[];
 
             for (const trendingCategory of trendMap.keys()) {
@@ -141,14 +140,15 @@ export class AlertEngineService {
                 if (isMatch) {
                     const trend = trendMap.get(trendingCategory)!;
 
-                    // Create a unique cache key for this user and this specific trend scenario
-                    const cacheKey = `${sub.userId}-${trend.category}-${trend.reportCount}`;
-                    if (this.dispatchedAlertsCache.has(cacheKey)) {
-                        continue; // Skip if we already notified this user about this exact trend volume
-                    }
+                    // Redis key is stable within a calendar day — immune to restarts and report count changes
+                    const cacheKey = `alert:trending:${sub.userId}:${trend.category}:${today}`;
 
                     try {
-                        // Simple circuit breaker/timeout (5s) for FCM calls
+                        const alreadySent = await redis.get(cacheKey);
+                        if (alreadySent) {
+                            continue; // Already notified today — skip
+                        }
+
                         const fcmTimeout = new Promise((_, reject) =>
                             setTimeout(() => reject(new Error('FCM timeout')), 5000)
                         );
@@ -175,19 +175,107 @@ export class AlertEngineService {
                             }),
                             fcmTimeout
                         ]);
-                        console.log(`✅ Push notification sent to User ${sub.userId} for category: ${trend.category}`);
-                        this.dispatchedAlertsCache.add(cacheKey);
+
+                        // Mark as sent in Redis for 24 hours 
+                        await redis.set(cacheKey, '1', 'EX', 86400);
                         dispatchCount++;
-                        // Break after sending one alert to avoid bombarding user with multiple alerts at once
-                        break;
+                        break; // One alert per user per dispatcher run
                     } catch (error) {
-                        console.error(`❌ Failed to send push notification to User ${sub.userId}:`, error);
-                        // If token is invalid/unregistered, we might want to clean it up here in a production app
+                        console.error(`❌ FCM Trending Alert failed:`, error);
                     }
                 }
             }
         }
-
         console.log(`🚀 Dispatched ${dispatchCount} trending push notifications.`);
+    }
+
+    /**
+     * Finds nearby subscribers and sends an immediate push notification for a new report
+     */
+    static async dispatchLocalAlert(report: any) {
+        if (!report.latitude || !report.longitude || !report.isPublic) return;
+
+        console.log(`📍 Processing local alert for Report ${report.id} at (${report.latitude}, ${report.longitude})`);
+
+        const subscribers = await (prisma as any).alertSubscription.findMany({
+            where: {
+                isActive: true,
+                fcmToken: { not: null },
+                userId: { not: report.userId }
+            }
+        });
+
+        const notifications: Promise<any>[] = [];
+        const redis = getRedisClient();
+        // Local alerts: cap at once per user per category per hour (not per day, since these are real-time reports)
+        const hourSlot = new Date().toISOString().slice(0, 13); // e.g. "2026-02-23T16"
+
+        for (const sub of subscribers) {
+            if (sub.latitude === null || sub.longitude === null) continue;
+
+            const distance = this.calculateDistance(
+                report.latitude, report.longitude,
+                sub.latitude, sub.longitude
+            );
+
+            if (distance <= (sub.radiusKm || 15)) {
+                const userCategories = sub.categories as string[];
+                const isMatch = userCategories.length === 0 || userCategories.some(cat =>
+                    report.category.toLowerCase().includes(cat.toLowerCase())
+                );
+
+                if (isMatch) {
+                    // Deduplicate: one local notification per user per category per hour
+                    const cacheKey = `alert:local:${sub.userId}:${report.category}:${hourSlot}`;
+                    const alreadySent = await redis.get(cacheKey).catch(() => null);
+                    if (alreadySent) continue;
+
+                    notifications.push(
+                        admin.messaging().send({
+                            token: sub.fcmToken,
+                            notification: {
+                                title: '🚨 Scam Reported Near You',
+                                body: `A new ${report.category} scam was just reported within ${distance.toFixed(1)}km of your location.`,
+                            },
+                            data: {
+                                type: 'local_alert',
+                                reportId: report.id,
+                                category: report.category,
+                                distance: distance.toFixed(1)
+                            },
+                            android: {
+                                notification: {
+                                    channelId: 'high_importance_channel',
+                                    priority: 'high',
+                                }
+                            }
+                        })
+                            .then(() => redis.set(cacheKey, '1', 'EX', 3600)) // Mark as sent for 1 hour
+                            .catch(err => console.error(`❌ FCM Local Alert failed:`, err))
+                    );
+                }
+            }
+        }
+
+        if (notifications.length > 0) {
+            await Promise.all(notifications);
+            console.log(`🚀 Sent ${notifications.length} local push notifications.`);
+        }
+    }
+
+
+    /**
+     * Haversine formula to calculate distance between two points in km
+     */
+    private static calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+        const R = 6371; // Earth's radius in km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 }

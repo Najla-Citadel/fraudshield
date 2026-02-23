@@ -11,6 +11,7 @@ class RiskResult {
   final int communityReports;
   final int verifiedReports;
   final List<String> categories;
+  final List<String> sources; // e.g. ['community', 'ccid']
 
   RiskResult({
     required this.score,
@@ -20,6 +21,7 @@ class RiskResult {
     this.communityReports = 0,
     this.verifiedReports = 0,
     this.categories = const [],
+    this.sources = const [],
   });
 }
 
@@ -87,28 +89,43 @@ class RiskEvaluator {
     );
   }
 
-  // ── Pre-Transaction Check (async, calls backend) ──
   static Future<RiskResult> evaluatePayment({
     required String type, // "bank_account", "phone", "url"
     required String value,
   }) async {
+    String cleanValue = value.replaceAll(RegExp(r'[\s\-]'), '');
+    String backendType = type.toLowerCase();
+    
+    // Infer if it's phone or bank when generic 'Payment' is used
+    if (type == 'Payment') {
+      if (cleanValue.startsWith('+') || cleanValue.startsWith('01') || (cleanValue.length >= 9 && cleanValue.length <= 11)) {
+         backendType = 'phone';
+      } else {
+         backendType = 'bank'; 
+      }
+    }
+
+    String localType = backendType == 'phone' ? 'Phone No' : backendType == 'bank' ? 'Bank Account' : type;
+
     // 1. Run heuristic check for basic patterns
-    RiskResult localCheck = evaluate(type: type, value: value);
+    RiskResult localCheck = evaluate(type: localType, value: cleanValue);
     int score = localCheck.score;
     List<String> reasons = List.from(localCheck.reasons);
     
     int communityReports = 0;
     int verifiedReports = 0;
     List<String> categories = [];
+    List<String> sources = [];
     String level = localCheck.level;
 
     try {
-      final res = await _api.lookupPaymentRisk(type: type, value: value);
+      final res = await _api.lookupPaymentRisk(type: backendType, value: cleanValue);
       
       if (res['found'] == true) {
         communityReports = res['communityReports'] ?? 0;
         verifiedReports = res['verifiedReports'] ?? 0;
         categories = List<String>.from(res['categories'] ?? []);
+        sources = List<String>.from(res['sources'] ?? []);
         final String apiLevel = res['riskLevel'] ?? 'low';
         final String apiRec = res['recommendation'] ?? '';
         
@@ -146,6 +163,7 @@ class RiskEvaluator {
       communityReports: communityReports,
       verifiedReports: verifiedReports,
       categories: categories,
+      sources: sources,
     );
   }
 
