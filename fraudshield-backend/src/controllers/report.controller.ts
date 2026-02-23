@@ -69,13 +69,28 @@ export class ReportController {
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
+            const { limit = '20', offset = '0' } = req.query;
 
-            const reports = await prisma.scamReport.findMany({
-                where: { userId },
-                orderBy: { createdAt: 'desc' },
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
+
+            const [reports, total] = await Promise.all([
+                prisma.scamReport.findMany({
+                    where: { userId },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                prisma.scamReport.count({ where: { userId } }),
+            ]);
+
+            res.json({
+                results: reports,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
             });
-
-            res.json(reports);
         } catch (error) {
             next(error);
         }
@@ -143,28 +158,37 @@ export class ReportController {
 
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
-            const reports = await (prisma as any).scamReport.findMany({
-                where: { isPublic: true },
-                include: {
-                    _count: {
-                        select: { verifications: true },
-                    },
-                    user: {
-                        select: {
-                            profile: {
-                                select: {
-                                    reputation: true,
-                                    badges: true,
+            const { limit = '20', offset = '0' } = req.query;
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
+
+            const [reports, total] = await Promise.all([
+                (prisma as any).scamReport.findMany({
+                    where: { isPublic: true },
+                    include: {
+                        _count: {
+                            select: { verifications: true },
+                        },
+                        user: {
+                            select: {
+                                profile: {
+                                    select: {
+                                        reputation: true,
+                                        badges: true,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-                orderBy: { createdAt: 'desc' },
-            });
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).scamReport.count({ where: { isPublic: true } }),
+            ]);
 
             // Anonymize sensitive fields
-            const redactedReports = reports.map((report) => {
+            const redactedReports = reports.map((report: any) => {
                 const profile = report.user?.profile;
                 if (!profile) {
                     console.warn(`[PublicFeed] Report ${report.id} is missing reporter profile data.`);
@@ -192,7 +216,13 @@ export class ReportController {
                 };
             });
 
-            res.json(redactedReports);
+            res.json({
+                results: redactedReports,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }

@@ -75,3 +75,40 @@ export const validateChangePassword = [
 
     handleValidationErrors,
 ];
+
+/**
+ * Validation rules for POST /reports (submitReport)
+ */
+export const validateReport = [
+    body('type')
+        .trim()
+        .notEmpty().withMessage('Report type is required.'),
+
+    body('category')
+        .trim()
+        .notEmpty().withMessage('Category is required.'),
+
+    body('description')
+        .trim()
+        .notEmpty().withMessage('Description is required.')
+        .isLength({ min: 10 }).withMessage('Description must be at least 10 characters long.'),
+
+    body('target')
+        .optional()
+        .trim()
+        .isString().withMessage('Target must be a string.'),
+
+    body('isPublic')
+        .optional()
+        .isBoolean().withMessage('isPublic must be a boolean.'),
+
+    body('latitude')
+        .optional()
+        .isNumeric().withMessage('Latitude must be a number.'),
+
+    body('longitude')
+        .optional()
+        .isNumeric().withMessage('Longitude must be a number.'),
+
+    handleValidationErrors,
+];

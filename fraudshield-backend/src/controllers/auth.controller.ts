@@ -37,12 +37,19 @@ export class AuthController {
                 },
             });
 
-            // Generate token
-            const token = AuthService.generateToken(user.id);
+            // Generate tokens
+            const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
+
+            // Store refresh token
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken },
+            });
 
             res.status(201).json({
                 user: AuthService.toSafeUser(user),
-                token,
+                token: accessToken,
+                refreshToken,
             });
         } catch (error) {
             next(error);
@@ -58,11 +65,18 @@ export class AuthController {
 
             // Fetch user with profile for a complete response
             const fullUser = await AuthService.findUserById(user.id);
-            const token = AuthService.generateToken(user.id);
+            const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
+
+            // Store refresh token
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken },
+            });
 
             res.json({
                 user: AuthService.toSafeUser(fullUser),
-                token,
+                token: accessToken,
+                refreshToken,
             });
         })(req, res, next);
     }
@@ -208,9 +222,56 @@ export class AuthController {
         }
     }
 
+    static async refresh(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { refreshToken } = req.body;
+
+            if (!refreshToken) {
+                return res.status(400).json({ message: 'Refresh token is required' });
+            }
+
+            const payload = AuthService.verifyRefreshToken(refreshToken);
+            if (!payload) {
+                return res.status(401).json({ message: 'Invalid or expired refresh token' });
+            }
+
+            const user = await prisma.user.findUnique({
+                where: { id: payload.sub },
+            });
+
+            if (!user || user.refreshToken !== refreshToken) {
+                return res.status(401).json({ message: 'Invalid refresh token' });
+            }
+
+            const tokens = AuthService.generateTokens(user.id);
+
+            // Rotate refresh token
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken: tokens.refreshToken },
+            });
+
+            res.json({
+                token: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async logout(req: Request, res: Response, next: NextFunction) {
-        // For JWT, logout is usually handled client-side by deleting the token.
-        // Optionally, you could blacklist tokens in Redis here.
-        res.json({ message: 'Logged out successfully' });
+        try {
+            const userId = (req.user as any)?.id;
+            if (userId) {
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { refreshToken: null },
+                });
+            }
+            res.json({ message: 'Logged out successfully' });
+        } catch (error) {
+            next(error);
+        }
     }
 }

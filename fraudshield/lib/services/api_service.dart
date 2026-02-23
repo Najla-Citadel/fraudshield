@@ -13,6 +13,7 @@ class ApiService {
 
   late final String baseUrl;
   String? _token;
+  String? _refreshToken;
 
   Future<void> init() async {
     final String rawBaseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
@@ -26,18 +27,25 @@ class ApiService {
     }
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('auth_token');
+    _refreshToken = prefs.getString('refresh_token');
   }
 
   String? get token => _token;
   bool get isAuthenticated => _token != null;
 
-  Future<void> _setToken(String? token) async {
+  Future<void> _setTokens(String? token, String? refreshToken) async {
     _token = token;
+    _refreshToken = refreshToken;
     final prefs = await SharedPreferences.getInstance();
     if (token != null) {
       await prefs.setString('auth_token', token);
     } else {
       await prefs.remove('auth_token');
+    }
+    if (refreshToken != null) {
+      await prefs.setString('refresh_token', refreshToken);
+    } else {
+      await prefs.remove('refresh_token');
     }
   }
 
@@ -77,7 +85,7 @@ class ApiService {
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 201) {
-        await _setToken(data['token']);
+        await _setTokens(data['token'], data['refreshToken']);
         return data['user'];
       } else {
         throw Exception('Signup failed: ${response.statusCode} - ${data['message'] ?? response.body}');
@@ -104,7 +112,7 @@ class ApiService {
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        await _setToken(data['token']);
+        await _setTokens(data['token'], data['refreshToken']);
         return data['user'];
       } else {
         throw Exception(data['message'] ?? 'Login failed');
@@ -118,7 +126,33 @@ class ApiService {
   }
 
   Future<void> signOut() async {
-    await _setToken(null);
+    await _setTokens(null, null);
+  }
+
+  Future<bool> refreshToken() async {
+    if (_refreshToken == null) return false;
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/refresh'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refreshToken': _refreshToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await _setTokens(data['token'], data['refreshToken']);
+        return true;
+      } else {
+        await signOut();
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService refreshToken error: $e');
+      }
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>> getProfile() async {
@@ -274,11 +308,17 @@ class ApiService {
 
   Future<List<dynamic>> getMyReports() async {
     final response = await get('/reports/my');
+    if (response is Map && response.containsKey('results')) {
+      return response['results'] as List;
+    }
     return response as List;
   }
 
   Future<List<dynamic>> getPublicFeed() async {
     final response = await get('/reports/public');
+    if (response is Map && response.containsKey('results')) {
+      return response['results'] as List;
+    }
     return response as List;
   }
 
@@ -453,6 +493,9 @@ class ApiService {
 
   Future<List<dynamic>> getRewards() async {
     final response = await get('/features/rewards');
+    if (response is Map && response.containsKey('results')) {
+      return response['results'] as List;
+    }
     return response as List;
   }
 
@@ -467,6 +510,9 @@ class ApiService {
 
   Future<List<dynamic>> getMyRedemptions() async {
     final response = await get('/features/redemptions');
+    if (response is Map && response.containsKey('results')) {
+      return response['results'] as List;
+    }
     return response as List;
   }
 
@@ -534,6 +580,16 @@ class ApiService {
       final response = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
+      } else if (response.statusCode == 401 && _refreshToken != null) {
+        final success = await refreshToken();
+        if (success) {
+          // Retry once
+          final retryResponse = await http.get(Uri.parse('$baseUrl$path'), headers: _headers);
+          if (retryResponse.statusCode == 200) {
+            return jsonDecode(retryResponse.body);
+          }
+        }
+        throw Exception('Session expired');
       } else {
         throw Exception('GET $path failed: ${response.statusCode}');
       }
@@ -554,6 +610,19 @@ class ApiService {
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
+      } else if (response.statusCode == 401 && _refreshToken != null) {
+        final success = await refreshToken();
+        if (success) {
+          final retryResponse = await http.post(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+            body: jsonEncode(body),
+          );
+          if (retryResponse.statusCode == 200 || retryResponse.statusCode == 201) {
+            return jsonDecode(retryResponse.body);
+          }
+        }
+        throw Exception('Session expired');
       } else {
         throw Exception('POST $path failed: ${response.statusCode}');
       }
@@ -574,6 +643,19 @@ class ApiService {
       );
       if (response.statusCode == 200 || response.statusCode == 204) {
         return response.body.isNotEmpty ? jsonDecode(response.body) : {};
+      } else if (response.statusCode == 401 && _refreshToken != null) {
+        final success = await refreshToken();
+        if (success) {
+          final retryResponse = await http.patch(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+            body: jsonEncode(body),
+          );
+          if (retryResponse.statusCode == 200 || retryResponse.statusCode == 204) {
+            return retryResponse.body.isNotEmpty ? jsonDecode(retryResponse.body) : {};
+          }
+        }
+        throw Exception('Session expired');
       } else {
         throw Exception('PATCH $path failed: ${response.statusCode}');
       }
@@ -593,6 +675,18 @@ class ApiService {
       );
       if (response.statusCode == 200 || response.statusCode == 204) {
         return response.body.isNotEmpty ? jsonDecode(response.body) : null;
+      } else if (response.statusCode == 401 && _refreshToken != null) {
+        final success = await refreshToken();
+        if (success) {
+          final retryResponse = await http.delete(
+            Uri.parse('$baseUrl$path'),
+            headers: _headers,
+          );
+          if (retryResponse.statusCode == 200 || retryResponse.statusCode == 204) {
+            return retryResponse.body.isNotEmpty ? jsonDecode(retryResponse.body) : null;
+          }
+        }
+        throw Exception('Session expired');
       } else {
         throw Exception('DELETE $path failed: ${response.statusCode}');
       }

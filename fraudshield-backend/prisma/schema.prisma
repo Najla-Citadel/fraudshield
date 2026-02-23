@@ -32,6 +32,7 @@ model User {
   redemptions         Redemption[]
   alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
   transactionJournals TransactionJournal[]
+  refreshToken        String?             @unique
 }
 
 model Profile {
@@ -84,6 +85,11 @@ model ScamReport {
   longitude   Float?
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
+
+  @@index([isPublic])
+  @@index([createdAt])
+  @@index([category])
+  @@index([status])
 }
 
 model Verification {
@@ -93,6 +99,8 @@ model Verification {
   isSame    Boolean
   createdAt DateTime   @default(now())
   report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@unique([reportId, userId])
 }
 
 model PointsTransaction {

@@ -20,13 +20,13 @@ export const authLimiter = rateLimit({
  * 10 attempts per 15 minutes per IP to prevent credential stuffing and brute force.
  */
 export const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10,
+    windowMs: 2 * 60 * 1000, // 2 minutes
+    max: 10, // 5 attempts per minute average
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     message: {
         error: 'Too Many Requests',
-        message: 'Too many login or signup attempts from this IP, please try again after 15 minutes.',
+        message: 'Too many login or signup attempts from this IP, please try again after 2 minutes.',
     },
     skipSuccessfulRequests: true, // Only count failed (non-2xx) responses
 });
