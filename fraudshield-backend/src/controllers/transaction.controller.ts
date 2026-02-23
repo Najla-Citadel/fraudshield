@@ -70,10 +70,6 @@ export class TransactionController {
         }
     }
 
-    /**
-     * POST /api/v1/transactions
-     * Manually log a transaction for historical tracking
-     */
     static async logTransaction(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
@@ -83,21 +79,48 @@ export class TransactionController {
                 target,
                 paymentMethod,
                 platform,
-                notes
+                notes,
+                checkType
             } = req.body;
+
+            // 1. Run Pre-Check
+            let preCheck = {
+                riskLevel: 'unknown',
+                communityReports: 0,
+                recommendation: 'No community reports found. Proceed with standard caution.',
+            };
+
+            let riskScore = 0;
+            let status = 'SAFE';
+
+            if (target) {
+                const reportsCount = await prisma.scamReport.count({
+                    where: { target: { contains: target, mode: 'insensitive' } }
+                });
+
+                if (reportsCount > 0) {
+                    preCheck = {
+                        riskLevel: reportsCount >= 3 ? 'high' : 'medium',
+                        communityReports: reportsCount,
+                        recommendation: `${reportsCount} previous report(s) found for this recipient. Consider using platform escrow instead.`
+                    };
+                    riskScore = reportsCount >= 3 ? 90 : 60;
+                    status = reportsCount >= 3 ? 'BLOCKED' : 'SUSPICIOUS';
+                }
+            }
 
             const transaction = await prisma.transactionJournal.create({
                 data: {
                     userId,
-                    checkType: 'MANUAL',
+                    checkType: checkType || 'MANUAL',
                     target: target || merchant,
                     amount: amount ? parseFloat(amount) : null,
                     merchant,
                     paymentMethod,
                     platform,
                     notes,
-                    riskScore: 0, // Manual logs are neutral by default
-                    status: 'SAFE',
+                    riskScore,
+                    status,
                     metadata: {
                         source: 'manual_entry',
                         loggedAt: new Date(),
@@ -105,7 +128,10 @@ export class TransactionController {
                 }
             });
 
-            res.status(201).json(transaction);
+            res.status(201).json({
+                transaction,
+                preCheck
+            });
         } catch (error) {
             next(error);
         }
