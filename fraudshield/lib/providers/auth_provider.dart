@@ -83,6 +83,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> signInWithGoogle(String idToken) async {
+    _loading = true;
+    notifyListeners();
+    try {
+      final userData = await api.signInWithGoogle(idToken);
+      _user = UserModel.fromJson(userData);
+      NotificationService.instance.initialize(_user!.id);
+      return true;
+    } catch (e) {
+      log('AuthProvider signInWithGoogle error: $e');
+      rethrow;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> signUp({
     required String email,
     required String password,
