@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:flutter/foundation.dart'; // Added for kDebugMode if preferred, but debugPrint is enough.
@@ -14,6 +15,9 @@ class ApiService {
   late final String baseUrl;
   String? _token;
   String? _refreshToken;
+
+  // SHA-256 Fingerprint for api.fraudshieldprotect.com
+  static const String _prodFingerprint = '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
 
   Future<void> init() async {
     final String rawBaseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
@@ -574,6 +578,7 @@ class ApiService {
 
   Future<dynamic> get(String path) async {
     try {
+      await _checkCertificatePinning();
       final response = await http
           .get(Uri.parse('$baseUrl$path'), headers: _headers)
           .timeout(const Duration(seconds: 10));
@@ -621,6 +626,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
     try {
+      await _checkCertificatePinning();
       final response = await http
           .post(
             Uri.parse('$baseUrl$path'),
@@ -641,6 +647,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) async {
     try {
+      await _checkCertificatePinning();
       final response = await http
           .patch(
             Uri.parse('$baseUrl$path'),
@@ -661,6 +668,7 @@ class ApiService {
 
   Future<dynamic> delete(String path) async {
     try {
+      await _checkCertificatePinning();
       final response = await http
           .delete(
             Uri.parse('$baseUrl$path'),
@@ -698,6 +706,34 @@ class ApiService {
         debugPrint('ApiService uploadFile error: $e');
       }
       rethrow;
+    }
+  }
+
+  /// Verifies the SSL certificate fingerprint for production API.
+  /// Skips check if in development or not hitting the production domain.
+  Future<void> _checkCertificatePinning() async {
+    // Only enforce on production domain
+    if (!baseUrl.contains('api.fraudshieldprotect.com')) {
+      return;
+    }
+
+    try {
+      // Use the SHA256 fingerprint retrieved from the server
+      await HttpCertificatePinning.check(
+        serverURL: baseUrl,
+        headerHttp: {},
+        sha: SHA.SHA256,
+        allowedSHAFingerprints: [_prodFingerprint],
+        timeout: 10,
+      );
+      if (kDebugMode) {
+        debugPrint('ApiService: SSL Pinning Verified Successfully');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('ApiService: SSL Pinning FAILED: $e');
+      }
+      rethrow; // Prevent request if pinning fails
     }
   }
 }

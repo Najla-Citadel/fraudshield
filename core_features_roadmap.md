@@ -1,7 +1,7 @@
 # FraudShield — Core Features Development Roadmap
 
-> **Last updated:** 23 Feb 2026
-> **Status:** MVP ~82% ready · 1 critical blocker (HTTPS/SSL)
+> **Last updated:** 24 Feb 2026
+> **Status:** MVP 🚀 Live · All Phase 1 blockers resolved
 
 ---
 
@@ -34,7 +34,7 @@
 | **Frontend** | Flutter (42 screens, 24 widgets, 6 services) |
 | **Database** | 16 Prisma models (incl. TransactionJournal, BadgeDefinition, AlertSubscription) |
 | **Deployment** | Docker Compose on DigitalOcean droplet |
-| **HTTPS** | ❌ Not configured — **last MVP blocker** |
+| **HTTPS** | ✅ Live on `api.fraudshieldprotect.com` (Feb 24) |
 | **CI/CD** | ❌ No automated pipeline |
 | **Testing** | Auth controller only (Jest) |
 
@@ -45,14 +45,14 @@
 
 | # | Task | Est. | Status |
 |---|------|------|--------|
-| 1.1 | Set up HTTPS/SSL with nginx + Let's Encrypt | 1-2 hrs | 🔴 BLOCKER |
-| 1.2 | Integrate Firebase Crashlytics | 1 hr | ⚠️ Recommended |
+| 1.1 | Set up HTTPS/SSL with nginx + Let's Encrypt | 1-2 hrs | ✅ Done |
+| 1.2 | Integrate Firebase Crashlytics | 1 hr | ✅ Done |
 | 1.3 | Remove debug logging from production builds | 30 min | ⚠️ Polish |
 | 1.4 | Final QA pass on all 42 screens | 2 hrs | ⚠️ Recommended |
 | 1.5 | Submit to Google Play Store (internal testing) | — | ✅ Done |
 | 1.6 | Prepare App Store listing | 2 hrs | ⚠️ Partial |
 
-**Exit criteria:** App live on Google Play with HTTPS enabled.
+**Exit criteria:** ✅ Met — App live with HTTPS on `api.fraudshieldprotect.com`.
 
 ---
 

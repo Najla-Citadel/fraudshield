@@ -18,6 +18,7 @@ dependencies:
   # Networking / parsing / open links
   #http: ^1.1.0
   http: any
+  http_certificate_pinning: ^3.0.1
   xml: ^6.1.0
   html: 0.15.6
   url_launcher: ^6.3.2
@@ -45,6 +46,7 @@ dependencies:
   share_plus: ^7.2.1
   firebase_core: ^4.4.0
   firebase_messaging: ^16.1.1
+  firebase_crashlytics: ^5.0.7
   shimmer: ^3.0.0
 
 dev_dependencies:
