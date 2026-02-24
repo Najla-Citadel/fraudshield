@@ -274,4 +274,65 @@ export class AuthController {
             next(error);
         }
     }
+
+    static async googleLogin(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idToken } = req.body;
+            if (!idToken) {
+                return res.status(400).json({ message: 'Google ID Token is required' });
+            }
+
+            const payload = await AuthService.verifyGoogleToken(idToken);
+            if (!payload) {
+                return res.status(401).json({ message: 'Invalid Google token' });
+            }
+
+            const { email, name, picture, sub: googleId } = payload;
+            if (!email) {
+                return res.status(400).json({ message: 'Google account must have an email' });
+            }
+
+            // Find or create user
+            let user = await prisma.user.findUnique({
+                where: { email },
+                include: { profile: true },
+            });
+
+            if (!user) {
+                // Auto-register (random password since they'll use Google)
+                const passwordHash = await AuthService.hashPassword(Math.random().toString(36).substring(2, 12));
+                user = await prisma.user.create({
+                    data: {
+                        email,
+                        fullName: name || 'Google User',
+                        passwordHash,
+                        profile: {
+                            create: {
+                                avatar: 'Felix',
+                                bio: 'Joined via Google',
+                            },
+                        },
+                    },
+                    include: { profile: true },
+                });
+            }
+
+            // Generate tokens
+            const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
+
+            // Store refresh token
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken },
+            });
+
+            res.json({
+                user: AuthService.toSafeUser(user),
+                token: accessToken,
+                refreshToken,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

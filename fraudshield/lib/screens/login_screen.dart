@@ -11,6 +11,7 @@ import '../widgets/app_logo.dart';
 import '../services/api_service.dart';
 import 'forgot_password_screen.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +25,10 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _loading = false;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
 
   @override
   void dispose() {
@@ -71,6 +76,50 @@ class _LoginScreenState extends State<LoginScreen> {
           content: Text("Error: $message"),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _tryGoogleSignIn() async {
+    setState(() => _loading = true);
+
+    try {
+      // 1. Trigger Google account picker
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account == null) {
+        setState(() => _loading = false);
+        return; // User cancelled
+      }
+
+      // 2. Get the auth tokens
+      final GoogleSignInAuthentication auth = await account.authentication;
+      final String? idToken = auth.idToken;
+
+      if (idToken == null) {
+        throw Exception('Failed to get Google ID Token');
+      }
+
+      // 3. Authenticate with backend
+      if (!mounted) return;
+      final success = await context.read<AuthProvider>().signInWithGoogle(idToken);
+      
+      if (success) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      debugPrint('Google Sign-In Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In failed: ${e.toString()}"),
+          backgroundColor: Colors.red,
         ),
       );
     } finally {
@@ -200,6 +249,64 @@ class _LoginScreenState extends State<LoginScreen> {
                               text: 'Log In',
                               isLoading: _loading,
                               onPressed: _trySignIn,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // 🔘 OR Divider
+                            Row(
+                              children: [
+                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.4),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // ⚪ Google Sign In Button
+                            InkWell(
+                              onTap: _loading ? null : _tryGoogleSignIn,
+                              borderRadius: BorderRadius.circular(16),
+                              child: GlassSurface(
+                                opacity: 0.1,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                borderRadius: 16,
+                                borderOpacity: 0.2,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
+                                      height: 20,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(
+                                        Icons.login, 
+                                        size: 20, 
+                                        color: Colors.white
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'Sign in with Google',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),

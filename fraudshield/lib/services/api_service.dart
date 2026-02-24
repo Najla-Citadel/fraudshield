@@ -93,6 +93,12 @@ class ApiService {
     await _setTokens(null, null);
   }
 
+  Future<Map<String, dynamic>> signInWithGoogle(String idToken) async {
+    final response = await post('/auth/google', {'idToken': idToken});
+    await _setTokens(response['token'], response['refreshToken']);
+    return response;
+  }
+
   Future<bool> refreshToken() async {
     if (_refreshToken == null) return false;
 

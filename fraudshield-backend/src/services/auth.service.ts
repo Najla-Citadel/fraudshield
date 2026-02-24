@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database';
 
 export class AuthService {
@@ -20,6 +21,8 @@ export class AuthService {
         return secret;
     }
     private static readonly JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+
+    private static readonly googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
     static async hashPassword(password: string): Promise<string> {
         return bcrypt.hash(password, 10);
@@ -51,6 +54,19 @@ export class AuthService {
         try {
             return jwt.verify(token, this.JWT_REFRESH_SECRET);
         } catch (error) {
+            return null;
+        }
+    }
+
+    static async verifyGoogleToken(idToken: string) {
+        try {
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+            return ticket.getPayload();
+        } catch (error) {
+            console.error('Google token verification failed:', error);
             return null;
         }
     }

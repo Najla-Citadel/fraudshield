@@ -111,6 +111,7 @@
 | 3.7 | App versioning / force update | 1 hr | 🟡 |
 | 3.8 | Soft delete for ScamReport | 30 min | 🟡 |
 | 3.9 | Docker healthcheck, pin versions, log rotation | 30 min | ✅ Done |
+| 3.10 | Google Sign-In integration | 4 hrs | 🟠 |
 
 ---
 
