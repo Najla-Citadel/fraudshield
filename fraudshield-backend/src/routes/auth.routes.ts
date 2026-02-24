@@ -20,7 +20,7 @@ router.post('/forgot-password', loginLimiter, AuthController.requestPasswordRese
 router.post('/reset-password', loginLimiter, AuthController.verifyAndResetPassword);
 
 // Protected routes
-router.use(passport.authenticate('jwt', { session: false }));
+router.use(authenticate);
 
 router.get('/profile', AuthController.getProfile);
 router.patch('/profile', AuthController.updateProfile);
