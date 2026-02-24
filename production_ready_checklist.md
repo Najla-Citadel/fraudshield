@@ -1,6 +1,6 @@
 # FraudShield — Production-Ready Checklist
 
-> **Last updated:** 23 Feb 2026 · Full audit of backend, Flutter, Docker, and infra.
+> **Last updated:** 24 Feb 2026 · Updated after HTTPS/SSL go-live and Crashlytics integration.
 
 ---
 
@@ -12,11 +12,11 @@
 | Backend Reliability | 0 | 0 | 3 | 3 | 6 |
 | Database & Data | 0 | 0 | 2 | 2 | 4 |
 | Deployment & Infra | 0 | 3 | 0 | 3 | 6 |
-| Mobile App | 0 | 0 | 6 | 1 | 7 |
+| Mobile App | 0 | 0 | 5 | 2 | 7 |
 | UX & Compliance | 0 | 0 | 3 | 2 | 5 |
-| **Total** | **0** | **4** | **14** | **20** | **38** |
+| **Total** | **0** | **4** | **13** | **21** | **38** |
 
-> **Progress:** 20 of 38 items completed (~53%). **Critical blockers resolved.**
+> **Progress:** 21 of 38 items completed (~55%). **MVP is live — all critical blockers resolved.**
 
 ---
 
@@ -72,9 +72,9 @@
 
 ### Deployment
 
-- [ ] **D4. Add health check to Docker Compose** ⏱️ 10 min
-- [ ] **D5. Pin Docker image versions** ⏱️ 10 min
-- [ ] **D6. Configure log rotation** ⏱️ 10 min
+- [x] **D4. Add health check to Docker Compose** ✅
+- [x] **D5. Pin Docker image versions** ✅
+- [x] **D6. Configure log rotation** ✅
 
 ### Database
 
@@ -89,15 +89,16 @@
 
 - [x] **M1. Voice Detection → "Coming Soon"** ✅
 - [x] **M2. Add proper loading / error states** ✅
-- [ ] **M3. Add certificate pinning** ⏱️ 1 hr
+- [x] **M3. Add certificate pinning** ✅
 - [ ] **M4. Secure token storage** ⏱️ 1 hr
 - [ ] **M5. Add app versioning check** ⏱️ 1 hr
-- [ ] **M6. Add crash reporting** ⏱️ 1 hr
+- [x] **M6. Add crash reporting** ✅
+  - Integrated Firebase Crashlytics (Feb 24). Crash events stream to Firebase console.
 - [ ] **M7. Remove debug logging from production** ⏱️ 30 min
 
 ### Backend
 
-- [ ] **R4. Add structured logging with Winston** ⏱️ 1 hr
+- [x] **R4. Add structured logging with Winston** ✅
 - [ ] **R5. Add unit tests beyond auth** ⏱️ 3–4 hrs
 - [ ] **R6. Add API documentation (Swagger/OpenAPI)** ⏱️ 2 hrs
 
@@ -110,8 +111,8 @@
 
 - [x] **U1. Add "Forgot Password" flow** ✅
 - [x] **U4. User profile editing** ✅
-- [ ] **U2. Add PDPA data export** ⏱️ 2 hrs
-- [ ] **U3. Add Terms update consent** ⏱️ 1 hr
+- [x] **U2. Add PDPA data export** ✅
+- [x] **U3. Add Terms update consent** ✅
 - [ ] **U5. Add Bahasa Malaysia localization** ⏱️ 6 hrs
 
 ---

@@ -17,15 +17,33 @@ export class AlertWorkerService {
         if (this.isInitialized) return;
 
         // Support for REDIS_URL or individual host/port environment variables
+        // Defaults to localhost:6380 to match local Docker setup when REDIS_PORT is missing
+        const host = process.env.REDIS_HOST || 'localhost';
+        const port = Number(process.env.REDIS_PORT) || 6380;
+        const password = process.env.REDIS_PASSWORD || undefined;
+
         const redisOptions: any = process.env.REDIS_URL
             ? process.env.REDIS_URL
             : {
-                host: process.env.REDIS_HOST || 'redis',
-                port: Number(process.env.REDIS_PORT) || 6379,
-                password: process.env.REDIS_PASSWORD,
+                host,
+                port,
+                password,
             };
 
-        this.trendingAlertQueue = new Queue('trending-alerts', redisOptions, {
+        const connectionString = typeof redisOptions === 'string'
+            ? 'via REDIS_URL'
+            : `${host}:${port}`;
+
+        console.log(`📶 Bull Queue: Attempting to connect to Redis at ${connectionString}`);
+
+        if (!process.env.REDIS_HOST || !process.env.REDIS_PORT) {
+            if (typeof redisOptions !== 'string') {
+                console.log('⚠️  Bull Queue: Using default connection parameters (localhost:6380). Ensure your .env is correctly configured for production.');
+            }
+        }
+
+        // Bull Queue Options
+        const queueOptions: Queue.QueueOptions = {
             defaultJobOptions: {
                 removeOnComplete: true,
                 removeOnFail: false, // Keep failed jobs for debugging
@@ -35,7 +53,16 @@ export class AlertWorkerService {
                     delay: 5000,
                 },
             },
-        });
+        };
+
+        // If using a host/port object, it must be nested under 'redis' in options
+        // If using a URL string, it can be passed as the second argument
+        if (typeof redisOptions === 'string') {
+            this.trendingAlertQueue = new Queue('trending-alerts', redisOptions, queueOptions);
+        } else {
+            queueOptions.redis = redisOptions;
+            this.trendingAlertQueue = new Queue('trending-alerts', queueOptions);
+        }
 
         // 🏗️ Define the worker process
         this.trendingAlertQueue.process(async (job) => {

@@ -5,6 +5,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import passport from './config/passport';
+import logger from './utils/logger';
 
 // Load environment variables
 dotenv.config();
@@ -75,7 +76,12 @@ app.use(compression());
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 } else {
-    app.use(morgan('combined'));
+    // Stream morgan logs to Winston
+    app.use(morgan('combined', {
+        stream: {
+            write: (message) => logger.info(message.trim())
+        }
+    }));
 }
 
 // Health check endpoint
@@ -135,11 +141,10 @@ app.use((req: Request, res: Response) => {
 
 // Global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    // Log the error with more context
-    console.error(`[${new Date().toISOString()}] Error ${req.method} ${req.path}:`, {
+    // Log the error with structured logging
+    logger.error(`${req.method} ${req.path} failed`, {
         message: err.message,
         stack: err.stack,
-        // body: req.body, REDACTED: Prevent logging sensitive data like passwords
         params: req.params,
         query: req.query
     });
