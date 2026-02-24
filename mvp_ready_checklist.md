@@ -2,7 +2,7 @@
 
 This checklist contains only the absolute bare minimum requirements to safely launch FraudShield as a Minimum Viable Product (MVP) on the App Store and Play Store. Polishing and scaling optimizations are deferred for post-launch updates.
 
-> **Last updated:** 24 Feb 2026
+> **Last updated:** 25 Feb 2026
 
 ---
 
@@ -57,8 +57,9 @@ The following tasks from the main production checklist have intentionally been d
 
 *   **Security:** Email Verification (S7), JWT Refresh Tokens (S6).
 *   **Reliability:** API Pagination (R2), Request Timeout (R3), Database Indexes (DB1), DB Connection Pooling (DB4), Soft Delete (DB3).
-*   **Mobile App:** Secure token storage migration (M4), Certificate Pinning (M3), App Versioning check (M5), removing debug logs (M7), improved loading/error states (M2).
-*   **Compliance & Docs:** PDPA Data Export (U2), Unit Tests (R5), API Docs (R6), Terms update consent (U3), Structured Logging (R4), Re-enable Rewards Routes (R1).
+*   **Mobile App:** Secure token storage migration (M4), **Certificate Pinning (M3) ✅**, App Versioning check (M5), removing debug logs (M7), improved loading/error states (M2).
+*   **Compliance & Docs:** **PDPA Data Export (U2) ✅**, Unit Tests (R5), API Docs (R6), **Terms update consent (U3) ✅**, **Structured Logging (R4) ✅**, Re-enable Rewards Routes (R1).
+*   **Infrastructure:** **Docker healthcheck, pinning, and log rotation (D4-D6) ✅**
 
 ---
 

@@ -15,6 +15,7 @@ class ApiService {
   late final String baseUrl;
   String? _token;
   String? _refreshToken;
+  Future<bool>? _refreshFuture;
 
   // SHA-256 Fingerprint for api.fraudshieldprotect.com
   static const String _prodFingerprint = '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
@@ -95,6 +96,20 @@ class ApiService {
   Future<bool> refreshToken() async {
     if (_refreshToken == null) return false;
 
+    // Deduplicate simultaneous refresh calls
+    if (_refreshFuture != null) {
+      return _refreshFuture!;
+    }
+
+    _refreshFuture = _performRefresh();
+    try {
+      return await _refreshFuture!;
+    } finally {
+      _refreshFuture = null;
+    }
+  }
+
+  Future<bool> _performRefresh() async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/refresh'),
@@ -105,8 +120,14 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await _setTokens(data['token'], data['refreshToken']);
+        if (kDebugMode) {
+          debugPrint('ApiService: Token refreshed successfully');
+        }
         return true;
       } else {
+        if (kDebugMode) {
+          debugPrint('ApiService: Token refresh failed (${response.statusCode})');
+        }
         await signOut();
         return false;
       }
@@ -151,72 +172,28 @@ class ApiService {
   // ---------------- Admin ----------------
 
   Future<List<Map<String, dynamic>>> getAdminAlerts() async {
-    final response = await http.get(Uri.parse('$baseUrl/admin/alerts'), headers: _headers);
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to get alerts');
-    }
+    final response = await get('/admin/alerts');
+    return List<Map<String, dynamic>>.from(response);
   }
 
   // ==== Password Reset ====
 
   Future<Map<String, dynamic>> requestPasswordReset(String email) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/forgot-password'),
-        headers: _headers,
-        body: jsonEncode({'email': email}),
-      );
-
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        return data;
-      } else {
-        throw Exception(data['message'] ?? 'Failed to request password reset');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService requestPasswordReset error: $e');
-      }
-      rethrow;
-    }
+    return post('/auth/forgot-password', {'email': email});
   }
 
   Future<Map<String, dynamic>> resetPassword(
       String email, String otp, String newPassword) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/auth/reset-password'),
-        headers: _headers,
-        body: jsonEncode({
-          'email': email,
-          'otp': otp,
-          'newPassword': newPassword,
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        return data;
-      } else {
-        throw Exception(data['message'] ?? 'Failed to reset password');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService resetPassword error: $e');
-      }
-      rethrow;
-    }
+    return post('/auth/reset-password', {
+      'email': email,
+      'otp': otp,
+      'newPassword': newPassword,
+    });
   }
 
   Future<Map<String, dynamic>> getTransactionDetails(String txId) async {
-    final response = await http.get(Uri.parse('$baseUrl/admin/transactions/$txId'), headers: _headers);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to get transaction details');
-    }
+    final response = await get('/admin/transactions/$txId');
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> labelTransaction({
@@ -413,12 +390,8 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getMySubscription() async {
-    final response = await http.get(Uri.parse('$baseUrl/features/subscription'), headers: _headers);
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to get subscription');
-    }
+    final response = await get('/features/subscription');
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> createSubscription({
@@ -436,14 +409,8 @@ class ApiService {
   // ---------------- Points ----------------
 
   Future<Map<String, dynamic>> getMyPoints() async {
-    final response = await http
-        .get(Uri.parse('$baseUrl/features/points'), headers: _headers)
-        .timeout(const Duration(seconds: 10));
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to get points');
-    }
+    final response = await get('/features/points');
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> addPoints({
@@ -577,22 +544,15 @@ class ApiService {
   // ---------------- CRUD Templates (for other features) ----------------
 
   Future<dynamic> get(String path) async {
-    try {
-      await _checkCertificatePinning();
-      final response = await http
-          .get(Uri.parse('$baseUrl$path'), headers: _headers)
-          .timeout(const Duration(seconds: 10));
-      
-      return _processResponse(response, 'GET', path);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService GET error: $e');
-      }
-      rethrow;
-    }
+    return _sendRequest('GET', path);
   }
 
-  dynamic _processResponse(http.Response response, String method, String path) async {
+  dynamic _processResponse(
+    http.Response response, 
+    String method, 
+    String path, {
+    Map<String, dynamic>? body,
+  }) async {
     final contentType = response.headers['content-type'] ?? '';
     final isJson = contentType.contains('application/json');
 
@@ -602,18 +562,22 @@ class ApiService {
         data = jsonDecode(response.body);
       } catch (e) {
         debugPrint('ApiService: Failed to decode JSON response: ${response.body}');
-        // Fallback or rethrow based on preference
       }
     }
 
     if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
       return data ?? (response.body.isNotEmpty ? response.body : null);
     } else if (response.statusCode == 401 && _refreshToken != null && !path.contains('/auth/refresh')) {
+      if (kDebugMode) {
+        debugPrint('ApiService: 401 Unauthorized for $path. Attempting refresh...');
+      }
+      
       final success = await refreshToken();
       if (success) {
-        // Retry logic is complex for multi-part or streaming, but simple for normal requests
-        // For simplicity here, we re-run the request manually or via simplified logic
-        // Recommendation: use a more robust interceptor approach if this grows.
+        if (kDebugMode) {
+          debugPrint('ApiService: Retrying $method $path after successful refresh');
+        }
+        return _sendRequest(method, path, body: body);
       }
       throw Exception('Session expired');
     } else {
@@ -624,69 +588,56 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
+  Future<dynamic> _sendRequest(String method, String path, {Map<String, dynamic>? body}) async {
     try {
       await _checkCertificatePinning();
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 10));
-      
-      final result = await _processResponse(response, 'POST', path);
-      return result is Map<String, dynamic> ? result : {'results': result};
+
+      final uri = Uri.parse('$baseUrl$path');
+      http.Response response;
+
+      switch (method) {
+        case 'GET':
+          response = await http.get(uri, headers: _headers).timeout(const Duration(seconds: 10));
+          break;
+        case 'POST':
+          response = await http.post(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
+          break;
+        case 'PATCH':
+          response = await http.patch(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
+          break;
+        case 'DELETE':
+          response = await http.delete(uri, headers: _headers).timeout(const Duration(seconds: 10));
+          break;
+        default:
+          throw Exception('Unsupported method: $method');
+      }
+
+      return _processResponse(response, method, path, body: body);
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('ApiService POST error: $e');
+        debugPrint('ApiService $method $path error: $e');
       }
       rethrow;
     }
+  }
+
+  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
+    final result = await _sendRequest('POST', path, body: body);
+    return result is Map<String, dynamic> ? result : {'results': result};
   }
 
   Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) async {
-    try {
-      await _checkCertificatePinning();
-      final response = await http
-          .patch(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 10));
-      
-      final result = await _processResponse(response, 'PATCH', path);
-      return result is Map<String, dynamic> ? result : {'results': result};
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService PATCH error: $e');
-      }
-      rethrow;
-    }
+    final result = await _sendRequest('PATCH', path, body: body);
+    return result is Map<String, dynamic> ? result : {'results': result};
   }
 
   Future<dynamic> delete(String path) async {
-    try {
-      await _checkCertificatePinning();
-      final response = await http
-          .delete(
-            Uri.parse('$baseUrl$path'),
-            headers: _headers,
-          )
-          .timeout(const Duration(seconds: 10));
-      
-      return _processResponse(response, 'DELETE', path);
-    } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService DELETE error: $e');
-      }
-      rethrow;
-    }
+    return _sendRequest('DELETE', path);
   }
 
   Future<Map<String, dynamic>> uploadFile(String filePath) async {
     try {
+      await _checkCertificatePinning();
       final url = Uri.parse('$baseUrl/upload/single');
       final request = http.MultipartRequest('POST', url);
       
