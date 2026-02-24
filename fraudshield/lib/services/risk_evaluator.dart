@@ -28,58 +28,67 @@ class RiskResult {
 class RiskEvaluator {
   static final ApiService _api = ApiService.instance;
 
-  // ── Main entry point for URL checks (async, calls backend) ──
+  // ── Main entry point for URL checks (async, calls backend V2 engine) ──
   static Future<RiskResult> evaluateUrl(String url) async {
     int score = 0;
     List<String> reasons = [];
     bool apiChecked = false;
 
-    // 1. Run heuristic checks first (instant, offline)
+    // 1. Run local heuristic checks first (instant, offline fallback)
     final heuristic = _heuristicUrlCheck(url);
     score += heuristic.score;
     reasons.addAll(heuristic.reasons);
 
-    // 2. Call Google Safe Browsing API via backend
+    // 2. Call V2 centralized risk engine (takes priority)
     try {
-      final res = await _api.checkUrl(url);
+      final res = await _api.evaluateRisk(type: 'url', value: url);
       apiChecked = true;
 
-      if (res['safe'] == false) {
-        final threats = List<String>.from(res['threats'] ?? []);
-        score += 90; // API-flagged = very high risk
+      final int v2Score  = (res['score'] as num?)?.toInt() ?? 0;
+      final String level = res['level'] as String? ?? 'low';
+      final List<dynamic> v2Reasons = res['reasons'] as List? ?? [];
 
-        for (final threat in threats) {
-          switch (threat) {
-            case 'SOCIAL_ENGINEERING':
-              reasons.insert(0, '⚠️ Phishing site detected by Google Safe Browsing');
-              break;
-            case 'MALWARE':
-              reasons.insert(0, '⚠️ Malware distribution detected by Google Safe Browsing');
-              break;
-            case 'UNWANTED_SOFTWARE':
-              reasons.insert(0, '⚠️ Unwanted software detected by Google Safe Browsing');
-              break;
-            default:
-              reasons.insert(0, '⚠️ Flagged as $threat by Google Safe Browsing');
+      if (v2Score > score) {
+        // V2 backend knows more — use its score and reasons
+        score = v2Score;
+        reasons = ['🤖 Community Intelligence Score'] + v2Reasons.cast<String>();
+      }
+
+      // Still apply Google Safe Browsing for URLs specifically
+      try {
+        final sbRes = await _api.checkUrl(url);
+        if (sbRes['safe'] == false) {
+          final threats = List<String>.from(sbRes['threats'] ?? []);
+          score = ((score + 90) / 2).round().clamp(90, 100);
+          for (final threat in threats) {
+            switch (threat) {
+              case 'SOCIAL_ENGINEERING':
+                reasons.insert(0, '⚠️ Phishing site detected by Google Safe Browsing');
+                break;
+              case 'MALWARE':
+                reasons.insert(0, '⚠️ Malware distribution detected by Google Safe Browsing');
+                break;
+              default:
+                reasons.insert(0, '⚠️ Flagged as $threat by Google Safe Browsing');
+            }
           }
+        } else if (v2Score < 30) {
+          reasons.add('✅ Verified safe by Google Safe Browsing');
         }
-      } else {
-        reasons.add('✅ Verified safe by Google Safe Browsing');
+      } catch (_) {
+        // Safe Browsing failure is non-fatal
       }
     } catch (e) {
-      log('Safe Browsing API call failed: $e');
-      reasons.add('⚡ Could not verify with Google (offline check only)');
+      log('V2 risk evaluation failed, falling back to local heuristics: $e');
+      reasons.add('⚡ Could not reach community database (offline check only)');
     }
 
-    // 3. Determine level
+    // 3. Determine level from final score
     String level;
-    if (score >= 70) {
-      level = 'high';
-    } else if (score >= 40) {
-      level = 'medium';
-    } else {
-      level = 'low';
-    }
+    if (score >= 80) level = 'critical';
+    else if (score >= 55) level = 'high';
+    else if (score >= 30) level = 'medium';
+    else level = 'low';
 
     return RiskResult(
       score: score.clamp(0, 100),
@@ -105,9 +114,8 @@ class RiskEvaluator {
       }
     }
 
+    // Run local heuristic for instant offline feedback while API loads
     String localType = backendType == 'phone' ? 'Phone No' : backendType == 'bank' ? 'Bank Account' : type;
-
-    // 1. Run heuristic check for basic patterns
     RiskResult localCheck = evaluate(type: localType, value: cleanValue);
     int score = localCheck.score;
     List<String> reasons = List.from(localCheck.reasons);
@@ -118,42 +126,40 @@ class RiskEvaluator {
     List<String> sources = [];
     String level = localCheck.level;
 
+    // Call V2 centralized risk engine
     try {
-      final res = await _api.lookupPaymentRisk(type: backendType, value: cleanValue);
-      
-      if (res['found'] == true) {
-        communityReports = res['communityReports'] ?? 0;
-        verifiedReports = res['verifiedReports'] ?? 0;
-        categories = List<String>.from(res['categories'] ?? []);
-        sources = List<String>.from(res['sources'] ?? []);
-        final String apiLevel = res['riskLevel'] ?? 'low';
-        final String apiRec = res['recommendation'] ?? '';
-        
-        if (apiRec.isNotEmpty) {
-          reasons.insert(0, '🌐 Community: $apiRec');
-        }
+      final res = await _api.evaluateRisk(type: backendType, value: cleanValue);
 
-        // Backend risk takes priority if higher
-        if (apiLevel == 'high') {
-          score = 90;
-          level = 'high';
-        } else if (apiLevel == 'medium' && score < 70) {
-          score += 40;
-          level = 'medium';
+      final int v2Score = (res['score'] as num?)?.toInt() ?? 0;
+      final List<dynamic> v2Reasons = res['reasons'] as List? ?? [];
+      final Map<String, dynamic> factors = Map<String, dynamic>.from(res['factors'] ?? {});
+
+      communityReports = (factors['communityReports'] as num?)?.toInt() ?? 0;
+      verifiedReports  = (factors['verifiedReports'] as num?)?.toInt() ?? 0;
+      sources = communityReports > 0 ? ['community'] : [];
+
+      if (v2Score > score) {
+        // V2 backend has more info — use its score
+        score = v2Score;
+        reasons = v2Reasons.cast<String>();
+      } else if (communityReports > 0) {
+        // Merge community info even if score is similar
+        for (final r in v2Reasons) {
+          if (!reasons.contains(r)) reasons.add(r as String);
         }
       }
     } catch (e) {
-      log('Payment risk lookup failed: $e');
-      reasons.add('⚡ Could not access community database (offline check only)');
+      log('V2 payment risk evaluation failed: $e');
+      // Fall through to local heuristic result
     }
 
-    if (score >= 70) level = 'high';
-    else if (score >= 40) level = 'medium';
+    if (score >= 80) level = 'critical';
+    else if (score >= 55) level = 'high';
+    else if (score >= 30) level = 'medium';
+    else level = 'low';
 
-    // Remove "No risks detected" if we added community risks
-    if (score > 0) {
-      reasons.remove('No risks detected');
-    }
+    // Remove generic fallback message if we have community data
+    if (score > 0) reasons.remove('No risks detected');
 
     return RiskResult(
       score: score.clamp(0, 100),

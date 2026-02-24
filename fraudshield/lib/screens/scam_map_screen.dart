@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/glass_surface.dart';
+import 'scam_reporting_screen.dart';
 
 class ScamMapScreen extends StatefulWidget {
   const ScamMapScreen({super.key});
@@ -20,8 +21,12 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
   List<dynamic> _reports = [];
   bool _isLoading = true;
   String? _selectedCategory;
+  LatLng? _lastSearchPosition;
+  bool _showSearchThisArea = false;
+  LatLng? _currentCameraPosition;
   
   final Set<Marker> _markers = {};
+  final Set<Circle> _circles = {};
   
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(3.1390, 101.6869), // Kuala Lumpur
@@ -63,16 +68,34 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
             LatLng(position.latitude, position.longitude),
           ),
         );
+        // Initial fetch around user
+        _fetchReports(
+          lat: position.latitude, 
+          lng: position.longitude, 
+          radius: 5.0
+        );
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
     }
   }
 
-  Future<void> _fetchReports() async {
-    setState(() => _isLoading = true);
+  Future<void> _fetchReports({double? lat, double? lng, double? radius}) async {
+    setState(() {
+      _isLoading = true;
+      _showSearchThisArea = false;
+      if (lat != null && lng != null) {
+        _lastSearchPosition = LatLng(lat, lng);
+        _updateCircles(lat, lng, radius ?? 5.0);
+      }
+    });
+
     try {
-      final reports = await ApiService.instance.getPublicFeed();
+      final reports = await ApiService.instance.getPublicFeed(
+        lat: lat,
+        lng: lng,
+        radius: radius,
+      );
       if (mounted) {
         setState(() {
           _reports = reports;
@@ -82,7 +105,43 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
       }
     } catch (e) {
       debugPrint('Error fetching reports: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _updateCircles(double lat, double lng, double radiusKm) {
+    setState(() {
+      _circles.clear();
+      _circles.add(
+        Circle(
+          circleId: const CircleId('search_radius'),
+          center: LatLng(lat, lng),
+          radius: radiusKm * 1000,
+          fillColor: AppColors.accentGreen.withOpacity(0.05),
+          strokeColor: AppColors.accentGreen.withOpacity(0.2),
+          strokeWidth: 1,
+        ),
+      );
+    });
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    _currentCameraPosition = position.target;
+  }
+
+  void _onCameraIdle() {
+    if (_lastSearchPosition == null || _currentCameraPosition == null) return;
+    
+    // Check if camera moved significantly (e.g. more than 1km)
+    final distance = Geolocator.distanceBetween(
+      _lastSearchPosition!.latitude,
+      _lastSearchPosition!.longitude,
+      _currentCameraPosition!.latitude,
+      _currentCameraPosition!.longitude,
+    );
+
+    if (distance > 1000) {
+      setState(() => _showSearchThisArea = true);
     }
   }
 
@@ -158,7 +217,11 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 report: report,
                 onVerify: () {
                   Navigator.pop(context);
-                  _fetchReports();
+                  _fetchReports(
+                    lat: _lastSearchPosition?.latitude,
+                    lng: _lastSearchPosition?.longitude,
+                    radius: 5.0
+                  );
                 },
               ),
             ],
@@ -181,9 +244,27 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
               _mapController = controller;
               _mapController?.setMapStyle(_mapStyle);
             },
+            onCameraMove: _onCameraMove,
+            onCameraIdle: _onCameraIdle,
+            onLongPress: (latLng) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ScamReportingScreen(
+                    prefilledLat: latLng.latitude,
+                    prefilledLng: latLng.longitude,
+                  ),
+                ),
+              ).then((_) => _fetchReports(
+                lat: _lastSearchPosition?.latitude,
+                lng: _lastSearchPosition?.longitude,
+                radius: 5.0
+              ));
+            },
             markers: _markers,
+            circles: _circles,
             myLocationEnabled: true,
-            myLocationButtonEnabled: false, // Custom button instead
+            myLocationButtonEnabled: false, 
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
           ),
@@ -269,6 +350,68 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
             ),
           ),
 
+          // SEARCH THIS AREA BUTTON
+          if (_showSearchThisArea && !_isLoading)
+            Positioned(
+              top: 140,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_currentCameraPosition != null) {
+                      _fetchReports(
+                        lat: _currentCameraPosition!.latitude,
+                        lng: _currentCameraPosition!.longitude,
+                        radius: 5.0,
+                      );
+                    }
+                  },
+                  child: GlassSurface(
+                    borderRadius: 30,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.refresh, color: Colors.white, size: 16),
+                        SizedBox(width: 8),
+                        Text(
+                          'SEARCH THIS AREA',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // Long Press Tip
+          if (!_isLoading)
+            Positioned(
+              bottom: 100,
+              left: 20,
+              child: GlassSurface(
+                borderRadius: 12,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Row(
+                  children: [
+                    Icon(Icons.touch_app_outlined, color: AppColors.accentGreen.withOpacity(0.7), size: 14),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Long press to report a scam at a location',
+                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 10),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
           // 3. BOTTOM BUTTONS
           Positioned(
             bottom: 30,
@@ -282,7 +425,11 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 const SizedBox(height: 12),
                 _buildRoundButton(
                   icon: Icons.refresh,
-                  onTap: _fetchReports,
+                  onTap: () => _fetchReports(
+                    lat: _lastSearchPosition?.latitude,
+                    lng: _lastSearchPosition?.longitude,
+                    radius: 5.0
+                  ),
                 ),
               ],
             ),
@@ -308,7 +455,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
     );
   }
 
-  // Dark Map Style (simplified for example)
+  // Dark Map Style
   final String _mapStyle = '''
   [
     {

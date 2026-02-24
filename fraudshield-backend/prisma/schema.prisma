@@ -33,6 +33,7 @@ model User {
   alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
   transactionJournals TransactionJournal[]
   refreshToken        String?             @unique
+  comments            Comment[]
 }
 
 model Profile {
@@ -85,11 +86,24 @@ model ScamReport {
   longitude   Float?
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
+  comments    Comment[]
 
   @@index([isPublic])
   @@index([createdAt])
   @@index([category])
   @@index([status])
+}
+
+model Comment {
+  id        String     @id @default(uuid())
+  text      String
+  userId    String
+  reportId  String
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@index([reportId])
 }
 
 model Verification {

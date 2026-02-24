@@ -3,6 +3,8 @@ import { SubscriptionController, PointsController, BehavioralController } from '
 import { RewardsController } from '../controllers/rewards.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
+import { RiskEvaluationController } from '../controllers/risk-evaluation.controller';
+import { LeaderboardController } from '../controllers/leaderboard.controller';
 
 import passport from 'passport';
 
@@ -13,6 +15,9 @@ router.use(passport.authenticate('jwt', { session: false }));
 
 // Safe Browsing
 router.post('/check-url', SafeBrowsingController.checkUrl);
+
+// AI Risk Score V2 — Centralized Evaluator
+router.post('/evaluate-risk', RiskEvaluationController.evaluate);
 
 // Subscriptions
 router.get('/plans', SubscriptionController.getPlans);
@@ -29,6 +34,10 @@ router.post('/rewards/redeem', RewardsController.redeemReward);
 router.get('/redemptions', RewardsController.getMyRedemptions);
 router.post('/rewards/daily', RewardsController.claimDailyReward);
 router.post('/rewards/seed', RewardsController.seedRewards); // Admin/dev only
+
+// Leaderboards
+router.get('/leaderboard', LeaderboardController.getGlobalLeaderboard);
+router.get('/leaderboard/me', LeaderboardController.getMyRank);
 
 // Badges
 router.get('/badges', BadgeController.getMyBadges);
