@@ -110,6 +110,8 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         children: [
           const SizedBox(height: 20),
           _buildBalanceCard(),
+          const SizedBox(height: 24),
+          _buildLeaderboardCard(),
           const SizedBox(height: 32),
           _buildHistoryHeader(),
           const SizedBox(height: 16),
@@ -211,6 +213,51 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLeaderboardCard() {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, '/leaderboard'),
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.accentGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.emoji_events_rounded, color: AppColors.accentGreen, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Global Leaderboard',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'See how you rank against other protectors.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+          ],
+        ),
       ),
     );
   }

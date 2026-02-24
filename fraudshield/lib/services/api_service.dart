@@ -61,39 +61,14 @@ class ApiService {
     required String password,
     String? fullName,
   }) async {
-    final url = Uri.parse('$baseUrl/auth/signup');
-    if (kDebugMode) {
-      debugPrint('ApiService: POST $url');
-    }
-
-    try {
-      final response = await http
-          .post(
-            url,
-            headers: _headers,
-            body: jsonEncode({
-              'email': email,
-              'password': password,
-              if (fullName != null) 'fullName': fullName,
-            }),
-          )
-          .timeout(const Duration(seconds: 10)); // Force timeout after 10s
-      
-      if (kDebugMode) {
-        debugPrint('ApiService: Response Status: ${response.statusCode}');
-      }
-
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 201) {
-        await _setTokens(data['token'], data['refreshToken']);
-        return data['user'];
-      } else {
-        throw Exception('Signup failed: ${response.statusCode} - ${data['message'] ?? response.body}');
-      }
-    } catch (e, st) {
-      print('ApiService signUp error: $e\n$st');
-      rethrow;
-    }
+    final data = await post('/auth/signup', {
+      'email': email,
+      'password': password,
+      if (fullName != null) 'fullName': fullName,
+    });
+    
+    await _setTokens(data['token'], data['refreshToken']);
+    return data['user'];
   }
 
   Future<Map<String, dynamic>> signIn({
@@ -314,8 +289,18 @@ class ApiService {
     return response as List;
   }
 
-  Future<List<dynamic>> getPublicFeed() async {
-    final response = await get('/reports/public');
+  Future<List<dynamic>> getPublicFeed({
+    double? lat,
+    double? lng,
+    double? radius,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    String query = '?limit=$limit&offset=$offset';
+    if (lat != null && lng != null && radius != null) {
+      query += '&lat=$lat&lng=$lng&radius=$radius';
+    }
+    final response = await get('/reports/public$query');
     if (response is Map && response.containsKey('results')) {
       return response['results'] as List;
     }
@@ -325,6 +310,33 @@ class ApiService {
   Future<Map<String, dynamic>> getReportDetails(String reportId) async {
     final response = await get('/reports/$reportId');
     return response as Map<String, dynamic>;
+  }
+
+  // ---------------- Community & Interaction (Phase 3) ----------------
+
+  Future<List<dynamic>> getLeaderboard() async {
+    final response = await get('/features/leaderboard');
+    return response as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getMyRank() async {
+    final response = await get('/features/leaderboard/me');
+    return response as Map<String, dynamic>;
+  }
+
+  Future<List<dynamic>> getComments(String reportId) async {
+    final response = await get('/reports/$reportId/comments');
+    return response as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> submitComment({
+    required String reportId,
+    required String text,
+  }) async {
+    return post('/reports/comments', {
+      'reportId': reportId,
+      'text': text,
+    });
   }
 
   Future<Map<String, dynamic>> searchReports({
@@ -541,6 +553,21 @@ class ApiService {
     return await get('/reports/lookup?type=$type&value=$value');
   }
 
+  // ---------------- AI Risk Score V2 ----------------
+
+  /// Centralized risk evaluation. Replaces the old heuristic-only approach.
+  /// [type] is one of: 'phone', 'bank', 'url', 'doc'
+  Future<Map<String, dynamic>> evaluateRisk({
+    required String type,
+    required String value,
+  }) async {
+    return await post('/features/evaluate-risk', {
+      'type': type,
+      'value': value,
+    });
+  }
+
+
   // ---------------- Alerts ----------------
 
   Future<Map<String, dynamic>> getTrendingAlerts({int hours = 72, double? lat, double? lng}) async {
@@ -597,7 +624,9 @@ class ApiService {
         }
         throw Exception('Session expired');
       } else {
-        throw Exception('GET $path failed: ${response.statusCode}');
+        final data = jsonDecode(response.body);
+        final message = data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null);
+        throw Exception(message ?? 'GET $path failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -634,7 +663,9 @@ class ApiService {
         }
         throw Exception('Session expired');
       } else {
-        throw Exception('POST $path failed: ${response.statusCode}');
+        final data = jsonDecode(response.body);
+        final message = data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null);
+        throw Exception(message ?? 'POST $path failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -671,7 +702,9 @@ class ApiService {
         }
         throw Exception('Session expired');
       } else {
-        throw Exception('PATCH $path failed: ${response.statusCode}');
+        final data = jsonDecode(response.body);
+        final message = data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null);
+        throw Exception(message ?? 'PATCH $path failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -706,7 +739,9 @@ class ApiService {
         }
         throw Exception('Session expired');
       } else {
-        throw Exception('DELETE $path failed: ${response.statusCode}');
+        final data = jsonDecode(response.body);
+        final message = data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null);
+        throw Exception(message ?? 'DELETE $path failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) {

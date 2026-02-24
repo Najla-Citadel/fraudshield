@@ -165,13 +165,40 @@ export class ReportController {
 
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
-            const { limit = '20', offset = '0' } = req.query;
+            const { limit = '20', offset = '0', lat, lng, radius } = req.query;
             const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
             const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
 
+            let whereClause: any = { isPublic: true };
+
+            // Optional localized filtering
+            if (lat && lng && radius) {
+                const latitude = parseFloat(lat as string);
+                const longitude = parseFloat(lng as string);
+                const radiusKm = parseFloat(radius as string);
+
+                if (!isNaN(latitude) && !isNaN(longitude) && !isNaN(radiusKm)) {
+                    // Rough bounding box for better performance before complex math
+                    const latDegreeSearch = radiusKm / 111.32; // 1 degree = ~111km
+                    const lngDegreeSearch = radiusKm / (111.32 * Math.cos(latitude * (Math.PI / 180)));
+
+                    whereClause = {
+                        ...whereClause,
+                        latitude: {
+                            gte: latitude - latDegreeSearch,
+                            lte: latitude + latDegreeSearch,
+                        },
+                        longitude: {
+                            gte: longitude - lngDegreeSearch,
+                            lte: longitude + lngDegreeSearch,
+                        },
+                    };
+                }
+            }
+
             const [reports, total] = await Promise.all([
                 (prisma as any).scamReport.findMany({
-                    where: { isPublic: true },
+                    where: whereClause,
                     include: {
                         _count: {
                             select: { verifications: true },
@@ -191,24 +218,16 @@ export class ReportController {
                     take: limitNum,
                     skip: offsetNum,
                 }),
-                (prisma as any).scamReport.count({ where: { isPublic: true } }),
+                (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
             // Anonymize sensitive fields
             const redactedReports = reports.map((report: any) => {
                 const profile = report.user?.profile;
-                if (!profile) {
-                    console.warn(`[PublicFeed] Report ${report.id} is missing reporter profile data.`);
-                }
 
-                // Ensure badges is an array (sometimes stored as stringified JSON in DB)
                 let badges = profile?.badges;
                 if (typeof badges === 'string') {
-                    try {
-                        badges = JSON.parse(badges);
-                    } catch (e) {
-                        badges = [];
-                    }
+                    try { badges = JSON.parse(badges); } catch (e) { badges = []; }
                 }
 
                 return {

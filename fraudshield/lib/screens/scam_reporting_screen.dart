@@ -12,7 +12,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 
 class ScamReportingScreen extends StatefulWidget {
-  const ScamReportingScreen({super.key});
+  final double? prefilledLat;
+  final double? prefilledLng;
+
+  const ScamReportingScreen({
+    super.key, 
+    this.prefilledLat, 
+    this.prefilledLng,
+  });
 
   @override
   State<ScamReportingScreen> createState() => _ScamReportingScreenState();
@@ -36,6 +43,28 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     'Document',
     'Others',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.prefilledLat != null && widget.prefilledLng != null) {
+      _fetchAddressFromCoords(widget.prefilledLat!, widget.prefilledLng!);
+    }
+  }
+
+  Future<void> _fetchAddressFromCoords(double lat, double lng) async {
+    try {
+      final placemarks = await geo.placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty && mounted) {
+        final p = placemarks.first;
+        setState(() {
+          _locationController.text = '${p.street}, ${p.subLocality}, ${p.locality}';
+        });
+      }
+    } catch (e) {
+      log('Error reverse geocoding: $e');
+    }
+  }
 
   @override
   void dispose() {
@@ -67,7 +96,17 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     bool isPhoneValid = _reportType != 'Phone' || _phoneController.text.trim().isNotEmpty;
     if (!isPhoneValid || _descController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all required fields'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Please fill in all required fields'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    if (_descController.text.trim().length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Description must be at least 10 characters long'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -82,7 +121,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
       } catch (e) {
         log('Error uploading file: $e');
         if (mounted) {
-           setState(() => _isSubmitting = false);
+          setState(() => _isSubmitting = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to upload evidence: $e')),
           );
@@ -93,37 +132,40 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
 
     try {
       // Determine coordinates
-      double? latitude;
-      double? longitude;
+      double? latitude = widget.prefilledLat;
+      double? longitude = widget.prefilledLng;
 
       final manualLocation = _locationController.text.trim();
       
-      if (manualLocation.isNotEmpty) {
-        try {
-          // Attempt to geocode the keyed-in location
-          final locations = await geo.locationFromAddress(manualLocation);
-          if (locations.isNotEmpty) {
-            latitude = locations.first.latitude;
-            longitude = locations.first.longitude;
-            log('Geocoded "$manualLocation" to: $latitude, $longitude');
-          }
-        } catch (e) {
-          log('Geocoding failed for "$manualLocation": $e');
-        }
-      }
-
-      // Fallback to device GPS if manual geocoding failed or was empty
+      // Only attempt to geocode or use GPS if we don't have prefilled coordinates
       if (latitude == null || longitude == null) {
-        try {
-          final position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high,
-            timeLimit: const Duration(seconds: 5),
-          );
-          latitude = position.latitude;
-          longitude = position.longitude;
-          log('Using GPS fallback: $latitude, $longitude');
-        } catch (e) {
-          log('Could not fetch GPS fallback coordinates: $e');
+        if (manualLocation.isNotEmpty) {
+          try {
+            // Attempt to geocode the keyed-in location
+            final locations = await geo.locationFromAddress(manualLocation);
+            if (locations.isNotEmpty) {
+              latitude = locations.first.latitude;
+              longitude = locations.first.longitude;
+              log('Geocoded "$manualLocation" to: $latitude, $longitude');
+            }
+          } catch (e) {
+            log('Geocoding failed for "$manualLocation": $e');
+          }
+        }
+
+        // Fallback to device GPS if manual geocoding failed or was empty
+        if (latitude == null || longitude == null) {
+          try {
+            final position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high,
+              timeLimit: const Duration(seconds: 5),
+            );
+            latitude = position.latitude;
+            longitude = position.longitude;
+            log('Using GPS fallback: $latitude, $longitude');
+          } catch (e) {
+            log('Could not fetch GPS fallback coordinates: $e');
+          }
         }
       }
 
