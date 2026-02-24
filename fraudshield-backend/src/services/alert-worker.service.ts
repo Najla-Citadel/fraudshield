@@ -16,14 +16,16 @@ export class AlertWorkerService {
     static initialize() {
         if (this.isInitialized) return;
 
-        const redisOptions = {
-            host: process.env.REDIS_HOST || 'localhost',
-            port: Number(process.env.REDIS_PORT) || 6380,
-            password: process.env.REDIS_PASSWORD,
-        };
+        // Support for REDIS_URL or individual host/port environment variables
+        const redisOptions: any = process.env.REDIS_URL
+            ? process.env.REDIS_URL
+            : {
+                host: process.env.REDIS_HOST || 'redis',
+                port: Number(process.env.REDIS_PORT) || 6379,
+                password: process.env.REDIS_PASSWORD,
+            };
 
-        this.trendingAlertQueue = new Queue('trending-alerts', {
-            redis: redisOptions,
+        this.trendingAlertQueue = new Queue('trending-alerts', redisOptions, {
             defaultJobOptions: {
                 removeOnComplete: true,
                 removeOnFail: false, // Keep failed jobs for debugging
