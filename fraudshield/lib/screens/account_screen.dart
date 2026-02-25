@@ -11,9 +11,10 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/settings_group.dart';
-import 'subscription_screen.dart' as crate; // Alias to avoid conflict if any, though likely safe
+import 'subscription_screen.dart' as crate;
 import 'badges_screen.dart';
 import 'status_details_screen.dart';
+import 'profile_screen.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -24,13 +25,8 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  // ================= CONTROLLERS =================
-  final TextEditingController _nameController = TextEditingController();
-
   // ================= STATE =================
   bool _loading = true;
-  bool _savingName = false;
-  bool _editingName = false;
 
   String _email = '';
   String _avatarSeed = 'Felix';
@@ -44,7 +40,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
@@ -54,44 +49,19 @@ class _AccountScreenState extends State<AccountScreen> {
     final profile = authProvider.userProfile;
 
     if (profile == null) {
-      await authProvider.refreshProfile();
+      // Clear flag to avoid infinite loops if it fails persistently
+      await authProvider.refreshProfile().catchError((_) => null);
     }
 
     if (!mounted) return;
 
     final updatedProfile = authProvider.userProfile;
-    _nameController.text = updatedProfile?.fullName ?? '';
     _avatarSeed = updatedProfile?.profile?.avatar ?? 'Felix';
     _email = authProvider.user?.email ?? '';
 
     setState(() => _loading = false);
   }
 
-  Future<void> _saveName() async {
-    setState(() => _savingName = true);
-
-    try {
-      await ApiService.instance.updateProfile(
-        fullName: _nameController.text.trim(),
-      );
-      
-      // Refresh local state
-      await context.read<AuthProvider>().refreshProfile();
-
-      if (!mounted) return;
-
-      setState(() {
-        _savingName = false;
-        _editingName = false;
-      });
-
-      _toast('Name updated');
-    } catch (e) {
-      log('Error saving name: $e');
-      if (mounted) setState(() => _savingName = false);
-      _toast('Failed to update name');
-    }
-  }
 
   Future<void> _saveAvatar(String seed) async {
     setState(() => _avatarSeed = seed);
@@ -172,6 +142,12 @@ class _AccountScreenState extends State<AccountScreen> {
     return AdaptiveScaffold(
       title: 'My Account',
       backgroundColor: AppColors.deepNavy,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.language, color: Colors.white),
+          onPressed: () => _openPlaceholder('Language Setting'),
+        ),
+      ],
       body: Padding(
         padding: const EdgeInsets.only(bottom: 40),
         child: Column(
@@ -212,24 +188,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
                 SettingsTile(
-                  icon: Icons.notifications_rounded,
-                  title: 'Notifications',
-                  onTap: () => _openPlaceholder('Notification Settings'),
-                ),
-                SettingsTile(
-                  icon: Icons.language, 
-                  title: 'Language',
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('English', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
-                      const SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
-                    ],
-                  ),
-                  onTap: () => _openPlaceholder('Language'),
-                ),
-                SettingsTile(
                   icon: Icons.dark_mode_rounded,
                   title: 'Dark Mode',
                   trailing: Switch(
@@ -256,11 +214,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   icon: Icons.security, 
                   title: 'Two-Factor Authentication',
                   onTap: () => _openPlaceholder('Two-Factor Authentication'),
-                ),
-                SettingsTile(
-                  icon: Icons.devices_rounded,
-                  title: 'Device History',
-                  onTap: () => _openPlaceholder('Device History'),
                 ),
               ],
             ),
@@ -456,111 +409,76 @@ class _AccountScreenState extends State<AccountScreen> {
         children: [
           const SizedBox(height: 10),
           // Avatar
-          Stack(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
-                ),
-                child: CircleAvatar(
-                  radius: 50,
-                  backgroundColor: const Color(0xFF1E293B),
-                  backgroundImage: NetworkImage(
-                    'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
+          GestureDetector(
+            onTap: _openAvatarPicker,
+            child: Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
                   ),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: const Color(0xFF1E293B),
+                    backgroundImage: NetworkImage(
+                      'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      color: AppColors.accentGreen,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 14),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Name and View Profile
+          Column(
+            children: [
+              Text(
+                user?.fullName ?? 'Alexander Wright',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                ),
                 child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: AppColors.accentGreen,
-                    shape: BoxShape.circle,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 14),
+                  child: const Text(
+                    'View Profile',
+                    style: TextStyle(
+                      color: AppColors.accentGreen,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Name
-          Text(
-            user?.fullName ?? 'Alexander Wright',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           const SizedBox(height: 12),
-          // Tier Badge
-          GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BadgesScreen()),
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.9),
-                    Colors.white.withOpacity(0.6),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.shield_rounded, color: Colors.black, size: 16),
-                  const SizedBox(width: 8),
-                  Text(
-                    context.watch<AuthProvider>().isSubscribed ? 'GOLD PROTECTOR' : 'SILVER PROTECTOR',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.arrow_forward_ios, color: Colors.black, size: 10),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          // View Status Benefits
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const StatusDetailsScreen()),
-              );
-            },
-            child: const Text(
-              'View Status Benefits ↗',
-              style: TextStyle(
-                color: AppColors.accentGreen,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -604,35 +522,84 @@ class _AccountScreenState extends State<AccountScreen> {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '$points',
-                            style: const TextStyle(
-                              fontSize: 42,
-                              fontWeight: FontWeight.bold,
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '$points',
+                                style: const TextStyle(
+                                  fontSize: 42,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' PTS',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.accentGreen.withOpacity(0.8),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Tier Badge beside points
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const BadgesScreen()),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
                               color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.shield_rounded, color: Colors.black, size: 12),
+                                const SizedBox(width: 6),
+                                Text(
+                                  context.watch<AuthProvider>().isSubscribed ? 'GOLD PROTECTOR' : 'SILVER PROTECTOR',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          TextSpan(
-                            text: ' PTS',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.accentGreen.withOpacity(0.8),
-                            ),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // View Status Benefits under points
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const StatusDetailsScreen()),
+                        );
+                      },
+                      child: Text(
+                        'View Status Benefits ↗',
+                        style: TextStyle(
+                          color: AppColors.accentGreen.withOpacity(0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
-                ),
-                Icon(
-                  Icons.layers_outlined,
-                  size: 48,
-                  color: Colors.white.withOpacity(0.1),
                 ),
               ],
             ),
@@ -710,22 +677,6 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _editName() {
-    return Column(
-      children: [
-        AdaptiveTextField(
-          controller: _nameController,
-          label: 'Full Name',
-        ),
-        const SizedBox(height: 12),
-        AdaptiveButton(
-          onPressed: _savingName ? null : _saveName,
-          text: 'Save Changes',
-          isLoading: _savingName,
-        ),
-      ],
-    );
-  }
 
 
 
