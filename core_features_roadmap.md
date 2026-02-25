@@ -1,26 +1,28 @@
 # FraudShield — Core Features Development Roadmap
 
-> **Last updated:** 22 Feb 2026
-> **Status:** MVP ~78% ready · 1 critical blocker remaining (HTTPS/SSL)
+> **Last updated:** 25 Feb 2026
+> **Status:** MVP 🚀 Live · All Phase 1 blockers resolved · Hardening in progress
 
 ---
 
 ## Current State: What's Built vs What's Real
 
-| Feature | Frontend | Backend | Real or Mock? |
-|---------|:--------:|:-------:|:-------------:|
-| **Fraud Check** (Phone/URL/Bank/Doc) | ✅ | ✅ | ⚠️ URL is real (Google Safe Browsing), rest is heuristic |
+| Feature | Frontend | Backend | Status |
+|---------|:--------:|:-------:|:------:|
+| **Fraud Check** (Phone/URL/Bank/Doc) | ✅ | ✅ | ⚠️ URL real (Google Safe Browsing), rest heuristic |
 | **QR Scanner** | ✅ | ✅ | ⚠️ Basic keyword matching on decoded URLs |
-| **Scam Reporting** | ✅ | ✅ | ✅ Real — submits to PostgreSQL with evidence |
-| **Community Feed + Verification** | ✅ | ✅ | ✅ Real — with gamification, badges, points |
-| **Voice Scam Detection** | ✅ | ❌ | 🚫 Mock → now hidden behind "Coming Soon" |
-| **Transaction Risk Alerts** | ✅ | ❌ | 🚫 Mock — no real transaction monitoring |
+| **Scam Reporting** | ✅ | ✅ | ✅ Real — PostgreSQL with evidence |
+| **Community Feed + Verification** | ✅ | ✅ | ✅ Real — gamification, badges, points |
+| **Voice Scam Detection** | ✅ | ❌ | 🚫 Hidden behind "Coming Soon" |
+| **Transaction Journal** | ✅ | ✅ | ✅ Real — manual logging with categories (PHONE/BANK/DOC) |
 | **Subscription System** | ✅ | ✅ | ⚠️ DB & plans exist, no payment gateway |
-| **Rewards / Points Store** | ✅ | ✅ | ✅ Real — points, redemptions, badges |
+| **Rewards / Points Store** | ✅ | ✅ | ✅ Real — catalog, redemptions, points history |
 | **Scam Map** | ✅ | ✅ | ✅ Real — geo-tagged reports on map |
 | **Badge System** | ✅ | ✅ | ✅ Real — evaluation engine, definitions, awards |
-| **User Auth** | ✅ | ✅ | ✅ Real — signup, login, password change, forgot password |
-| **PDPA Compliance** | ✅ | ✅ | ✅ Privacy Policy, ToS, consent, account deletion |
+| **User Auth** | ✅ | ✅ | ✅ Real — full flow incl. forgot password |
+| **User Profile** | ✅ | ✅ | ✅ Real — view, edit, statistics |
+| **PDPA Compliance** | ✅ | ✅ | ✅ Privacy Policy, ToS, consent, deletion |
+| **Transaction Risk Alerts** | ✅ | ❌ | 🚫 Mock — no real transaction monitoring |
 | **Security Health Score** | ❌ | ❌ | ❌ Not started |
 | **Push Notifications** | ❌ | ❌ | ❌ Not started |
 
@@ -29,10 +31,10 @@
 | Component | Status |
 |-----------|--------|
 | **Backend** | Node.js + Express + Prisma + PostgreSQL + Redis on DigitalOcean |
-| **Frontend** | Flutter (37 screens, 24 widgets, 6 services) |
-| **Database** | 14 Prisma models (User, Profile, ScamReport, Verification, etc.) |
+| **Frontend** | Flutter (42 screens, 24 widgets, 6 services) |
+| **Database** | 16 Prisma models (incl. TransactionJournal, BadgeDefinition, AlertSubscription) |
 | **Deployment** | Docker Compose on DigitalOcean droplet |
-| **HTTPS** | ❌ Not configured — **last MVP blocker** |
+| **HTTPS** | ✅ Live on `api.fraudshieldprotect.com` (Feb 24) |
 | **CI/CD** | ❌ No automated pipeline |
 | **Testing** | Auth controller only (Jest) |
 
@@ -41,16 +43,16 @@
 ## Phase 1: MVP Launch (Week 1)
 *Goal: Ship to App Store & Play Store*
 
-| # | Task | Est. | Status | Priority |
-|---|------|------|--------|----------|
-| 1.1 | Set up HTTPS/SSL with nginx + Let's Encrypt | 1-2 hrs | ❌ | 🔴 BLOCKER |
-| 1.2 | Integrate Firebase Crashlytics | 1 hr | ❌ | 🟠 Recommended |
-| 1.3 | Remove debug logging from production builds | 30 min | ❌ | 🟡 Polish |
-| 1.4 | Final QA pass on all screens | 2 hrs | ❌ | 🟠 Recommended |
-| 1.5 | Submit to Google Play Store (internal testing) | 1 hr | ✅ Done | ✅ |
-| 1.6 | Prepare App Store listing (screenshots, description) | 2 hrs | ⚠️ Partial | 🟠 |
+| # | Task | Est. | Status |
+|---|------|------|--------|
+| 1.1 | Set up HTTPS/SSL with nginx + Let's Encrypt | 1-2 hrs | ✅ Done |
+| 1.2 | Integrate Firebase Crashlytics | 1 hr | ✅ Done |
+| 1.3 | Remove debug logging from production builds | 30 min | ⚠️ Polish |
+| 1.4 | Final QA pass on all 42 screens | 2 hrs | ⚠️ Recommended |
+| 1.5 | Submit to Google Play Store (internal testing) | — | ✅ Done |
+| 1.6 | Prepare App Store listing | 2 hrs | ⚠️ Partial |
 
-**Exit criteria:** App is live on at least Google Play internal track with HTTPS enabled.
+**Exit criteria:** ✅ Met — App live with HTTPS on `api.fraudshieldprotect.com`.
 
 ---
 
@@ -61,130 +63,119 @@
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2A.1 | Research CCID Semak Mule API (scraping/API access) | 2 hrs | 🔴 |
-| 2A.2 | Build backend proxy endpoint `/api/fraud/phone-lookup` | 3 hrs | 🔴 |
-| 2A.3 | Crowdsource from community reports — query internal `ScamReport` DB for phone numbers | 2 hrs | 🟠 |
-| 2A.4 | Update Flutter `fraud_check_screen.dart` to show source of check (CCID, community, etc.) | 2 hrs | 🟠 |
+| 2A.1 | Research CCID Semak Mule API | 2 hrs | ✅ Done |
+| 2A.2 | Build backend proxy `/api/fraud/phone-lookup` | 3 hrs | ✅ Done |
+| 2A.3 | Crowdsource from community ScamReport DB | 2 hrs | ✅ Done |
+| 2A.4 | Show source of check in Flutter UI | 2 hrs | ✅ Done |
 
 ### 2B. Enhanced URL Analysis
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2B.1 | ✅ Google Safe Browsing API integration | Done | ✅ |
-| 2B.2 | Add VirusTotal API as secondary source (free tier: 4 req/min) | 2 hrs | 🟠 |
-| 2B.3 | Build URL redirect-following for shortened links (bit.ly, tinyurl) | 3 hrs | 🟠 |
-| 2B.4 | Display check source in results ("Verified against Google Safe Browsing") | 1 hr | 🟡 |
+| 2B.1 | Google Safe Browsing API | — | ✅ Done |
+| 2B.2 | VirusTotal API secondary source | 2 hrs | 🟠 |
+| 2B.3 | URL redirect-following for shortened links | 3 hrs | 🟠 |
+| 2B.4 | Display check source in results | 1 hr | 🟡 |
 
 ### 2C. QR Code Deep Analysis
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2C.1 | Follow redirects on decoded QR URLs before analysis | 2 hrs | 🟠 |
-| 2C.2 | Cross-reference decoded URLs against Google Safe Browsing | 1 hr | 🟠 |
-| 2C.3 | Detect and warn about unusual QR data (non-URL content, large payloads) | 2 hrs | 🟡 |
+| 2C.1 | Follow redirects on decoded QR URLs | 2 hrs | 🟠 |
+| 2C.2 | Cross-reference against Google Safe Browsing | 1 hr | 🟠 |
+| 2C.3 | Detect unusual QR data | 2 hrs | 🟡 |
 
 ### 2D. Database & Performance
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2D.1 | Add database indexes (ScamReport fields) | 15 min | 🔴 |
-| 2D.2 | Add unique constraint on Verification `[reportId, userId]` | 10 min | 🔴 |
-| 2D.3 | Add API pagination to `getPublicFeed`, `getMyReports`, `searchReports` | 1 hr | 🟠 |
-| 2D.4 | Configure DB connection pooling | 10 min | 🟡 |
+| 2D.1 | Add ScamReport indexes | 15 min | 🔴 |
+| 2D.2 | Unique constraint on Verification | 10 min | 🔴 |
+| 2D.3 | API pagination | 1 hr | 🟠 |
+| 2D.4 | DB connection pooling | 10 min | 🟡 |
 
-**Exit criteria:** At least 2 fraud check types use real external data sources. Database is indexed.
+**Exit criteria:** ≥2 fraud check types use real external data. Database indexed.
 
 ---
 
 ## Phase 3: Security Hardening (Weeks 3–5)
-*Goal: Raise security posture appropriate for an anti-fraud app*
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 3.1 | JWT refresh token flow (15-min access + 30-day refresh) | 3 hrs | 🟠 |
+| 3.1 | JWT refresh token flow | 3 hrs | ✅ Done |
 | 3.2 | Email verification on signup | 3 hrs | 🟠 |
-| 3.3 | Input validation on report submission (express-validator) | 1 hr | 🟠 |
-| 3.4 | Secure token storage (flutter_secure_storage) | 1 hr | 🟠 |
-| 3.5 | Certificate pinning | 1 hr | 🟡 |
-| 3.6 | App versioning check (force update mechanism) | 1 hr | 🟡 |
-| 3.7 | Soft delete for ScamReport | 30 min | 🟡 |
-| 3.8 | Docker health checks, pinned image versions, log rotation | 30 min | 🟡 |
-
-**Exit criteria:** Refresh tokens implemented, signup requires email verification, tokens stored securely.
+| 3.3 | Input validation (express-validator) | 1 hr | 🟠 |
+| 3.4 | Rate limiting on auth endpoints | 30 min | 🟠 |
+| 3.5 | Secure token storage (flutter_secure_storage) | 1 hr | 🟠 |
+| 3.6 | Certificate pinning | 1 hr | ✅ Done |
+| 3.7 | App versioning / force update | 1 hr | 🟡 |
+| 3.8 | Soft delete for ScamReport | 30 min | 🟡 |
+| 3.9 | Docker healthcheck, pin versions, log rotation | 30 min | ✅ Done |
+| 3.10 | Google Sign-In integration | 4 hrs | 🟠 |
 
 ---
 
 ## Phase 4: Monetization & Payment (Weeks 5–8)
-*Goal: Enable real revenue collection*
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 4.1 | Integrate payment gateway (Billplz / Stripe MY / Revenue Monster) | 8 hrs | 🔴 |
-| 4.2 | Wire subscription creation to payment flow | 3 hrs | 🔴 |
-| 4.3 | Add payment receipt / invoice generation | 2 hrs | 🟠 |
-| 4.4 | Implement subscription expiry and renewal logic | 3 hrs | 🟠 |
-| 4.5 | Re-enable and complete rewards routes | 1 hr | 🟡 |
-| 4.6 | Implement free trial (14-day) flow | 2 hrs | 🟡 |
+| 4.1 | Payment gateway (Billplz / Stripe / Revenue Monster) | 8 hrs | 🔴 |
+| 4.2 | Wire subscription to payment flow | 3 hrs | 🔴 |
+| 4.3 | Payment receipt / invoice | 2 hrs | 🟠 |
+| 4.4 | Subscription expiry & renewal | 3 hrs | 🟠 |
+| 4.5 | Wire rewards to payment | 1 hr | 🟡 |
+| 4.6 | Free trial (14-day) | 2 hrs | 🟡 |
 
-### Recommended Pricing
+### Pricing
 
-| Tier | Price | Target Audience |
-|------|-------|-----------------|
-| Free Shield | RM 0 | Everyone — must be genuinely useful |
-| Shield Basic | RM 2.99/mo (RM 29.90/yr) | Gen Z, gig workers |
-| Shield Family | RM 5.99/mo (RM 59.90/yr) | Heads of household |
-
-**Exit criteria:** At least one working payment flow; users can pay and receive premium features.
+| Tier | Price | Target |
+|------|-------|--------|
+| Free Shield | RM 0 | Everyone |
+| Shield Basic | RM 2.99/mo | Gen Z, gig workers |
+| Shield Family | RM 5.99/mo | Heads of household |
 
 ---
 
 ## Phase 5: Engagement & Retention (Weeks 6–10)
-*Goal: Prevent "one-time use" app syndrome*
 
-| # | Task | Est. | Priority |
-|---|------|------|----------|
-| 5.1 | Push notification scam alerts (Firebase Cloud Messaging) | 6 hrs | 🔴 |
-| 5.2 | "Daily scam digest" notification system | 4 hrs | 🟠 |
-| 5.3 | Recent checks history (local storage) | 2 hrs | 🟠 |
-| 5.4 | Share scam warnings to WhatsApp | 2 hrs | 🟠 |
-| 5.5 | Streak rewards ("check in daily to level up") | 3 hrs | 🟡 |
-| 5.6 | Community scam heat map (enhanced `scam_map_screen.dart`) | 4 hrs | 🟡 |
-| 5.7 | Emergency CTA ("Call Police" / "Call Bank") on high-risk results | 1 hr | 🟡 |
-
-**Exit criteria:** Push notifications working, daily digest configured, WhatsApp sharing enabled.
+| # | Task | Est. | Status |
+|---|------|------|--------|
+| 5.1 | Push notifications (FCM) | 6 hrs | 🔴 |
+| 5.2 | Daily scam digest | 4 hrs | 🟠 |
+| 5.3 | Recent checks history | 2 hrs | ✅ Done |
+| 5.4 | WhatsApp sharing | 2 hrs | 🟠 |
+| 5.5 | Streak rewards | 3 hrs | 🟡 |
+| 5.6 | Enhanced scam heat map | 4 hrs | 🟡 |
+| 5.7 | Emergency CTA on high-risk results | 1 hr | 🟡 |
 
 ---
 
-## Phase 6: Compliance, Testing & Platform Maturity (Weeks 8–12)
-*Goal: Production-grade reliability and legal compliance*
+## Phase 6: Compliance, Testing & Maturity (Weeks 8–12)
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 6.1 | PDPA data export ("Download My Data") | 2 hrs | 🟠 |
-| 6.2 | Terms of Service update consent tracking | 1 hr | 🟡 |
-| 6.3 | Structured logging with Winston | 1 hr | 🟡 |
-| 6.4 | Unit tests for report, rewards, feature controllers | 4 hrs | 🟠 |
-| 6.5 | API documentation (Swagger/OpenAPI) | 2 hrs | 🟡 |
+| 6.1 | PDPA data export | 2 hrs | ✅ Done |
+| 6.2 | Terms update consent tracking | 1 hr | ✅ Done |
+| 6.3 | Structured logging (Winston) | 1 hr | ✅ Done |
+| 6.4 | Unit tests for all controllers | 4 hrs | 🟠 |
+| 6.5 | API docs (Swagger/OpenAPI) | 2 hrs | 🟡 |
 | 6.6 | CI/CD pipeline (GitHub Actions) | 3 hrs | 🟠 |
-| 6.7 | Proper loading/error states across all screens | 2 hrs | 🟡 |
-| 6.8 | Bahasa Malaysia (BM) localization | 6 hrs | 🟠 |
-
-**Exit criteria:** Data export functional, CI/CD running, BM support shipped.
+| 6.7 | Loading/error states across 42 screens | 2 hrs | 🟡 |
+| 6.8 | Bahasa Malaysia localization | 6 hrs | 🟠 |
 
 ---
 
 ## Phase 7: Differentiation & Growth (Months 4–6)
-*Goal: Build defensible competitive moats*
 
-| # | Task | Est. | Priority |
-|---|------|------|----------|
-| 7.1 | Security Health Score (computed from user behavior + checks) | 2 wks | 🟡 |
-| 7.2 | Family protection (share shield with family members) | 2 wks | 🟡 |
-| 7.3 | Android home screen widget (latest scam alerts) | 1 wk | 🟡 |
-| 7.4 | Voice detection research/POC (Whisper API on transcripts) | 3 wks | 🟡 |
-| 7.5 | Telco API partnerships (Maxis/Celcom/Digi) | Ongoing | 🟡 |
-| 7.6 | Bank API partnerships for transaction monitoring | Ongoing | 🟡 |
-| 7.7 | B2B data licensing (sell scam intelligence to banks) | Ongoing | 🟡 |
+| # | Task | Est. |
+|---|------|------|
+| 7.1 | Security Health Score | 2 wks |
+| 7.2 | Family protection | 2 wks |
+| 7.3 | Android home screen widget | 1 wk |
+| 7.4 | Voice detection POC (Whisper API) | 3 wks |
+| 7.5 | Telco API partnerships | Ongoing |
+| 7.6 | Bank API partnerships | Ongoing |
+| 7.7 | B2B data licensing | Ongoing |
 
 ---
 
@@ -208,7 +199,7 @@ gantt
     section Phase 3: Security
     JWT Refresh Tokens           :p3a, 2026-03-10, 3d
     Email Verification           :p3b, after p3a, 3d
-    Secure Storage + Validation  :p3c, 2026-03-10, 3d
+    Rate Limiting + Validation   :p3c, 2026-03-10, 3d
     
     section Phase 4: Monetization
     Payment Gateway              :crit, p4a, 2026-03-20, 10d
@@ -236,29 +227,29 @@ gantt
 
 | Phase | Items | Est. Hours | Timeline |
 |-------|:-----:|:----------:|----------|
-| **1. MVP Launch** | 4 remaining | ~6 hrs | Week 1 |
+| **1. MVP Launch** | 3 remaining | ~5 hrs | Week 1 |
 | **2. Real Detection** | 12 items | ~20 hrs | Weeks 2–4 |
-| **3. Security Hardening** | 8 items | ~12 hrs | Weeks 3–5 |
+| **3. Security Hardening** | 9 items | ~13 hrs | Weeks 3–5 |
 | **4. Monetization** | 6 items | ~19 hrs | Weeks 5–8 |
-| **5. Engagement & Retention** | 7 items | ~22 hrs | Weeks 6–10 |
+| **5. Engagement** | 6 remaining | ~20 hrs | Weeks 6–10 |
 | **6. Compliance & Testing** | 8 items | ~21 hrs | Weeks 8–12 |
 | **7. Differentiation** | 7 items | 6+ weeks | Months 4–6 |
-| **Grand Total** | **52 items** | **~100 hrs** (Phases 1–6) | **~3 months** |
+| **Grand Total** | **51 items** | **~98 hrs** (Ph 1–6) | **~3 months** |
 
 ---
 
 ## Key Decision Points
 
 > [!IMPORTANT]
-> ### Decisions to Make Before Phase 4
-> 1. **Payment gateway choice:** Billplz (MY-focused, simple) vs Stripe (global, more features) vs Revenue Monster (MY, multiple methods)
-> 2. **Push notification service:** Firebase Cloud Messaging (free, Google) vs OneSignal (free tier, more control)
-> 3. **Phone number data source:** CCID Semak Mule (official, may require partnership) vs community crowdsource only
-> 4. **Pricing strategy:** Confirm RM 2.99/5.99 tiers or adjust based on early user feedback
+> ### Decisions Before Phase 4
+> 1. **Payment gateway:** Billplz vs Stripe vs Revenue Monster
+> 2. **Push notifications:** FCM vs OneSignal
+> 3. **Phone data source:** CCID Semak Mule vs community crowdsource
+> 4. **Pricing:** Confirm RM 2.99/5.99 tiers
 
 > [!WARNING]
-> ### Risks to Monitor
-> - **Solo developer velocity** — 100 hrs = ~3 months at part-time. Consider hiring Phase 4+.
-> - **Scam data quality** — Crowdsourced reports need verification to avoid defamation risk.
-> - **Voice detection** — Still 6+ months away. Keep it hidden until real POC works.
-> - **App Store rejection** — iOS may flag security/fraud apps for additional review.
+> ### Risks
+> - **Solo dev velocity** — 98 hrs ≈ 3 months part-time
+> - **Scam data quality** — crowdsourced reports need verification
+> - **Voice detection** — 6+ months away, keep hidden
+> - **Transaction Risk Alerts** — currently mock, do NOT market as real

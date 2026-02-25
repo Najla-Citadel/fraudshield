@@ -50,4 +50,86 @@ export class UserController {
             next(error);
         }
     }
+
+    static async exportData(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const data = await prisma.user.findUnique({
+                where: { id: userId },
+                include: {
+                    profile: true,
+                    reports: {
+                        include: {
+                            verifications: true,
+                            comments: true,
+                        },
+                    },
+                    userTransactions: true,
+                    transactionJournals: true,
+                    alerts: true,
+                    subscriptions: {
+                        include: {
+                            plan: true,
+                        },
+                    },
+                    redemptions: {
+                        include: {
+                            reward: true,
+                        },
+                    },
+                    alertSubscription: true,
+                },
+            });
+
+            if (!data) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            // Omit sensitive security fields
+            const { passwordHash, refreshToken, ...safeData } = data;
+
+            res.status(200).json({
+                exportDate: new Date().toISOString(),
+                data: safeData,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async updateTermsConsent(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+            const { version } = req.body;
+
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            if (!version) {
+                return res.status(400).json({ message: 'Terms version is required' });
+            }
+
+            await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    acceptedTermsVersion: version,
+                    acceptedTermsAt: new Date(),
+                },
+            });
+
+            res.status(200).json({
+                message: 'Consent recorded successfully',
+                version,
+                timestamp: new Date().toISOString(),
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }

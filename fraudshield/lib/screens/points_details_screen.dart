@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
+import '../widgets/skeleton_card.dart';
+import '../widgets/error_state.dart';
 
 class PointsDetailsScreen extends StatefulWidget {
   const PointsDetailsScreen({super.key});
@@ -13,6 +15,7 @@ class PointsDetailsScreen extends StatefulWidget {
 
 class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   bool _loading = true;
+  bool _hasError = false;
   int _balance = 0;
   List<dynamic> _transactions = [];
 
@@ -30,11 +33,17 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
           _balance = res['totalPoints'] ?? 0;
           _transactions = res['transactions'] ?? [];
           _loading = false;
+          _hasError = false;
         });
       }
     } catch (e) {
       log('Error loading points details: $e');
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _hasError = true;
+        });
+      }
     }
   }
 
@@ -63,23 +72,53 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         ),
       ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.accentGreen))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  _buildBalanceCard(),
-                  const SizedBox(height: 32),
-                  _buildHistoryHeader(),
-                  const SizedBox(height: 16),
-                  _buildTransactionHistory(),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_hasError) {
+      return ErrorState(onRetry: () {
+        setState(() {
+          _loading = true;
+          _hasError = false;
+        });
+        _loadData();
+      });
+    }
+
+    if (_loading) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const SkeletonCard(height: 200, margin: EdgeInsets.zero),
+            const SizedBox(height: 32),
+            const SkeletonCard(height: 80, margin: EdgeInsets.zero),
+            const SizedBox(height: 16),
+            const SkeletonCard(height: 80, margin: EdgeInsets.zero),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          _buildBalanceCard(),
+          const SizedBox(height: 24),
+          _buildLeaderboardCard(),
+          const SizedBox(height: 32),
+          _buildHistoryHeader(),
+          const SizedBox(height: 16),
+          _buildTransactionHistory(),
+          const SizedBox(height: 40),
+        ],
+      ),
     );
   }
 
@@ -174,6 +213,51 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLeaderboardCard() {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, '/leaderboard'),
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.03),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.accentGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.emoji_events_rounded, color: AppColors.accentGreen, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Global Leaderboard',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'See how you rank against other protectors.',
+                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+          ],
+        ),
       ),
     );
   }

@@ -9,23 +9,55 @@ export class AlertController {
      */
     static async getTrendingAlerts(req: Request, res: Response, next: NextFunction) {
         try {
+            // Fetch user preferences
+            const userId = req.user!.id;
+            const subscription = await (prisma as any).alertSubscription.findUnique({
+                where: { userId }
+            });
+            const userRadius = subscription?.radiusKm || 15;
+            const userCategories = (subscription?.categories as string[]) || [];
+            const isActive = subscription?.isActive ?? false;
+
+            // Option A: If alerts are disabled, return empty feed with a flag
+            if (!isActive) {
+                return res.json({
+                    trending: [],
+                    nearYou: [],
+                    alertsDisabled: true
+                });
+            }
+
             // Default lookback to 72 hours
             const hours = parseInt(req.query.hours as string) || 72;
             const lat = parseFloat(req.query.lat as string);
             const lng = parseFloat(req.query.lng as string);
 
-            const trending = await AlertEngineService.getTrendingAlerts(hours);
+            let trending = await AlertEngineService.getTrendingAlerts(hours);
 
-            let nearYou = [];
+            // Filter trending by categories if user has specified any
+            if (userCategories.length > 0) {
+                trending = trending.filter(t =>
+                    userCategories.some(c => t.category.toLowerCase().includes(c.toLowerCase()))
+                );
+            }
+
+            let nearYou: any[] = [];
             if (!isNaN(lat) && !isNaN(lng)) {
                 // Return just the count of recent local reports to save bandwidth
-                const localReports = await AlertEngineService.getAlertsNearLocation(lat, lng, 15);
+                let localReports = await AlertEngineService.getAlertsNearLocation(lat, lng, userRadius);
+
+                // Filter localReports by categories if user has specified any
+                if (userCategories.length > 0) {
+                    localReports = localReports.filter(r =>
+                        userCategories.some(c => r.category.toLowerCase().includes(c.toLowerCase()))
+                    );
+                }
 
                 if (localReports.length > 0) {
                     nearYou = [{
                         reportCount: localReports.length,
-                        radius: '15km',
-                        message: `${localReports.length} reports logged near your area recently. Stay alert.`,
+                        radius: `${userRadius}km`,
+                        message: `${localReports.length} reports logged within ${userRadius}km recently. Stay alert.`,
                         latestReport: localReports[0],
                     }];
                 }

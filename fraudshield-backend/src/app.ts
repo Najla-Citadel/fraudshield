@@ -5,6 +5,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import passport from './config/passport';
+import logger from './utils/logger';
 
 // Load environment variables
 dotenv.config();
@@ -16,13 +17,21 @@ import { prisma } from './config/database';
 import authRoutes from './routes/auth.routes';
 import reportRoutes from './routes/report.routes';
 import featureRoutes from './routes/feature.routes';
-// import rewardsRoutes from './routes/rewards.routes'; // File missing
+import rewardsRoutes from './routes/rewards.routes';
 import adminRoutes from './routes/admin.routes';
 import uploadRoutes from './routes/upload.routes';
 import userRoutes from './routes/user.routes';
 import alertRoutes from './routes/alert.routes';
 import transactionRoutes from './routes/transaction.routes';
+import { requestTimeout } from './middleware/timeout.middleware';
+
 const app: Application = express();
+
+// Trust proxy for rate limiting accuracy behind reverse proxies/LB
+app.set('trust proxy', 1);
+
+// Global Request Timeout (30s)
+app.use(requestTimeout(30000));
 
 // Security middleware
 app.use(helmet());
@@ -67,7 +76,12 @@ app.use(compression());
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 } else {
-    app.use(morgan('combined'));
+    // Stream morgan logs to Winston
+    app.use(morgan('combined', {
+        stream: {
+            write: (message) => logger.info(message.trim())
+        }
+    }));
 }
 
 // Health check endpoint
@@ -90,7 +104,7 @@ const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);
-// app.use(`${apiPrefix}/rewards`, rewardsRoutes); // Commented out as file is missing
+app.use(`${apiPrefix}/rewards`, rewardsRoutes);
 app.use(`${apiPrefix}/admin`, adminRoutes);
 app.use(`${apiPrefix}/upload`, uploadRoutes);
 app.use(`${apiPrefix}/users`, userRoutes); // Added user routes
@@ -127,11 +141,10 @@ app.use((req: Request, res: Response) => {
 
 // Global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    // Log the error with more context
-    console.error(`[${new Date().toISOString()}] Error ${req.method} ${req.path}:`, {
+    // Log the error with structured logging
+    logger.error(`${req.method} ${req.path} failed`, {
         message: err.message,
         stack: err.stack,
-        // body: req.body, REDACTED: Prevent logging sensitive data like passwords
         params: req.params,
         query: req.query
     });

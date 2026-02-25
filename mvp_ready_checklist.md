@@ -2,7 +2,7 @@
 
 This checklist contains only the absolute bare minimum requirements to safely launch FraudShield as a Minimum Viable Product (MVP) on the App Store and Play Store. Polishing and scaling optimizations are deferred for post-launch updates.
 
-> **Last updated:** 22 Feb 2026
+> **Last updated:** 25 Feb 2026
 
 ---
 
@@ -10,11 +10,11 @@ This checklist contains only the absolute bare minimum requirements to safely la
 
 | Phase | Done | Total | Status |
 |-------|:----:|:-----:|--------|
-| 🔴 Phase 1: Bare Minimum | 6 / 7 | 86% | **1 item remaining** |
-| 🟠 Phase 2: Recommended | 1 / 2 | 50% | 1 item remaining |
-| **Total** | **7 / 9** | **78%** | Almost launch-ready |
+| 🔴 Phase 1: Bare Minimum | 7 / 7 | 100% | **✅ Complete** |
+| 🟠 Phase 2: Recommended | 2 / 2 | 100% | **✅ Complete** |
+| **Total** | **9 / 9** | **100%** | 🚀 MVP launch-ready |
 
-> **Remaining blockers:** HTTPS/SSL setup and crash reporting integration.
+> **All blockers cleared.** HTTPS/SSL live (Feb 24) and Firebase Crashlytics integrated (Feb 24).
 
 ---
 
@@ -23,9 +23,8 @@ This checklist contains only the absolute bare minimum requirements to safely la
 
 If these are not fixed, you risk losing data, leaking passwords, or facing app store rejection.
 
-- [ ] **D1. Add HTTPS / SSL (1-2 hrs)** 🔴 LAST BLOCKER
-  - Mobile apps require secure connections. Add an nginx container with Let's Encrypt SSL or a Cloudflare proxy.
-  - **Why it's critical:** App Store may reject apps making insecure HTTP calls. Auth tokens travel in plaintext.
+- [x] **D1. Add HTTPS / SSL** ✅
+  - Nginx + Let's Encrypt SSL live on `api.fraudshieldprotect.com`. API port 3000 locked to internal only.
 - [x] **M1. Hide Voice Detection (30 min)** ✅
   - Replaced with a "Coming Soon" overlay to avoid bad reviews.
 - [x] **S1. Fix JWT Secret (10 min)** ✅
@@ -48,8 +47,8 @@ The app functions without these, but lacking them will severely hurt early user 
 
 - [x] **U1. "Forgot Password" Flow (3-4 hrs)** ✅
   - Email-based password reset with OTP implemented — 2-step flow on Flutter frontend.
-- [ ] **M6. Crash Reporting (1 hr)**
-  - Integrate Firebase Crashlytics or Sentry. Real users will experience edge-case crashes that you won't catch in emulators.
+- [x] **M6. Crash Reporting** ✅
+  - Firebase Crashlytics integrated (Feb 24). Real crash events visible in Firebase console.
 
 ---
 
@@ -58,8 +57,9 @@ The following tasks from the main production checklist have intentionally been d
 
 *   **Security:** Email Verification (S7), JWT Refresh Tokens (S6).
 *   **Reliability:** API Pagination (R2), Request Timeout (R3), Database Indexes (DB1), DB Connection Pooling (DB4), Soft Delete (DB3).
-*   **Mobile App:** Secure token storage migration (M4), Certificate Pinning (M3), App Versioning check (M5), removing debug logs (M7), improved loading/error states (M2).
-*   **Compliance & Docs:** PDPA Data Export (U2), Unit Tests (R5), API Docs (R6), Terms update consent (U3), Structured Logging (R4), Re-enable Rewards Routes (R1).
+*   **Mobile App:** Secure token storage migration (M4), **Certificate Pinning (M3) ✅**, App Versioning check (M5), removing debug logs (M7), improved loading/error states (M2).
+*   **Compliance & Docs:** **PDPA Data Export (U2) ✅**, Unit Tests (R5), API Docs (R6), **Terms update consent (U3) ✅**, **Structured Logging (R4) ✅**, Re-enable Rewards Routes (R1).
+*   **Infrastructure:** **Docker healthcheck, pinning, and log rotation (D4-D6) ✅**
 
 ---
 
@@ -72,8 +72,8 @@ The following tasks from the main production checklist have intentionally been d
 | User auth flow | ✅ | Signup, login, change password, forgot password |
 | Mock features hidden | ✅ | Voice detection shows "Coming Soon" |
 | Database backups | ✅ | Daily pg_dump configured |
-| HTTPS/SSL | ❌ | **Must complete before launch** |
-| Crash reporting | ⚠️ | Highly recommended but not blocking |
+| HTTPS/SSL | ✅ | Live on `api.fraudshieldprotect.com` (Feb 24) |
+| Crash reporting | ✅ | Firebase Crashlytics integrated (Feb 24) |
 | PDPA compliance | ✅ | Privacy Policy, ToS, data consent, account deletion |
 
-> **Bottom line:** Complete D1 (HTTPS/SSL) and you are cleared for MVP launch. M6 (crash reporting) is strongly recommended but won't block the release.
+> **🚀 MVP is launch-ready.** All blocking items resolved. You are cleared to submit to Google Play and the App Store.

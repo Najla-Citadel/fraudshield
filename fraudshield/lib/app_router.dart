@@ -9,8 +9,11 @@ import 'screens/scam_map_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/privacy_policy_screen.dart';
 import 'screens/terms_of_service_screen.dart';
+import 'screens/leaderboard_screen.dart';
 
 class AppRouter {
+  static final navigatorKey = GlobalKey<NavigatorState>();
+
   static Route generate(RouteSettings settings) {
     switch (settings.name) {
       case '/':
@@ -29,6 +32,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/scam-map':
         return MaterialPageRoute(builder: (_) => const ScamMapScreen());
+      case '/leaderboard':
+        return MaterialPageRoute(builder: (_) => const LeaderboardScreen());
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }

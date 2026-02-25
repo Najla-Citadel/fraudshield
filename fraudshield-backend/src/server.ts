@@ -3,6 +3,8 @@ import { Server } from 'socket.io';
 import app from './app';
 import { initializeFirebase } from './config/firebase.config';
 import { AlertEngineService } from './services/alert-engine.service';
+import { AlertWorkerService } from './services/alert-worker.service';
+import logger from './utils/logger';
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,15 +18,15 @@ const io = new Server(httpServer, {
 
 // Basic Socket.io setup
 io.on('connection', (socket) => {
-    console.log(`🔌 New client connected: ${socket.id}`);
+    logger.info('New socket client connected', { socketId: socket.id });
 
     socket.on('join', (userId: string) => {
         socket.join(userId);
-        console.log(`👤 User ${userId} joined their personal room`);
+        logger.info('User joined socket room', { userId, socketId: socket.id });
     });
 
     socket.on('disconnect', () => {
-        console.log(`❌ Client disconnected: ${socket.id}`);
+        logger.info('Socket client disconnected', { socketId: socket.id });
     });
 });
 
@@ -35,32 +37,32 @@ export { io };
 initializeFirebase();
 
 const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
-    console.log('🚀 FraudShield Backend Server');
-    console.log(`📡 Server running on port ${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`🔗 Health check: http://0.0.0.0:${PORT}/health`);
-    console.log(`📊 API Status: http://0.0.0.0:${PORT}/api/${process.env.API_VERSION || 'v1'}/status`);
+    logger.info('FraudShield Backend Server Started', {
+        port: PORT,
+        env: process.env.NODE_ENV || 'development',
+        healthCheck: `http://0.0.0.0:${PORT}/health`,
+        apiStatus: `http://0.0.0.0:${PORT}/api/${process.env.API_VERSION || 'v1'}/status`
+    });
 
     // Start background jobs
-    console.log('⏱️ Starting background jobs...');
-    AlertEngineService.dispatchTrendingAlerts().catch(console.error); // Run immediately
-    setInterval(() => {
-        AlertEngineService.dispatchTrendingAlerts().catch(console.error);
-    }, 60 * 1000); // Check for trending alerts every minute (for demo purposes)
+    logger.info('Starting background jobs...');
+    AlertWorkerService.initialize();
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received: closing HTTP server');
-    server.close(() => {
-        console.log('HTTP server closed');
+    logger.warn('SIGTERM received: shutting down');
+    server.close(async () => {
+        await AlertWorkerService.shutdown();
+        logger.info('HTTP server closed');
     });
 });
 
 process.on('SIGINT', () => {
-    console.log('SIGINT signal received: closing HTTP server');
-    server.close(() => {
-        console.log('HTTP server closed');
+    logger.warn('SIGINT received: shutting down');
+    server.close(async () => {
+        await AlertWorkerService.shutdown();
+        logger.info('HTTP server closed');
         process.exit(0);
     });
 });

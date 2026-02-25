@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { BadgeService } from '../services/badge.service';
-
+import { SemakMuleService } from '../services/semak-mule.service';
+import { AlertEngineService } from '../services/alert-engine.service';
 
 export class ReportController {
+    private static readonly MAX_LIMIT = 100;
     static async submitReport(req: Request, res: Response, next: NextFunction) {
         try {
             const { type, category, description, evidence, target, isPublic, latitude, longitude } = req.body;
@@ -57,6 +59,11 @@ export class ReportController {
 
                 // Evaluate badges
                 newBadges = await BadgeService.evaluateBadges(userId);
+
+                // Dispatch real-time local alerts to nearby subscribers
+                AlertEngineService.dispatchLocalAlert(report).catch(err => {
+                    console.error('❌ Failed to dispatch local alerts:', err);
+                });
             }
 
             res.status(201).json({ ...report, newBadges });
@@ -69,13 +76,28 @@ export class ReportController {
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
+            const { limit = '20', offset = '0' } = req.query;
 
-            const reports = await prisma.scamReport.findMany({
-                where: { userId },
-                orderBy: { createdAt: 'desc' },
+            const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
+            const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
+
+            const [reports, total] = await Promise.all([
+                prisma.scamReport.findMany({
+                    where: { userId },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                prisma.scamReport.count({ where: { userId } }),
+            ]);
+
+            res.json({
+                results: reports,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
             });
-
-            res.json(reports);
         } catch (error) {
             next(error);
         }
@@ -143,41 +165,69 @@ export class ReportController {
 
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
-            const reports = await (prisma as any).scamReport.findMany({
-                where: { isPublic: true },
-                include: {
-                    _count: {
-                        select: { verifications: true },
-                    },
-                    user: {
-                        select: {
-                            profile: {
-                                select: {
-                                    reputation: true,
-                                    badges: true,
+            const { limit = '20', offset = '0', lat, lng, radius } = req.query;
+            const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
+            const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
+
+            let whereClause: any = { isPublic: true };
+
+            // Optional localized filtering
+            if (lat && lng && radius) {
+                const latitude = parseFloat(lat as string);
+                const longitude = parseFloat(lng as string);
+                const radiusKm = parseFloat(radius as string);
+
+                if (!isNaN(latitude) && !isNaN(longitude) && !isNaN(radiusKm)) {
+                    // Rough bounding box for better performance before complex math
+                    const latDegreeSearch = radiusKm / 111.32; // 1 degree = ~111km
+                    const lngDegreeSearch = radiusKm / (111.32 * Math.cos(latitude * (Math.PI / 180)));
+
+                    whereClause = {
+                        ...whereClause,
+                        latitude: {
+                            gte: latitude - latDegreeSearch,
+                            lte: latitude + latDegreeSearch,
+                        },
+                        longitude: {
+                            gte: longitude - lngDegreeSearch,
+                            lte: longitude + lngDegreeSearch,
+                        },
+                    };
+                }
+            }
+
+            const [reports, total] = await Promise.all([
+                (prisma as any).scamReport.findMany({
+                    where: whereClause,
+                    include: {
+                        _count: {
+                            select: { verifications: true },
+                        },
+                        user: {
+                            select: {
+                                profile: {
+                                    select: {
+                                        reputation: true,
+                                        badges: true,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-                orderBy: { createdAt: 'desc' },
-            });
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).scamReport.count({ where: whereClause }),
+            ]);
 
             // Anonymize sensitive fields
-            const redactedReports = reports.map((report) => {
+            const redactedReports = reports.map((report: any) => {
                 const profile = report.user?.profile;
-                if (!profile) {
-                    console.warn(`[PublicFeed] Report ${report.id} is missing reporter profile data.`);
-                }
 
-                // Ensure badges is an array (sometimes stored as stringified JSON in DB)
                 let badges = profile?.badges;
                 if (typeof badges === 'string') {
-                    try {
-                        badges = JSON.parse(badges);
-                    } catch (e) {
-                        badges = [];
-                    }
+                    try { badges = JSON.parse(badges); } catch (e) { badges = []; }
                 }
 
                 return {
@@ -192,7 +242,13 @@ export class ReportController {
                 };
             });
 
-            res.json(redactedReports);
+            res.json({
+                results: redactedReports,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }
@@ -251,8 +307,8 @@ export class ReportController {
                 delete whereClause.AND;
             }
 
-            const limitNum = parseInt(limit as string, 10);
-            const offsetNum = parseInt(offset as string, 10);
+            const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
+            const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
 
             // Dynamic sort logic
             let orderByClause: any;
@@ -349,18 +405,13 @@ export class ReportController {
             const { reportId, isSame } = req.body;
             const userId = (req.user as any).id;
 
-            // 1. Create or update the verification
-            const verification = await (prisma as any).verification.upsert({
+            // 1. Create or update the verification (uses @@unique([reportId, userId]) compound key)
+            const verification = await prisma.verification.upsert({
                 where: {
-                    id: `${reportId}-${userId}`,
+                    reportId_userId: { reportId, userId },
                 },
                 update: { isSame },
-                create: {
-                    id: `${reportId}-${userId}`,
-                    reportId,
-                    userId,
-                    isSame,
-                },
+                create: { reportId, userId, isSame },
             });
 
             // 2. Reward the verifier with Shield Points
@@ -439,17 +490,6 @@ export class ReportController {
 
             const totalCount = reports.length;
 
-            if (totalCount === 0) {
-                return res.json({
-                    found: false,
-                    riskLevel: 'unknown',
-                    communityReports: 0,
-                    verifiedReports: 0,
-                    categories: [],
-                    recommendation: 'No community reports found. Proceed with standard caution.',
-                });
-            }
-
             // Aggregate metrics
             let verifiedCount = 0;
             const categorySet = new Set<string>();
@@ -470,28 +510,57 @@ export class ReportController {
             }
 
             const categories = Array.from(categorySet);
-            const lastReported = reports[0]?.createdAt;
+            const lastReported = totalCount > 0 ? reports[0]?.createdAt : undefined;
 
             // Determine Risk Level
             let riskLevel = 'low';
             let recommendation = '';
+            const sources: string[] = [];
 
-            if (totalCount >= 3 || verifiedCount >= 1 || highestRisk) {
-                riskLevel = 'high';
-                recommendation = `This ${type} has been reported ${totalCount} times. Proceed with extreme caution.`;
-            } else if (totalCount > 0) {
-                riskLevel = 'medium';
-                recommendation = `This ${type} has ${totalCount} unverified report(s). Verify the recipient before paying.`;
+            // 1. Check Community Database
+            if (totalCount > 0) {
+                sources.push('community');
+                if (totalCount >= 3 || verifiedCount >= 1 || highestRisk) {
+                    riskLevel = 'high';
+                    recommendation = `This ${type} has been reported ${totalCount} times. Proceed with extreme caution.`;
+                } else {
+                    riskLevel = 'medium';
+                    recommendation = `This ${type} has ${totalCount} unverified report(s). Verify the recipient before paying.`;
+                }
+            }
+
+            // 2. Check Official Databases (CCID Semak Mule API mock)
+            if (type === 'phone' || type === 'bank') {
+                try {
+                    const officialMuleCheck = await SemakMuleService.checkTarget(type, value);
+
+                    if (officialMuleCheck.found && officialMuleCheck.riskLevel === 'high') {
+                        // Overwrite community risk to HIGH if official API flags it
+                        riskLevel = 'high';
+                        recommendation = officialMuleCheck.recommendation; // Use official text
+                    }
+
+                    // Add CCID to sources list (it was checked)
+                    sources.push('ccid');
+                } catch (apiError) {
+                    console.warn(`[Lookup API] CCID connection failed for ${value}:`, apiError);
+                    // Do not add 'ccid' to the sources list, keep the community risk level
+                    // so the app gracefully degrades to crowdsourced data instead of crashing.
+                }
+            }
+
+            if (totalCount === 0 && riskLevel === 'low') {
+                recommendation = 'No community reports found. Proceed with standard caution.';
             }
 
             res.json({
-                found: true,
+                found: totalCount > 0 || riskLevel === 'high',
                 riskLevel,
                 communityReports: totalCount,
                 verifiedReports: verifiedCount,
                 categories,
                 lastReported,
-                sources: ['community'],
+                sources,
                 recommendation,
             });
 

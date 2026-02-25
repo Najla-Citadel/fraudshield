@@ -11,6 +11,8 @@ import '../widgets/app_logo.dart';
 import '../services/api_service.dart';
 import 'forgot_password_screen.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +26,32 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _loading = false;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  Future<void>? _initializationFuture;
+  bool _initSuccess = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializationFuture = _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    try {
+      debugPrint('Google Sign-In: Initializing...');
+      final serverClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
+      debugPrint('Google Sign-In: Using serverClientId: $serverClientId');
+      await _googleSignIn.initialize(
+        serverClientId: serverClientId,
+      ).timeout(const Duration(seconds: 10));
+      debugPrint('Google Sign-In: Initialization complete.');
+      _initSuccess = true;
+    } catch (e) {
+      debugPrint('Google Sign-In: Initialization ERROR: $e');
+      _initSuccess = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -74,6 +102,69 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _tryGoogleSignIn() async {
+    debugPrint('Google Sign-In: Starting flow...');
+    setState(() => _loading = true);
+
+    try {
+      // 0. Ensure initialized
+      if (_initializationFuture != null) {
+        debugPrint('Google Sign-In: Waiting for initialization...');
+        await _initializationFuture!.timeout(const Duration(seconds: 10));
+      }
+
+      if (!_initSuccess) {
+        throw Exception('Google Sign-In failed to initialize. Check your configuration.');
+      }
+
+      // 1. Trigger Google account picker
+      debugPrint('Google Sign-In: Calling authenticate()...');
+      final GoogleSignInAccount? account = await _googleSignIn.authenticate()
+          .timeout(const Duration(seconds: 45));
+      
+      if (account == null) {
+        debugPrint('Google Sign-In: User canceled or picker returned null.');
+        return;
+      }
+      debugPrint('Google Sign-In: Authentication successful for ${account.email}');
+      
+      // 2. Get the auth tokens (must be awaited — async in google_sign_in v6+)
+      final GoogleSignInAuthentication auth = await account.authentication;
+      final String? idToken = auth.idToken;
+      debugPrint('Google Sign-In: ID Token retrieved: ${idToken != null}');
+
+      if (idToken == null) {
+        throw Exception('Failed to get Google ID Token');
+      }
+
+      // 3. Authenticate with backend
+      if (!mounted) return;
+      debugPrint('Google Sign-In: Calling backend /auth/google...');
+      final success = await context.read<AuthProvider>().signInWithGoogle(idToken);
+      debugPrint('Google Sign-In: Backend response success: $success');
+      
+      if (success) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      debugPrint('Google Sign-In ERROR: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Google Sign-In failed: ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      debugPrint('Google Sign-In: Flow finished.');
       if (mounted) setState(() => _loading = false);
     }
   }
@@ -200,6 +291,64 @@ class _LoginScreenState extends State<LoginScreen> {
                               text: 'Log In',
                               isLoading: _loading,
                               onPressed: _trySignIn,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // 🔘 OR Divider
+                            Row(
+                              children: [
+                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.4),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // ⚪ Google Sign In Button
+                            InkWell(
+                              onTap: _loading ? null : _tryGoogleSignIn,
+                              borderRadius: BorderRadius.circular(16),
+                              child: GlassSurface(
+                                opacity: 0.1,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                borderRadius: 16,
+                                borderColor: Colors.white.withOpacity(0.2),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.network(
+                                      'https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png',
+                                      height: 20,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(
+                                        Icons.login, 
+                                        size: 20, 
+                                        color: Colors.white
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      'Sign in with Google',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),

@@ -19,6 +19,7 @@ model User {
   id                  String              @id @default(uuid())
   email               String              @unique
   passwordHash        String
+  emailVerified       Boolean             @default(false)
   fullName            String?
   role                String              @default("user")
   createdAt           DateTime            @default(now())
@@ -32,6 +33,10 @@ model User {
   redemptions         Redemption[]
   alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
   transactionJournals TransactionJournal[]
+  refreshToken        String?             @unique
+  comments            Comment[]
+  acceptedTermsVersion String?
+  acceptedTermsAt      DateTime?
 }
 
 model Profile {
@@ -84,6 +89,24 @@ model ScamReport {
   longitude   Float?
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
+  comments    Comment[]
+
+  @@index([isPublic])
+  @@index([createdAt])
+  @@index([category])
+  @@index([status])
+}
+
+model Comment {
+  id        String     @id @default(uuid())
+  text      String
+  userId    String
+  reportId  String
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@index([reportId])
 }
 
 model Verification {
@@ -93,6 +116,8 @@ model Verification {
   isSame    Boolean
   createdAt DateTime   @default(now())
   report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@unique([reportId, userId])
 }
 
 model PointsTransaction {

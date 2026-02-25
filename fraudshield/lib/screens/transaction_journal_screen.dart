@@ -5,6 +5,8 @@ import '../constants/colors.dart';
 import '../widgets/adaptive_scaffold.dart';
 import 'transaction_detail_screen.dart';
 import 'log_payment_sheet.dart';
+import '../widgets/skeleton_card.dart';
+import '../widgets/error_state.dart';
 
 class TransactionJournalScreen extends StatefulWidget {
   const TransactionJournalScreen({super.key});
@@ -212,38 +214,20 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
 
   Widget _buildBody() {
     if (_isLoading && _transactions.isEmpty) {
-      return const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.accentGreen)));
+      return Expanded(
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: 5,
+          itemBuilder: (context, index) => const SkeletonCard(height: 80, margin: EdgeInsets.only(bottom: 12)),
+        ),
+      );
     }
 
     if (_error != null && _transactions.isEmpty) {
       return Expanded(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(LucideIcons.alertCircle, color: Colors.redAccent, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load journal',
-              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-               _error!,
-              style: const TextStyle(color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => _fetchTransactions(),
-               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGreen,
-                  foregroundColor: AppColors.deepNavy,
-                ),
-              child: const Text('RETRY'),
-            ),
-            ],
-          ),
+        child: ErrorState(
+          onRetry: () => _fetchTransactions(),
+          message: _error!,
         ),
       );
     }

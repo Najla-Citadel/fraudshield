@@ -1,6 +1,6 @@
 # FraudShield — Production-Ready Checklist
 
-> **Last updated:** 22 Feb 2026 · Based on audit of all backend source files, middleware, services, configs, Docker setup, and Flutter app
+> **Last updated:** 25 Feb 2026 · Updated after full-stack audit. 10 new findings added.
 
 ---
 
@@ -8,59 +8,43 @@
 
 | Category | 🔴 Critical | 🟠 High | 🟡 Medium | ✅ Done | Total |
 |----------|:-----------:|:-------:|:---------:|:------:|:-----:|
-| Security & Auth | 1 | 4 | 3 | 5 | 13 |
-| Backend Reliability | 2 | 3 | 3 | 0 | 8 |
-| Database & Data | 2 | 2 | 0 | 0 | 4 |
-| Deployment & Infra | 1 | 3 | 2 | 2 | 8 |
-| Mobile App | 0 | 3 | 3 | 1 | 7 |
-| UX & Compliance | 0 | 2 | 3 | 1 | 6 |
-| **Total** | **6** | **17** | **14** | **9** | **46** |
+| Security & Auth | 0 | 1 | 0 | 9 | 10 |
+| Backend Reliability | 1 | 2 | 2 | 3 | 8 |
+| Database & Data | 0 | 0 | 3 | 2 | 5 |
+| Deployment & Infra | 0 | 4 | 0 | 3 | 7 |
+| Mobile App | 0 | 2 | 6 | 2 | 10 |
+| UX & Compliance | 0 | 0 | 3 | 2 | 5 |
+| **Total** | **1** | **9** | **14** | **21** | **45** |
 
-> **Progress:** 9 of 46 items completed (~20%). All critical security items except HTTPS/SSL are done.
+> **Progress:** 21 of 45 items completed (~47%). **MVP is live. 10 new issues found in Feb 25 audit — 1 new critical, 5 new high.**
 
 ---
 
 ## 🔴 Critical Blockers (Must Fix Before Public Launch)
 
-### Security & Auth
+### Security & Auth — All Critical Items ✅ DONE
 
-- [x] **S1. Remove hardcoded JWT fallback secret** ⏱️ 10 min ✅
-  - [auth.service.ts](file:///c:/Fraudshield/fraudshield-backend/src/services/auth.service.ts#L6): Removed fallback `'your-super-secret-jwt-key'`. System now throws on startup if `JWT_SECRET` is missing.
-
-- [x] **S2. Stop logging request body in global error handler** ⏱️ 10 min ✅
-  - [app.ts](file:///c:/Fraudshield/fraudshield-backend/src/app.ts): Removed `body: req.body` from error handler.
-
-- [x] **S3. Restrict CORS origin in production** ⏱️ 10 min ✅
-  - `CORS_ORIGIN` set in `.env.prod`. No longer falls back to `'*'`.
-
-- [x] **S4. Add auth middleware to change-password route** ⏱️ 5 min ✅
-  - [auth.routes.ts](file:///c:/Fraudshield/fraudshield-backend/src/routes/auth.routes.ts): `authenticate` middleware added before `changePassword`.
-
-- [x] **S5. Require current password for password changes** ⏱️ 30 min ✅
-  - [auth.controller.ts](file:///c:/Fraudshield/fraudshield-backend/src/controllers/auth.controller.ts): Now accepts `currentPassword`, verifies with `bcrypt.compare` before allowing change.
+- [x] **S1. Remove hardcoded JWT fallback secret** ✅
+  - Removed fallback `'your-super-secret-jwt-key'`. System throws on startup if `JWT_SECRET` is missing.
+- [x] **S2. Stop logging request body in global error handler** ✅
+  - Removed `body: req.body` from error handler to prevent logging passwords/tokens.
+- [x] **S3. Restrict CORS origin in production** ✅
+  - `CORS_ORIGIN` enforced in production mode.
+- [x] **S4. Add auth middleware to change-password route** ✅
+  - Route now protected by JWT authentication.
+- [x] **S5. Require current password for password changes** ✅
+  - Added current password verification before allowing updates.
+- [x] **S9. Add request payload size limit** ✅
+  - `express.json({ limit: '1mb' })` added to prevent OOM attacks.
 
 ### Deployment
 
-- [ ] **D1. Add HTTPS / reverse proxy (nginx)** ⏱️ 1–2 hrs 🔴
-  - [docker-compose.prod.yml](file:///c:/Fraudshield/fraudshield-backend/docker-compose.prod.yml): Port 3000 still exposed directly with no TLS.
-  - All API traffic (including auth tokens) is sent in plaintext.
-  - **Fix:** Add an nginx container with Let's Encrypt SSL, or use Cloudflare proxy.
+- [x] **D1. Add HTTPS / reverse proxy (nginx)** ✅
+  - Integrated Nginx and Certbot (Let's Encrypt) for automated SSL.
+  - Locked down API port 3000 to internal traffic only.
 
-- [x] **D2. Set `NODE_ENV=production` in Docker Compose** ⏱️ 5 min ✅
-  - Already set in `docker-compose.prod.yml` and verified on droplet.
-
-- [x] **D3. Set up automated database backups** ⏱️ 1 hr ✅
-  - Daily pg_dump backup script configured.
-
-### Database
-
-- [ ] **DB1. Add database indexes for query performance** ⏱️ 15 min
-  - `ScamReport.isPublic`, `ScamReport.createdAt`, `ScamReport.category` — used in `WHERE` and `ORDER BY` but have no indexes.
-  - **Fix:** Add `@@index` directives to `schema.prisma`.
-
-- [ ] **DB2. Enforce unique constraint on Verification** ⏱️ 10 min
-  - A user can currently verify the same report multiple times (duplicate entries).
-  - **Fix:** Add `@@unique([reportId, userId])` to the `Verification` model.
+- [x] **D2. Set `NODE_ENV=production` in Docker Compose** ✅
+- [x] **D3. Set up automated database backups** ✅
 
 ---
 
@@ -68,58 +52,34 @@
 
 ### Security & Auth
 
-- [ ] **S6. Implement JWT refresh token flow** ⏱️ 2–3 hrs
-  - Currently tokens expire after 7 days with no way to refresh. Users must re-login.
-  - **Fix:** Issue a short-lived access token (15 min) + long-lived refresh token (30 days). Add a `/auth/refresh` endpoint.
-
-- [ ] **S7. Implement real email verification** ⏱️ 3–4 hrs
-  - [auth.service.ts](file:///c:/Fraudshield/fraudshield-backend/src/services/auth.service.ts): `isEmailVerified: true` is hardcoded.
-  - **Fix:** Send verification email on signup, add `isEmailVerified` column to `User`, gate certain features on it.
-
-- [ ] **S8. Add input validation to report submission** ⏱️ 1 hr
-  - `submitReport` accepts arbitrary `type`, `category`, `target`, and `evidence` without validation.
-  - **Fix:** Add `express-validator` rules to the report routes.
-
-- [x] **S9. Add request payload size limit** ⏱️ 5 min ✅
-  - `express.json({ limit: '1mb' })` added in `app.ts`.
+- [x] **S6. Implement JWT refresh token flow** ✅
+  - Added 15m access token + 30-day refresh token rotation.
+- [x] **S7. Implement real email verification** ✅
+  - Integrated OTP-based verification for signups and password resets.
+- [x] **S8. Add input validation to report submission** ✅
+  - Added `express-validator` rules to report routes.
+- [x] **S10. Add rate limiting to auth endpoints** ✅
+  - `authLimiter` and `loginLimiter` applied with `trust proxy` support.
 
 ### Backend Reliability
 
-- [ ] **R1. Re-enable rewards routes** ⏱️ 30 min
-  - [app.ts](file:///c:/Fraudshield/fraudshield-backend/src/app.ts): `rewardsRoutes` is commented out as "file is missing".
-  - **Fix:** Create `rewards.routes.ts` and uncomment the import.
-
-- [ ] **R2. Add API pagination** ⏱️ 1 hr
-  - `getPublicFeed`, `getMyReports`, `searchReports` return all records. Will degrade with data growth.
-  - **Fix:** Add `skip`/`take` (or cursor-based) pagination with a default `limit=20`.
-
-- [ ] **R3. Add request timeout / circuit breaker** ⏱️ 30 min
-  - No timeout on database queries. If Postgres is slow, requests hang indefinitely.
-  - **Fix:** Set Prisma connection timeout and add a global request timeout middleware.
+- [x] **R1. Wire rewards routes properly** ✅
+  - Rewards logic wired through `feature.routes.ts`.
+- [x] **R2. Add API pagination** ✅
+  - Standardized `limit`/`offset` pagination for all feed/history endpoints.
+- [x] **R3. Add request timeout / circuit breaker** ✅
+  - 30s global timeout and 5s external service (FCM) timeout implemented.
 
 ### Deployment
 
-- [ ] **D4. Add health check to Docker Compose** ⏱️ 10 min
-  - The `api` service has no `healthcheck` directive.
-  - **Fix:** Add `healthcheck: test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]`.
-
-- [ ] **D5. Pin Docker image versions** ⏱️ 10 min
-  - `node:20-alpine`, `postgres:16-alpine`, `redis:7-alpine` — patch versions may change.
-  - **Fix:** Pin to specific digests or patch versions (e.g., `node:20.11-alpine`).
-
-- [ ] **D6. Configure log rotation** ⏱️ 10 min
-  - Docker logs grow indefinitely.
-  - **Fix:** Add `logging: driver: json-file` with `max-size: 10m` and `max-file: 5` in Docker Compose.
+- [x] **D4. Add health check to Docker Compose** ✅
+- [x] **D5. Pin Docker image versions** ✅
+- [x] **D6. Configure log rotation** ✅
 
 ### Database
 
-- [ ] **DB3. Add soft delete to ScamReport** ⏱️ 30 min
-  - Reports cannot be removed by admins without hard-deleting data.
-  - **Fix:** Add `deletedAt DateTime?` and filter queries with `WHERE deletedAt IS NULL`.
-
-- [ ] **DB4. Add database connection pooling** ⏱️ 10 min
-  - Prisma's default connection pool may be insufficient under load.
-  - **Fix:** Configure `connection_limit` in the `DATABASE_URL` (e.g., `?connection_limit=10`).
+- [x] **DB1. Add database indexes for query performance** ✅
+- [x] **DB2. Enforce unique constraint on Verification** ✅
 
 ---
 
@@ -127,59 +87,34 @@
 
 ### Mobile App
 
-- [x] **M1. Voice Detection → "Coming Soon"** ⏱️ 30 min ✅
-  - Replaced random results with a "Coming Soon" overlay.
-
-- [ ] **M2. Add proper loading / error states** ⏱️ 2 hrs
-  - Many screens show a blank screen or spinner on failure.
-  - **Fix:** Add error banners with retry buttons. Show cached data when offline.
-
-- [ ] **M3. Add certificate pinning** ⏱️ 1 hr
-  - The app trusts all TLS certificates.
-  - **Fix:** Pin the server's certificate in `network_security_config.xml` and Flutter HTTP client.
-
-- [ ] **M4. Secure token storage** ⏱️ 1 hr
-  - Tokens are stored in `SharedPreferences` (plaintext on Android).
-  - **Fix:** Use `flutter_secure_storage` which uses Android Keystore / iOS Keychain.
-
+- [x] **M1. Voice Detection → "Coming Soon"** ✅
+- [x] **M2. Add proper loading / error states** ✅
+- [x] **M3. Add certificate pinning** ✅
+- [x] **M4. Secure token storage** ✅
+  - Migrated from `shared_preferences` (plaintext) to `flutter_secure_storage` (AES on Android, Keychain on iOS).
 - [ ] **M5. Add app versioning check** ⏱️ 1 hr
-  - No mechanism to force-update the app when breaking backend changes are deployed.
-  - **Fix:** Add a `/api/v1/version` endpoint and check on app startup.
-
-- [ ] **M6. Add analytics / crash reporting** ⏱️ 1 hr
-  - No crash reporting (Firebase Crashlytics, Sentry) is integrated.
-  - **Fix:** Integrate Firebase Crashlytics or Sentry.
-
-- [ ] **M7. Remove debug logging from production builds** ⏱️ 30 min
-  - `debugPrint('[CommunityFeed]...')` calls appear in production.
-  - **Fix:** Wrap debug prints in `kDebugMode` checks or use a logger with configurable levels.
+- [x] **M6. Add crash reporting** ✅
+  - Integrated Firebase Crashlytics (Feb 24). Crash events stream to Firebase console.
+- [ ] **M7. Remove debug logging from production** ⏱️ 30 min
 
 ### Backend
 
-- [ ] **R4. Add structured logging with Winston** ⏱️ 1 hr
-  - `winston` is a dependency but unused. All logging uses `console.log`/`console.error`.
-  - **Fix:** Initialize Winston logger with JSON format and file/cloud transport.
-
+- [x] **R4. Add structured logging with Winston** ✅
 - [ ] **R5. Add unit tests beyond auth** ⏱️ 3–4 hrs
-  - Only `auth.controller` has tests. Report, rewards, and feature controllers have no test coverage.
-  - **Fix:** Add Jest tests for critical endpoints (submit report, verify, public feed).
-
 - [ ] **R6. Add API documentation (Swagger/OpenAPI)** ⏱️ 2 hrs
-  - No API docs exist. Frontend development relies on reading source code.
-  - **Fix:** Add `swagger-jsdoc` + `swagger-ui-express` or generate from route definitions.
+
+### Database
+
+- [ ] **DB3. Add soft delete to ScamReport** ⏱️ 30 min
+- [ ] **DB4. Add database connection pooling config** ⏱️ 10 min
 
 ### UX & Compliance
 
-- [x] **U1. Add "Forgot Password" flow** ⏱️ 3–4 hrs ✅
-  - Email-based password reset with time-limited OTP implemented.
-
-- [ ] **U2. Add PDPA data export** ⏱️ 2 hrs
-  - PDPA Section 12 requires users to be able to export their personal data.
-  - **Fix:** Add a "Download My Data" button to the Account screen + backend endpoint.
-
-- [ ] **U3. Add Terms update consent** ⏱️ 1 hr
-  - If ToS or Privacy Policy change, users aren't re-prompted to accept.
-  - **Fix:** Track `tosAcceptedVersion` in Profile and prompt on version mismatch.
+- [x] **U1. Add "Forgot Password" flow** ✅
+- [x] **U4. User profile editing** ✅
+- [x] **U2. Add PDPA data export** ✅
+- [x] **U3. Add Terms update consent** ✅
+- [ ] **U5. Add Bahasa Malaysia localization** ⏱️ 6 hrs
 
 ---
 
@@ -187,47 +122,58 @@
 
 ```mermaid
 flowchart LR
-    subgraph "✅ Done — Critical Security"
-        S1[S1: JWT fallback ✅] --> S2[S2: Error logging ✅]
-        S2 --> S3[S3: CORS origin ✅]
-        S3 --> S4[S4: Change-password auth ✅]
-        S4 --> S5[S5: Verify current password ✅]
-        S4 --> S9[S9: Payload size limit ✅]
+    subgraph "✅ Done"
+        S1["S-Items ✅"]
+        R1["R-Items ✅"]
+        DB1["DB-Items ✅"]
     end
 
-    subgraph "🔴 Next — Infrastructure"
-        D1[D1: HTTPS/nginx] --> D4[D4: Docker healthcheck]
-        D4 --> D5[D5: Pin versions]
-        D5 --> D6[D6: Log rotation]
+    subgraph "🔴 Now"
+        D1["D1: HTTPS"] --> D4["D4: Healthcheck"]
+        D4 --> D5["D5: Pin versions"]
+        D5 --> D6["D6: Log rotation"]
     end
 
-    subgraph "Week 2 — Data Integrity"
-        DB1[DB1: Indexes] --> DB2[DB2: Unique verification]
-        DB2 --> R2[R2: Pagination]
-        R2 --> R1[R1: Rewards routes]
+    subgraph "Week 2"
+        S7["S7: Email Verification"] --> U2["U2: Data Export"]
+        U2 --> U3["U3: Terms Consent"]
     end
 
-    subgraph "Week 3 — App Polish"
-        M4[M4: Secure storage] --> M7[M7: Remove debug logs]
-        M7 --> M6[M6: Crash reporting]
-    end
-
-    subgraph "Week 4 — Auth & Compliance"
-        S6[S6: Refresh tokens] --> S7[S7: Email verification]
-        S7 --> U2[U2: Data export]
+    subgraph "Week 3"
+        M4["M4: Secure Storage"] --> M6["M6: Crashlytics"]
+        M6 --> BM["U5: Bahasa Malaysia"]
     end
 ```
 
 ---
 
-## Quick Reference: Effort Estimates
+## 🆕 New Findings — Feb 25, 2026 Audit
 
-| Effort | Remaining | Time |
-|--------|:---------:|------|
-| ⚡ Under 15 min | 6 | ~1.5 hrs total |
-| 🟡 30 min – 1 hr | 12 | ~8 hrs total |
-| 🟢 1–2 hrs | 10 | ~15 hrs total |
-| 🔵 3–4 hrs | 3 | ~10 hrs total |
-| **Grand Total Remaining** | **31** | **~34.5 hrs** |
+### 🔴 Critical
 
-> Previously completed: **9 items** (~15.5 hrs of work done). Remaining work is ~34.5 hrs across 31 items.
+- [x] **B1. Real email service** ✅
+  - Integrated Nodemailer + SMTP (Resend). OTPs are sent via real email templates.
+
+### 🟠 High
+
+- [x] **B2. Re-add rewards route** ✅
+  - Created `rewards.routes.ts` and enabled in `app.ts`. Frontend updated to use `/api/v1/rewards`.
+- [x] **B3. Replace `console.log` in alert-engine** ✅
+  - Standardized logging using Winston `logger`.
+- [x] **B4. Wire Semak Mule into risk evaluation** ✅
+  - Integrated `SemakMuleService` into `RiskEvaluationService.evaluate()` for phone and bank targets.
+- [x] **B10. Move Firebase service account JSON to env var** ✅
+  - Service account now loaded from `FIREBASE_SERVICE_ACCOUNT` env var. JSON file can be safely ignored/removed from repo.
+- [x] **F9. Fix Google Sign-In hang** ✅
+  - Resolved auth flow hang and ensured `emailVerified` is set to true for Google users.
+
+### 🟡 Medium
+
+- [x] **F2. Remove hardcoded `_isAndroidEmulator = true`** ✅
+  - Removed unused flag from `api_service.dart`.
+- [x] **F7. Remove `test_screen.dart`** ✅
+  - Deleted unused screen file from productions screens folder.
+- [x] **F8. Delete empty `transaction_screen.dart`** ✅
+  - Deleted 0-byte file.
+- [ ] **DB5. Soft delete on ScamReport** ⏱️ 30 min
+  - Reports are hard-deleted. Add `deletedAt DateTime?` field and scope all queries accordingly.
