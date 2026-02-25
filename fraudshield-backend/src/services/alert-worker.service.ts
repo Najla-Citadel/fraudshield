@@ -13,7 +13,7 @@ export class AlertWorkerService {
     /**
      * Initializes the Bull queue and sets up the worker process
      */
-    static initialize() {
+    static async initialize() {
         if (this.isInitialized) return;
 
         // Support for REDIS_URL or individual host/port environment variables
@@ -82,7 +82,20 @@ export class AlertWorkerService {
 
         console.log(`⏰ Bull Queue: Scheduling trending analysis with cron: "${cronInterval}"`);
 
-        this.trendingAlertQueue.add({}, {
+        // Clean up any existing repeatable jobs with this ID to prevent duplicates when cron changes
+        try {
+            const repeatableJobs = await this.trendingAlertQueue.getRepeatableJobs();
+            for (const job of repeatableJobs) {
+                if (job.id === 'trending-analysis-recurring') {
+                    await this.trendingAlertQueue.removeRepeatableByKey(job.key);
+                    console.log('🧹 Bull Queue: Removed old repeatable job');
+                }
+            }
+        } catch (error) {
+            console.error('⚠️ Bull Queue: Failed to clean old jobs:', error);
+        }
+
+        await this.trendingAlertQueue.add({}, {
             repeat: { cron: cronInterval },
             jobId: 'trending-analysis-recurring'
         });

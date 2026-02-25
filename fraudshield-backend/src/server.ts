@@ -46,7 +46,9 @@ const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
 
     // Start background jobs
     logger.info('Starting background jobs...');
-    AlertWorkerService.initialize();
+    AlertWorkerService.initialize().catch(err => {
+        logger.error('❌ Failed to initialize Alert Worker:', err);
+    });
 });
 
 // Graceful shutdown
