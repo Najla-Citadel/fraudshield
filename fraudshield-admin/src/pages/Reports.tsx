@@ -20,11 +20,14 @@ interface ScamReport {
 const Reports = () => {
     const [reports, setReports] = useState<ScamReport[]>([]);
     const [loading, setLoading] = useState(true);
+    const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
 
-    const fetchReports = async () => {
+    const fetchReports = async (page = 1) => {
+        setLoading(true);
         try {
-            const response = await adminService.getReports();
-            setReports(response.data);
+            const response = await adminService.getReports(page);
+            setReports(response.data.data);
+            setMeta(response.data.meta);
         } catch (error) {
             console.error('Error fetching reports:', error);
         } finally {
@@ -33,7 +36,7 @@ const Reports = () => {
     };
 
     useEffect(() => {
-        fetchReports();
+        fetchReports(1);
     }, []);
 
     const handleStatusUpdate = async (id: string, status: string) => {
@@ -143,6 +146,28 @@ const Reports = () => {
                         <Clock size={48} className="mx-auto text-slate-600 mb-4" />
                         <h3 className="text-xl font-bold text-slate-400">No reports found</h3>
                         <p className="text-slate-500">All caught up! Check back later.</p>
+                    </div>
+                )}
+
+                {meta.totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-8 p-4 bg-navy-800 rounded-xl border border-navy-700">
+                        <button
+                            onClick={() => fetchReports(meta.page - 1)}
+                            disabled={meta.page === 1}
+                            className="px-4 py-2 bg-navy-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-navy-600 transition-colors"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-slate-300 font-medium">
+                            Page {meta.page} of {meta.totalPages} ({meta.total} total records)
+                        </span>
+                        <button
+                            onClick={() => fetchReports(meta.page + 1)}
+                            disabled={meta.page >= meta.totalPages}
+                            className="px-4 py-2 bg-accent-green text-navy-900 font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-500 transition-colors"
+                        >
+                            Next
+                        </button>
                     </div>
                 )}
             </div>
