@@ -44,6 +44,7 @@ model Profile {
   bio      String?
   avatar   String?
   points     Int     @default(0)
+  totalPoints Int     @default(0)
   reputation Int     @default(0)
   badges     Json    @default("[]")
   userId     String  @unique
@@ -181,6 +182,8 @@ model Reward {
   type        String       // 'subscription', 'badge', 'cosmetic'
   metadata    Json         @default("{}")
   active      Boolean      @default(true)
+  minTier     String       @default("BRONZE") // BRONZE, SILVER, GOLD, DIAMOND
+  isFeatured  Boolean      @default(false)
   createdAt   DateTime     @default(now())
   redemptions Redemption[]
 }
