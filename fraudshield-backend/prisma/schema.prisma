@@ -7,21 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CheckType {
+  PHONE
+  URL
+  BANK
+  DOC
+  MANUAL
+}
+
 model User {
-  id               String              @id @default(uuid())
-  email            String              @unique
-  passwordHash     String
-  fullName         String?
-  role             String              @default("user")
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
-  alerts           Alert[]
-  transactions     PointsTransaction[]
-  profile          Profile?
-  reports          ScamReport[]
-  userTransactions Transaction[]
-  subscriptions    UserSubscription[]
-  redemptions      Redemption[]
+  id                  String              @id @default(uuid())
+  email               String              @unique
+  passwordHash        String
+  emailVerified       Boolean             @default(false)
+  fullName            String?
+  role                String              @default("user")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  alerts              Alert[]
+  transactions        PointsTransaction[]
+  profile             Profile?
+  reports             ScamReport[]
+  userTransactions    Transaction[]
+  subscriptions       UserSubscription[]
+  redemptions         Redemption[]
+  alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
+  transactionJournals TransactionJournal[]
+  refreshToken        String?             @unique
+  comments            Comment[]
+  acceptedTermsVersion String?
+  acceptedTermsAt      DateTime?
 }
 
 model Profile {
@@ -62,6 +77,7 @@ model ScamReport {
   id          String         @id @default(uuid())
   type        String
   target      String?
+  targetType  String?        // e.g. "phone", "bank_account", "url"
   description String
   userId      String
   status      String         @default("pending")
@@ -73,6 +89,24 @@ model ScamReport {
   longitude   Float?
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
+  comments    Comment[]
+
+  @@index([isPublic])
+  @@index([createdAt])
+  @@index([category])
+  @@index([status])
+}
+
+model Comment {
+  id        String     @id @default(uuid())
+  text      String
+  userId    String
+  reportId  String
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@index([reportId])
 }
 
 model Verification {
@@ -82,6 +116,8 @@ model Verification {
   isSame    Boolean
   createdAt DateTime   @default(now())
   report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@unique([reportId, userId])
 }
 
 model PointsTransaction {
@@ -155,4 +191,53 @@ model Redemption {
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
   reward     Reward   @relation(fields: [rewardId], references: [id])
+}
+model BadgeDefinition {
+  id          String   @id @default(uuid())
+  key         String   @unique   // e.g. "elite_sentinel"
+  name        String             // Display name: "Elite Sentinel"
+  description String
+  icon        String             // Emoji or icon name
+  tier        String             // "bronze" | "silver" | "gold" | "platinum"
+  trigger     String             // "reputation" | "reports" | "streak" | "purchase"
+  threshold   Int?               // e.g. reputation >= 50
+  createdAt   DateTime @default(now())
+}
+
+model TransactionJournal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  checkType     CheckType
+  target        String?   // the mapped URL/Phone/Num or Recipient
+  riskScore     Int      // 0-100 indicating fraud risk
+  status        String   // SAFE, SUSPICIOUS, BLOCKED, SCAMMED
+  metadata      Json?    // Stores the raw deep-dive data from APIs
+  
+  // Fields for manual transaction logging
+  amount        Float?
+  merchant      String?
+  paymentMethod String?   // "duitnow", "bank_transfer", etc.
+  platform      String?   // "Shopee", "WhatsApp", etc.
+  notes         String?
+  reportId      String?   // Linked if converted to ScamReport
+  
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AlertSubscription {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  categories  String[]
+  latitude    Float?
+  longitude   Float?
+  radiusKm    Int      @default(15)
+  fcmToken    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
 }

@@ -187,7 +187,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               opacity: _fadeAnimation,
               child: Center(
                 child: Text(
-                  'Powered by AI Security',
+                  'NEXT-GEN FRAUD DETECTION',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.3),
                     fontSize: 10,

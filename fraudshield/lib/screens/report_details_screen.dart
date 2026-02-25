@@ -2,16 +2,69 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../constants/colors.dart';
 import '../widgets/adaptive_button.dart';
+import '../services/api_service.dart';
 
-class ReportDetailsScreen extends StatelessWidget {
+class ReportDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> report;
 
   const ReportDetailsScreen({super.key, required this.report});
 
   @override
+  State<ReportDetailsScreen> createState() => _ReportDetailsScreenState();
+}
+
+class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
+  final TextEditingController _commentController = TextEditingController();
+  List<dynamic> _comments = [];
+  bool _isLoadingComments = true;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchComments();
+  }
+
+  Future<void> _fetchComments() async {
+    try {
+      final comments = await ApiService.instance.getComments(widget.report['id']);
+      if (mounted) {
+        setState(() {
+          _comments = comments;
+          _isLoadingComments = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching comments: $e');
+      if (mounted) setState(() => _isLoadingComments = false);
+    }
+  }
+
+  Future<void> _submitComment() async {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() => _isSubmitting = true);
+    try {
+      await ApiService.instance.submitComment(
+        reportId: widget.report['id'],
+        text: text,
+      );
+      _commentController.clear();
+      await _fetchComments();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to post comment: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isVerified = (report['category'] == 'E-Wallet Phishing' || report['category'] == 'Courier Impersonation');
+    final isVerified = widget.report['status'] == 'VERIFIED';
 
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
@@ -49,7 +102,7 @@ class ReportDetailsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    report['category'] ?? 'Scam Report',
+                    widget.report['category'] ?? 'Scam Report',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       color: AppColors.textLight,
                       fontWeight: FontWeight.bold,
@@ -91,7 +144,7 @@ class ReportDetailsScreen extends StatelessWidget {
                 Icon(Icons.access_time_rounded, size: 16, color: AppColors.textLight.withOpacity(0.5)),
                 const SizedBox(width: 6),
                 Text(
-                  'Reported ${_getTimeAgo(report['createdAt'])}',
+                  'Reported ${_getTimeAgo(widget.report['createdAt'])}',
                   style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
                 ),
                 const SizedBox(width: 12),
@@ -99,7 +152,7 @@ class ReportDetailsScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    report['location'] ?? 'Petaling Jaya',
+                    widget.report['location'] ?? 'Petaling Jaya',
                     style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -112,44 +165,7 @@ class ReportDetailsScreen extends StatelessWidget {
             // 2. Scam Source Card
             const Text('SCAM SOURCE', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
             const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF162032), // Slightly lighter than bg
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-              ),
-              child: Row(
-                children: [
-                   Container(
-                     padding: const EdgeInsets.all(12),
-                     decoration: BoxDecoration(
-                       color: const Color(0xFF1E3A8A).withOpacity(0.4),
-                       borderRadius: BorderRadius.circular(12),
-                     ),
-                     child: const Icon(Icons.sms_rounded, color: Color(0xFF3B82F6), size: 24),
-                   ),
-                   const SizedBox(width: 16),
-                   Expanded(
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Text(
-                           'SMS from ${report['target'] ?? '+60 12-XXXXXXX'}',
-                           style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
-                         ),
-                         const SizedBox(height: 4),
-                         Text(
-                           'Malaysia Mobile Network',
-                           style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
-                         ),
-                       ],
-                     ),
-                   ),
-                ],
-              ),
-            ),
+            _buildSourceCard(widget.report),
 
             const SizedBox(height: 24),
 
@@ -165,7 +181,7 @@ class ReportDetailsScreen extends StatelessWidget {
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Text(
-                '"${report['description'] ?? 'No content available.'}"',
+                '"${widget.report['description'] ?? 'No content available.'}"',
                 style: const TextStyle(
                   color: AppColors.textLight,
                   fontSize: 15,
@@ -195,11 +211,14 @@ class ReportDetailsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _riskItem('Sense of Urgency', 'Use of "suspended in 2 hours" is a classic social engineering tactic.'),
-                  const SizedBox(height: 16),
-                  _riskItem('Suspicious Link', 'bit.ly URL shortener used to mask a phishing site, not official e-wallet domain.'),
-                  const SizedBox(height: 16),
-                  _riskItem('Sender ID', 'Unknown mobile number used instead of official shortcode.'),
+                  ..._buildRiskPoints(widget.report).asMap().entries.map((entry) {
+                    return Column(
+                      children: [
+                        if (entry.key > 0) const SizedBox(height: 16),
+                        _riskItem(entry.value['title']!, entry.value['desc']!),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
@@ -212,25 +231,24 @@ class ReportDetailsScreen extends StatelessWidget {
               onPressed: () {},
               icon: const Icon(Icons.block_rounded, color: Colors.white, size: 20),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.share_rounded, size: 20),
-                label: const Text('Share with Friends'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.textLight,
-                  side: BorderSide(color: AppColors.textLight.withOpacity(0.2)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
+            const SizedBox(height: 32),
+            
+            // 6. Comments Section (New for Phase 3)
+            Row(
+              children: [
+                const Icon(Icons.forum_rounded, color: AppColors.accentGreen, size: 20),
+                const SizedBox(width: 8),
+                Text('COMMUNITY DISCUSSION', style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                const Spacer(),
+                Text('${_comments.length} comments', style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 11)),
+              ],
             ),
+            const SizedBox(height: 16),
+            _buildCommentSection(),
 
             const SizedBox(height: 32),
             
-            // 6. Screenshots (Blurred)
+            // 7. Screenshots (Blurred)
             Row(
               children: [
                 Expanded(child: _screenshotPlaceholder()),
@@ -254,6 +272,274 @@ class ReportDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildCommentSection() {
+    return Column(
+      children: [
+        // Comment Input
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF162032),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              const CircleAvatar(
+                radius: 14,
+                backgroundColor: AppColors.accentGreen,
+                child: Icon(Icons.person, size: 16, color: Colors.white),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  style: const TextStyle(color: AppColors.textLight, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Add a comment...',
+                    hintStyle: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 14),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: _isSubmitting 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accentGreen))
+                  : const Icon(Icons.send_rounded, color: AppColors.accentGreen, size: 20),
+                onPressed: _isSubmitting ? null : _submitComment,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        
+        // Comments List
+        if (_isLoadingComments)
+          const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: AppColors.accentGreen)))
+        else if (_comments.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                Icon(Icons.chat_bubble_outline_rounded, color: AppColors.textLight.withOpacity(0.1), size: 48),
+                const SizedBox(height: 12),
+                Text('No comments yet. Be the first to discuss!', style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 13)),
+              ],
+            ),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _comments.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final comment = _comments[index];
+              final userData = comment['user'] ?? {};
+              final profile = userData['profile'] ?? {};
+              
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   CircleAvatar(
+                    radius: 16,
+                    backgroundColor: Colors.white.withOpacity(0.05),
+                    child: Text(
+                      (userData['fullName'] ?? '?').substring(0, 1),
+                      style: const TextStyle(color: AppColors.textLight, fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              userData['fullName'] ?? 'Anonymous User',
+                              style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _getTimeAgo(comment['createdAt']),
+                              style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 11),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.03),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            comment['text'] ?? '',
+                            style: TextStyle(color: AppColors.textLight.withOpacity(0.8), fontSize: 14, height: 1.4),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+      ],
+    );
+  }
+
+  /// Builds the source card based on report type (Phone / Message / Document / Others)
+  Widget _buildSourceCard(Map<String, dynamic> report) {
+    final type = report['type'] ?? 'Message';
+    final target = report['target'] as String? ?? '';
+
+    final IconData icon;
+    final String label;
+    final String sublabel;
+
+    switch (type) {
+      case 'Phone':
+        icon = Icons.phone_rounded;
+        label = 'Call from $target';
+        sublabel = 'Malaysia Mobile Network';
+        break;
+      case 'Document':
+        icon = Icons.description_rounded;
+        label = 'Document: ${target.isNotEmpty ? target : "Attached file"}';
+        sublabel = 'Uploaded evidence file';
+        break;
+      case 'Message':
+        icon = Icons.sms_rounded;
+        label = target.isNotEmpty ? 'SMS from $target' : 'Suspicious message';
+        sublabel = 'Malaysia Mobile Network';
+        break;
+      default:
+        icon = Icons.warning_amber_rounded;
+        label = target.isNotEmpty ? target : 'Other scam source';
+        sublabel = 'Reported by community';
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF162032),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E3A8A).withOpacity(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  sublabel,
+                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Generates dynamic AI risk analysis bullets from report fields
+  List<Map<String, String>> _buildRiskPoints(Map<String, dynamic> report) {
+    final points = <Map<String, String>>[];
+    final category = (report['category'] ?? '').toString().toLowerCase();
+    final type = (report['type'] ?? '').toString();
+    final count = (report['_count']?['verifications'] ?? 0) as int;
+    final description = (report['description'] ?? '').toString().toLowerCase();
+
+    // Category-level signal
+    if (category.contains('phishing') || category.contains('wallet')) {
+      points.add({
+        'title': 'Sense of Urgency',
+        'desc': 'Phishing messages often claim accounts are suspended to pressure victims into acting fast.',
+      });
+      if (description.contains('link') || description.contains('url') || description.contains('bit.ly')) {
+        points.add({
+          'title': 'Suspicious Link',
+          'desc': 'URL shortener or unofficial domain used to mask a phishing site.',
+        });
+      }
+    } else if (category.contains('investment')) {
+      points.add({
+        'title': 'Unrealistic Returns',
+        'desc': '"Guaranteed" high-return schemes are always red flags. Check BNM Alert List before investing.',
+      });
+      if (description.contains('telegram') || description.contains('whatsapp') || description.contains('group')) {
+        points.add({
+          'title': 'Social Media Pressure',
+          'desc': 'Scammers often use closed group chats to fabricate testimonials and urgency.',
+        });
+      }
+    } else if (category.contains('courier') || category.contains('delivery')) {
+      points.add({
+        'title': 'Impersonation Tactic',
+        'desc': 'Official couriers never request bank details or fees via phone call.',
+      });
+      points.add({
+        'title': 'Illegal Parcel Threat',
+        'desc': 'Threatening legal action over a parcel is a known social engineering tactic.',
+      });
+    } else if (category.contains('love') || category.contains('romance')) {
+      points.add({
+        'title': 'Emotional Manipulation',
+        'desc': 'Romance scammers build trust over time before making financial requests.',
+      });
+    } else if (category.contains('job')) {
+      points.add({
+        'title': 'Advance Fee',
+        'desc': 'Legitimate employers never ask you to pay upfront to secure a job offer.',
+      });
+    }
+
+    // Source type signal
+    if (type == 'Phone') {
+      points.add({
+        'title': 'Sender ID',
+        'desc': 'Unknown mobile number used instead of an official registered shortcode.',
+      });
+    }
+
+    // Community verification signal
+    if (count > 3) {
+      points.add({
+        'title': 'Community Flagged',
+        'desc': '$count users have independently reported this as a scam — treat with high caution.',
+      });
+    }
+
+    // Fallback
+    if (points.isEmpty) {
+      points.add({
+        'title': 'Unverified Source',
+        'desc': 'Always verify the source before taking any action on unsolicited messages.',
+      });
+    }
+
+    return points;
   }
 
   Widget _riskItem(String title, String desc) {
@@ -341,3 +627,4 @@ class ReportDetailsScreen extends StatelessWidget {
     }
   }
 }
+

@@ -1,16 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { BadgeService } from '../services/badge.service';
+
 
 export class RewardsController {
     // Get all available rewards
     static async getRewards(req: Request, res: Response, next: NextFunction) {
         try {
-            const rewards = await (prisma as any).reward.findMany({
-                where: { active: true },
-                orderBy: { pointsCost: 'asc' },
-            });
+            const { limit = '20', offset = '0' } = req.query;
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
 
-            res.json(rewards);
+            const [rewards, total] = await Promise.all([
+                (prisma as any).reward.findMany({
+                    where: { active: true },
+                    orderBy: { pointsCost: 'asc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).reward.count({ where: { active: true } }),
+            ]);
+
+            res.json({
+                results: rewards,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }
@@ -175,16 +192,30 @@ export class RewardsController {
     static async getMyRedemptions(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
+            const { limit = '20', offset = '0' } = req.query;
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
 
-            const redemptions = await (prisma as any).redemption.findMany({
-                where: { userId },
-                include: {
-                    reward: true,
-                },
-                orderBy: { createdAt: 'desc' },
+            const [redemptions, total] = await Promise.all([
+                (prisma as any).redemption.findMany({
+                    where: { userId },
+                    include: {
+                        reward: true,
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
+                }),
+                (prisma as any).redemption.count({ where: { userId } }),
+            ]);
+
+            res.json({
+                results: redemptions,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
             });
-
-            res.json(redemptions);
         } catch (error) {
             next(error);
         }
@@ -246,12 +277,88 @@ export class RewardsController {
                 },
             ];
 
-            const created = await (prisma as any).reward.createMany({
+            const createdRewards = await (prisma as any).reward.createMany({
                 data: rewards,
                 skipDuplicates: true,
             });
 
-            res.json({ message: 'Rewards seeded successfully', count: created.count });
+            const badges = [
+                {
+                    key: 'first_report',
+                    name: 'First Responder',
+                    description: 'Submitted your first public scam report',
+                    icon: '🎯',
+                    tier: 'bronze',
+                    trigger: 'reports',
+                    threshold: 1
+                },
+                {
+                    key: 'community_guardian',
+                    name: 'Community Guardian',
+                    description: 'Submitted 10 public scam reports',
+                    icon: '🛡️',
+                    tier: 'silver',
+                    trigger: 'reports',
+                    threshold: 10
+                },
+                {
+                    key: 'senior_sentinel',
+                    name: 'Senior Sentinel',
+                    description: 'Submitted 50 public scam reports',
+                    icon: '🥇',
+                    tier: 'gold',
+                    trigger: 'reports',
+                    threshold: 50
+                },
+                {
+                    key: 'first_verify',
+                    name: 'Truth Seeker',
+                    description: 'Verified your first scam report',
+                    icon: '🔍',
+                    tier: 'bronze',
+                    trigger: 'verifications',
+                    threshold: 1
+                },
+                {
+                    key: 'elite_verifier',
+                    name: 'Elite Verifier',
+                    description: 'Verified 25 scam reports',
+                    icon: '⚖️',
+                    tier: 'silver',
+                    trigger: 'verifications',
+                    threshold: 25
+                },
+                {
+                    key: 'elite_sentinel',
+                    name: 'Elite Sentinel',
+                    description: 'Reached 50 reputation points',
+                    icon: '💎',
+                    tier: 'gold',
+                    trigger: 'reputation',
+                    threshold: 50
+                },
+                {
+                    key: 'streak_master',
+                    name: 'Streak Master',
+                    description: 'Logged in for 7 consecutive days',
+                    icon: '🔥',
+                    tier: 'silver',
+                    trigger: 'streak',
+                    threshold: 7
+                }
+            ];
+
+            const createdBadges = await (prisma as any).badgeDefinition.createMany({
+                data: badges,
+                skipDuplicates: true,
+            });
+
+            res.json({
+                message: 'Seeding successful',
+                rewardsCount: createdRewards.count,
+                badgesCount: createdBadges.count
+            });
+
         } catch (error) {
             next(error);
         }
@@ -323,13 +430,18 @@ export class RewardsController {
                 }),
             ]);
 
+            // Evaluate badges for the user
+            const newBadges = await BadgeService.evaluateBadges(userId);
+
             res.json({
                 claimed: true,
                 message,
                 points: pointsAwarded,
                 streak,
                 nextReward: RewardsController.calculateReward(streak + 1),
+                newBadges,
             });
+
 
         } catch (error) {
             next(error);

@@ -11,6 +11,7 @@ import 'phishing_protection_screen.dart';
 import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
 import 'scam_reporting_screen.dart';
+import 'scam_alerts_screen.dart';
 import 'awareness_tips_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
@@ -25,6 +26,9 @@ import 'activity_screen.dart';
 import '../constants/colors.dart';
 import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
+import '../widgets/security_report_sheet.dart';
+import 'transaction_journal_screen.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,8 +39,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  String _userName = 'User';
-  bool _loadingProfile = true;
+  // Removed _userName and _loadingProfile - we will watch the provider directly
+
 
   // Key to refresh PointsScreen from Home
   final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
@@ -44,11 +48,16 @@ class _HomeScreenState extends State<HomeScreen> {
   // Customization State
   List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
 
+  // Security Center State
+  bool _isScanning = false;
+  List<dynamic> _recentTransactions = [];
+
   @override
   void initState() {
     super.initState();
     _loadProfile();
     _loadQuickActions();
+    _loadRecentTransactions();
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
@@ -56,6 +65,77 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check for daily login reward
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyReward();
+    });
+  }
+
+  int _calculateSecurityScore(bool isSubscribed) {
+    final authProvider = context.read<AuthProvider>();
+    int score = 70; // Base score
+    if (isSubscribed) score += 15;
+    
+    final fullName = authProvider.userProfile?.fullName;
+    if (fullName != null && fullName.trim().isNotEmpty) {
+      score += 5; // Profile set
+    }
+    
+    // Future: Check permissions
+    if (_activeQuickActions.isNotEmpty) score += 5;
+    return score;
+  }
+
+  void _runQuickScan(bool isSubscribed) {
+    if (_isScanning) return;
+    
+    setState(() => _isScanning = true);
+
+    // Simulate system scan
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() => _isScanning = false);
+        _showSecurityReport(isSubscribed);
+      }
+    });
+  }
+
+  void _showSecurityReport(bool isSubscribed) {
+    final authProvider = context.read<AuthProvider>();
+    final fullName = authProvider.userProfile?.fullName;
+    final profileComplete = fullName != null && fullName.trim().isNotEmpty;
+    final activeDefenses = _activeQuickActions.length;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => SecurityReportSheet(
+        score: _calculateSecurityScore(isSubscribed),
+        isSubscribed: isSubscribed,
+        profileComplete: profileComplete,
+        activeDefensesCount: activeDefenses,
+        onFixPremium: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+          );
+        },
+        onUpdateProfile: () {
+          Navigator.pop(context);
+          _onNavTap(4); // Switch to Account Tab
+        },
+        onEnableDefenses: () {
+          Navigator.pop(context);
+          _showCustomizationSheet();
+        },
+      ),
+    );
+  }
+
+  Future<void> _saveQuickActions(List<String> actions) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('active_quick_actions', actions);
+    setState(() {
+      _activeQuickActions = actions;
     });
   }
 
@@ -76,9 +156,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
           duration: const Duration(seconds: 5),
           action: SnackBarAction(label: 'VIEW', textColor: Colors.white, onPressed: () {
-            // Future: Navigate to alert details
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+            );
           }),
         ),
       );
@@ -94,18 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadProfile() async {
     final authProvider = context.read<AuthProvider>();
     
-    // AuthProvider already handles profile loading/refreshing
+    // Trigger profile fetch if not already present
     if (authProvider.userProfile == null) {
-      await authProvider.refreshProfile();
-    }
-
-    if (mounted) {
-      setState(() {
-        _userName = authProvider.userProfile?.fullName ?? 
-                   authProvider.user?.email?.split('@').first ?? 
-                   'User';
-        _loadingProfile = false;
-      });
+      try {
+        await authProvider.refreshProfile();
+      } catch (e) {
+        debugPrint('HomeScreen: Error loading profile: $e');
+      }
     }
   }
 
@@ -144,12 +223,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _saveQuickActions(List<String> actions) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('active_quick_actions', actions);
-    setState(() {
-      _activeQuickActions = actions;
-    });
+  Future<void> _loadRecentTransactions() async {
+    try {
+      final data = await ApiService.instance.getTransactionJournal(limit: 3);
+      if (mounted) {
+        setState(() {
+          _recentTransactions = data['results'] ?? [];
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load recent transactions on Home: $e');
+    }
   }
 
   void _showCustomizationSheet() {
@@ -347,9 +431,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
+
+// ... inside HomeScreen build method ...
+
   @override
   Widget build(BuildContext context) {
-    final isSubscribed = context.watch<AuthProvider>().isSubscribed;
+    final authProvider = context.watch<AuthProvider>();
+    final isSubscribed = authProvider.isSubscribed;
+    final loading = authProvider.loading;
+    
+    String? name = authProvider.userProfile?.fullName;
+    if (name != null && name.trim().isEmpty) {
+      name = null;
+    }
+    final displayUserName = name ?? 
+                           authProvider.user?.email?.split('@').first ?? 
+                           'User';
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
@@ -358,11 +456,16 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: [
           _HomeTab(
-            userName: _userName,
-            loading: _loadingProfile,
+            userName: displayUserName,
+            loading: loading,
             activeQuickActions: _activeQuickActions,
             onCustomize: () => _showCustomizationSheet(),
             isSubscribed: isSubscribed,
+            // Pass security state down
+            isScanning: _isScanning,
+            score: _calculateSecurityScore(isSubscribed),
+            onScan: () => _runQuickScan(isSubscribed),
+            recentTransactions: _recentTransactions,
           ),
           const CommunityFeedScreen(),
           const ActivityScreen(),
@@ -384,6 +487,12 @@ class _HomeTab extends StatelessWidget {
   final List<String> activeQuickActions;
   final VoidCallback onCustomize;
   final bool isSubscribed;
+  
+  // New props for security center
+  final bool isScanning;
+  final int score;
+  final VoidCallback onScan;
+  final List<dynamic> recentTransactions;
 
   const _HomeTab({
     required this.userName,
@@ -391,6 +500,10 @@ class _HomeTab extends StatelessWidget {
     required this.activeQuickActions,
     required this.onCustomize,
     required this.isSubscribed,
+    required this.isScanning,
+    required this.score,
+    required this.onScan,
+    required this.recentTransactions,
   });
 
   @override
@@ -430,7 +543,10 @@ class _HomeTab extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
+                                height: 1.2, // Fixed: height, not maxHeight
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                     ],
                   ),
@@ -455,40 +571,23 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // 2. SECURITY SCORE RING
-              const SecurityScoreRing(
-                score: 98,
-                status: 'Excellent',
+              // 2. SECURITY SCORE RING (Interactive)
+              GestureDetector(
+                onTap: () {
+                  if (!isScanning) onScan();
+                },
+                child: SecurityScoreRing(
+                  score: score,
+                  status: score >= 90 ? 'Excellent' : 'Good',
+                  isScanning: isScanning,
+                  onTap: onScan,
+                ),
               ),
 
               const SizedBox(height: 30),
 
-              // 3. MONITORING PILL
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B), // Dark Slate
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.circle, color: AppColors.accentGreen, size: 8),
-                    SizedBox(width: 8),
-                    Text(
-                      'AI Watchdog Monitoring Active',
-                      style: TextStyle(
-                        color: AppColors.accentGreen,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
+              // 3. MONITORING PILL (Animated)
+              _buildMonitoringPill(),
 
               // 4. QUICK ACTIONS ROW
               Row(
@@ -645,6 +744,118 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 32),
 
+              // NEW: TRENDING ALERTS CARD
+              _buildTrendingAlertsCard(context),
+
+              const SizedBox(height: 32),
+
+              // NEW: PAYMENT JOURNAL CARD
+              _buildPaymentJournalCard(context),
+
+              const SizedBox(height: 32),
+
+              // NEW: RECENT CHECKS (formerly SECURITY JOURNAL)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'RECENT CHECKS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
+                      ),
+                      child: Text(
+                        'View All',
+                        style: TextStyle(
+                          color: AppColors.accentGreen,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (recentTransactions.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: [
+                       Icon(LucideIcons.shieldCheck, color: Colors.grey.withOpacity(0.5), size: 32),
+                       const SizedBox(height: 8),
+                       Text('No recent scans recorded.', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                )
+              else
+                ...recentTransactions.map((tx) {
+                   final type = tx['checkType'] ?? 'UNKNOWN';
+                   final target = tx['target'] ?? '';
+                   final status = tx['status'] ?? 'SAFE';
+                   
+                   IconData icon;
+                   switch (type) {
+                     case 'URL': icon = LucideIcons.link; break;
+                     case 'PHONE': icon = LucideIcons.phone; break;
+                     case 'BANK': icon = LucideIcons.building; break;
+                     default: icon = LucideIcons.fileText;
+                   }
+
+                   Color color;
+                   if (status == 'SAFE') color = AppColors.accentGreen;
+                   else if (status == 'SUSPICIOUS') color = Colors.orangeAccent;
+                   else color = Colors.redAccent;
+
+                   return Container(
+                     margin: const EdgeInsets.only(bottom: 8),
+                     padding: const EdgeInsets.all(12),
+                     decoration: BoxDecoration(
+                       color: const Color(0xFF1E293B),
+                       borderRadius: BorderRadius.circular(12),
+                     ),
+                     child: Row(
+                       children: [
+                         Container(
+                           padding: const EdgeInsets.all(8),
+                           decoration: BoxDecoration(
+                             color: color.withOpacity(0.1),
+                             borderRadius: BorderRadius.circular(8),
+                           ),
+                           child: Icon(icon, color: color, size: 16),
+                         ),
+                         const SizedBox(width: 12),
+                         Expanded(
+                           child: Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Text(target, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                               Text(status, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                             ],
+                           ),
+                         ),
+                       ],
+                     ),
+                   );
+                }),
+
+              const SizedBox(height: 32),
+
               // 5. ALL SERVICES (Renamed from PROTECTION STATUS)
               Align(
                 alignment: Alignment.centerLeft,
@@ -690,6 +901,17 @@ class _HomeTab extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _StatusItem(
+                icon: Icons.edit_document,
+                title: 'Log Payment',
+                subtitle: 'Securely track your transactions',
+                isActive: true,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
                 ),
               ),
 
@@ -810,6 +1032,173 @@ class _HomeTab extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTrendingAlertsCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.orange.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.warning_rounded, color: Colors.orange, size: 20),
+                const SizedBox(width: 8),
+                const Text(
+                  'TRENDING THREATS',
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const Spacer(),
+                Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.5), size: 14),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Stay ahead of the latest scams in your area. Check the threat intelligence dashboard now.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMonitoringPill() {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.5, end: 1.0),
+      duration: const Duration(milliseconds: 1500),
+      builder: (context, value, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B), // Dark Slate
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.accentGreen.withOpacity(0.3 * value),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.accentGreen.withOpacity(0.1 * value),
+                blurRadius: 8 * value,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.circle,
+                color: AppColors.accentGreen.withOpacity(value),
+                size: 8,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'System Shield Active',
+                style: TextStyle(
+                  color: AppColors.accentGreen,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      onEnd: () {}, 
+    );
+  }
+
+  Widget _buildPaymentJournalCard(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B), // Match trending alerts style
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accentGreen.withOpacity(0.3), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.accentGreen.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.menu_book_rounded, color: AppColors.accentGreen, size: 24),
+              const SizedBox(width: 10),
+              const Text(
+                'PAYMENT JOURNAL',
+                style: TextStyle(
+                  color: AppColors.accentGreen,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Unsure about a seller? Log the payment here before you transfer money.',
+            style: TextStyle(color: Colors.white.withOpacity(0.8), height: 1.4),
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
+                );
+              },
+              icon: const Text('Log Now', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              label: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.accentGreen,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
