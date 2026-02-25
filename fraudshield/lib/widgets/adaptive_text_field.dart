@@ -12,6 +12,9 @@ class AdaptiveTextField extends StatelessWidget {
   final bool? filled;
   final Color? fillColor;
   final Color? textColor;
+  final bool autofocus;
+  final bool readOnly;
+  final bool enabled;
 
   const AdaptiveTextField({
     super.key,
@@ -25,6 +28,9 @@ class AdaptiveTextField extends StatelessWidget {
     this.filled,
     this.fillColor,
     this.textColor,
+    this.autofocus = false,
+    this.readOnly = false,
+    this.enabled = true,
   });
 
   @override
@@ -53,6 +59,9 @@ class AdaptiveTextField extends StatelessWidget {
             keyboardType: keyboardType,
             placeholder: placeholder ?? label,
             maxLines: maxLines,
+            autofocus: autofocus,
+            readOnly: readOnly,
+            enabled: enabled,
             padding: const EdgeInsets.all(16),
             prefix: prefixIcon != null 
               ? Padding(
@@ -78,6 +87,9 @@ class AdaptiveTextField extends StatelessWidget {
         obscureText: obscureText,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        autofocus: autofocus,
+        readOnly: readOnly,
+        enabled: enabled,
         style: TextStyle(color: textColor ?? (isDark ? Colors.white : Colors.black)),
         decoration: InputDecoration(
           labelText: label,
