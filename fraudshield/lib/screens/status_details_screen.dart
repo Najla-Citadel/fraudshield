@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
+import '../providers/auth_provider.dart';
 
 class StatusDetailsScreen extends StatelessWidget {
   const StatusDetailsScreen({super.key});
 
+  String _calculateTier(int totalPoints) {
+    if (totalPoints >= 10000) return 'Diamond';
+    if (totalPoints >= 5000) return 'Gold';
+    if (totalPoints >= 1000) return 'Silver';
+    return 'Bronze';
+  }
+
+  double _calculateProgress(int totalPoints) {
+    if (totalPoints >= 10000) return 1.0;
+    if (totalPoints >= 5000) return (totalPoints - 5000) / 5000;
+    if (totalPoints >= 1000) return (totalPoints - 1000) / 4000;
+    return totalPoints / 1000;
+  }
+
+  String _getNextTierInfo(int totalPoints) {
+    if (totalPoints >= 10000) return 'Max Tier Reached';
+    if (totalPoints >= 5000) return '${10000 - totalPoints} PTS to Diamond Protector';
+    if (totalPoints >= 1000) return '${5000 - totalPoints} PTS to Gold Protector';
+    return '${1000 - totalPoints} PTS to Silver Protector';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final totalPoints = authProvider.user?.profile?.totalPoints ?? 0;
+    final tier = _calculateTier(totalPoints);
+
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
@@ -28,58 +55,21 @@ class StatusDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 32),
-                _buildShieldHero(),
+                _buildShieldHero(tier),
                 const SizedBox(height: 40),
-                _buildTierProgress(),
+                _buildTierProgress(totalPoints),
                 const SizedBox(height: 48),
                 _buildBenefitSection(
                   title: 'CURRENT BENEFITS',
-                  benefits: [
-                    _BenefitItem(
-                      icon: Icons.trending_up_rounded,
-                      title: '5% Points Bonus on Reports',
-                      subtitle: 'Earn more for every verified scam report',
-                      isLocked: false,
-                    ),
-                    _BenefitItem(
-                      icon: Icons.card_giftcard_rounded,
-                      title: 'Silver-Exclusive Rewards',
-                      subtitle: 'Access to the silver-tier marketplace',
-                      isLocked: false,
-                    ),
-                    _BenefitItem(
-                      icon: Icons.verified_user_rounded,
-                      title: 'Priority Community Verification',
-                      subtitle: 'Your votes carry 2x more weight',
-                      isLocked: false,
-                    ),
-                  ],
+                  benefits: _getBenefitsForTier(tier, true),
                 ),
                 const SizedBox(height: 40),
-                _buildBenefitSection(
-                  title: 'LOCKED AT GOLD',
-                  benefits: [
-                    _BenefitItem(
-                      icon: Icons.security_rounded,
-                      title: '10% Points Bonus',
-                      subtitle: 'Double your current efficiency',
-                      isLocked: true,
-                    ),
-                    _BenefitItem(
-                      icon: Icons.support_agent_rounded,
-                      title: 'Direct Support Access',
-                      subtitle: '24/7 priority human assistance',
-                      isLocked: true,
-                    ),
-                    _BenefitItem(
-                      icon: Icons.label_important_outline_rounded,
-                      title: 'Premium Feature Discounts',
-                      subtitle: '30% off all protection add-ons',
-                      isLocked: true,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 120), // Bottom padding for fixed button
+                if (tier != 'Diamond')
+                  _buildBenefitSection(
+                    title: 'LOCKED AT ${_getNextTierName(tier)}',
+                    benefits: _getBenefitsForTier(_getNextTierName(tier).toLowerCase(), false),
+                  ),
+                const SizedBox(height: 120),
               ],
             ),
           ),
@@ -87,14 +77,97 @@ class StatusDetailsScreen extends StatelessWidget {
             left: 24,
             right: 24,
             bottom: 32,
-            child: _buildHowToLevelUpButton(),
+            child: _buildHowToLevelUpButton(context),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildShieldHero() {
+  String _getNextTierName(String currentTier) {
+    switch (currentTier) {
+      case 'Bronze': return 'SILVER';
+      case 'Silver': return 'GOLD';
+      case 'Gold': return 'DIAMOND';
+      default: return 'MAX';
+    }
+  }
+
+  List<_BenefitItem> _getBenefitsForTier(String tier, bool unlocked) {
+    tier = tier.toLowerCase();
+    if (tier == 'bronze') {
+      return [
+        _BenefitItem(
+          icon: Icons.trending_up_rounded,
+          title: 'Basic Points Earning',
+          subtitle: 'Earn standard points for reports',
+          isLocked: !unlocked,
+        ),
+      ];
+    } else if (tier == 'silver') {
+      return [
+        _BenefitItem(
+          icon: Icons.trending_up_rounded,
+          title: '5% Points Bonus',
+          subtitle: 'Earn more for every verified scam report',
+          isLocked: !unlocked,
+        ),
+        _BenefitItem(
+          icon: Icons.verified_user_rounded,
+          title: 'Priority Verification',
+          subtitle: 'Your votes carry 1.5x more weight',
+          isLocked: !unlocked,
+        ),
+      ];
+    } else if (tier == 'gold') {
+      return [
+        _BenefitItem(
+          icon: Icons.security_rounded,
+          title: '10% Points Bonus',
+          subtitle: 'Double your current efficiency',
+          isLocked: !unlocked,
+        ),
+        _BenefitItem(
+          icon: Icons.support_agent_rounded,
+          title: 'Direct Support Access',
+          subtitle: 'Priority human assistance',
+          isLocked: !unlocked,
+        ),
+      ];
+    } else if (tier == 'diamond') {
+      return [
+        _BenefitItem(
+          icon: Icons.diamond_rounded,
+          title: '25% Points Bonus',
+          subtitle: 'Maximum efficiency tier',
+          isLocked: !unlocked,
+        ),
+        _BenefitItem(
+          icon: Icons.stars_rounded,
+          title: 'Early Access',
+          subtitle: 'Test new security features first',
+          isLocked: !unlocked,
+        ),
+        _BenefitItem(
+          icon: Icons.card_membership_rounded,
+          title: 'Diamond Protector Badge',
+          subtitle: 'Elite status on your public profile',
+          isLocked: !unlocked,
+        ),
+      ];
+    }
+    return [];
+  }
+
+  Widget _buildShieldHero(String tier) {
+    Color tierColor;
+    switch (tier) {
+      case 'Diamond': tierColor = Colors.cyan; break;
+      case 'Gold': tierColor = Colors.amber; break;
+      case 'Silver': tierColor = Colors.grey.shade400; break;
+      default: tierColor = Colors.orange.shade700;
+    }
+
     return Column(
       children: [
         Container(
@@ -104,8 +177,8 @@ class StatusDetailsScreen extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                Colors.white.withOpacity(0.15),
-                Colors.white.withOpacity(0.0),
+                tierColor.withOpacity(0.2),
+                tierColor.withOpacity(0.0),
               ],
             ),
           ),
@@ -124,18 +197,18 @@ class StatusDetailsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.shield_rounded,
                 size: 60,
-                color: Colors.white,
+                color: tierColor,
               ),
             ),
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Silver Protector',
-          style: TextStyle(
+        Text(
+          '$tier Protector',
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -177,7 +250,10 @@ class StatusDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTierProgress() {
+  Widget _buildTierProgress(int totalPoints) {
+    final progress = _calculateProgress(totalPoints);
+    final nextTierInfo = _getNextTierInfo(totalPoints);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -196,9 +272,9 @@ class StatusDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  '450 XP to Gold Protector',
-                  style: TextStyle(
+                Text(
+                  nextTierInfo,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -207,8 +283,8 @@ class StatusDetailsScreen extends StatelessWidget {
               ],
             ),
             Text(
-              'Level 12',
-              style: TextStyle(
+              '$totalPoints Total PTS',
+              style: const TextStyle(
                 color: AppColors.accentGreen,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
@@ -221,7 +297,7 @@ class StatusDetailsScreen extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: 0.65,
+            value: progress,
             minHeight: 8,
             backgroundColor: Colors.white.withOpacity(0.05),
             valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
@@ -231,9 +307,10 @@ class StatusDetailsScreen extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _tierLabel('BRONZE'),
-            _tierLabel('SILVER', isActive: true),
-            _tierLabel('GOLD'),
+            _tierLabel('BRONZE', isActive: totalPoints < 1000),
+            _tierLabel('SILVER', isActive: totalPoints >= 1000 && totalPoints < 5000),
+            _tierLabel('GOLD', isActive: totalPoints >= 5000 && totalPoints < 10000),
+            _tierLabel('DIAMOND', isActive: totalPoints >= 10000),
           ],
         ),
       ],
@@ -348,7 +425,7 @@ class StatusDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHowToLevelUpButton() {
+  Widget _buildHowToLevelUpButton(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 56,
@@ -366,11 +443,13 @@ class StatusDetailsScreen extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            _showLevelUpGuide(context);
+          },
           borderRadius: BorderRadius.circular(16),
           child: const Center(
             child: Text(
-              'How to Level Up',
+              'How to Earn Points',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 16,
@@ -379,6 +458,57 @@ class StatusDetailsScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showLevelUpGuide(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'How to Earn Points',
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            _guideItem(Icons.report_problem_rounded, 'Submit a Scam Report', '10 Points'),
+            _guideItem(Icons.verified_rounded, 'Verify Others\' Reports', '5 Points'),
+            _guideItem(Icons.login_rounded, 'Daily Login Streak', '2-10 Points'),
+            _guideItem(Icons.share_rounded, 'Share Security Alerts', '5 Points'),
+            const SizedBox(height: 24),
+            Center(
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Got it!', style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _guideItem(IconData icon, String title, String points) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.accentGreen, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          ),
+          Text(points, style: const TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold)),
+        ],
       ),
     );
   }

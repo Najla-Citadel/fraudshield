@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_history_screen.dart';
 import 'badges_screen.dart';
@@ -22,6 +24,8 @@ class PointsScreenState extends State<PointsScreen> {
   bool _loading = true;
   bool _hasError = false;
   int _balance = 0;
+  String _userTier = 'BRONZE';
+  double _userDiscount = 0.0;
   String _selectedCategory = 'All Rewards';
   List<Map<String, dynamic>> _rewards = [];
 
@@ -48,17 +52,17 @@ class PointsScreenState extends State<PointsScreen> {
 
   Future<void> _loadPoints() async {
     try {
-      final res = await _api.getMyPoints();
-      _balance = res['totalPoints'] ?? 0;
-      
-      try {
-        final rewardsRes = await _api.getRewards();
-        _rewards = List<Map<String, dynamic>>.from(rewardsRes as List);
-      } catch (e) {
-        log('Error loading rewards: $e');
+      final rewardsRes = await _api.getRewards();
+      if (mounted) {
+        setState(() {
+          _rewards = List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
+          _userTier = rewardsRes['userTier'] ?? 'BRONZE';
+          _userDiscount = (rewardsRes['userDiscount'] ?? 0).toDouble();
+          _balance = rewardsRes['userBalance'] ?? 0;
+        });
       }
     } catch (e) {
-      log('Error loading points: $e');
+      log('Error loading points/rewards: $e');
       if (mounted) setState(() => _hasError = true);
     }
   }
@@ -277,9 +281,35 @@ class PointsScreenState extends State<PointsScreen> {
                 ],
               ),
             ),
+            if (_userDiscount > 0) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.local_offer_rounded, size: 14, color: AppColors.accentGreen),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${(_userDiscount * 100).toInt()}% $_userTier Discount Active',
+                      style: const TextStyle(
+                        color: AppColors.accentGreen,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             Text(
-              'You\'ve reached Silver Protector status this month. Keep it up!',
+              'You\'ve reached ${_calculateTierName(context.read<AuthProvider>().user?.profile?.totalPoints ?? 0)} status. Keep it up!',
               style: TextStyle(
                 color: Colors.white.withOpacity(0.7),
                 fontSize: 14,
@@ -390,7 +420,11 @@ class PointsScreenState extends State<PointsScreen> {
             child: Stack(
               children: [
                 Center(
-                  child: Icon(Icons.security, size: 80, color: Colors.blue.withOpacity(0.5)),
+                  child: Icon(
+                    (reward['isLocked'] ?? false) ? Icons.lock_outline_rounded : Icons.security, 
+                    size: 80, 
+                    color: (reward['isLocked'] ?? false) ? Colors.white24 : Colors.blue.withOpacity(0.5)
+                  ),
                 ),
                 Positioned(
                   top: 16,
@@ -398,19 +432,52 @@ class PointsScreenState extends State<PointsScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.accentGreen,
+                      color: (reward['isLocked'] ?? false) ? Colors.black54 : AppColors.accentGreen,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      '$cost PTS',
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (reward['originalCost'] != null && reward['originalCost'] != reward['pointsCost'])
+                          Text(
+                            '${reward['originalCost']} ',
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              decoration: TextDecoration.lineThrough,
+                              fontSize: 10,
+                            ),
+                          ),
+                        Text(
+                          '$cost PTS',
+                          style: TextStyle(
+                            color: (reward['isLocked'] ?? false) ? Colors.white70 : Colors.black87,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+                if (reward['isLocked'] ?? false)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      color: Colors.black45,
+                      child: Text(
+                        'Requires ${reward['requiredTier']} Status',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -442,14 +509,28 @@ class PointsScreenState extends State<PointsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: canAfford ? () => _redeemReward(reward) : null,
+                    onPressed: (canAfford && !(reward['isLocked'] ?? false)) ? () => _redeemReward(reward) : null,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.accentGreen,
-                      side: BorderSide(color: canAfford ? AppColors.accentGreen : Colors.grey),
+                      side: BorderSide(
+                        color: (canAfford && !(reward['isLocked'] ?? false)) 
+                          ? AppColors.accentGreen 
+                          : Colors.grey.withOpacity(0.5)
+                      ),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    child: Text(canAfford ? 'Redeem Now' : 'Not Enough Points', style: TextStyle(fontWeight: FontWeight.bold, color: canAfford ? AppColors.accentGreen : Colors.grey)),
+                    child: Text(
+                      (reward['isLocked'] ?? false) 
+                        ? 'Unlock at ${reward['requiredTier']}' 
+                        : (canAfford ? 'Redeem Now' : 'Not Enough Points'), 
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        color: (canAfford && !(reward['isLocked'] ?? false)) 
+                          ? AppColors.accentGreen 
+                          : Colors.grey
+                      )
+                    ),
                   ),
                 ),
               ],
@@ -480,15 +561,42 @@ class PointsScreenState extends State<PointsScreen> {
                    color: Colors.white.withOpacity(0.1),
                    shape: BoxShape.circle,
                  ),
-                 child: const Icon(Icons.card_giftcard, color: Colors.white, size: 20),
-               ),
-               Text(
-                 '$cost PTS',
-                 style: const TextStyle(
-                   color: AppColors.accentGreen,
-                   fontSize: 12,
-                   fontWeight: FontWeight.bold,
+                 child: Icon(
+                   (reward['isLocked'] ?? false) ? Icons.lock_outline_rounded : Icons.card_giftcard, 
+                   color: (reward['isLocked'] ?? false) ? Colors.white38 : Colors.white, 
+                   size: 20
                  ),
+               ),
+               if (reward['isLocked'] ?? false)
+                 Padding(
+                   padding: const EdgeInsets.only(left: 8.0),
+                   child: Text(
+                     'Requires ${reward['requiredTier']}',
+                     style: const TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
+                   ),
+                 ),
+               const Spacer(),
+               Column(
+                 crossAxisAlignment: CrossAxisAlignment.end,
+                 children: [
+                   if (reward['originalCost'] != null && reward['originalCost'] != reward['pointsCost'])
+                     Text(
+                       '${reward['originalCost']}',
+                       style: const TextStyle(
+                         color: Colors.white38,
+                         decoration: TextDecoration.lineThrough,
+                         fontSize: 10,
+                       ),
+                     ),
+                   Text(
+                     '$cost PTS',
+                     style: TextStyle(
+                       color: (reward['isLocked'] ?? false) ? Colors.white38 : AppColors.accentGreen,
+                       fontSize: 12,
+                       fontWeight: FontWeight.bold,
+                     ),
+                   ),
+                 ],
                ),
              ],
            ),
@@ -516,14 +624,26 @@ class PointsScreenState extends State<PointsScreen> {
            SizedBox(
              width: double.infinity,
              child: OutlinedButton(
-               onPressed: canAfford ? () => _redeemReward(reward) : null,
+               onPressed: (canAfford && !(reward['isLocked'] ?? false)) ? () => _redeemReward(reward) : null,
                style: OutlinedButton.styleFrom(
-                 foregroundColor: Colors.white,
-                 side: BorderSide(color: Colors.white.withOpacity(0.2)),
+                 foregroundColor: (reward['isLocked'] ?? false) ? Colors.grey : Colors.white,
+                 side: BorderSide(
+                   color: (canAfford && !(reward['isLocked'] ?? false)) 
+                    ? Colors.white.withOpacity(0.2) 
+                    : Colors.white.withOpacity(0.05)
+                 ),
                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                  padding: const EdgeInsets.symmetric(vertical: 10),
                ),
-               child: Text(canAfford ? 'Redeem' : 'Not Enough', style: TextStyle(fontSize: 12, color: canAfford ? Colors.white : Colors.grey)),
+               child: Text(
+                 (reward['isLocked'] ?? false) 
+                  ? 'Locked' 
+                  : (canAfford ? 'Redeem' : 'Not Enough'), 
+                 style: TextStyle(
+                   fontSize: 12, 
+                   color: (canAfford && !(reward['isLocked'] ?? false)) ? Colors.white : Colors.grey
+                 )
+               ),
              ),
            ),
         ],
@@ -654,6 +774,13 @@ class PointsScreenState extends State<PointsScreen> {
       alignment: Alignment.center,
       child: Text(icon, style: const TextStyle(fontSize: 24)),
     );
+  }
+
+  String _calculateTierName(int totalPoints) {
+    if (totalPoints >= 10000) return 'Diamond Protector';
+    if (totalPoints >= 5000) return 'Gold Protector';
+    if (totalPoints >= 1000) return 'Silver Protector';
+    return 'Bronze Protector';
   }
 }
 
