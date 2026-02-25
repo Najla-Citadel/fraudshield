@@ -76,10 +76,14 @@ export class AlertWorkerService {
             }
         });
 
-        // 📅 Schedule the recurring job (Check for trends every 5 minutes in production)
-        // For development/demo, we'll keep it at 1 minute as requested
+        // 📅 Schedule the recurring job (Configurable via TRENDING_ALERT_CRON)
+        // Defaults to once per hour in absolute time (e.g. 10:00, 11:00)
+        const cronInterval = process.env.TRENDING_ALERT_CRON || '0 * * * *';
+
+        console.log(`⏰ Bull Queue: Scheduling trending analysis with cron: "${cronInterval}"`);
+
         this.trendingAlertQueue.add({}, {
-            repeat: { cron: '*/1 * * * *' }, // Every minute
+            repeat: { cron: cronInterval },
             jobId: 'trending-analysis-recurring'
         });
 
