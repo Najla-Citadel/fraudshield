@@ -49,6 +49,7 @@ class UserProfile {
   final String? avatar;
   final String? bio;
   final int points;
+  final int totalPoints;
   final int reputation;
   final int loginStreak;
   final List<String> badges;
@@ -59,6 +60,7 @@ class UserProfile {
     this.avatar,
     this.bio,
     this.points = 0,
+    this.totalPoints = 0,
     this.reputation = 0,
     this.loginStreak = 0,
     this.badges = const [],
@@ -71,6 +73,7 @@ class UserProfile {
       avatar: json['avatar'],
       bio: json['bio'],
       points: json['points'] ?? 0,
+      totalPoints: json['totalPoints'] ?? 0,
       reputation: json['reputation'] ?? 0,
       loginStreak: json['loginStreak'] ?? 0,
       badges: (json['badges'] as List<dynamic>?)?.cast<String>() ?? [],
@@ -84,6 +87,7 @@ class UserProfile {
       'avatar': avatar,
       'bio': bio,
       'points': points,
+      'totalPoints': totalPoints,
       'reputation': reputation,
       'loginStreak': loginStreak,
       'badges': badges,

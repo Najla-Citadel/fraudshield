@@ -28,17 +28,31 @@ class AuthProvider extends ChangeNotifier {
     try {
       await api.init();
       if (api.isAuthenticated) {
+        log('AuthProvider: Token found, restoring session...');
         await Future.wait([
           refreshProfile(),
           refreshSubscription(),
-        ]);
+        ]).catchError((e) {
+          log('AuthProvider session restoration partial failure: $e');
+          // If it's a "Session expired" message from ApiService, we should log out.
+          // Otherwise, it might just be a network timeout, so we stay "authenticated" 
+          // but with legacy/cached user data if available.
+          if (e.toString().contains('Session expired') || e.toString().contains('401')) {
+            api.signOut();
+          }
+          return [];
+        });
+        
         if (_user != null) {
           NotificationService.instance.initialize(_user!.id);
         }
+      } else {
+        log('AuthProvider: No token found.');
       }
     } catch (e) {
       log('AuthProvider init error: $e');
-      await api.signOut();
+      // We don't call api.signOut() here because a network error 
+      // shouldn't wipe the user's saved tokens.
     } finally {
       _loading = false;
       notifyListeners();

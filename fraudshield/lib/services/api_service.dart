@@ -470,12 +470,12 @@ class ApiService {
 
   // ---------------- Rewards ----------------
 
-  Future<List<dynamic>> getRewards() async {
+  Future<Map<String, dynamic>> getRewards() async {
     final response = await get('/rewards');
-    if (response is Map && response.containsKey('results')) {
-      return response['results'] as List;
+    if (response is List) {
+      return {'results': response};
     }
-    return response as List;
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> redeemReward(String rewardId) async {
