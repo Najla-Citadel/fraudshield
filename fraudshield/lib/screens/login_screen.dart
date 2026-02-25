@@ -11,6 +11,7 @@ import '../widgets/app_logo.dart';
 import '../services/api_service.dart';
 import 'forgot_password_screen.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,9 +27,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _loading = false;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
+  Future<void>? _initializationFuture;
+  bool _initSuccess = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializationFuture = _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    try {
+      debugPrint('Google Sign-In: Initializing...');
+      final serverClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
+      debugPrint('Google Sign-In: Using serverClientId: $serverClientId');
+      await _googleSignIn.initialize(
+        serverClientId: serverClientId,
+      ).timeout(const Duration(seconds: 10));
+      debugPrint('Google Sign-In: Initialization complete.');
+      _initSuccess = true;
+    } catch (e) {
+      debugPrint('Google Sign-In: Initialization ERROR: $e');
+      _initSuccess = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -84,19 +107,35 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _tryGoogleSignIn() async {
+    debugPrint('Google Sign-In: Starting flow...');
     setState(() => _loading = true);
 
     try {
-      // 1. Trigger Google account picker
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account == null) {
-        setState(() => _loading = false);
-        return; // User cancelled
+      // 0. Ensure initialized
+      if (_initializationFuture != null) {
+        debugPrint('Google Sign-In: Waiting for initialization...');
+        await _initializationFuture!.timeout(const Duration(seconds: 10));
       }
 
-      // 2. Get the auth tokens
+      if (!_initSuccess) {
+        throw Exception('Google Sign-In failed to initialize. Check your configuration.');
+      }
+
+      // 1. Trigger Google account picker
+      debugPrint('Google Sign-In: Calling authenticate()...');
+      final GoogleSignInAccount? account = await _googleSignIn.authenticate()
+          .timeout(const Duration(seconds: 45));
+      
+      if (account == null) {
+        debugPrint('Google Sign-In: User canceled or picker returned null.');
+        return;
+      }
+      debugPrint('Google Sign-In: Authentication successful for ${account.email}');
+      
+      // 2. Get the auth tokens (must be awaited — async in google_sign_in v6+)
       final GoogleSignInAuthentication auth = await account.authentication;
       final String? idToken = auth.idToken;
+      debugPrint('Google Sign-In: ID Token retrieved: ${idToken != null}');
 
       if (idToken == null) {
         throw Exception('Failed to get Google ID Token');
@@ -104,7 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // 3. Authenticate with backend
       if (!mounted) return;
+      debugPrint('Google Sign-In: Calling backend /auth/google...');
       final success = await context.read<AuthProvider>().signInWithGoogle(idToken);
+      debugPrint('Google Sign-In: Backend response success: $success');
       
       if (success) {
         if (!mounted) return;
@@ -114,8 +155,8 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      debugPrint('Google Sign-In ERROR: $e');
       if (!mounted) return;
-      debugPrint('Google Sign-In Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Google Sign-In failed: ${e.toString()}"),
@@ -123,6 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     } finally {
+      debugPrint('Google Sign-In: Flow finished.');
       if (mounted) setState(() => _loading = false);
     }
   }
@@ -282,12 +324,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 opacity: 0.1,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 borderRadius: 16,
-                                borderOpacity: 0.2,
+                                borderColor: Colors.white.withOpacity(0.2),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Image.network(
-                                      'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg',
+                                      'https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png',
                                       height: 20,
                                       errorBuilder: (context, error, stackTrace) => const Icon(
                                         Icons.login, 

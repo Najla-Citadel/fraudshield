@@ -23,6 +23,7 @@ class AuthProvider extends ChangeNotifier {
   /// Compatibility getter for screens expecting 'userProfile'
   UserModel? get userProfile => _user;
 
+
   Future<void> _init() async {
     try {
       await api.init();
@@ -84,19 +85,23 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<bool> signInWithGoogle(String idToken) async {
+    debugPrint('AuthProvider: signInWithGoogle initiated');
     _loading = true;
     notifyListeners();
     try {
+      debugPrint('AuthProvider: Sending token to backend...');
       final userData = await api.signInWithGoogle(idToken);
+      debugPrint('AuthProvider: Backend successfully returned user data');
       _user = UserModel.fromJson(userData);
       NotificationService.instance.initialize(_user!.id);
       return true;
     } catch (e) {
-      log('AuthProvider signInWithGoogle error: $e');
+      debugPrint('AuthProvider: error in signInWithGoogle: $e');
       rethrow;
     } finally {
       _loading = false;
       notifyListeners();
+      debugPrint('AuthProvider: signInWithGoogle finished');
     }
   }
 

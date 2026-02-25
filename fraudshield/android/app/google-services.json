@@ -12,7 +12,28 @@
           "package_name": "com.citadel.fraudshield.v2"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "668317803810-dpgf8l4u0gvo66tiig9sd34rgmur6htc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.citadel.fraudshield.v2",
+            "certificate_hash": "34eb10d0d85e4c5c08fc8319e77b225b6f94a215"
+          }
+        },
+        {
+          "client_id": "668317803810-kt9ktnq41tpari87mo5k4edadatm7t47.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.citadel.fraudshield.v2",
+            "certificate_hash": "3b7009bbe680e79193fcc42babe4d99528c5f25d"
+          }
+        },
+        {
+          "client_id": "668317803810-klml5ouj1mt1dot9v03nuhlnn0htimr7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDZeGNvKDVJqQqahtpSGnxrHold0iUOq5U"
@@ -20,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "668317803810-klml5ouj1mt1dot9v03nuhlnn0htimr7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
