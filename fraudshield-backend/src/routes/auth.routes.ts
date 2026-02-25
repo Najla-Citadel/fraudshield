@@ -12,6 +12,7 @@ router.use(authLimiter);
 
 // Strict rate limiter on sensitive unauthenticated endpoints
 router.post('/signup', loginLimiter, validateSignup, AuthController.signup);
+router.post('/verify-email', loginLimiter, AuthController.verifyEmail);
 router.post('/login', loginLimiter, validateLogin, AuthController.login);
 router.post('/google', loginLimiter, AuthController.googleLogin);
 router.post('/refresh', AuthController.refresh);

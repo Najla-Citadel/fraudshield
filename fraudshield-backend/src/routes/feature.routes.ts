@@ -28,12 +28,9 @@ router.post('/subscription', SubscriptionController.createSubscription);
 router.get('/points', PointsController.getMyPoints);
 router.post('/points', PointsController.addPoints);
 
-// Rewards
-router.get('/rewards', RewardsController.getRewards);
-router.post('/rewards/redeem', RewardsController.redeemReward);
-router.get('/redemptions', RewardsController.getMyRedemptions);
-router.post('/rewards/daily', RewardsController.claimDailyReward);
-router.post('/rewards/seed', RewardsController.seedRewards); // Admin/dev only
+// Points
+router.get('/points', PointsController.getMyPoints);
+router.post('/points', PointsController.addPoints);
 
 // Leaderboards
 router.get('/leaderboard', LeaderboardController.getGlobalLeaderboard);

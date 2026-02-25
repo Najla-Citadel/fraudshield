@@ -10,6 +10,12 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
                 error: info?.message || 'Authentication failed'
             });
         }
+        if (!user.emailVerified) {
+            return res.status(403).json({
+                message: 'Forbidden',
+                error: 'Please verify your email address to access this resource.'
+            });
+        }
         req.user = user;
         next();
     })(req, res, next);

@@ -46,11 +46,54 @@ export class AuthController {
                 data: { refreshToken },
             });
 
+            // Generate OTP and store in Redis for email verification
+            const otp = await EmailService.generateEmailVerificationOtp(email);
+
+            // In local development, we return the OTP for easy testing. 
+            // In production, NEVER return the OTP in the HTTP response.
+            if (process.env.NODE_ENV === 'development') {
+                return res.status(201).json({
+                    user: AuthService.toSafeUser(user),
+                    token: accessToken,
+                    refreshToken,
+                    message: 'Account created. Please verify your email.',
+                    dev_otp: otp
+                });
+            }
+
             res.status(201).json({
                 user: AuthService.toSafeUser(user),
                 token: accessToken,
                 refreshToken,
+                message: 'Account created. Please verify your email.'
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email, otp } = req.body;
+
+            if (!email || !otp) {
+                return res.status(400).json({ error: 'Email and OTP are required' });
+            }
+
+            // Verify OTP with Redis
+            const isValid = await EmailService.verifyEmailOtp(email, otp);
+
+            if (!isValid) {
+                return res.status(400).json({ error: 'Invalid or expired verification code' });
+            }
+
+            // Update User in DB
+            await prisma.user.update({
+                where: { email },
+                data: { emailVerified: true },
+            });
+
+            res.json({ message: 'Email successfully verified' });
         } catch (error) {
             next(error);
         }
@@ -306,6 +349,7 @@ export class AuthController {
                         email,
                         fullName: name || 'Google User',
                         passwordHash,
+                        emailVerified: true,
                         profile: {
                             create: {
                                 avatar: 'Felix',
@@ -315,11 +359,14 @@ export class AuthController {
                     },
                     include: { profile: true },
                 });
-            } else if (!user.fullName && name) {
-                // Sync name from Google for existing users if missing
+            } else if (!user.emailVerified || (!user.fullName && name)) {
+                // Sync name from Google for existing users if missing and mark email as verified
                 user = await prisma.user.update({
                     where: { id: user.id },
-                    data: { fullName: name },
+                    data: {
+                        fullName: name || user.fullName,
+                        emailVerified: true
+                    },
                     include: { profile: true },
                 });
             }

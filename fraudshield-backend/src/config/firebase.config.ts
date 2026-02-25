@@ -8,17 +8,28 @@ export const initializeFirebase = () => {
     if (isInitialized) return;
 
     try {
-        // Determine the path to the service account key
-        // In production, you might want to load this from an environment variable
-        // For local dev, we use the file we just downloaded
-        const serviceAccountPath = path.resolve(__dirname, '../../fraudshield-271b0-firebase-adminsdk-fbsvc-2a70150a06.json');
+        let serviceAccount: any;
 
-        if (!fs.existsSync(serviceAccountPath)) {
-            console.warn('⚠️ Firebase service account key not found. Push notifications will be disabled.');
-            return;
+        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+            try {
+                serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                console.log('✅ Loading Firebase credentials from environment variable');
+            } catch (parseError) {
+                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var:', parseError);
+            }
         }
 
-        const serviceAccount = require(serviceAccountPath);
+        if (!serviceAccount) {
+            // Determine the path to the service account key (fallback for local dev)
+            const serviceAccountPath = path.resolve(__dirname, '../../fraudshield-271b0-firebase-adminsdk-fbsvc-2a70150a06.json');
+
+            if (!fs.existsSync(serviceAccountPath)) {
+                console.warn('⚠️ Firebase service account key not found. Push notifications will be disabled.');
+                return;
+            }
+
+            serviceAccount = require(serviceAccountPath);
+        }
 
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),

@@ -54,8 +54,8 @@
 
 - [x] **S6. Implement JWT refresh token flow** ✅
   - Added 15m access token + 30-day refresh token rotation.
-- [ ] **S7. Implement real email verification** ⏱️ 3–4 hrs
-  - Currently hardcoded to always verified.
+- [x] **S7. Implement real email verification** ✅
+  - Integrated OTP-based verification for signups and password resets.
 - [x] **S8. Add input validation to report submission** ✅
   - Added `express-validator` rules to report routes.
 - [x] **S10. Add rate limiting to auth endpoints** ✅
@@ -90,7 +90,8 @@
 - [x] **M1. Voice Detection → "Coming Soon"** ✅
 - [x] **M2. Add proper loading / error states** ✅
 - [x] **M3. Add certificate pinning** ✅
-- [ ] **M4. Secure token storage** ⏱️ 1 hr
+- [x] **M4. Secure token storage** ✅
+  - Migrated from `shared_preferences` (plaintext) to `flutter_secure_storage` (AES on Android, Keychain on iOS).
 - [ ] **M5. Add app versioning check** ⏱️ 1 hr
 - [x] **M6. Add crash reporting** ✅
   - Integrated Firebase Crashlytics (Feb 24). Crash events stream to Firebase console.
@@ -150,29 +151,29 @@ flowchart LR
 
 ### 🔴 Critical
 
-- [ ] **B1. Real email service** ⏱️ 2 hrs
-  - `email.service.ts` logs OTP to console — password reset broken in production. Integrate Nodemailer + SMTP (Brevo/SendGrid free tier).
+- [x] **B1. Real email service** ✅
+  - Integrated Nodemailer + SMTP (Resend). OTPs are sent via real email templates.
 
 ### 🟠 High
 
-- [ ] **B2. Re-add rewards route** ⏱️ 30 min
-  - `rewards.routes.ts` is commented out in `app.ts`. The `rewards.controller.ts` (17 KB) exists but `/api/v1/rewards` returns 404. Create route file and uncomment.
-- [ ] **B3. Replace `console.log` in alert-engine** ⏱️ 30 min
-  - `alert-engine.service.ts` has 9 bare `console.log/error` calls that bypass Winston in production.
-- [ ] **B4. Wire Semak Mule into risk evaluation** ⏱️ 3 hrs
-  - `semak-mule.service.ts` exists but `RiskEvaluationService.evaluate()` never calls it. Phone checks are still crowdsource-only.
-- [ ] **B10. Move Firebase service account JSON to env var** ⏱️ 30 min
-  - `fraudshield-271b0-firebase-adminsdk-fbsvc-2a70150a06.json` is committed to the repo. Move to `FIREBASE_SERVICE_ACCOUNT` env var.
-- [ ] **F9. Fix Google Sign-In hang** ⏱️ 2 hrs
-  - Tapping "Sign in with Google" hangs after auth. Backend `/auth/google` route exists. Debug callback flow (see conv. 1d82a697).
+- [x] **B2. Re-add rewards route** ✅
+  - Created `rewards.routes.ts` and enabled in `app.ts`. Frontend updated to use `/api/v1/rewards`.
+- [x] **B3. Replace `console.log` in alert-engine** ✅
+  - Standardized logging using Winston `logger`.
+- [x] **B4. Wire Semak Mule into risk evaluation** ✅
+  - Integrated `SemakMuleService` into `RiskEvaluationService.evaluate()` for phone and bank targets.
+- [x] **B10. Move Firebase service account JSON to env var** ✅
+  - Service account now loaded from `FIREBASE_SERVICE_ACCOUNT` env var. JSON file can be safely ignored/removed from repo.
+- [x] **F9. Fix Google Sign-In hang** ✅
+  - Resolved auth flow hang and ensured `emailVerified` is set to true for Google users.
 
 ### 🟡 Medium
 
-- [ ] **F2. Remove hardcoded `_isAndroidEmulator = true`** ⏱️ 5 min
-  - `api_service.dart:13` has a static bool that could cause subtle bugs if referenced later. Remove or replace with `kDebugMode`.
-- [ ] **F7. Remove `test_screen.dart`** ⏱️ 5 min
-  - `lib/screens/test_screen.dart` (4.5 KB) is in the production screen folder. Exclude from release.
-- [ ] **F8. Delete empty `transaction_screen.dart`** ⏱️ 5 min
-  - `lib/screens/transaction_screen.dart` is 0 bytes. Delete or implement.
+- [x] **F2. Remove hardcoded `_isAndroidEmulator = true`** ✅
+  - Removed unused flag from `api_service.dart`.
+- [x] **F7. Remove `test_screen.dart`** ✅
+  - Deleted unused screen file from productions screens folder.
+- [x] **F8. Delete empty `transaction_screen.dart`** ✅
+  - Deleted 0-byte file.
 - [ ] **DB5. Soft delete on ScamReport** ⏱️ 30 min
   - Reports are hard-deleted. Add `deletedAt DateTime?` field and scope all queries accordingly.

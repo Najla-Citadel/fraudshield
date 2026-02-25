@@ -1,6 +1,7 @@
 import { prisma } from '../config/database';
 import * as admin from 'firebase-admin';
 import { getRedisClient } from '../config/redis';
+import logger from '../utils/logger';
 
 export class AlertEngineService {
     /**
@@ -103,14 +104,14 @@ export class AlertEngineService {
      * Identifies trending alerts and dispatches FCM notifications to subscribed users
      */
     static async dispatchTrendingAlerts() {
-        console.log('🔍 Running trending alerts analysis...');
+        logger.info('🔍 Running trending alerts analysis...');
         const trends = await this.getTrendingAlerts(72);
 
         // Only trigger push notifications for HIGH severity trends
         const actionableTrends = trends.filter(trend => trend.severity === 'high');
 
         if (actionableTrends.length === 0) {
-            console.log('✅ No high-severity trends detected.');
+            logger.info('✅ No high-severity trends detected.');
             return;
         }
 
@@ -123,7 +124,7 @@ export class AlertEngineService {
             }
         });
 
-        console.log(`📡 Found ${subscribers.length} active alert subscribers.`);
+        logger.info(`📡 Found ${subscribers.length} active alert subscribers.`);
         let dispatchCount = 0;
         const redis = getRedisClient();
         // Stable date key — changes once per day, so each user gets at most 1 alert/category/day
@@ -181,12 +182,12 @@ export class AlertEngineService {
                         dispatchCount++;
                         break; // One alert per user per dispatcher run
                     } catch (error) {
-                        console.error(`❌ FCM Trending Alert failed:`, error);
+                        logger.error(`❌ FCM Trending Alert failed:`, { error });
                     }
                 }
             }
         }
-        console.log(`🚀 Dispatched ${dispatchCount} trending push notifications.`);
+        logger.info(`🚀 Dispatched ${dispatchCount} trending push notifications.`);
     }
 
     /**
@@ -195,7 +196,7 @@ export class AlertEngineService {
     static async dispatchLocalAlert(report: any) {
         if (!report.latitude || !report.longitude || !report.isPublic) return;
 
-        console.log(`📍 Processing local alert for Report ${report.id} at (${report.latitude}, ${report.longitude})`);
+        logger.info(`📍 Processing local alert for Report ${report.id} at (${report.latitude}, ${report.longitude})`);
 
         const subscribers = await (prisma as any).alertSubscription.findMany({
             where: {
@@ -251,7 +252,7 @@ export class AlertEngineService {
                             }
                         })
                             .then(() => redis.set(cacheKey, '1', 'EX', 3600)) // Mark as sent for 1 hour
-                            .catch(err => console.error(`❌ FCM Local Alert failed:`, err))
+                            .catch(err => logger.error(`❌ FCM Local Alert failed:`, { error: err }))
                     );
                 }
             }
@@ -259,7 +260,7 @@ export class AlertEngineService {
 
         if (notifications.length > 0) {
             await Promise.all(notifications);
-            console.log(`🚀 Sent ${notifications.length} local push notifications.`);
+            logger.info(`🚀 Sent ${notifications.length} local push notifications.`);
         }
     }
 
