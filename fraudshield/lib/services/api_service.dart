@@ -94,9 +94,16 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> signInWithGoogle(String idToken) async {
-    final response = await post('/auth/google', {'idToken': idToken});
-    await _setTokens(response['token'], response['refreshToken']);
-    return response;
+    debugPrint('ApiService: signInWithGoogle calling POST /auth/google');
+    try {
+      final response = await post('/auth/google', {'idToken': idToken});
+      debugPrint('ApiService: signInWithGoogle success');
+      await _setTokens(response['token'], response['refreshToken']);
+      return response;
+    } catch (e) {
+      debugPrint('ApiService: signInWithGoogle ERROR: $e');
+      rethrow;
+    }
   }
 
   Future<bool> refreshToken() async {

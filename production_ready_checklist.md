@@ -1,6 +1,6 @@
 # FraudShield — Production-Ready Checklist
 
-> **Last updated:** 24 Feb 2026 · Updated after HTTPS/SSL go-live and Crashlytics integration.
+> **Last updated:** 25 Feb 2026 · Updated after full-stack audit. 10 new findings added.
 
 ---
 
@@ -9,14 +9,14 @@
 | Category | 🔴 Critical | 🟠 High | 🟡 Medium | ✅ Done | Total |
 |----------|:-----------:|:-------:|:---------:|:------:|:-----:|
 | Security & Auth | 0 | 1 | 0 | 9 | 10 |
-| Backend Reliability | 0 | 0 | 3 | 3 | 6 |
-| Database & Data | 0 | 0 | 2 | 2 | 4 |
-| Deployment & Infra | 0 | 3 | 0 | 3 | 6 |
-| Mobile App | 0 | 0 | 5 | 2 | 7 |
+| Backend Reliability | 1 | 2 | 2 | 3 | 8 |
+| Database & Data | 0 | 0 | 3 | 2 | 5 |
+| Deployment & Infra | 0 | 4 | 0 | 3 | 7 |
+| Mobile App | 0 | 2 | 6 | 2 | 10 |
 | UX & Compliance | 0 | 0 | 3 | 2 | 5 |
-| **Total** | **0** | **4** | **13** | **21** | **38** |
+| **Total** | **1** | **9** | **14** | **21** | **45** |
 
-> **Progress:** 21 of 38 items completed (~55%). **MVP is live — all critical blockers resolved.**
+> **Progress:** 21 of 45 items completed (~47%). **MVP is live. 10 new issues found in Feb 25 audit — 1 new critical, 5 new high.**
 
 ---
 
@@ -143,3 +143,36 @@ flowchart LR
         M6 --> BM["U5: Bahasa Malaysia"]
     end
 ```
+
+---
+
+## 🆕 New Findings — Feb 25, 2026 Audit
+
+### 🔴 Critical
+
+- [ ] **B1. Real email service** ⏱️ 2 hrs
+  - `email.service.ts` logs OTP to console — password reset broken in production. Integrate Nodemailer + SMTP (Brevo/SendGrid free tier).
+
+### 🟠 High
+
+- [ ] **B2. Re-add rewards route** ⏱️ 30 min
+  - `rewards.routes.ts` is commented out in `app.ts`. The `rewards.controller.ts` (17 KB) exists but `/api/v1/rewards` returns 404. Create route file and uncomment.
+- [ ] **B3. Replace `console.log` in alert-engine** ⏱️ 30 min
+  - `alert-engine.service.ts` has 9 bare `console.log/error` calls that bypass Winston in production.
+- [ ] **B4. Wire Semak Mule into risk evaluation** ⏱️ 3 hrs
+  - `semak-mule.service.ts` exists but `RiskEvaluationService.evaluate()` never calls it. Phone checks are still crowdsource-only.
+- [ ] **B10. Move Firebase service account JSON to env var** ⏱️ 30 min
+  - `fraudshield-271b0-firebase-adminsdk-fbsvc-2a70150a06.json` is committed to the repo. Move to `FIREBASE_SERVICE_ACCOUNT` env var.
+- [ ] **F9. Fix Google Sign-In hang** ⏱️ 2 hrs
+  - Tapping "Sign in with Google" hangs after auth. Backend `/auth/google` route exists. Debug callback flow (see conv. 1d82a697).
+
+### 🟡 Medium
+
+- [ ] **F2. Remove hardcoded `_isAndroidEmulator = true`** ⏱️ 5 min
+  - `api_service.dart:13` has a static bool that could cause subtle bugs if referenced later. Remove or replace with `kDebugMode`.
+- [ ] **F7. Remove `test_screen.dart`** ⏱️ 5 min
+  - `lib/screens/test_screen.dart` (4.5 KB) is in the production screen folder. Exclude from release.
+- [ ] **F8. Delete empty `transaction_screen.dart`** ⏱️ 5 min
+  - `lib/screens/transaction_screen.dart` is 0 bytes. Delete or implement.
+- [ ] **DB5. Soft delete on ScamReport** ⏱️ 30 min
+  - Reports are hard-deleted. Add `deletedAt DateTime?` field and scope all queries accordingly.

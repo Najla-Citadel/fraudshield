@@ -59,14 +59,24 @@ export class AuthService {
     }
 
     static async verifyGoogleToken(idToken: string) {
+        console.log('AuthService: Verifying Google Token...');
+
+        const timeout = new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Google token verification timed out after 8s')), 8000)
+        );
+
         try {
-            const ticket = await this.googleClient.verifyIdToken({
-                idToken,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            });
+            const ticket = await Promise.race([
+                this.googleClient.verifyIdToken({
+                    idToken,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                }),
+                timeout,
+            ]);
+            console.log('AuthService: Token verified successfully.');
             return ticket.getPayload();
-        } catch (error) {
-            console.error('Google token verification failed:', error);
+        } catch (error: any) {
+            console.error('Google token verification failed:', error?.message ?? error);
             return null;
         }
     }

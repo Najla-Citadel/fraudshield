@@ -15,6 +15,7 @@ import 'screens/root_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  print('--- FraudShield App Starting ---');
   await Firebase.initializeApp();
 
   // Pass all uncaught "fatal" errors from the framework to Crashlytics

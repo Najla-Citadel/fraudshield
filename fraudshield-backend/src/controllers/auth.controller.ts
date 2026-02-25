@@ -315,6 +315,13 @@ export class AuthController {
                     },
                     include: { profile: true },
                 });
+            } else if (!user.fullName && name) {
+                // Sync name from Google for existing users if missing
+                user = await prisma.user.update({
+                    where: { id: user.id },
+                    data: { fullName: name },
+                    include: { profile: true },
+                });
             }
 
             // Generate tokens

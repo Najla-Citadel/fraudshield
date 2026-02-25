@@ -39,8 +39,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  String _userName = 'User';
-  bool _loadingProfile = true;
+  // Removed _userName and _loadingProfile - we will watch the provider directly
+
 
   // Key to refresh PointsScreen from Home
   final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
@@ -69,9 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int _calculateSecurityScore(bool isSubscribed) {
+    final authProvider = context.read<AuthProvider>();
     int score = 70; // Base score
     if (isSubscribed) score += 15;
-    if (_userName != 'User') score += 5; // Profile set
+    
+    final fullName = authProvider.userProfile?.fullName;
+    if (fullName != null && fullName.trim().isNotEmpty) {
+      score += 5; // Profile set
+    }
+    
     // Future: Check permissions
     if (_activeQuickActions.isNotEmpty) score += 5;
     return score;
@@ -92,7 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showSecurityReport(bool isSubscribed) {
-    final profileComplete = _userName != 'User';
+    final authProvider = context.read<AuthProvider>();
+    final fullName = authProvider.userProfile?.fullName;
+    final profileComplete = fullName != null && fullName.trim().isNotEmpty;
     final activeDefenses = _activeQuickActions.length;
 
     showModalBottomSheet(
@@ -170,18 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadProfile() async {
     final authProvider = context.read<AuthProvider>();
     
-    // AuthProvider already handles profile loading/refreshing
+    // Trigger profile fetch if not already present
     if (authProvider.userProfile == null) {
-      await authProvider.refreshProfile();
-    }
-
-    if (mounted) {
-      setState(() {
-        _userName = authProvider.userProfile?.fullName ?? 
-                   authProvider.user?.email?.split('@').first ?? 
-                   'User';
-        _loadingProfile = false;
-      });
+      try {
+        await authProvider.refreshProfile();
+      } catch (e) {
+        debugPrint('HomeScreen: Error loading profile: $e');
+      }
     }
   }
 
@@ -434,7 +437,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSubscribed = context.watch<AuthProvider>().isSubscribed;
+    final authProvider = context.watch<AuthProvider>();
+    final isSubscribed = authProvider.isSubscribed;
+    final loading = authProvider.loading;
+    
+    String? name = authProvider.userProfile?.fullName;
+    if (name != null && name.trim().isEmpty) {
+      name = null;
+    }
+    final displayUserName = name ?? 
+                           authProvider.user?.email?.split('@').first ?? 
+                           'User';
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
@@ -443,8 +456,8 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _selectedIndex,
         children: [
           _HomeTab(
-            userName: _userName,
-            loading: _loadingProfile,
+            userName: displayUserName,
+            loading: loading,
             activeQuickActions: _activeQuickActions,
             onCustomize: () => _showCustomizationSheet(),
             isSubscribed: isSubscribed,
