@@ -7,9 +7,19 @@ export class RewardsController {
     // Get all available rewards
     static async getRewards(req: Request, res: Response, next: NextFunction) {
         try {
+            const userId = (req.user as any).id;
             const { limit = '20', offset = '0' } = req.query;
             const limitNum = parseInt(limit as string, 10);
             const offsetNum = parseInt(offset as string, 10);
+
+            const profile = await (prisma as any).profile.findUnique({
+                where: { userId },
+                select: { totalPoints: true, points: true }
+            });
+
+            const userTotalPoints = profile?.totalPoints || 0;
+            const currentTier = RewardsController.calculateTier(userTotalPoints);
+            const discount = RewardsController.getTierDiscount(currentTier);
 
             const [rewards, total] = await Promise.all([
                 (prisma as any).reward.findMany({
@@ -21,12 +31,30 @@ export class RewardsController {
                 (prisma as any).reward.count({ where: { active: true } }),
             ]);
 
+            const tierOrder = ['BRONZE', 'SILVER', 'GOLD', 'DIAMOND'];
+            const userTierIndex = tierOrder.indexOf(currentTier);
+
+            const results = rewards.map((r: any) => {
+                const requiredTierIndex = tierOrder.indexOf(r.minTier || 'BRONZE');
+                const isLocked = requiredTierIndex > userTierIndex;
+                const discountedCost = Math.round(r.pointsCost * (1 - discount));
+
+                return {
+                    ...r,
+                    originalCost: r.pointsCost,
+                    pointsCost: discountedCost,
+                    isLocked,
+                    requiredTier: r.minTier
+                };
+            });
+
             res.json({
-                results: rewards,
+                results,
                 total,
                 hasMore: offsetNum + limitNum < total,
-                limit: limitNum,
-                offset: offsetNum,
+                userTier: currentTier,
+                userDiscount: discount,
+                userBalance: profile?.points || 0
             });
         } catch (error) {
             next(error);
@@ -57,29 +85,47 @@ export class RewardsController {
                 return res.status(404).json({ error: 'User profile not found' });
             }
 
-            // 3. Check if user has enough points
-            if (profile.points < reward.pointsCost) {
+            // 3. Calculate discounted cost
+            const currentTier = RewardsController.calculateTier(profile.totalPoints || 0);
+            const discount = RewardsController.getTierDiscount(currentTier);
+            const discountedCost = Math.round(reward.pointsCost * (1 - discount));
+
+            // 4. Check Tier Lock
+            const tierOrder = ['BRONZE', 'SILVER', 'GOLD', 'DIAMOND'];
+            const userTierIndex = tierOrder.indexOf(currentTier);
+            const requiredTierIndex = tierOrder.indexOf(reward.minTier || 'BRONZE');
+
+            if (requiredTierIndex > userTierIndex) {
+                return res.status(403).json({
+                    error: 'Tier locked',
+                    requiredTier: reward.minTier,
+                    currentTier
+                });
+            }
+
+            // 5. Check if user has enough points
+            if (profile.points < discountedCost) {
                 return res.status(400).json({
                     error: 'Insufficient points',
-                    required: reward.pointsCost,
+                    required: discountedCost,
                     current: profile.points,
                 });
             }
 
-            // 4. Create redemption and deduct points in a transaction
+            // 6. Create redemption and deduct points in a transaction
             const result = await (prisma as any).$transaction(async (tx: any) => {
                 // Deduct points from profile
                 await tx.profile.update({
                     where: { userId },
-                    data: { points: { decrement: reward.pointsCost } },
+                    data: { points: { decrement: discountedCost } },
                 });
 
                 // Create negative points transaction
                 await tx.pointsTransaction.create({
                     data: {
                         userId,
-                        amount: -reward.pointsCost,
-                        description: `Redeemed: ${reward.name}`,
+                        amount: -discountedCost,
+                        description: `Redeemed: ${reward.name} (incl. ${Math.round(discount * 100)}% tier discount)`,
                     },
                 });
 
@@ -88,7 +134,7 @@ export class RewardsController {
                     data: {
                         userId,
                         rewardId,
-                        pointsCost: reward.pointsCost,
+                        pointsCost: discountedCost,
                         status: 'completed',
                     },
                     include: {
@@ -96,12 +142,11 @@ export class RewardsController {
                     },
                 });
 
-                // 5. Apply reward based on type
+                // 7. Apply reward based on type
                 if (reward.type === 'subscription') {
                     const metadata = reward.metadata as any;
                     const durationDays = metadata.durationDays || 30;
 
-                    // Find or create a subscription plan
                     let plan = await tx.subscriptionPlan.findFirst({
                         where: { name: reward.name },
                     });
@@ -110,35 +155,27 @@ export class RewardsController {
                         plan = await tx.subscriptionPlan.create({
                             data: {
                                 name: reward.name,
-                                price: 0, // Free via points
+                                price: 0,
                                 features: metadata.features || [],
                                 durationDays,
                             },
                         });
                     }
 
-                    // Create or extend subscription
                     const existingSubscription = await tx.userSubscription.findFirst({
-                        where: {
-                            userId,
-                            isActive: true,
-                        },
+                        where: { userId, isActive: true },
                     });
 
                     if (existingSubscription) {
-                        // Extend existing subscription
                         const newEndDate = new Date(existingSubscription.endDate);
                         newEndDate.setDate(newEndDate.getDate() + durationDays);
-
                         await tx.userSubscription.update({
                             where: { id: existingSubscription.id },
                             data: { endDate: newEndDate },
                         });
                     } else {
-                        // Create new subscription
                         const endDate = new Date();
                         endDate.setDate(endDate.getDate() + durationDays);
-
                         await tx.userSubscription.create({
                             data: {
                                 userId,
@@ -150,11 +187,8 @@ export class RewardsController {
                         });
                     }
                 } else if (reward.type === 'badge') {
-                    // Add badge to user profile
                     const metadata = reward.metadata as any;
                     const badgeName = metadata.badgeName || reward.name;
-
-                    // Safely handle badges which might be stringified Json in DB
                     let currentBadges: string[] = [];
                     if (Array.isArray(profile.badges)) {
                         currentBadges = profile.badges as string[];
@@ -164,17 +198,13 @@ export class RewardsController {
                             if (Array.isArray(parsed)) {
                                 currentBadges = parsed;
                             }
-                        } catch (e) {
-                            console.error('Error parsing badges from DB:', e);
-                        }
+                        } catch (e) { }
                     }
 
                     if (!currentBadges.includes(badgeName)) {
                         await tx.profile.update({
                             where: { userId },
-                            data: {
-                                badges: [...currentBadges, badgeName],
-                            },
+                            data: { badges: [...currentBadges, badgeName] },
                         });
                     }
                 }
@@ -199,9 +229,7 @@ export class RewardsController {
             const [redemptions, total] = await Promise.all([
                 (prisma as any).redemption.findMany({
                     where: { userId },
-                    include: {
-                        reward: true,
-                    },
+                    include: { reward: true },
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
@@ -213,15 +241,13 @@ export class RewardsController {
                 results: redemptions,
                 total,
                 hasMore: offsetNum + limitNum < total,
-                limit: limitNum,
-                offset: offsetNum,
             });
         } catch (error) {
             next(error);
         }
     }
 
-    // Seed initial rewards (admin only or run once)
+    // Seed initial rewards
     static async seedRewards(req: Request, res: Response, next: NextFunction) {
         try {
             const rewards = [
@@ -230,9 +256,11 @@ export class RewardsController {
                     description: 'Unlock all premium features for 30 days',
                     pointsCost: 500,
                     type: 'subscription',
+                    minTier: 'BRONZE',
+                    isFeatured: true,
                     metadata: {
                         durationDays: 30,
-                        features: ['Unlimited scans', 'Priority support', 'Advanced analytics'],
+                        features: ['Unlimited scans', 'Priority support'],
                     },
                 },
                 {
@@ -240,41 +268,36 @@ export class RewardsController {
                     description: 'Unlock all premium features for 90 days',
                     pointsCost: 1200,
                     type: 'subscription',
+                    minTier: 'SILVER',
+                    isFeatured: true,
                     metadata: {
                         durationDays: 90,
-                        features: ['Unlimited scans', 'Priority support', 'Advanced analytics'],
+                        features: ['Unlimited scans', 'Priority support'],
                     },
                 },
                 {
-                    name: '1 Year Premium',
-                    description: 'Unlock all premium features for 365 days',
-                    pointsCost: 4000,
+                    name: 'Elite Shield Access',
+                    description: 'Exclusive Gold-tier security features',
+                    pointsCost: 3000,
                     type: 'subscription',
+                    minTier: 'GOLD',
+                    isFeatured: true,
                     metadata: {
-                        durationDays: 365,
-                        features: ['Unlimited scans', 'Priority support', 'Advanced analytics'],
+                        durationDays: 180,
+                        features: ['Advanced AI Risk Score', 'Custom Alert Rules'],
                     },
                 },
                 {
-                    name: 'Scam Hunter Badge',
-                    description: 'Show off your scam-fighting prowess',
-                    pointsCost: 300,
+                    name: 'Diamond Guardian Badge',
+                    description: 'The ultimate mark of a scam fighter',
+                    pointsCost: 8000,
                     type: 'badge',
+                    minTier: 'DIAMOND',
                     metadata: {
-                        badgeName: 'Scam Hunter',
-                        icon: '🎯',
+                        badgeName: 'Diamond Guardian',
+                        icon: '💎',
                     },
-                },
-                {
-                    name: 'Guardian Badge',
-                    description: 'Protect the community with pride',
-                    pointsCost: 200,
-                    type: 'badge',
-                    metadata: {
-                        badgeName: 'Guardian',
-                        icon: '🛡️',
-                    },
-                },
+                }
             ];
 
             const createdRewards = await (prisma as any).reward.createMany({
@@ -282,136 +305,42 @@ export class RewardsController {
                 skipDuplicates: true,
             });
 
-            const badges = [
-                {
-                    key: 'first_report',
-                    name: 'First Responder',
-                    description: 'Submitted your first public scam report',
-                    icon: '🎯',
-                    tier: 'bronze',
-                    trigger: 'reports',
-                    threshold: 1
-                },
-                {
-                    key: 'community_guardian',
-                    name: 'Community Guardian',
-                    description: 'Submitted 10 public scam reports',
-                    icon: '🛡️',
-                    tier: 'silver',
-                    trigger: 'reports',
-                    threshold: 10
-                },
-                {
-                    key: 'senior_sentinel',
-                    name: 'Senior Sentinel',
-                    description: 'Submitted 50 public scam reports',
-                    icon: '🥇',
-                    tier: 'gold',
-                    trigger: 'reports',
-                    threshold: 50
-                },
-                {
-                    key: 'first_verify',
-                    name: 'Truth Seeker',
-                    description: 'Verified your first scam report',
-                    icon: '🔍',
-                    tier: 'bronze',
-                    trigger: 'verifications',
-                    threshold: 1
-                },
-                {
-                    key: 'elite_verifier',
-                    name: 'Elite Verifier',
-                    description: 'Verified 25 scam reports',
-                    icon: '⚖️',
-                    tier: 'silver',
-                    trigger: 'verifications',
-                    threshold: 25
-                },
-                {
-                    key: 'elite_sentinel',
-                    name: 'Elite Sentinel',
-                    description: 'Reached 50 reputation points',
-                    icon: '💎',
-                    tier: 'gold',
-                    trigger: 'reputation',
-                    threshold: 50
-                },
-                {
-                    key: 'streak_master',
-                    name: 'Streak Master',
-                    description: 'Logged in for 7 consecutive days',
-                    icon: '🔥',
-                    tier: 'silver',
-                    trigger: 'streak',
-                    threshold: 7
-                }
-            ];
-
-            const createdBadges = await (prisma as any).badgeDefinition.createMany({
-                data: badges,
-                skipDuplicates: true,
-            });
-
             res.json({
                 message: 'Seeding successful',
                 rewardsCount: createdRewards.count,
-                badgesCount: createdBadges.count
             });
-
         } catch (error) {
             next(error);
         }
     }
 
-    // Claim daily login reward
     static async claimDailyReward(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
             const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Start of today
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-            const profile = await (prisma as any).profile.findUnique({
-                where: { userId },
-            });
-
-            if (!profile) {
-                return res.status(404).json({ error: 'Profile not found' });
-            }
+            const profile = await (prisma as any).profile.findUnique({ where: { userId } });
+            if (!profile) return res.status(404).json({ error: 'Profile not found' });
 
             let streak = profile.loginStreak || 0;
             let lastLogin = profile.lastLoginDate ? new Date(profile.lastLoginDate) : null;
-            let pointsAwarded = 0;
-            let message = '';
-
-            // Normalize lastLogin to start of its day
             if (lastLogin) {
                 lastLogin = new Date(lastLogin.getFullYear(), lastLogin.getMonth(), lastLogin.getDate());
             }
 
             if (lastLogin && lastLogin.getTime() === today.getTime()) {
-                // Already claimed today
-                return res.json({
-                    claimed: false,
-                    message: 'Already claimed today',
-                    streak,
-                    nextReward: RewardsController.calculateReward(streak + 1),
-                });
+                return res.json({ claimed: false, message: 'Already claimed today' });
             }
 
             if (lastLogin && (today.getTime() - lastLogin.getTime() === 86400000)) {
-                // Consecutive day
                 streak += 1;
-                message = `Daily streak! ${streak} days in a row.`;
             } else {
-                // Missed a day or first time
                 streak = 1;
-                message = 'Daily reward claimed!';
             }
 
-            pointsAwarded = RewardsController.calculateReward(streak);
+            const pointsAwarded = RewardsController.calculateReward(streak);
 
-            // Update profile and add points transaction
             await (prisma as any).$transaction([
                 (prisma as any).profile.update({
                     where: { userId },
@@ -419,6 +348,7 @@ export class RewardsController {
                         lastLoginDate: now,
                         loginStreak: streak,
                         points: { increment: pointsAwarded },
+                        totalPoints: { increment: pointsAwarded }
                     },
                 }),
                 (prisma as any).pointsTransaction.create({
@@ -430,19 +360,8 @@ export class RewardsController {
                 }),
             ]);
 
-            // Evaluate badges for the user
             const newBadges = await BadgeService.evaluateBadges(userId);
-
-            res.json({
-                claimed: true,
-                message,
-                points: pointsAwarded,
-                streak,
-                nextReward: RewardsController.calculateReward(streak + 1),
-                newBadges,
-            });
-
-
+            res.json({ claimed: true, points: pointsAwarded, streak, newBadges });
         } catch (error) {
             next(error);
         }
@@ -450,7 +369,21 @@ export class RewardsController {
 
     private static calculateReward(streak: number): number {
         const base = 10;
-        const bonus = Math.min(streak * 5, 50); // Cap bonus at 50
-        return base + bonus;
+        return base + Math.min(streak * 5, 50);
+    }
+
+    private static calculateTier(totalPoints: number): string {
+        if (totalPoints >= 10000) return 'DIAMOND';
+        if (totalPoints >= 5000) return 'GOLD';
+        if (totalPoints >= 1000) return 'SILVER';
+        return 'BRONZE';
+    }
+
+    private static getTierDiscount(tier: string): number {
+        switch (tier) {
+            case 'DIAMOND': return 0.20;
+            case 'GOLD': return 0.10;
+            default: return 0;
+        }
     }
 }

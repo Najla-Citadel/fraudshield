@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { GamificationService } from '../services/gamification.service';
 
 export class SubscriptionController {
     static async getPlans(req: Request, res: Response, next: NextFunction) {
@@ -52,19 +53,31 @@ export class SubscriptionController {
     }
 }
 
+
+
 export class PointsController {
     static async getMyPoints(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
 
-            const transactions = await prisma.pointsTransaction.findMany({
-                where: { userId },
-                orderBy: { createdAt: 'desc' },
+            const [profile, transactions] = await Promise.all([
+                (prisma as any).profile.findUnique({ where: { userId } }),
+                prisma.pointsTransaction.findMany({
+                    where: { userId },
+                    orderBy: { createdAt: 'desc' },
+                })
+            ]);
+
+            const currentBalance = profile?.points ?? 0;
+            const totalPoints = profile?.totalPoints ?? 0;
+            const tierProgress = GamificationService.getTierProgress(totalPoints);
+
+            res.json({
+                totalPoints,
+                currentBalance,
+                ...tierProgress,
+                transactions
             });
-
-            const totalPoints = transactions.reduce((sum, tx) => sum + tx.amount, 0);
-
-            res.json({ totalPoints, transactions });
         } catch (error) {
             next(error);
         }
@@ -75,15 +88,13 @@ export class PointsController {
             const { amount, description } = req.body;
             const userId = (req.user as any).id;
 
-            const transaction = await prisma.pointsTransaction.create({
-                data: {
-                    userId,
-                    amount,
-                    description: description || '',
-                },
-            });
+            const result = await GamificationService.awardPoints(
+                userId,
+                amount,
+                description || 'Manual point adjustment'
+            );
 
-            res.status(201).json(transaction);
+            res.status(201).json(result);
         } catch (error) {
             next(error);
         }

@@ -3,6 +3,7 @@ import { prisma } from '../config/database';
 import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
+import { GamificationService } from '../services/gamification.service';
 
 export class ReportController {
     private static readonly MAX_LIMIT = 100;
@@ -40,25 +41,13 @@ export class ReportController {
             });
 
             // Award points for submitting a report
-            let newBadges: string[] = [];
+            let gamificationResult: any = { newBadges: [] };
             if (isPublic) {
-                await (prisma as any).profile.update({
-                    where: { userId },
-                    data: {
-                        points: { increment: 10 },
-                    },
-                });
-
-                await (prisma as any).pointsTransaction.create({
-                    data: {
-                        userId,
-                        amount: 10,
-                        description: `Submitted public scam report`,
-                    },
-                });
-
-                // Evaluate badges
-                newBadges = await BadgeService.evaluateBadges(userId);
+                gamificationResult = await GamificationService.awardPoints(
+                    userId,
+                    10,
+                    `Submitted public scam report`
+                );
 
                 // Dispatch real-time local alerts to nearby subscribers
                 AlertEngineService.dispatchLocalAlert(report).catch(err => {
@@ -66,7 +55,12 @@ export class ReportController {
                 });
             }
 
-            res.status(201).json({ ...report, newBadges });
+            res.status(201).json({
+                ...report,
+                newBadges: gamificationResult.newBadges,
+                pointsAwarded: 10,
+                currentTier: gamificationResult.currentTier
+            });
         } catch (error) {
             next(error);
         }
@@ -415,25 +409,11 @@ export class ReportController {
             });
 
             // 2. Reward the verifier with Shield Points
-            await (prisma as any).profile.upsert({
-                where: { userId },
-                update: {
-                    points: { increment: 10 },
-                },
-                create: {
-                    userId,
-                    points: 10,
-                    avatar: 'Felix', // Default avatar
-                },
-            });
-
-            await (prisma as any).pointsTransaction.create({
-                data: {
-                    userId,
-                    amount: 10,
-                    description: `Verified report ${reportId}`,
-                },
-            });
+            const gamificationResult = await GamificationService.awardPoints(
+                userId,
+                10,
+                `Verified report ${reportId}`
+            );
 
             // 3. Reward the original reporter with Reputation if verified as 'Same'
             const report = await (prisma as any).scamReport.findUnique({
