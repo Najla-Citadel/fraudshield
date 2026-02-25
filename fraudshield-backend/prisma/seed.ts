@@ -16,6 +16,19 @@ async function main() {
         },
     });
 
+    // Create a default Admin user
+    await prisma.user.upsert({
+        where: { email: 'admin@fraudshield.com' },
+        update: { role: 'admin' },
+        create: {
+            email: 'admin@fraudshield.com',
+            passwordHash: '$2b$10$ax7SDB8sYUp5X4COdUkIX.hudDV4dIx9djNl0yaG8m27ULiWs4.NS', // AdminPassword123
+            fullName: 'Principal Admin',
+            role: 'admin',
+            emailVerified: true,
+        },
+    });
+
     // Create Subscription Plans
     const proPlan = await prisma.subscriptionPlan.upsert({
         where: { id: 'pro-plan-id' }, // Hardcoded ID for easier manual sub
