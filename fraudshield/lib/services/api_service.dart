@@ -2,15 +2,23 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-// import 'package:flutter/foundation.dart'; // Added for kDebugMode if preferred, but debugPrint is enough.
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class ApiService {
   ApiService._privateConstructor();
   static final ApiService instance = ApiService._privateConstructor();
-  static const bool _isAndroidEmulator = true; // This could be determined dynamically if needed
+
+  // Secure storage — uses AES on Android (EncryptedSharedPreferences),
+  // Keychain on iOS. Tokens are NEVER stored as plaintext.
+  static final _secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  static const _keyAuthToken = 'auth_token';
+  static const _keyRefreshToken = 'refresh_token';
 
   late final String baseUrl;
   String? _token;
@@ -30,9 +38,8 @@ class ApiService {
     if (kDebugMode) {
       debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
     }
-    final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('auth_token');
-    _refreshToken = prefs.getString('refresh_token');
+    _token = await _secureStorage.read(key: _keyAuthToken);
+    _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
   }
 
   String? get token => _token;
@@ -41,16 +48,15 @@ class ApiService {
   Future<void> _setTokens(String? token, String? refreshToken) async {
     _token = token;
     _refreshToken = refreshToken;
-    final prefs = await SharedPreferences.getInstance();
     if (token != null) {
-      await prefs.setString('auth_token', token);
+      await _secureStorage.write(key: _keyAuthToken, value: token);
     } else {
-      await prefs.remove('auth_token');
+      await _secureStorage.delete(key: _keyAuthToken);
     }
     if (refreshToken != null) {
-      await prefs.setString('refresh_token', refreshToken);
+      await _secureStorage.write(key: _keyRefreshToken, value: refreshToken);
     } else {
-      await prefs.remove('refresh_token');
+      await _secureStorage.delete(key: _keyRefreshToken);
     }
   }
 
@@ -74,6 +80,13 @@ class ApiService {
     
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
+  }
+
+  Future<void> verifyEmail(String email, String otp) async {
+    await post('/auth/verify-email', {
+      'email': email,
+      'otp': otp,
+    });
   }
 
   Future<Map<String, dynamic>> signIn({
@@ -458,7 +471,7 @@ class ApiService {
   // ---------------- Rewards ----------------
 
   Future<List<dynamic>> getRewards() async {
-    final response = await get('/features/rewards');
+    final response = await get('/rewards');
     if (response is Map && response.containsKey('results')) {
       return response['results'] as List;
     }
@@ -467,7 +480,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> redeemReward(String rewardId) async {
     try {
-      return await post('/features/rewards/redeem', {'rewardId': rewardId});
+      return await post('/rewards/redeem', {'rewardId': rewardId});
     } catch (e) {
       // Re-throw with more specific error message
       throw Exception('Failed to redeem reward: $e');
@@ -475,7 +488,7 @@ class ApiService {
   }
 
   Future<List<dynamic>> getMyRedemptions() async {
-    final response = await get('/features/redemptions');
+    final response = await get('/rewards/redemptions');
     if (response is Map && response.containsKey('results')) {
       return response['results'] as List;
     }
@@ -489,7 +502,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> claimDailyReward() async {
 
-    return post('/features/rewards/daily', {});
+    return post('/rewards/daily', {});
   }
 
   // ---------------- Safe Browsing ----------------

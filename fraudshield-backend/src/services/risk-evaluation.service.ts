@@ -1,4 +1,5 @@
 import { prisma } from '../config/database';
+import { SemakMuleService } from './semak-mule.service';
 
 export interface RiskFactor {
     key: string;
@@ -16,6 +17,7 @@ export interface RiskEvaluationResult {
         avgReporterReputation: number;
         recencyScore: number;       // Higher = more recent activity
         verificationRatio: number;  // % of people who agreed it's a scam
+        semakMuleFound?: boolean;
     };
     checkedAt: string;
 }
@@ -39,25 +41,40 @@ export class RiskEvaluationService {
         // 1. Query community intelligence from DB
         const communityData = await this.getCommunityIntelligence(type, cleanValue);
 
-        // 2. Build each sub-score (0–100)
+        // 2. Query official CCID Semak Mule API (if applicable)
+        let semakMuleData: any = null;
+        if (type === 'phone' || type === 'bank') {
+            semakMuleData = await SemakMuleService.checkTarget(type, cleanValue);
+        }
+
+        // 3. Build each sub-score (0–100)
         const communityScore = this.calcCommunityScore(communityData.totalReports);
         const verRatioScore = this.calcVerificationRatioScore(communityData.verifiedReports, communityData.totalReports);
         const repScore = this.calcReputationScore(communityData.avgReporterReputation);
         const recencyScore = this.calcRecencyScore(communityData.daysSinceLastReport);
 
-        // 3. Weighted composite score
-        const rawScore =
+        // 4. Weighted composite score
+        let rawScore =
             communityScore * this.W_COMMUNITY_REPORTS +
             verRatioScore * this.W_VERIFICATION_RATIO +
             repScore * this.W_REPORTER_REP +
             recencyScore * this.W_RECENCY;
 
+        // 5. Boost score if found in Semak Mule
+        if (semakMuleData?.found) {
+            // If blacklisted by PDRM, it's at least high risk (base 75)
+            rawScore = Math.max(rawScore, 75);
+            if (semakMuleData.riskLevel === 'high') {
+                rawScore = Math.max(rawScore, 90); // Near critical
+            }
+        }
+
         const score = Math.round(Math.min(rawScore, 100));
 
-        // 4. Determine level
+        // 6. Determine level
         const level = this.getLevel(score);
 
-        // 5. Build human-readable reasons
+        // 7. Build human-readable reasons
         const reasons = this.buildReasons({
             score,
             communityData,
@@ -65,6 +82,7 @@ export class RiskEvaluationService {
             verRatioScore,
             repScore,
             recencyScore,
+            semakMuleData
         });
 
         return {
@@ -79,6 +97,7 @@ export class RiskEvaluationService {
                 verificationRatio: communityData.totalReports > 0
                     ? Math.round((communityData.verifiedReports / communityData.totalReports) * 100)
                     : 0,
+                semakMuleFound: semakMuleData?.found || false,
             },
             checkedAt: new Date().toISOString(),
         };
@@ -186,12 +205,21 @@ export class RiskEvaluationService {
         verRatioScore: number;
         repScore: number;
         recencyScore: number;
+        semakMuleData?: any;
     }): string[] {
-        const { communityData } = data;
+        const { communityData, semakMuleData } = data;
         const reasons: string[] = [];
 
+        // 1. Official Data Reasons (Primary)
+        if (semakMuleData?.found) {
+            reasons.push(`🚓 CCID Semak Mule: Blacklisted (${semakMuleData.reportsCount} official reports)`);
+        }
+
+        // 2. Community Data Reasons
         if (communityData.totalReports === 0) {
-            reasons.push('✅ No community reports found for this target');
+            if (!semakMuleData?.found) {
+                reasons.push('✅ No community reports found for this target');
+            }
             return reasons;
         }
 

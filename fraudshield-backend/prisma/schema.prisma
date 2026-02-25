@@ -19,6 +19,7 @@ model User {
   id                  String              @id @default(uuid())
   email               String              @unique
   passwordHash        String
+  emailVerified       Boolean             @default(false)
   fullName            String?
   role                String              @default("user")
   createdAt           DateTime            @default(now())

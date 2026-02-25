@@ -5,6 +5,7 @@ import '../constants/colors.dart';
 import '../providers/auth_provider.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+import 'email_verification_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
 import '../widgets/adaptive_text_field.dart';
@@ -77,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => EmailVerificationScreen(email: email)),
         );
       } else {
         if (!mounted) return;
