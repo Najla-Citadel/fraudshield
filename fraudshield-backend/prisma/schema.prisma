@@ -50,6 +50,9 @@ model Profile {
   metadata   Json    @default("{}")
   lastLoginDate DateTime?
   loginStreak Int     @default(0)
+  preferredName  String?
+  mobile         String?
+  mailingAddress String?
   user     User    @relation(fields: [userId], references: [id])
 }
 

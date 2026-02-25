@@ -4,6 +4,11 @@ import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Reports from './pages/Reports';
 import Login from './pages/Login';
+import Subscriptions from './pages/Subscriptions';
+import Badges from './pages/Badges';
+import Rewards from './pages/Rewards';
+import Broadcasts from './pages/Broadcasts';
+import FraudAnalysis from './pages/FraudAnalysis';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -47,6 +52,46 @@ function App() {
           element={
             <ProtectedRoute>
               <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subscriptions"
+          element={
+            <ProtectedRoute>
+              <Subscriptions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/badges"
+          element={
+            <ProtectedRoute>
+              <Badges />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rewards"
+          element={
+            <ProtectedRoute>
+              <Rewards />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/broadcasts"
+          element={
+            <ProtectedRoute>
+              <Broadcasts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fraud-analysis"
+          element={
+            <ProtectedRoute>
+              <FraudAnalysis />
             </ProtectedRoute>
           }
         />

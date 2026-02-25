@@ -23,6 +23,7 @@ class PointsScreenState extends State<PointsScreen> {
   bool _hasError = false;
   int _balance = 0;
   String _selectedCategory = 'All Rewards';
+  List<Map<String, dynamic>> _rewards = [];
 
   @override
   void initState() {
@@ -49,9 +50,49 @@ class PointsScreenState extends State<PointsScreen> {
     try {
       final res = await _api.getMyPoints();
       _balance = res['totalPoints'] ?? 0;
+      
+      try {
+        final rewardsRes = await _api.getRewards();
+        _rewards = List<Map<String, dynamic>>.from(rewardsRes as List);
+      } catch (e) {
+        log('Error loading rewards: $e');
+      }
     } catch (e) {
       log('Error loading points: $e');
       if (mounted) setState(() => _hasError = true);
+    }
+  }
+
+  Future<void> _redeemReward(Map<String, dynamic> reward) async {
+    final pointsCost = reward['pointsCost'] as int;
+    if (_balance < pointsCost) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Insufficient points!'), backgroundColor: Colors.red));
+      return;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Redeem ${reward['name']}?'),
+        content: Text('Cost: $pointsCost points\nYour balance after: ${_balance - pointsCost} points'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Redeem'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await _api.redeemReward(reward['id']);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ Redeemed ${reward['name']}!'), backgroundColor: Colors.green));
+        refreshData();
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
@@ -128,39 +169,35 @@ class PointsScreenState extends State<PointsScreen> {
 
 
           // 3. Sections
-          _buildSectionHeader('Security Upgrades'),
-          const SizedBox(height: 12),
-          _buildFeaturedReward(),
+          if (_selectedCategory == 'All Rewards' || _selectedCategory == 'Security') ...[
+            _buildSectionHeader('Security Upgrades'),
+            const SizedBox(height: 12),
+            ..._rewards
+                .where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
+                .map((r) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildFeaturedReward(r),
+                    ))
+                .toList(),
+            if (_rewards.where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION').isEmpty)
+              const Text('No security upgrades available', style: TextStyle(color: Colors.white54)),
+            const SizedBox(height: 32),
+          ],
           
-          const SizedBox(height: 32),
-          
-          _buildSectionHeader('Digital Vouchers'),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildVoucherCard(
-                  icon: Icons.local_taxi,
-                  amount: 'RM10',
-                  title: 'Grab Voucher',
-                  cost: 1000,
-                  desc: 'RM10 off your next ride or food delivery.',
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildVoucherCard(
-                  icon: Icons.local_cafe,
-                  amount: 'RM15',
-                  title: 'Starbucks Credit',
-                  cost: 850,
-                  desc: 'A fresh brew on us. Enjoy a drink.',
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 32),
+          if (_selectedCategory == 'All Rewards' || _selectedCategory == 'Vouchers') ...[
+            _buildSectionHeader('Store Items & Vouchers'),
+            const SizedBox(height: 12),
+            ..._rewards
+                .where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION')
+                .map((r) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildDynamicVoucherCard(r),
+                    ))
+                .toList(),
+            if (_rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').isEmpty)
+              const Text('No store items available', style: TextStyle(color: Colors.white54)),
+            const SizedBox(height: 32),
+          ],
 
           _buildDonationCard(),
           
@@ -321,7 +358,12 @@ class PointsScreenState extends State<PointsScreen> {
     );
   }
 
-  Widget _buildFeaturedReward() {
+  Widget _buildFeaturedReward(Map<String, dynamic> reward) {
+    final name = reward['name'] ?? 'Premium';
+    final desc = reward['description'] ?? '';
+    final cost = reward['pointsCost'] ?? 0;
+    final canAfford = _balance >= cost;
+
     // Large featured card - keeping custom styling as it's unique, but using consistent colors
     return Container(
       decoration: BoxDecoration(
@@ -359,9 +401,9 @@ class PointsScreenState extends State<PointsScreen> {
                       color: AppColors.accentGreen,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
-                      '500 PTS',
-                      style: TextStyle(
+                    child: Text(
+                      '$cost PTS',
+                      style: const TextStyle(
                         color: Colors.black87,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
@@ -379,9 +421,9 @@ class PointsScreenState extends State<PointsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '1-Month Premium',
-                  style: TextStyle(
+                Text(
+                  name,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -389,7 +431,7 @@ class PointsScreenState extends State<PointsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Full access to AI-powered transaction monitoring and priority alerts.',
+                  desc,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withOpacity(0.6),
@@ -400,14 +442,14 @@ class PointsScreenState extends State<PointsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: canAfford ? () => _redeemReward(reward) : null,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.accentGreen,
-                      side: const BorderSide(color: AppColors.accentGreen),
+                      side: BorderSide(color: canAfford ? AppColors.accentGreen : Colors.grey),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    child: const Text('Redeem Now', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(canAfford ? 'Redeem Now' : 'Not Enough Points', style: TextStyle(fontWeight: FontWeight.bold, color: canAfford ? AppColors.accentGreen : Colors.grey)),
                   ),
                 ),
               ],
@@ -418,13 +460,12 @@ class PointsScreenState extends State<PointsScreen> {
     );
   }
 
-  Widget _buildVoucherCard({
-    required IconData icon,
-    required String amount,
-    required String title,
-    required int cost,
-    required String desc,
-  }) {
+  Widget _buildDynamicVoucherCard(Map<String, dynamic> reward) {
+    final name = reward['name'] ?? 'Item';
+    final desc = reward['description'] ?? '';
+    final cost = reward['pointsCost'] ?? 0;
+    final canAfford = _balance >= cost;
+
     return GlassCard(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -439,7 +480,7 @@ class PointsScreenState extends State<PointsScreen> {
                    color: Colors.white.withOpacity(0.1),
                    shape: BoxShape.circle,
                  ),
-                 child: Icon(icon, color: Colors.white, size: 20),
+                 child: const Icon(Icons.card_giftcard, color: Colors.white, size: 20),
                ),
                Text(
                  '$cost PTS',
@@ -453,7 +494,7 @@ class PointsScreenState extends State<PointsScreen> {
            ),
            const SizedBox(height: 16),
            Text(
-             title,
+             name,
              style: const TextStyle(
                color: Colors.white,
                fontWeight: FontWeight.bold,
@@ -475,14 +516,14 @@ class PointsScreenState extends State<PointsScreen> {
            SizedBox(
              width: double.infinity,
              child: OutlinedButton(
-               onPressed: () {},
+               onPressed: canAfford ? () => _redeemReward(reward) : null,
                style: OutlinedButton.styleFrom(
                  foregroundColor: Colors.white,
                  side: BorderSide(color: Colors.white.withOpacity(0.2)),
                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                  padding: const EdgeInsets.symmetric(vertical: 10),
                ),
-               child: const Text('Claim', style: TextStyle(fontSize: 12)),
+               child: Text(canAfford ? 'Redeem' : 'Not Enough', style: TextStyle(fontSize: 12, color: canAfford ? Colors.white : Colors.grey)),
              ),
            ),
         ],
