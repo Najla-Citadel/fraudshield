@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
 import 'glass_surface.dart';
@@ -19,7 +21,27 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
   @override
   void initState() {
     super.initState();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    await _loadCachedDigest();
     _fetchDigest();
+  }
+
+  Future<void> _loadCachedDigest() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedData = prefs.getString('daily_digest_cache');
+      if (cachedData != null && mounted) {
+        setState(() {
+          _digest = jsonDecode(cachedData);
+          // Don't set _isLoading to false yet, we still want to fetch fresh data
+        });
+      }
+    } catch (e) {
+      // Ignore cache errors
+    }
   }
 
   Future<void> _fetchDigest() async {
@@ -30,12 +52,21 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
           _digest = data;
           _isLoading = false;
         });
+        
+        // Update cache
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('daily_digest_cache', jsonEncode(data));
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = e.toString();
-          _isLoading = false;
+          // If we have cached data, don't show an error, just hide the loading spinner
+          if (_digest != null) {
+            _isLoading = false;
+          } else {
+            _error = e.toString();
+            _isLoading = false;
+          }
         });
       }
     }
