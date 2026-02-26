@@ -612,7 +612,7 @@ export class AdminController {
             const [userCount, reportCount, pendingReports] = await Promise.all([
                 prisma.user.count(),
                 prisma.scamReport.count({ where: { deletedAt: null } }),
-                prisma.scamReport.count({ where: { status: 'pending', deletedAt: null } }),
+                prisma.scamReport.count({ where: { status: 'PENDING', deletedAt: null } }),
             ]);
 
             res.json({

@@ -91,14 +91,14 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
     });
 
     try {
-      final reports = await ApiService.instance.getPublicFeed(
+      final response = await ApiService.instance.getPublicFeed(
         lat: lat,
         lng: lng,
         radius: radius,
       );
       if (mounted) {
         setState(() {
-          _reports = reports;
+          _reports = response['results'] ?? [];
           _isLoading = false;
         });
         _updateMarkers();

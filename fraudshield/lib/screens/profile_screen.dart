@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../constants/colors.dart';
+import 'email_verification_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -80,6 +81,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _requestVerification(String email) async {
+    setState(() => _isLoading = true);
+    try {
+      await ApiService.instance.requestVerificationEmail();
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => EmailVerificationScreen(email: email),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to request verification: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
@@ -134,8 +158,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _item(
                 label: 'Email Address',
                 value: user?.email ?? 'N/A',
-                isEditing: false, // Email is never editable here
+                isEditing: false, 
                 icon: Icons.email_outlined,
+                trailing: user?.isEmailVerified == true
+                    ? const Icon(Icons.verified, color: AppColors.accentGreen, size: 16)
+                    : GestureDetector(
+                        onTap: _isLoading ? null : () => _requestVerification(user?.email ?? ''),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                          ),
+                          child: const Text(
+                            'Verify Now',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
               ),
               const SizedBox(height: 16),
               
@@ -203,6 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TextEditingController? controller,
     required bool isEditing,
     required IconData icon,
+    Widget? trailing,
     TextInputType? keyboardType,
     int maxLines = 1,
   }) {
@@ -250,6 +296,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
           ),
+          if (trailing != null) ...[
+            const SizedBox(width: 12),
+            trailing,
+          ],
         ],
       ),
     );

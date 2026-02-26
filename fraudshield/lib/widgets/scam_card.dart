@@ -131,12 +131,16 @@ class ScamCard extends StatelessWidget {
               children: [
                 Icon(Icons.location_on, size: 16, color: Colors.white.withOpacity(0.6)),
                 const SizedBox(width: 4),
-                Text(
-                  report['evidence']?['location'] ?? report['location'] ?? 'Kuala Lumpur, Malaysia',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    report['target'] ?? report['description']?.toString().split('\n').first ?? 'General Threat',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -214,11 +218,11 @@ class ScamCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Avatar Pile (Mock)
-                Row(
-                  children: [
-                    _buildAvatarPile(verificationCount),
-                    const SizedBox(width: 8),
-                    if (verificationCount > 0)
+                if (verificationCount > 0)
+                  Row(
+                    children: [
+                      _buildAvatarPile(verificationCount),
+                      const SizedBox(width: 8),
                       Row(
                         children: [
                           const Icon(Icons.priority_high_rounded, color: Colors.redAccent, size: 14),
@@ -228,8 +232,8 @@ class ScamCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                  ],
-                ),
+                    ],
+                  ),
 
                 // Alert Action
                 InkWell(

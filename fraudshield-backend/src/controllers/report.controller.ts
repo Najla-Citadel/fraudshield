@@ -159,11 +159,22 @@ export class ReportController {
 
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
-            const { limit = '20', offset = '0', lat, lng, radius } = req.query;
+            const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;
             const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
             const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
 
             let whereClause: any = { isPublic: true, deletedAt: null };
+
+            if (category) {
+                whereClause.category = category as string;
+            }
+
+            if (search) {
+                whereClause.description = {
+                    contains: search as string,
+                    mode: 'insensitive',
+                };
+            }
 
             // Optional localized filtering
             if (lat && lng && radius) {
