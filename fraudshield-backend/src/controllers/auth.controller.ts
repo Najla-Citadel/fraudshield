@@ -5,7 +5,34 @@ import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
 
+/**
+ * @openapi
+ * tags:
+ *   name: Auth
+ *   description: User authentication and profile management
+ */
 export class AuthController {
+    /**
+     * @openapi
+     * /api/v1/auth/signup:
+     *   post:
+     *     summary: Register a new user
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [email, password]
+     *             properties:
+     *               email: { type: string, format: email }
+     *               password: { type: string, format: password }
+     *               fullName: { type: string }
+     *     responses:
+     *       201:
+     *         description: User created successfully
+     */
     static async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password, fullName } = req.body;
@@ -132,6 +159,26 @@ export class AuthController {
         }
     }
 
+    /**
+     * @openapi
+     * /api/v1/auth/login:
+     *   post:
+     *     summary: Authenticate user and get tokens
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [email, password]
+     *             properties:
+     *               email: { type: string, format: email }
+     *               password: { type: string, format: password }
+     *     responses:
+     *       200:
+     *         description: Login successful
+     */
     static async login(req: Request, res: Response, next: NextFunction) {
         passport.authenticate('local', { session: false }, async (err: any, user: any, info: any) => {
             if (err) return next(err);
@@ -157,6 +204,18 @@ export class AuthController {
         })(req, res, next);
     }
 
+    /**
+     * @openapi
+     * /api/v1/auth/profile:
+     *   get:
+     *     summary: Get current user profile
+     *     tags: [Auth]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved profile
+     */
     static async getProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;

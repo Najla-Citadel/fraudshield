@@ -24,7 +24,7 @@
 | **PDPA Compliance** | ✅ | ✅ | ✅ Privacy Policy, ToS, consent, deletion |
 | **Transaction Risk Alerts** | ✅ | ❌ | 🚫 Mock — no real transaction monitoring |
 | **Security Health Score** | ❌ | ❌ | ❌ Not started |
-| **Push Notifications** | ❌ | ❌ | ❌ Not started |
+| **Push Notifications** | ✅ | ✅ | ✅ Real — FCM integrated via AlertEngine |
 
 ### Infrastructure Summary
 
@@ -89,10 +89,10 @@
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2D.1 | Add ScamReport indexes | 15 min | 🔴 |
-| 2D.2 | Unique constraint on Verification | 10 min | 🔴 |
-| 2D.3 | API pagination | 1 hr | 🟠 |
-| 2D.4 | DB connection pooling | 10 min | 🟡 |
+| 2D.1 | Add ScamReport indexes | 15 min | ✅ Done |
+| 2D.2 | Unique constraint on Verification | 10 min | ✅ Done |
+| 2D.3 | API pagination | 1 hr | ✅ Done |
+| 2D.4 | DB connection pooling | 10 min | ✅ Done |
 
 **Exit criteria:** ≥2 fraud check types use real external data. Database indexed.
 
@@ -103,15 +103,15 @@
 | # | Task | Est. | Priority |
 |---|------|------|----------|
 | 3.1 | JWT refresh token flow | 3 hrs | ✅ Done |
-| 3.2 | Email verification on signup | 3 hrs | 🟠 |
-| 3.3 | Input validation (express-validator) | 1 hr | 🟠 |
-| 3.4 | Rate limiting on auth endpoints | 30 min | 🟠 |
-| 3.5 | Secure token storage (flutter_secure_storage) | 1 hr | 🟠 |
+| 3.2 | Email verification on signup | 3 hrs | ✅ Done |
+| 3.3 | Input validation (express-validator) | 1 hr | ✅ Done |
+| 3.4 | Rate limiting on auth endpoints | 30 min | ✅ Done |
+| 3.5 | Secure token storage (flutter_secure_storage) | 1 hr | ✅ Done |
 | 3.6 | Certificate pinning | 1 hr | ✅ Done |
-| 3.7 | App versioning / force update | 1 hr | 🟡 |
-| 3.8 | Soft delete for ScamReport | 30 min | 🟡 |
+| 3.7 | App versioning / force update | 1 hr | ✅ Done |
+| 3.8 | Soft delete for ScamReport | 30 min | ✅ Done |
 | 3.9 | Docker healthcheck, pin versions, log rotation | 30 min | ✅ Done |
-| 3.10 | Google Sign-In integration | 4 hrs | 🟠 |
+| 3.10 | Google Sign-In integration | 4 hrs | ✅ Done |
 
 ---
 
@@ -140,8 +140,8 @@
 
 | # | Task | Est. | Status |
 |---|------|------|--------|
-| 5.1 | Push notifications (FCM) | 6 hrs | 🔴 |
-| 5.2 | Daily scam digest | 4 hrs | 🟠 |
+| 5.1 | Push notifications (FCM) | 6 hrs | ✅ Done |
+| 5.2 | Daily scam digest | 4 hrs | ✅ Done |
 | 5.3 | Recent checks history | 2 hrs | ✅ Done |
 | 5.4 | WhatsApp sharing | 2 hrs | 🟠 |
 | 5.5 | Streak rewards | 3 hrs | 🟡 |
@@ -158,9 +158,9 @@
 | 6.2 | Terms update consent tracking | 1 hr | ✅ Done |
 | 6.3 | Structured logging (Winston) | 1 hr | ✅ Done |
 | 6.4 | Unit tests for all controllers | 4 hrs | 🟠 |
-| 6.5 | API docs (Swagger/OpenAPI) | 2 hrs | 🟡 |
+| 6.5 | API docs (Swagger/OpenAPI) | 2 hrs | ✅ Done |
 | 6.6 | CI/CD pipeline (GitHub Actions) | 3 hrs | 🟠 |
-| 6.7 | Loading/error states across 42 screens | 2 hrs | 🟡 |
+| 6.7 | Loading/error states across 42 screens | 2 hrs | ✅ Done |
 | 6.8 | Bahasa Malaysia localization | 6 hrs | 🟠 |
 
 ---

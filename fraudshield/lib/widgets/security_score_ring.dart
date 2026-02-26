@@ -6,6 +6,7 @@ class SecurityScoreRing extends StatefulWidget {
   final String status;
   final bool isScanning;
   final VoidCallback onTap;
+  final VoidCallback onInfoTap;
 
   const SecurityScoreRing({
     super.key,
@@ -13,6 +14,7 @@ class SecurityScoreRing extends StatefulWidget {
     required this.status,
     required this.isScanning,
     required this.onTap,
+    required this.onInfoTap,
   });
 
   @override
@@ -170,6 +172,19 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                   ),
                 ),
               ],
+            ),
+            // 5. Info Icon
+            Positioned(
+              top: 20,
+              right: 20,
+              child: IconButton(
+                icon: Icon(
+                  Icons.info_outline,
+                  color: Colors.white.withOpacity(0.5),
+                  size: 20,
+                ),
+                onPressed: widget.onInfoTap,
+              ),
             ),
           ],
         ),

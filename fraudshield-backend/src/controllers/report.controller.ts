@@ -5,8 +5,43 @@ import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
 
+/**
+ * @openapi
+ * tags:
+ *   name: Reports
+ *   description: Scam report management and public feed
+ */
 export class ReportController {
     private static readonly MAX_LIMIT = 100;
+
+    /**
+     * @openapi
+     * /api/v1/reports:
+     *   post:
+     *     summary: Submit a new scam report
+     *     tags: [Reports]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [type, category, description, target]
+     *             properties:
+     *               type: { type: string, enum: [phone, bank, doc, link] }
+     *               category: { type: string }
+     *               description: { type: string }
+     *               target: { type: string }
+     *               isPublic: { type: boolean }
+     *               latitude: { type: number }
+     *               longitude: { type: number }
+     *               evidence: { type: object }
+     *     responses:
+     *       201:
+     *         description: Report submitted successfully
+     */
     static async submitReport(req: Request, res: Response, next: NextFunction) {
         try {
             const { type, category, description, evidence, target, isPublic, latitude, longitude } = req.body;
@@ -157,6 +192,16 @@ export class ReportController {
         }
     }
 
+    /**
+     * @openapi
+     * /api/v1/reports/public:
+     *   get:
+     *     summary: Get public scam report feed
+     *     tags: [Reports]
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved feed
+     */
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
             const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;

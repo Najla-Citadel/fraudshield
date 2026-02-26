@@ -29,6 +29,7 @@ import '../widgets/floating_nav_bar.dart';
 import '../widgets/security_report_sheet.dart';
 import 'transaction_journal_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../widgets/daily_digest_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Key to refresh PointsScreen from Home
   final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
+  final GlobalKey<LatestNewsWidgetState> _newsKey = GlobalKey<LatestNewsWidgetState>();
 
   // Customization State
   List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
@@ -65,7 +67,72 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check for daily login reward
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyReward();
+      _checkSecurityGuide();
     });
+  }
+
+  Future<void> _checkSecurityGuide() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool('score_guide_seen') ?? false;
+    
+    if (!seen && mounted) {
+      await Future.delayed(const Duration(milliseconds: 1500)); // Wait for initial animations
+      if (!mounted) return;
+      
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: GlassSurface(
+            borderRadius: 24,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.security, size: 64, color: AppColors.accentGreen),
+                const SizedBox(height: 16),
+                const Text(
+                  'Welcome to Security Center',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'This score represents your current defense level. Tapping the ring shows a detailed security report and how to improve your score to 100.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 14,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await prefs.setBool('score_guide_seen', true);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accentGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Got it!'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   int _calculateSecurityScore(bool isSubscribed) {
@@ -201,10 +268,10 @@ class _HomeScreenState extends State<HomeScreen> {
           context: context,
           barrierDismissible: false,
           builder: (context) => _DailyRewardDialog(
-            points: res['points'],
-            streak: res['streak'],
-            message: res['message'],
-            nextReward: res['nextReward'],
+            points: res['points'] ?? 0,
+            streak: res['streak'] ?? 1,
+            message: res['message'] ?? 'Thanks for being part of the community!',
+            nextReward: res['nextReward'] ?? 20,
           ),
         );
       }
@@ -461,11 +528,12 @@ class _HomeScreenState extends State<HomeScreen> {
             activeQuickActions: _activeQuickActions,
             onCustomize: () => _showCustomizationSheet(),
             isSubscribed: isSubscribed,
-            // Pass security state down
             isScanning: _isScanning,
             score: _calculateSecurityScore(isSubscribed),
             onScan: () => _runQuickScan(isSubscribed),
+            onShowReport: () => _showSecurityReport(isSubscribed),
             recentTransactions: _recentTransactions,
+            newsKey: _newsKey,
           ),
           const CommunityFeedScreen(),
           const ActivityScreen(),
@@ -492,7 +560,10 @@ class _HomeTab extends StatelessWidget {
   final bool isScanning;
   final int score;
   final VoidCallback onScan;
+  final VoidCallback onShowReport;
   final List<dynamic> recentTransactions;
+  final GlobalKey<LatestNewsWidgetState> newsKey;
+
 
   const _HomeTab({
     required this.userName,
@@ -503,7 +574,9 @@ class _HomeTab extends StatelessWidget {
     required this.isScanning,
     required this.score,
     required this.onScan,
+    required this.onShowReport,
     required this.recentTransactions,
+    required this.newsKey,
   });
 
   @override
@@ -581,13 +654,17 @@ class _HomeTab extends StatelessWidget {
                   status: score >= 90 ? 'Excellent' : 'Good',
                   isScanning: isScanning,
                   onTap: onScan,
+                  onInfoTap: onShowReport,
                 ),
               ),
 
-              const SizedBox(height: 30),
-
-              // 3. MONITORING PILL (Animated)
+              const SizedBox(height: 16),
               _buildMonitoringPill(),
+              const SizedBox(height: 16),
+
+              const DailyDigestWidget(),
+
+              const SizedBox(height: 20),
 
               // 4. QUICK ACTIONS ROW
               Row(
@@ -1014,20 +1091,27 @@ class _HomeTab extends StatelessWidget {
               const SizedBox(height: 32),
 
               // 7. THREAT INSIGHTS
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'THREAT INSIGHTS',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'THREAT INSIGHTS',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () => newsKey.currentState?.showCustomization(),
+                    child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              const LatestNewsWidget(),
+              LatestNewsWidget(key: newsKey),
+
               const SizedBox(height: 40), // Bottom padding
             ],
           ),

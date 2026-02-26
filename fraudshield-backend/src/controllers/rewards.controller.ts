@@ -361,7 +361,14 @@ export class RewardsController {
             ]);
 
             const newBadges = await BadgeService.evaluateBadges(userId);
-            res.json({ claimed: true, points: pointsAwarded, streak, newBadges });
+            res.json({
+                claimed: true,
+                points: pointsAwarded,
+                streak,
+                message: 'You\'re on a roll! Keep it up!',
+                nextReward: (streak + 1) * 10 + 10,
+                newBadges
+            });
         } catch (error) {
             next(error);
         }

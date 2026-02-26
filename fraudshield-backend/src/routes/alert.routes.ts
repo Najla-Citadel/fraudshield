@@ -6,6 +6,7 @@ const router = Router();
 
 // Public/Aggregate Routes (but still requiring login for the app)
 router.get('/trending', authenticate, AlertController.getTrendingAlerts);
+router.get('/daily-digest', authenticate, AlertController.getDailyDigest);
 
 // Personal Preferences
 router.get('/preferences', authenticate, AlertController.getPreferences);

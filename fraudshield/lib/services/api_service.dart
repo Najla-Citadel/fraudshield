@@ -569,6 +569,11 @@ class ApiService {
     return response as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getDailyDigest() async {
+    final response = await get('/alerts/daily-digest');
+    return response as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> getAlertPreferences() async {
     final response = await get('/alerts/preferences');
     return response as Map<String, dynamic>;
@@ -581,6 +586,7 @@ class ApiService {
     int? radiusKm,
     String? fcmToken,
     bool? isActive,
+    bool? emailDigestEnabled,
   }) async {
     return await post('/alerts/subscribe', {
       if (categories != null) 'categories': categories,
@@ -589,6 +595,7 @@ class ApiService {
       if (radiusKm != null) 'radiusKm': radiusKm,
       if (fcmToken != null) 'fcmToken': fcmToken,
       if (isActive != null) 'isActive': isActive,
+      if (emailDigestEnabled != null) 'emailDigestEnabled': emailDigestEnabled,
     });
   }
 

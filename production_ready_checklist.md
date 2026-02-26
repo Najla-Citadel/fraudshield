@@ -8,15 +8,15 @@
 
 | Category | 🔴 Critical | 🟠 High | 🟡 Medium | ✅ Done | Total |
 |----------|:-----------:|:-------:|:---------:|:------:|:-----:|
-| Security & Auth | 0 | 1 | 0 | 9 | 10 |
-| Backend Reliability | 1 | 2 | 2 | 3 | 8 |
-| Database & Data | 0 | 0 | 3 | 2 | 5 |
-| Deployment & Infra | 0 | 4 | 0 | 3 | 7 |
-| Mobile App | 0 | 2 | 6 | 2 | 10 |
-| UX & Compliance | 0 | 0 | 3 | 2 | 5 |
-| **Total** | **1** | **9** | **14** | **21** | **45** |
+| Security & Auth | 0 | 0 | 0 | 10 | 10 |
+| Backend Reliability | 0 | 0 | 3 | 5 | 8 |
+| Database & Data | 0 | 0 | 1 | 4 | 5 |
+| Deployment & Infra | 0 | 1 | 0 | 6 | 7 |
+| Mobile App | 0 | 0 | 1 | 9 | 10 |
+| UX & Compliance | 0 | 0 | 1 | 4 | 5 |
+| **Total** | **0** | **1** | **6** | **38** | **45** |
 
-> **Progress:** 21 of 45 items completed (~47%). **MVP is live. 10 new issues found in Feb 25 audit — 1 new critical, 5 new high.**
+> **Progress:** 38 of 45 items completed (~84%). **Hardened MVP is live.**
 
 ---
 
@@ -96,18 +96,21 @@
   - Backend now serves required version config. Flutter app checks this on launch and prompts/forces updates via premium dialog.
 - [x] **M6. Add crash reporting** ✅
   - Integrated Firebase Crashlytics (Feb 24). Crash events stream to Firebase console.
-- [ ] **M7. Remove debug logging from production** ⏱️ 30 min
+- [x] **M7. Remove debug logging from production** ✅
+- [x] **M8. Daily Scam Digest Widget** ✅
+  - Premium glassmorphism card on Home Screen with daily stats and pro tips.
 
 ### Backend
 
 - [x] **R4. Add structured logging with Winston** ✅
-- [ ] **R5. Add unit tests beyond auth** ⏱️ 3–4 hrs
-- [ ] **R6. Add API documentation (Swagger/OpenAPI)** ⏱️ 2 hrs
+- [ ] **R5. Add unit tests beyond auth** (In Progress: Auth & Email done) ⏱️ 3–4 hrs
+- [x] **R6. Add API documentation (Swagger/OpenAPI)** ✅
+  - Interactive Swagger UI live at `/api-docs`. JSDoc-based spec integration.
 
 ### Database
 
-- [ ] **DB3. Add soft delete to ScamReport** ⏱️ 30 min
-- [ ] **DB4. Add database connection pooling config** ⏱️ 10 min
+- [x] **DB3. Add soft delete to ScamReport** ✅
+- [x] **DB4. Add database connection pooling config** ✅
 
 ### UX & Compliance
 

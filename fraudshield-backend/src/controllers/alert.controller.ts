@@ -2,10 +2,24 @@ import { Request, Response, NextFunction } from 'express';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { prisma } from '../config/database';
 
+/**
+ * @openapi
+ * tags:
+ *   name: Alerts
+ *   description: Proactive scam alerts and daily digest
+ */
 export class AlertController {
     /**
-     * GET /api/alerts/trending
-     * Returns aggressive aggregations of recent scams
+     * @openapi
+     * /api/v1/alerts/trending:
+     *   get:
+     *     summary: Get currently trending scams
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved trending alerts
      */
     static async getTrendingAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -73,8 +87,58 @@ export class AlertController {
     }
 
     /**
-     * POST /api/alerts/subscribe
-     * Manage user preferences for push alerts
+     * @openapi
+     * /api/v1/alerts/daily-digest:
+     *   get:
+     *     summary: Get consolidated daily scam summary
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved daily digest
+     */
+    static async getDailyDigest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const digest = await AlertEngineService.getDailySummary();
+            res.json(digest);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/subscribe:
+     *   post:
+     *     summary: Manage user alert preferences
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               categories:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *               latitude:
+     *                 type: number
+     *               longitude:
+     *                 type: number
+     *               radiusKm:
+     *                 type: integer
+     *               emailDigestEnabled:
+     *                 type: boolean
+     *               isActive:
+     *                 type: boolean
+     *     responses:
+     *       200:
+     *         description: Preferences saved successfully
      */
     static async subscribeToAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -90,6 +154,7 @@ export class AlertController {
                     ...(radiusKm && { radiusKm }),
                     ...(fcmToken && { fcmToken }),
                     ...(isActive !== undefined && { isActive }),
+                    ...(req.body.emailDigestEnabled !== undefined && { emailDigestEnabled: req.body.emailDigestEnabled }),
                 },
                 create: {
                     userId,
@@ -99,6 +164,7 @@ export class AlertController {
                     radiusKm: radiusKm || 15,
                     fcmToken,
                     isActive: isActive ?? true,
+                    emailDigestEnabled: req.body.emailDigestEnabled ?? false,
                 },
             });
 
@@ -111,6 +177,18 @@ export class AlertController {
     /**
      * GET /api/alerts/preferences
      * Retrieve current user subscription preferences
+     */
+    /**
+     * @openapi
+     * /api/v1/alerts/preferences:
+     *   get:
+     *     summary: Get user alert preferences
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved preferences
      */
     static async getPreferences(req: Request, res: Response, next: NextFunction) {
         try {
@@ -125,6 +203,7 @@ export class AlertController {
                     categories: [],
                     isActive: false,
                     radiusKm: 15,
+                    emailDigestEnabled: false,
                 });
             }
 

@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 import passport from './config/passport';
 import logger from './utils/logger';
 
@@ -100,8 +102,12 @@ app.use('/uploads', express.static('uploads'));
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
 
-// API Routes
+// API Documentation (Swagger)
 const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(`${apiPrefix}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// API Routes
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);

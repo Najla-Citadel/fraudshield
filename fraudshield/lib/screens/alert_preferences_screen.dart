@@ -15,6 +15,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
   
   // Preferences state
   bool _isActive = true;
+  bool _emailDigestEnabled = false;
   double _radiusKm = 15;
   final List<String> _selectedCategories = [];
 
@@ -40,6 +41,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
       if (mounted) {
         setState(() {
           _isActive = prefs['isActive'] ?? true;
+          _emailDigestEnabled = prefs['emailDigestEnabled'] ?? false;
           _radiusKm = (prefs['radiusKm'] ?? 15).toDouble();
           
           final List<dynamic> cats = prefs['categories'] ?? [];
@@ -72,6 +74,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
         categories: _selectedCategories,
         radiusKm: _radiusKm.toInt(),
         isActive: _isActive,
+        emailDigestEnabled: _emailDigestEnabled,
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +147,38 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                       ],
                     ),
                   ),
+
+                  const SizedBox(height: 16),
                   
+                  // Email Digest Switch
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E293B),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Daily Email Digest', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text('Consolidated scam news in your inbox', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _emailDigestEnabled,
+                          onChanged: (val) => setState(() => _emailDigestEnabled = val),
+                          activeColor: AppColors.accentGreen,
+                        ),
+                      ],
+                    ),
+                  ),
                   AnimatedOpacity(
                     opacity: _isActive ? 1.0 : 0.3,
                     duration: const Duration(milliseconds: 300),
