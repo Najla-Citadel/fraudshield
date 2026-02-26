@@ -106,7 +106,7 @@ export class RiskEvaluationService {
     // ── DB Query ──────────────────────────────────────────────────────────
 
     private static async getCommunityIntelligence(type: string, value: string) {
-        let whereClause: any = { isPublic: true };
+        let whereClause: any = { isPublic: true, deletedAt: null };
 
         // Map Flutter type strings to db values
         if (type === 'phone' || type === 'bank') {

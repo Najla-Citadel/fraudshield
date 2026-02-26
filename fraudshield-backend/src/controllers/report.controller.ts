@@ -77,12 +77,12 @@ export class ReportController {
 
             const [reports, total] = await Promise.all([
                 prisma.scamReport.findMany({
-                    where: { userId },
+                    where: { userId, deletedAt: null },
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
                 }),
-                prisma.scamReport.count({ where: { userId } }),
+                prisma.scamReport.count({ where: { userId, deletedAt: null } }),
             ]);
 
             res.json({
@@ -103,7 +103,7 @@ export class ReportController {
             const userId = (req.user as any).id;
 
             const report = await (prisma as any).scamReport.findUnique({
-                where: { id },
+                where: { id, deletedAt: null },
                 include: {
                     verifications: true,
                     user: {
@@ -163,7 +163,7 @@ export class ReportController {
             const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
             const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
 
-            let whereClause: any = { isPublic: true };
+            let whereClause: any = { isPublic: true, deletedAt: null };
 
             // Optional localized filtering
             if (lat && lng && radius) {
@@ -264,6 +264,7 @@ export class ReportController {
             // Build dynamic where clause
             const whereClause: any = {
                 isPublic: true,
+                deletedAt: null,
                 AND: [],
             };
 
@@ -456,6 +457,7 @@ export class ReportController {
             // Build query based on target match
             const whereClause: any = {
                 target: { contains: value, mode: 'insensitive' },
+                deletedAt: null,
             };
 
             const reports = await (prisma as any).scamReport.findMany({

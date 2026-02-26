@@ -15,6 +15,7 @@ export class AlertEngineService {
             where: {
                 createdAt: { gte: timeWindow },
                 isPublic: true,
+                deletedAt: null,
             },
             include: {
                 _count: { select: { verifications: true } }
@@ -87,6 +88,7 @@ export class AlertEngineService {
         const localReports = await prisma.scamReport.findMany({
             where: {
                 isPublic: true,
+                deletedAt: null,
                 latitude: { gte: lat - latDelta, lte: lat + latDelta },
                 longitude: { gte: lng - lngDelta, lte: lng + lngDelta }
             },

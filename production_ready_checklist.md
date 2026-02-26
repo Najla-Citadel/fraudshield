@@ -92,7 +92,8 @@
 - [x] **M3. Add certificate pinning** ✅
 - [x] **M4. Secure token storage** ✅
   - Migrated from `shared_preferences` (plaintext) to `flutter_secure_storage` (AES on Android, Keychain on iOS).
-- [ ] **M5. Add app versioning check** ⏱️ 1 hr
+- [x] **M5. App Versioning Check** ✅
+  - Backend now serves required version config. Flutter app checks this on launch and prompts/forces updates via premium dialog.
 - [x] **M6. Add crash reporting** ✅
   - Integrated Firebase Crashlytics (Feb 24). Crash events stream to Firebase console.
 - [ ] **M7. Remove debug logging from production** ⏱️ 30 min
@@ -175,5 +176,5 @@ flowchart LR
   - Deleted unused screen file from productions screens folder.
 - [x] **F8. Delete empty `transaction_screen.dart`** ✅
   - Deleted 0-byte file.
-- [ ] **DB5. Soft delete on ScamReport** ⏱️ 30 min
-  - Reports are hard-deleted. Add `deletedAt DateTime?` field and scope all queries accordingly.
+- [x] **DB5. Soft delete on ScamReport** ✅
+  - Reports are now soft-deleted using a `deletedAt` timestamp. All public/user queries updated to filter active reports.

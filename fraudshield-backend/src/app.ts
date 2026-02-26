@@ -23,6 +23,7 @@ import uploadRoutes from './routes/upload.routes';
 import userRoutes from './routes/user.routes';
 import alertRoutes from './routes/alert.routes';
 import transactionRoutes from './routes/transaction.routes';
+import configRoutes from './routes/config.routes';
 import { requestTimeout } from './middleware/timeout.middleware';
 
 const app: Application = express();
@@ -110,6 +111,7 @@ app.use(`${apiPrefix}/upload`, uploadRoutes);
 app.use(`${apiPrefix}/users`, userRoutes); // Added user routes
 app.use(`${apiPrefix}/alerts`, alertRoutes);
 app.use(`${apiPrefix}/transactions`, transactionRoutes);
+app.use(`${apiPrefix}/config`, configRoutes);
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
