@@ -87,6 +87,10 @@ class ApiService {
     return data['user'];
   }
 
+  Future<void> requestVerificationEmail() async {
+    await post('/auth/request-verification', {});
+  }
+
   Future<void> verifyEmail(String email, String otp) async {
     await post('/auth/verify-email', {
       'email': email,
@@ -269,10 +273,12 @@ class ApiService {
     return response as List;
   }
 
-  Future<List<dynamic>> getPublicFeed({
+  Future<Map<String, dynamic>> getPublicFeed({
     double? lat,
     double? lng,
     double? radius,
+    String? category,
+    String? search,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -280,11 +286,25 @@ class ApiService {
     if (lat != null && lng != null && radius != null) {
       query += '&lat=$lat&lng=$lng&radius=$radius';
     }
-    final response = await get('/reports/public$query');
-    if (response is Map && response.containsKey('results')) {
-      return response['results'] as List;
+    if (category != null && category.isNotEmpty) {
+      query += '&category=${Uri.encodeComponent(category)}';
     }
-    return response as List;
+    if (search != null && search.isNotEmpty) {
+      query += '&search=${Uri.encodeComponent(search)}';
+    }
+    
+    final response = await get('/reports/public$query');
+    
+    if (response is Map<String, dynamic>) {
+      return response;
+    }
+    
+    // Fallback for unexpected formats
+    return {
+      'results': response is List ? response : [],
+      'total': response is List ? response.length : 0,
+      'hasMore': false,
+    };
   }
 
   Future<Map<String, dynamic>> getReportDetails(String reportId) async {

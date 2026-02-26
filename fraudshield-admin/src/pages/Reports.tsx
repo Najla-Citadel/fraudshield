@@ -51,7 +51,8 @@ const Reports = () => {
     if (loading) return <div className="text-white">Loading...</div>;
 
     const getStatusIcon = (status: string) => {
-        switch (status) {
+        const s = status.toLowerCase();
+        switch (s) {
             case 'pending': return <Clock size={16} className="text-yellow-400" />;
             case 'verified': return <CheckCircle2 size={16} className="text-accent-green" />;
             case 'rejected': return <XCircle size={16} className="text-accent-red" />;
@@ -83,8 +84,8 @@ const Reports = () => {
                                     <p className="text-xs text-slate-400">Reported by: <span className="text-slate-300 font-medium">{report.user.fullName || report.user.email}</span></p>
                                 </div>
                             </div>
-                            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center space-x-2 border ${report.status === 'pending' ? 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' :
-                                report.status === 'verified' ? 'bg-accent-green/10 text-accent-green border-accent-green/20' :
+                            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center space-x-2 border ${report.status.toLowerCase() === 'pending' ? 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' :
+                                report.status.toLowerCase() === 'verified' ? 'bg-accent-green/10 text-accent-green border-accent-green/20' :
                                     'bg-accent-red/10 text-accent-red border-accent-red/20'
                                 }`}>
                                 {getStatusIcon(report.status)}
@@ -112,25 +113,25 @@ const Reports = () => {
                             </div>
 
                             <div className="flex flex-col justify-end space-y-2">
-                                {report.status === 'pending' && (
+                                {report.status.toLowerCase() === 'pending' && (
                                     <>
                                         <button
-                                            onClick={() => handleStatusUpdate(report.id, 'verified')}
+                                            onClick={() => handleStatusUpdate(report.id, 'VERIFIED')}
                                             className="w-full bg-accent-green hover:bg-green-500 text-navy-900 font-bold py-2 rounded-lg transition-colors text-sm"
                                         >
                                             Verify & Approve
                                         </button>
                                         <button
-                                            onClick={() => handleStatusUpdate(report.id, 'rejected')}
+                                            onClick={() => handleStatusUpdate(report.id, 'REJECTED')}
                                             className="w-full bg-navy-700 hover:bg-accent-red hover:text-white text-slate-300 font-bold py-2 rounded-lg transition-colors text-sm border border-navy-600"
                                         >
                                             Reject Report
                                         </button>
                                     </>
                                 )}
-                                {report.status !== 'pending' && (
+                                {report.status.toLowerCase() !== 'pending' && (
                                     <button
-                                        onClick={() => handleStatusUpdate(report.id, 'pending')}
+                                        onClick={() => handleStatusUpdate(report.id, 'PENDING')}
                                         className="w-full bg-navy-700 hover:bg-navy-600 text-slate-300 font-bold py-2 rounded-lg transition-colors text-sm border border-navy-600"
                                     >
                                         Reset to Pending

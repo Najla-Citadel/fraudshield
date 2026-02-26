@@ -23,10 +23,9 @@ class PointsScreenState extends State<PointsScreen> {
   final ApiService _api = ApiService.instance;
   bool _loading = true;
   bool _hasError = false;
-  int _balance = 0;
   String _userTier = 'BRONZE';
   double _userDiscount = 0.0;
-  String _selectedCategory = 'All Rewards';
+  String _selectedCategory = 'All';
   List<Map<String, dynamic>> _rewards = [];
 
   @override
@@ -58,18 +57,27 @@ class PointsScreenState extends State<PointsScreen> {
           _rewards = List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
           _userTier = rewardsRes['userTier'] ?? 'BRONZE';
           _userDiscount = (rewardsRes['userDiscount'] ?? 0).toDouble();
-          _balance = rewardsRes['userBalance'] ?? 0;
         });
       }
+      // Sync auth provider to get latest balance/profile
+      await context.read<AuthProvider>().refreshProfile();
     } catch (e) {
       log('Error loading points/rewards: $e');
-      if (mounted) setState(() => _hasError = true);
+      if (e.toString().contains('403')) {
+        // likely email not verified, profiles sync failed but we let it pass
+        if (mounted) {
+           setState(() => _hasError = false);
+        }
+      } else if (mounted) {
+        setState(() => _hasError = true);
+      }
     }
   }
 
   Future<void> _redeemReward(Map<String, dynamic> reward) async {
+    final points = context.read<AuthProvider>().user?.profile?.points ?? 0;
     final pointsCost = reward['pointsCost'] as int;
-    if (_balance < pointsCost) {
+    if (points < pointsCost) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Insufficient points!'), backgroundColor: Colors.red));
       return;
     }
@@ -77,7 +85,7 @@ class PointsScreenState extends State<PointsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Redeem ${reward['name']}?'),
-        content: Text('Cost: $pointsCost points\nYour balance after: ${_balance - pointsCost} points'),
+        content: Text('Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           ElevatedButton(
@@ -93,6 +101,8 @@ class PointsScreenState extends State<PointsScreen> {
       await _api.redeemReward(reward['id']);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ Redeemed ${reward['name']}!'), backgroundColor: Colors.green));
+        // Refresh local rewards AND global balance
+        await context.read<AuthProvider>().refreshProfile();
         refreshData();
       }
     } catch (e) {
@@ -161,19 +171,14 @@ class PointsScreenState extends State<PointsScreen> {
         children: [
           // 1. Balance Card
           _buildBalanceCard(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
-          // 2. Badges Strip
-          _buildBadgesStrip(),
-          const SizedBox(height: 24),
-
-          // 3. Category Selector
+          // 2. Category Selector
           _buildCategorySelector(),
-          const SizedBox(height: 24),
-
+          const SizedBox(height: 16),
 
           // 3. Sections
-          if (_selectedCategory == 'All Rewards' || _selectedCategory == 'Security') ...[
+          if (_selectedCategory == 'All' || _selectedCategory == 'Security') ...[
             _buildSectionHeader('Security Upgrades'),
             const SizedBox(height: 12),
             ..._rewards
@@ -188,16 +193,24 @@ class PointsScreenState extends State<PointsScreen> {
             const SizedBox(height: 32),
           ],
           
-          if (_selectedCategory == 'All Rewards' || _selectedCategory == 'Vouchers') ...[
+          if (_selectedCategory == 'All' || _selectedCategory == 'Vouchers') ...[
             _buildSectionHeader('Store Items & Vouchers'),
             const SizedBox(height: 12),
-            ..._rewards
-                .where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION')
-                .map((r) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _buildDynamicVoucherCard(r),
-                    ))
-                .toList(),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                mainAxisExtent: 260, // Fixed height for consistency
+              ),
+              itemCount: _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').length,
+              itemBuilder: (context, index) {
+                final r = _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').toList()[index];
+                return _buildRewardCard(r, false);
+              },
+            ),
             if (_rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').isEmpty)
               const Text('No store items available', style: TextStyle(color: Colors.white54)),
             const SizedBox(height: 32),
@@ -212,6 +225,8 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildBalanceCard() {
+    final userPoints = context.watch<AuthProvider>().user?.profile?.points ?? 0;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -238,7 +253,7 @@ class PointsScreenState extends State<PointsScreen> {
             Row(
               children: [
                 Text(
-                  'YOUR BALANCE',
+                  'AVAILABLE BALANCE',
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.6),
                     fontSize: 12,
@@ -262,7 +277,7 @@ class PointsScreenState extends State<PointsScreen> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    text: '$_balance',
+                    text: '$userPoints',
                     style: const TextStyle(
                       fontSize: 48,
                       fontWeight: FontWeight.bold,
@@ -323,12 +338,14 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildCategorySelector() {
-    return SizedBox(
-      height: 40,
+    return Container(
+      height: 44,
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: ListView(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         children: [
-          _categoryChip('All Rewards', isActive: _selectedCategory == 'All Rewards'),
+          _categoryChip('All', isActive: _selectedCategory == 'All'),
           const SizedBox(width: 12),
           _categoryChip('Vouchers', isActive: _selectedCategory == 'Vouchers'),
           const SizedBox(width: 12),
@@ -342,18 +359,18 @@ class PointsScreenState extends State<PointsScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: Text(
           label,
           style: TextStyle(
             color: isActive ? Colors.black87 : Colors.white,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
         ),
@@ -389,146 +406,126 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildFeaturedReward(Map<String, dynamic> reward) {
-    final name = reward['name'] ?? 'Premium';
+    return _buildRewardCard(reward, true);
+  }
+
+  Widget _buildRewardCard(Map<String, dynamic> reward, bool isFeatured) {
+    final balance = context.watch<AuthProvider>().user?.profile?.points ?? 0;
+    final name = reward['name'] ?? 'Item';
     final desc = reward['description'] ?? '';
     final cost = reward['pointsCost'] ?? 0;
-    final canAfford = _balance >= cost;
+    final canAfford = balance >= cost;
+    final isLocked = reward['isLocked'] ?? false;
+    final requiredTier = reward['requiredTier'] ?? 'SILVER';
 
-    // Large featured card - keeping custom styling as it's unique, but using consistent colors
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Match GlassCard base
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(isFeatured ? 24 : 20),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Image / Icon Area
+          // Visual Area
           Container(
-            height: 140,
+            height: isFeatured ? 140 : 100,
             width: double.infinity,
-            alignment: Alignment.center,
             decoration: BoxDecoration(
-               gradient: LinearGradient(
-                  colors: [Colors.blue.withOpacity(0.2), Colors.blue.withOpacity(0.05)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-               ),
-               borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              gradient: LinearGradient(
+                colors: isFeatured 
+                  ? [Colors.blue.withOpacity(0.2), Colors.blue.withOpacity(0.05)]
+                  : [AppColors.accentGreen.withOpacity(0.1), AppColors.accentGreen.withOpacity(0.02)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(isFeatured ? 24 : 20)),
             ),
             child: Stack(
               children: [
                 Center(
                   child: Icon(
-                    (reward['isLocked'] ?? false) ? Icons.lock_outline_rounded : Icons.security, 
-                    size: 80, 
-                    color: (reward['isLocked'] ?? false) ? Colors.white24 : Colors.blue.withOpacity(0.5)
+                    isLocked ? Icons.lock_outline_rounded : (isFeatured ? Icons.security : Icons.card_giftcard), 
+                    size: isFeatured ? 64 : 40, 
+                    color: isLocked ? Colors.white24 : (isFeatured ? Colors.blue.withOpacity(0.5) : AppColors.accentGreen.withOpacity(0.5)),
                   ),
                 ),
                 Positioned(
-                  top: 16,
-                  right: 16,
+                  top: 12,
+                  right: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: (reward['isLocked'] ?? false) ? Colors.black54 : AppColors.accentGreen,
-                      borderRadius: BorderRadius.circular(12),
+                      color: isLocked ? Colors.black54 : AppColors.accentGreen,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (reward['originalCost'] != null && reward['originalCost'] != reward['pointsCost'])
-                          Text(
-                            '${reward['originalCost']} ',
-                            style: const TextStyle(
-                              color: Colors.white54,
-                              decoration: TextDecoration.lineThrough,
-                              fontSize: 10,
-                            ),
-                          ),
-                        Text(
-                          '$cost PTS',
-                          style: TextStyle(
-                            color: (reward['isLocked'] ?? false) ? Colors.white70 : Colors.black87,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (reward['isLocked'] ?? false)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      color: Colors.black45,
-                      child: Text(
-                        'Requires ${reward['requiredTier']} Status',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    child: Text(
+                      '$cost PTS',
+                      style: TextStyle(
+                        color: isLocked ? Colors.white70 : Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
           
-          // Content
+          // Content Area
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(isFeatured ? 20 : 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: isFeatured ? 18 : 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   desc,
+                  maxLines: isFeatured ? 3 : 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.6),
+                    fontSize: isFeatured ? 14 : 12,
+                    color: Colors.white.withOpacity(0.5),
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: (canAfford && !(reward['isLocked'] ?? false)) ? () => _redeemReward(reward) : null,
+                    onPressed: (canAfford && !isLocked) ? () => _redeemReward(reward) : null,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.accentGreen,
+                      foregroundColor: isFeatured ? AppColors.accentGreen : Colors.white,
                       side: BorderSide(
-                        color: (canAfford && !(reward['isLocked'] ?? false)) 
-                          ? AppColors.accentGreen 
-                          : Colors.grey.withOpacity(0.5)
+                        color: (canAfford && !isLocked) 
+                          ? (isFeatured ? AppColors.accentGreen : Colors.white.withOpacity(0.3))
+                          : Colors.white.withOpacity(0.05)
                       ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.symmetric(vertical: isFeatured ? 14 : 10),
                     ),
                     child: Text(
-                      (reward['isLocked'] ?? false) 
-                        ? 'Unlock at ${reward['requiredTier']}' 
-                        : (canAfford ? 'Redeem Now' : 'Not Enough Points'), 
+                      isLocked 
+                        ? 'Unlock at $requiredTier' 
+                        : (canAfford ? (isFeatured ? 'Redeem Now' : 'Redeem') : 'Not Enough'), 
                       style: TextStyle(
-                        fontWeight: FontWeight.bold, 
-                        color: (canAfford && !(reward['isLocked'] ?? false)) 
-                          ? AppColors.accentGreen 
-                          : Colors.grey
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: (canAfford && !isLocked) 
+                          ? (isFeatured ? AppColors.accentGreen : Colors.white) 
+                          : Colors.white.withOpacity(0.3)
                       )
                     ),
                   ),
@@ -536,116 +533,6 @@ class PointsScreenState extends State<PointsScreen> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDynamicVoucherCard(Map<String, dynamic> reward) {
-    final name = reward['name'] ?? 'Item';
-    final desc = reward['description'] ?? '';
-    final cost = reward['pointsCost'] ?? 0;
-    final canAfford = _balance >= cost;
-
-    return GlassCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-           Row(
-             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-             children: [
-               Container(
-                 padding: const EdgeInsets.all(10),
-                 decoration: BoxDecoration(
-                   color: Colors.white.withOpacity(0.1),
-                   shape: BoxShape.circle,
-                 ),
-                 child: Icon(
-                   (reward['isLocked'] ?? false) ? Icons.lock_outline_rounded : Icons.card_giftcard, 
-                   color: (reward['isLocked'] ?? false) ? Colors.white38 : Colors.white, 
-                   size: 20
-                 ),
-               ),
-               if (reward['isLocked'] ?? false)
-                 Padding(
-                   padding: const EdgeInsets.only(left: 8.0),
-                   child: Text(
-                     'Requires ${reward['requiredTier']}',
-                     style: const TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
-                   ),
-                 ),
-               const Spacer(),
-               Column(
-                 crossAxisAlignment: CrossAxisAlignment.end,
-                 children: [
-                   if (reward['originalCost'] != null && reward['originalCost'] != reward['pointsCost'])
-                     Text(
-                       '${reward['originalCost']}',
-                       style: const TextStyle(
-                         color: Colors.white38,
-                         decoration: TextDecoration.lineThrough,
-                         fontSize: 10,
-                       ),
-                     ),
-                   Text(
-                     '$cost PTS',
-                     style: TextStyle(
-                       color: (reward['isLocked'] ?? false) ? Colors.white38 : AppColors.accentGreen,
-                       fontSize: 12,
-                       fontWeight: FontWeight.bold,
-                     ),
-                   ),
-                 ],
-               ),
-             ],
-           ),
-           const SizedBox(height: 16),
-           Text(
-             name,
-             style: const TextStyle(
-               color: Colors.white,
-               fontWeight: FontWeight.bold,
-               fontSize: 14,
-             ),
-           ),
-           const SizedBox(height: 4),
-           Text(
-             desc,
-             style: TextStyle(
-               color: Colors.white.withOpacity(0.5),
-               fontSize: 11,
-               height: 1.3,
-             ),
-             maxLines: 2,
-             overflow: TextOverflow.ellipsis,
-           ),
-           const SizedBox(height: 16),
-           SizedBox(
-             width: double.infinity,
-             child: OutlinedButton(
-               onPressed: (canAfford && !(reward['isLocked'] ?? false)) ? () => _redeemReward(reward) : null,
-               style: OutlinedButton.styleFrom(
-                 foregroundColor: (reward['isLocked'] ?? false) ? Colors.grey : Colors.white,
-                 side: BorderSide(
-                   color: (canAfford && !(reward['isLocked'] ?? false)) 
-                    ? Colors.white.withOpacity(0.2) 
-                    : Colors.white.withOpacity(0.05)
-                 ),
-                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                 padding: const EdgeInsets.symmetric(vertical: 10),
-               ),
-               child: Text(
-                 (reward['isLocked'] ?? false) 
-                  ? 'Locked' 
-                  : (canAfford ? 'Redeem' : 'Not Enough'), 
-                 style: TextStyle(
-                   fontSize: 12, 
-                   color: (canAfford && !(reward['isLocked'] ?? false)) ? Colors.white : Colors.grey
-                 )
-               ),
-             ),
-           ),
         ],
       ),
     );
@@ -709,71 +596,6 @@ class PointsScreenState extends State<PointsScreen> {
           ],
         ),
       );
-  }
-
-  Widget _buildBadgesStrip() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'MY BADGES',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 0.5,
-              ),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const BadgesScreen()),
-              ),
-              child: Text(
-                'View All',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.accentGreen,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 60,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildBadgeStripItem('🎯'),
-              _buildBadgeStripItem('🛡️'),
-              _buildBadgeStripItem('💎'),
-              _buildBadgeStripItem('🔥'),
-              _buildBadgeStripItem('⚖️'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBadgeStripItem(String icon) {
-    return Container(
-      width: 60,
-      height: 60,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      alignment: Alignment.center,
-      child: Text(icon, style: const TextStyle(fontSize: 24)),
-    );
   }
 
   String _calculateTierName(int totalPoints) {

@@ -26,6 +26,7 @@ router.use(authenticate);
 
 router.get('/profile', AuthController.getProfile);
 router.patch('/profile', AuthController.updateProfile);
+router.post('/request-verification', AuthController.requestEmailVerification);
 router.post('/change-password', authenticate, validateChangePassword, AuthController.changePassword);
 router.post('/logout', AuthController.logout);
 
