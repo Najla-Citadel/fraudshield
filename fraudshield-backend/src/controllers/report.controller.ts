@@ -3,6 +3,7 @@ import { prisma } from '../config/database';
 import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
+import { GamificationService } from '../services/gamification.service';
 
 export class ReportController {
     private static readonly MAX_LIMIT = 100;
@@ -40,25 +41,13 @@ export class ReportController {
             });
 
             // Award points for submitting a report
-            let newBadges: string[] = [];
+            let gamificationResult: any = { newBadges: [] };
             if (isPublic) {
-                await (prisma as any).profile.update({
-                    where: { userId },
-                    data: {
-                        points: { increment: 10 },
-                    },
-                });
-
-                await (prisma as any).pointsTransaction.create({
-                    data: {
-                        userId,
-                        amount: 10,
-                        description: `Submitted public scam report`,
-                    },
-                });
-
-                // Evaluate badges
-                newBadges = await BadgeService.evaluateBadges(userId);
+                gamificationResult = await GamificationService.awardPoints(
+                    userId,
+                    10,
+                    `Submitted public scam report`
+                );
 
                 // Dispatch real-time local alerts to nearby subscribers
                 AlertEngineService.dispatchLocalAlert(report).catch(err => {
@@ -66,7 +55,12 @@ export class ReportController {
                 });
             }
 
-            res.status(201).json({ ...report, newBadges });
+            res.status(201).json({
+                ...report,
+                newBadges: gamificationResult.newBadges,
+                pointsAwarded: 10,
+                currentTier: gamificationResult.currentTier
+            });
         } catch (error) {
             next(error);
         }
@@ -83,12 +77,12 @@ export class ReportController {
 
             const [reports, total] = await Promise.all([
                 prisma.scamReport.findMany({
-                    where: { userId },
+                    where: { userId, deletedAt: null },
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
                 }),
-                prisma.scamReport.count({ where: { userId } }),
+                prisma.scamReport.count({ where: { userId, deletedAt: null } }),
             ]);
 
             res.json({
@@ -109,7 +103,7 @@ export class ReportController {
             const userId = (req.user as any).id;
 
             const report = await (prisma as any).scamReport.findUnique({
-                where: { id },
+                where: { id, deletedAt: null },
                 include: {
                     verifications: true,
                     user: {
@@ -165,11 +159,22 @@ export class ReportController {
 
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
-            const { limit = '20', offset = '0', lat, lng, radius } = req.query;
+            const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;
             const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
             const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
 
-            let whereClause: any = { isPublic: true };
+            let whereClause: any = { isPublic: true, deletedAt: null };
+
+            if (category) {
+                whereClause.category = category as string;
+            }
+
+            if (search) {
+                whereClause.description = {
+                    contains: search as string,
+                    mode: 'insensitive',
+                };
+            }
 
             // Optional localized filtering
             if (lat && lng && radius) {
@@ -270,6 +275,7 @@ export class ReportController {
             // Build dynamic where clause
             const whereClause: any = {
                 isPublic: true,
+                deletedAt: null,
                 AND: [],
             };
 
@@ -415,25 +421,11 @@ export class ReportController {
             });
 
             // 2. Reward the verifier with Shield Points
-            await (prisma as any).profile.upsert({
-                where: { userId },
-                update: {
-                    points: { increment: 10 },
-                },
-                create: {
-                    userId,
-                    points: 10,
-                    avatar: 'Felix', // Default avatar
-                },
-            });
-
-            await (prisma as any).pointsTransaction.create({
-                data: {
-                    userId,
-                    amount: 10,
-                    description: `Verified report ${reportId}`,
-                },
-            });
+            const gamificationResult = await GamificationService.awardPoints(
+                userId,
+                10,
+                `Verified report ${reportId}`
+            );
 
             // 3. Reward the original reporter with Reputation if verified as 'Same'
             const report = await (prisma as any).scamReport.findUnique({
@@ -476,6 +468,7 @@ export class ReportController {
             // Build query based on target match
             const whereClause: any = {
                 target: { contains: value, mode: 'insensitive' },
+                deletedAt: null,
             };
 
             const reports = await (prisma as any).scamReport.findMany({

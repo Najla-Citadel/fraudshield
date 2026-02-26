@@ -42,6 +42,11 @@ class ApiService {
     _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
   }
 
+  Future<Map<String, dynamic>> getAppConfig() async {
+    final response = await get('/config/app');
+    return response as Map<String, dynamic>;
+  }
+
   String? get token => _token;
   bool get isAuthenticated => _token != null;
 
@@ -80,6 +85,10 @@ class ApiService {
     
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
+  }
+
+  Future<void> requestVerificationEmail() async {
+    await post('/auth/request-verification', {});
   }
 
   Future<void> verifyEmail(String email, String otp) async {
@@ -264,10 +273,12 @@ class ApiService {
     return response as List;
   }
 
-  Future<List<dynamic>> getPublicFeed({
+  Future<Map<String, dynamic>> getPublicFeed({
     double? lat,
     double? lng,
     double? radius,
+    String? category,
+    String? search,
     int limit = 20,
     int offset = 0,
   }) async {
@@ -275,11 +286,25 @@ class ApiService {
     if (lat != null && lng != null && radius != null) {
       query += '&lat=$lat&lng=$lng&radius=$radius';
     }
-    final response = await get('/reports/public$query');
-    if (response is Map && response.containsKey('results')) {
-      return response['results'] as List;
+    if (category != null && category.isNotEmpty) {
+      query += '&category=${Uri.encodeComponent(category)}';
     }
-    return response as List;
+    if (search != null && search.isNotEmpty) {
+      query += '&search=${Uri.encodeComponent(search)}';
+    }
+    
+    final response = await get('/reports/public$query');
+    
+    if (response is Map<String, dynamic>) {
+      return response;
+    }
+    
+    // Fallback for unexpected formats
+    return {
+      'results': response is List ? response : [],
+      'total': response is List ? response.length : 0,
+      'hasMore': false,
+    };
   }
 
   Future<Map<String, dynamic>> getReportDetails(String reportId) async {
@@ -470,12 +495,12 @@ class ApiService {
 
   // ---------------- Rewards ----------------
 
-  Future<List<dynamic>> getRewards() async {
+  Future<Map<String, dynamic>> getRewards() async {
     final response = await get('/rewards');
-    if (response is Map && response.containsKey('results')) {
-      return response['results'] as List;
+    if (response is List) {
+      return {'results': response};
     }
-    return response as List;
+    return response as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> redeemReward(String rewardId) async {

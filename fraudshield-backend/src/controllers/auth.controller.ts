@@ -99,6 +99,39 @@ export class AuthController {
         }
     }
 
+    static async requestEmailVerification(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any)?.id;
+            const user = await prisma.user.findUnique({ where: { id: userId } });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            if (user.emailVerified) {
+                return res.status(400).json({ message: 'Email already verified' });
+            }
+
+            // Generate OTP and store in Redis for email verification
+            const otp = await EmailService.generateEmailVerificationOtp(user.email);
+
+            // In local development, we return the OTP for easy testing. 
+            // In production, NEVER return the OTP in the HTTP response.
+            if (process.env.NODE_ENV === 'development') {
+                return res.status(200).json({
+                    message: 'Verification code sent to your email.',
+                    dev_otp: otp
+                });
+            }
+
+            res.status(200).json({
+                message: 'Verification code sent to your email.'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async login(req: Request, res: Response, next: NextFunction) {
         passport.authenticate('local', { session: false }, async (err: any, user: any, info: any) => {
             if (err) return next(err);

@@ -13,7 +13,7 @@ export class AlertWorkerService {
     /**
      * Initializes the Bull queue and sets up the worker process
      */
-    static initialize() {
+    static async initialize() {
         if (this.isInitialized) return;
 
         // Support for REDIS_URL or individual host/port environment variables
@@ -76,10 +76,27 @@ export class AlertWorkerService {
             }
         });
 
-        // 📅 Schedule the recurring job (Check for trends every 5 minutes in production)
-        // For development/demo, we'll keep it at 1 minute as requested
-        this.trendingAlertQueue.add({}, {
-            repeat: { cron: '*/1 * * * *' }, // Every minute
+        // 📅 Schedule the recurring job (Configurable via TRENDING_ALERT_CRON)
+        // Defaults to once per hour in absolute time (e.g. 10:00, 11:00)
+        const cronInterval = process.env.TRENDING_ALERT_CRON || '0 * * * *';
+
+        console.log(`⏰ Bull Queue: Scheduling trending analysis with cron: "${cronInterval}"`);
+
+        // Clean up any existing repeatable jobs with this ID to prevent duplicates when cron changes
+        try {
+            const repeatableJobs = await this.trendingAlertQueue.getRepeatableJobs();
+            for (const job of repeatableJobs) {
+                if (job.id === 'trending-analysis-recurring') {
+                    await this.trendingAlertQueue.removeRepeatableByKey(job.key);
+                    console.log('🧹 Bull Queue: Removed old repeatable job');
+                }
+            }
+        } catch (error) {
+            console.error('⚠️ Bull Queue: Failed to clean old jobs:', error);
+        }
+
+        await this.trendingAlertQueue.add({}, {
+            repeat: { cron: cronInterval },
             jobId: 'trending-analysis-recurring'
         });
 

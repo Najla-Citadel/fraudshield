@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +18,6 @@ class PointsDetailsScreen extends StatefulWidget {
 class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   bool _loading = true;
   bool _hasError = false;
-  int _balance = 0;
   List<dynamic> _transactions = [];
 
   @override
@@ -28,9 +29,11 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   Future<void> _loadData() async {
     try {
       final res = await ApiService.instance.getMyPoints();
+      // Sync auth provider to get latest spendable/total points
+      await context.read<AuthProvider>().refreshProfile();
+      
       if (mounted) {
         setState(() {
-          _balance = res['totalPoints'] ?? 0;
           _transactions = res['transactions'] ?? [];
           _loading = false;
           _hasError = false;
@@ -38,7 +41,18 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       }
     } catch (e) {
       log('Error loading points details: $e');
-      if (mounted) {
+      if (e.toString().contains('403')) {
+        // User not authorized (likely email not verified)
+        if (mounted) {
+          setState(() {
+            _loading = false;
+            _hasError = false; // We can still show cached points from ApiService query
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Note: Please verify your email to sync latest status.'), duration: Duration(seconds: 2)),
+          );
+        }
+      } else if (mounted) {
         setState(() {
           _loading = false;
           _hasError = true;
@@ -109,7 +123,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          _buildBalanceCard(),
+          _buildSummaryHeader(),
           const SizedBox(height: 24),
           _buildLeaderboardCard(),
           const SizedBox(height: 32),
@@ -122,99 +136,151 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     );
   }
 
-  Widget _buildBalanceCard() {
+  Widget _buildSummaryHeader() {
+    final points = context.watch<AuthProvider>().user?.profile?.points ?? 0;
+    final totalPoints = context.watch<AuthProvider>().user?.profile?.totalPoints ?? 0;
+    
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F2633),
-        borderRadius: BorderRadius.circular(28),
+        color: const Color(0xFF1E293B), // Match regular cards
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF0F2633),
-            const Color(0xFF0F2633).withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'YOUR BALANCE',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'SPENDABLE POINTS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          '$points',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'PTS',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.accentGreen,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 8),
               Container(
-                width: 8,
-                height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.accentGreen,
-                  shape: BoxShape.circle,
+                width: 1,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                color: Colors.white.withOpacity(0.1),
+                child: const SizedBox(height: 36), // Minimum height for divider
+              ),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'LIFETIME EARNINGS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$totalPoints PTS',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '$_balance ',
-                  style: const TextStyle(
-                    fontSize: 56,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    height: 1.0,
-                  ),
-                ),
-                TextSpan(
-                  text: 'PTS',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accentGreen.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-          Row(
+          const SizedBox(height: 16),
+          // Progress toward next level
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.shield, color: AppColors.accentGreen, size: 20),
-              const SizedBox(width: 10),
-              const Text(
-                'Silver Protector Status',
-                style: TextStyle(
-                  color: AppColors.accentGreen,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _calculateTier(totalPoints),
+                    style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Next level at ${_getNextTierTarget(totalPoints)}',
+                    style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: _getTierProgress(totalPoints),
+                  backgroundColor: Colors.white.withOpacity(0.05),
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
+                  minHeight: 4,
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'You\'ve reached Silver Protector status this month. Keep it up!',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.6),
-              fontSize: 13,
-              height: 1.5,
-            ),
           ),
         ],
       ),
     );
+  }
+
+  String _calculateTier(int totalPoints) {
+    if (totalPoints >= 10000) return 'DIAMOND PROTECTOR';
+    if (totalPoints >= 5000) return 'GOLD PROTECTOR';
+    if (totalPoints >= 1000) return 'SILVER PROTECTOR';
+    return 'BRONZE PROTECTOR';
+  }
+
+  int _getNextTierTarget(int totalPoints) {
+    if (totalPoints >= 10000) return 20000;
+    if (totalPoints >= 5000) return 10000;
+    if (totalPoints >= 1000) return 5000;
+    return 1000;
+  }
+
+  double _getTierProgress(int totalPoints) {
+    int target = _getNextTierTarget(totalPoints);
+    int start = 0;
+    if (totalPoints >= 5000) start = 5000;
+    else if (totalPoints >= 1000) start = 1000;
+    
+    double progress = (totalPoints - start) / (target - start);
+    return progress.clamp(0.0, 1.0);
   }
 
   Widget _buildLeaderboardCard() {

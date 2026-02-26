@@ -23,14 +23,14 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
   Future<void> _loadData({bool showLoader = true}) async {
     if (showLoader) setState(() => _loading = true);
     try {
-      final [rewards, pointsData] = await Future.wait([
+      final [rewardsData, pointsData] = await Future.wait([
         _api.getRewards(),
         _api.getMyPoints(),
       ]);
 
       if (mounted) {
         setState(() {
-          _rewards = List<Map<String, dynamic>>.from(rewards as List);
+          _rewards = List<Map<String, dynamic>>.from(rewardsData['results'] as List);
           _userPoints = (pointsData as Map)['totalPoints'] ?? 0;
           _loading = false;
         });

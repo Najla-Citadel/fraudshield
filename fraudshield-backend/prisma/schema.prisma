@@ -44,12 +44,16 @@ model Profile {
   bio      String?
   avatar   String?
   points     Int     @default(0)
+  totalPoints Int     @default(0)
   reputation Int     @default(0)
   badges     Json    @default("[]")
   userId     String  @unique
   metadata   Json    @default("{}")
   lastLoginDate DateTime?
   loginStreak Int     @default(0)
+  preferredName  String?
+  mobile         String?
+  mailingAddress String?
   user     User    @relation(fields: [userId], references: [id])
 }
 
@@ -90,6 +94,7 @@ model ScamReport {
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
   comments    Comment[]
+  deletedAt   DateTime?
 
   @@index([isPublic])
   @@index([createdAt])
@@ -178,6 +183,8 @@ model Reward {
   type        String       // 'subscription', 'badge', 'cosmetic'
   metadata    Json         @default("{}")
   active      Boolean      @default(true)
+  minTier     String       @default("BRONZE") // BRONZE, SILVER, GOLD, DIAMOND
+  isFeatured  Boolean      @default(false)
   createdAt   DateTime     @default(now())
   redemptions Redemption[]
 }

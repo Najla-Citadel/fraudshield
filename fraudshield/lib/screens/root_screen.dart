@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../services/version_service.dart';
 import '../constants/colors.dart';
 
 class RootScreen extends StatefulWidget {
@@ -47,10 +48,17 @@ class _RootScreenState extends State<RootScreen> {
 
       if (!onboardingDone) {
         Navigator.pushReplacementNamed(context, '/onboarding');
-      } else if (auth.isAuthenticated) {
-        Navigator.pushReplacementNamed(context, '/home');
       } else {
-        Navigator.pushReplacementNamed(context, '/splash'); // Or login
+        // Run version check before home/login
+        if (mounted) {
+          await VersionService.instance.checkVersion(context);
+        }
+        
+        if (auth.isAuthenticated) {
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/splash'); // Or login
+        }
       }
     });
 

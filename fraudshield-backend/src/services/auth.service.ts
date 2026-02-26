@@ -111,6 +111,7 @@ export class AuthService {
                 avatar: user.profile.avatar,
                 metadata: user.profile.metadata,
                 points: user.profile.points,
+                totalPoints: user.profile.totalPoints,
             } : null,
         };
     }

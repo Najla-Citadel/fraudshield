@@ -601,7 +601,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 const Icon(Icons.shield_rounded, color: Colors.black, size: 12),
                                 const SizedBox(width: 6),
                                 Text(
-                                  context.watch<AuthProvider>().isSubscribed ? 'GOLD PROTECTOR' : 'SILVER PROTECTOR',
+                                  _calculateTierName(profile?.totalPoints ?? 0),
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 11,
@@ -774,6 +774,13 @@ class _AccountScreenState extends State<AccountScreen> {
       if (mounted) setState(() => _loading = false);
       _toast('Failed to delete account: $e');
     }
+  }
+
+  String _calculateTierName(int totalPoints) {
+    if (totalPoints >= 10000) return 'DIAMOND PROTECTOR';
+    if (totalPoints >= 5000) return 'GOLD PROTECTOR';
+    if (totalPoints >= 1000) return 'SILVER PROTECTOR';
+    return 'BRONZE PROTECTOR';
   }
 
   String _getBadgeEmoji(String key) {
