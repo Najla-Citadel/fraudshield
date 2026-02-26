@@ -94,6 +94,7 @@ model ScamReport {
   user        User           @relation(fields: [userId], references: [id])
   verifications Verification[]
   comments    Comment[]
+  deletedAt   DateTime?
 
   @@index([isPublic])
   @@index([createdAt])

@@ -42,6 +42,11 @@ class ApiService {
     _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
   }
 
+  Future<Map<String, dynamic>> getAppConfig() async {
+    final response = await get('/config/app');
+    return response as Map<String, dynamic>;
+  }
+
   String? get token => _token;
   bool get isAuthenticated => _token != null;
 

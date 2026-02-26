@@ -51,6 +51,7 @@ dependencies:
   firebase_auth: any
   google_sign_in: any
   shimmer: ^3.0.0
+  package_info_plus: ^8.2.0
 
 dev_dependencies:
   flutter_test:

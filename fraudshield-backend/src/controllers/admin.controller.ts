@@ -215,6 +215,7 @@ export class AdminController {
 
             const [reports, total] = await Promise.all([
                 prisma.scamReport.findMany({
+                    where: { deletedAt: null },
                     include: {
                         user: {
                             select: {
@@ -227,7 +228,7 @@ export class AdminController {
                     skip,
                     take: limit,
                 }),
-                prisma.scamReport.count()
+                prisma.scamReport.count({ where: { deletedAt: null } })
             ]);
 
             res.json({
@@ -255,6 +256,21 @@ export class AdminController {
             });
 
             res.json(updatedReport);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async deleteReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+
+            await prisma.scamReport.update({
+                where: { id: id as string },
+                data: { deletedAt: new Date() },
+            });
+
+            res.json({ message: 'Report soft-deleted successfully' });
         } catch (error) {
             next(error);
         }
@@ -595,8 +611,8 @@ export class AdminController {
         try {
             const [userCount, reportCount, pendingReports] = await Promise.all([
                 prisma.user.count(),
-                prisma.scamReport.count(),
-                prisma.scamReport.count({ where: { status: 'pending' } }),
+                prisma.scamReport.count({ where: { deletedAt: null } }),
+                prisma.scamReport.count({ where: { status: 'pending', deletedAt: null } }),
             ]);
 
             res.json({
