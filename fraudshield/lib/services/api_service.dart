@@ -560,6 +560,48 @@ class ApiService {
     return await _uploadFileToEndpoint(filePath, '/features/scan-apk');
   }
 
+  // Voice Scam Detection (Premium only)
+  Future<Map<String, dynamic>> analyzeVoice(String filePath) async {
+    return await _uploadFileToEndpoint(filePath, '/features/analyze-voice');
+  }
+
+  /// Upload in-memory audio bytes (from the record package).
+  /// [bytes] = raw audio data, [filename] = e.g. 'recording.m4a'
+  Future<Map<String, dynamic>> analyzeVoiceBytes({
+    required List<int> bytes,
+    required String filename,
+  }) async {
+    try {
+      await _checkCertificatePinning();
+      final url = Uri.parse('$baseUrl/features/analyze-voice');
+      final request = http.MultipartRequest('POST', url);
+
+      final headersWithoutContentType = Map<String, String>.from(_headers)
+        ..remove('Content-Type');
+      request.headers.addAll(headersWithoutContentType);
+
+      request.files.add(http.MultipartFile.fromBytes(
+        'file',
+        bytes,
+        filename: filename,
+      ));
+
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 90));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? 'Voice analysis failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('ApiService analyzeVoiceBytes error: $e');
+      rethrow;
+    }
+  }
+
   /// Generic multipart file upload helper
   Future<Map<String, dynamic>> _uploadFileToEndpoint(String filePath, String endpoint) async {
     try {
