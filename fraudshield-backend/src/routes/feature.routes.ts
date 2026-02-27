@@ -8,6 +8,7 @@ import { QuishingController } from '../controllers/quishing.controller';
 import { NlpMessageController } from '../controllers/nlp-message.controller';
 import { PdfScanController } from '../controllers/pdf-scan.controller';
 import { ApkScanController } from '../controllers/apk-scan.controller';
+import { VoiceScanController } from '../controllers/voice-scan.controller';
 import multer from 'multer';
 
 import passport from 'passport';
@@ -38,6 +39,9 @@ router.post('/scan-pdf', memoryUpload.single('file'), PdfScanController.scanPdf)
 
 // 2G: APK & Malicious File Detection
 router.post('/scan-apk', memoryUpload.single('file'), ApkScanController.scanApk);
+
+// Voice Scam Detection (Premium only — enforced within controller)
+router.post('/analyze-voice', memoryUpload.single('file'), VoiceScanController.analyzeVoice);
 
 // AI Risk Score V2 — Centralized Evaluator
 router.post('/evaluate-risk', RiskEvaluationController.evaluate);

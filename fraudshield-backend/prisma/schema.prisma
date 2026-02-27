@@ -15,6 +15,7 @@ enum CheckType {
   MANUAL
   MSG
   QR
+  VOICE
 }
 
 model User {
