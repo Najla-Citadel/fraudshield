@@ -5,6 +5,8 @@ import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
 import { RiskEvaluationController } from '../controllers/risk-evaluation.controller';
 import { LeaderboardController } from '../controllers/leaderboard.controller';
+import { QuishingController } from '../controllers/quishing.controller';
+import { NlpMessageController } from '../controllers/nlp-message.controller';
 
 import passport from 'passport';
 
@@ -13,8 +15,15 @@ const router = Router();
 // Protect all feature routes
 router.use(passport.authenticate('jwt', { session: false }));
 
-// Safe Browsing
+// Safe Browsing (legacy single URL check)
 router.post('/check-url', SafeBrowsingController.checkUrl);
+
+// 2F: Advanced Link & QR (Quishing) — deep scan with redirect chain + Safe Browsing batch
+router.post('/check-link', QuishingController.checkLink);
+router.post('/check-qr', QuishingController.checkQr);
+
+// 2H: NLP-based Message Analysis
+router.post('/analyze-message', NlpMessageController.analyzeMessage);
 
 // AI Risk Score V2 — Centralized Evaluator
 router.post('/evaluate-risk', RiskEvaluationController.evaluate);

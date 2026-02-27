@@ -536,6 +536,20 @@ class ApiService {
     return await post('/features/check-url', {'url': url});
   }
 
+  // 2F: Advanced Link & QR (Quishing)
+  Future<Map<String, dynamic>> checkLink(String url) async {
+    return await post('/features/check-link', {'url': url});
+  }
+
+  Future<Map<String, dynamic>> checkQr(String payload) async {
+    return await post('/features/check-qr', {'payload': payload});
+  }
+
+  // 2H: NLP-based Message Analysis
+  Future<Map<String, dynamic>> analyzeMessage(String message) async {
+    return await post('/features/analyze-message', {'message': message});
+  }
+
   Future<Map<String, dynamic>> lookupPaymentRisk({
     required String type,
     required String value,

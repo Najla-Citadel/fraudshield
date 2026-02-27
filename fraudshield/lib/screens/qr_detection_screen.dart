@@ -113,7 +113,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
   }
 
   // 📷 STEP 1: Handle scan result
-  void _foundBarcode(BarcodeCapture capture) {
+  Future<void> _foundBarcode(BarcodeCapture capture) async {
     if (_isProcessing) return; // 🛑 Ignore if already processing/showing result
     if (capture.barcodes.isEmpty) return;
 
@@ -125,8 +125,14 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       _lastScanned = raw;
     });
 
-    // Use consolidated RiskEvaluator
-    final result = RiskEvaluator.evaluate(type: 'QR', value: raw);
+    // Show persistent loading during deep scan
+    _showLoading(raw);
+
+    // Use consolidated RiskEvaluator (Async)
+    final result = await RiskEvaluator.evaluateQr(raw);
+
+    if (!mounted) return;
+    Navigator.pop(context); // Close loading
 
     // Save to history
     ScanHistoryService.addToHistory(ScanHistoryItem(
@@ -136,6 +142,50 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
     ));
 
     _showResult(raw, result);
+  }
+
+  void _showLoading(String raw) {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        height: 250,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 24),
+              const Text(
+                'Deep Scanning Link...',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  raw,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: AppColors.greyText, fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Checking redirect chains & safety signatures',
+                style: TextStyle(fontSize: 12, color: Colors.blue),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   // 🧾 STEP 2: Show result UI
@@ -195,27 +245,87 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.arrow_right, size: 16, color: AppColors.greyText),
+                   Icon(
+                    r.startsWith('✅') ? Icons.check_circle : 
+                    r.startsWith('🚨') ? Icons.dangerous : Icons.warning_amber, 
+                    size: 16, 
+                    color: r.startsWith('✅') ? Colors.green : 
+                           r.startsWith('🚨') ? Colors.red : AppColors.greyText
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       r,
-                      style: TextStyle(color: AppColors.darkText),
+                      style: TextStyle(
+                        color: r.startsWith('🚨') ? Colors.red : AppColors.darkText,
+                        fontWeight: r.startsWith('🚨') ? FontWeight.bold : FontWeight.normal,
+                      ),
                     ),
                   ),
                 ],
               ),
             )),
+
+            if (result.redirectChain.length > 1) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Redirect Path:',
+                style: TextStyle(
+                  color: AppColors.greyText,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < result.redirectChain.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${i + 1}. ', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            Expanded(
+                              child: Text(
+                                result.redirectChain[i],
+                                style: const TextStyle(fontSize: 10, fontFamily: 'Courier'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (result.finalUrl != null && result.finalUrl != result.redirectChain.last)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          'Destination: ${result.finalUrl}',
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             
             const SizedBox(height: 30),
 
             // 🔘 Action buttons
             Row(
               children: [
-                if (result.level != 'high')
+                if (result.level != 'high' && result.level != 'critical')
                   Expanded(
                     child: AdaptiveButton(
                       onPressed: () async {
-                        final uri = Uri.tryParse(raw);
+                        final uri = Uri.tryParse(result.finalUrl ?? raw);
                         if (uri != null && await canLaunchUrl(uri)) {
                           await launchUrl(uri,
                               mode: LaunchMode.externalApplication);
@@ -225,12 +335,12 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                     ),
                   ),
 
-                if (result.level == 'high')
+                if (result.level == 'high' || result.level == 'critical')
                   Expanded(
                     child: AdaptiveButton(
                       onPressed: () => Navigator.pop(context),
-                      text: 'Close (Unsafe)',
-                      // backgroundColor: Colors.red, // Assuming AdaptiveButton supports color
+                      text: 'Close (Danger)',
+                      // backgroundColor: Colors.red,
                     ),
                   ),
               ],
@@ -302,6 +412,11 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         color = Colors.red;
         label = 'High Risk QR Code';
         icon = Icons.dangerous;
+        break;
+      case 'critical':
+        color = Colors.purple;
+        label = 'Critical Threat Detected';
+        icon = Icons.security;
         break;
       default:
         color = Colors.grey;

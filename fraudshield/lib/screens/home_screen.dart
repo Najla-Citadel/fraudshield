@@ -629,14 +629,6 @@ class _HomeTab extends StatelessWidget {
                         icon: const Icon(Icons.notifications_none, color: Colors.white),
                         onPressed: () {},
                       ),
-                      const SizedBox(width: 8),
-                      CircleAvatar(
-                        backgroundColor: AppColors.accentGreen,
-                        child: Text(
-                          userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                      ),
                     ],
                   ),
                 ],

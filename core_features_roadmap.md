@@ -94,7 +94,41 @@
 | 2D.3 | API pagination | 1 hr | ✅ Done |
 | 2D.4 | DB connection pooling | 10 min | ✅ Done |
 
-**Exit criteria:** ≥2 fraud check types use real external data. Database indexed.
+### 2E. PDF Document Scanning
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2E.1 | Backend: PDF text/metadata extraction (pdf-parse) | 3 hrs | 🔴 |
+| 2E.2 | Backend: Keyword-based risk engine integration | 2 hrs | 🟠 |
+| 2E.3 | Backend: SHA-256 document fingerprinting | 1 hr | 🟠 |
+| 2E.4 | Frontend: PDF picker and upload flow | 3 hrs | 🔴 |
+| 2E.5 | Frontend: OCR detection (future enhancement) | 6 hrs | 🟡 |
+
+### 2F. Advanced Link & QR Analysis (Quishing)
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2F.1 | QR Deep Scan: Extract & analyze redirect chains | 4 hrs | 🔴 |
+| 2F.2 | QR Logo/Overlay detection (basic visual check) | 6 hrs | 🟡 |
+| 2F.3 | Integrated URL/QR risk score in Fraud Check UI | 2 hrs | 🟠 |
+
+### 2G. APK & Malicious File detection
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2G.1 | APK Signature & Package Name verification | 4 hrs | 🔴 |
+| 2G.2 | Manifest permission analysis (High-risk patterns) | 5 hrs | 🟠 |
+| 2G.3 | File entropy & obfuscation check | 3 hrs | 🟡 |
+
+### 2H. NLP-based Message Analysis
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2H.1 | Content-based scam likelihood (NLP/Regex) | 6 hrs | 🔴 |
+| 2H.2 | Multi-language support (BM/English/Chinese) | 8 hrs | 🟠 |
+| 2H.3 | Paste-to-check interface in Fraud Check module | 2 hrs | 🟠 |
+
+**Exit criteria:** ≥5 fraud check types use real data (Phone, URL, PDF, QR, APK). NLP scoring integrated.
 
 ---
 
@@ -195,6 +229,10 @@ gantt
     URL Analysis Enhancement     :p2b, 2026-02-27, 5d
     QR Deep Analysis             :p2c, 2026-03-04, 4d
     Database Optimization        :p2d, 2026-02-27, 2d
+    PDF Document Scanning        :p2e, 2026-03-08, 6d
+    Advanced Link & QR (Quishing):p2f, 2026-03-14, 5d
+    APK & Malicious File Det.    :p2g, 2026-03-19, 5d
+    NLP Message Analysis         :p2h, 2026-03-24, 7d
     
     section Phase 3: Security
     JWT Refresh Tokens           :p3a, 2026-03-10, 3d
@@ -228,13 +266,13 @@ gantt
 | Phase | Items | Est. Hours | Timeline |
 |-------|:-----:|:----------:|----------|
 | **1. MVP Launch** | 3 remaining | ~5 hrs | Week 1 |
-| **2. Real Detection** | 12 items | ~20 hrs | Weeks 2–4 |
-| **3. Security Hardening** | 9 items | ~13 hrs | Weeks 3–5 |
-| **4. Monetization** | 6 items | ~19 hrs | Weeks 5–8 |
-| **5. Engagement** | 6 remaining | ~20 hrs | Weeks 6–10 |
-| **6. Compliance & Testing** | 8 items | ~21 hrs | Weeks 8–12 |
+| **2. Real Detection** | 26 items | ~80 hrs | Weeks 2–6 |
+| **3. Security Hardening** | 9 items | ~13 hrs | Weeks 4–7 |
+| **4. Monetization** | 6 items | ~19 hrs | Weeks 7–10 |
+| **5. Engagement** | 6 remaining | ~20 hrs | Weeks 8–12 |
+| **6. Compliance & Testing** | 8 items | ~21 hrs | Weeks 10–14 |
 | **7. Differentiation** | 7 items | 6+ weeks | Months 4–6 |
-| **Grand Total** | **51 items** | **~98 hrs** (Ph 1–6) | **~3 months** |
+| **Grand Total** | **65 items** | **~158 hrs** (Ph 1–6) | **~4 months** |
 
 ---
 

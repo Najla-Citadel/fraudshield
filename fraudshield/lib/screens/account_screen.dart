@@ -17,6 +17,7 @@ import 'status_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'profile_screen.dart';
+import 'alert_preferences_screen.dart';
 
 
 class AccountScreen extends StatefulWidget {
@@ -229,6 +230,15 @@ class _AccountScreenState extends State<AccountScreen> {
                     activeColor: AppColors.accentGreen,
                   ),
                   onTap: () {}, // Handled by switch
+                ),
+                SettingsTile(
+                  icon: Icons.notifications_active_outlined,
+                  title: 'Notification Setting',
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
+                  ),
                 ),
               ],
             ),

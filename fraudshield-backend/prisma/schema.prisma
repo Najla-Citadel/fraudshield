@@ -13,6 +13,8 @@ enum CheckType {
   BANK
   DOC
   MANUAL
+  MSG
+  QR
 }
 
 model User {

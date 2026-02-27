@@ -5,6 +5,8 @@ import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../services/recent_checks_service.dart';
 import '../widgets/recent_checks_widget.dart';
+import 'message_analysis_screen.dart';
+import 'qr_detection_screen.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   const FraudCheckScreen({super.key});
@@ -22,6 +24,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   static const _tabs = [
     _TabItem(label: 'Phone / Bank', icon: Icons.payment_rounded, hint: 'Bank acc, phone, or merchant', type: 'Payment'),
     _TabItem(label: 'URL', icon: Icons.link_rounded, hint: 'e.g. https://bank.com', type: 'URL'),
+    _TabItem(label: 'Message', icon: Icons.chat_bubble_outline_rounded, hint: 'Paste message content', type: 'Message'),
     _TabItem(label: 'Document', icon: Icons.description_outlined, hint: 'Upload a file', type: 'Document'),
   ];
 
@@ -53,6 +56,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     } else if (tab.type == 'URL') {
       // Use async API-backed evaluation for URLs
       result = await RiskEvaluator.evaluateUrl(_inputController.text.trim());
+    } else if (tab.type == 'Message') {
+      // Use NLP analysis for messages
+      result = await RiskEvaluator.analyzeMessage(_inputController.text.trim());
     } else {
       // Unified payment (phone/bank/merchant) pre-check
       result = await RiskEvaluator.evaluatePayment(type: 'Payment', value: _inputController.text.trim());
@@ -198,11 +204,15 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                     TextField(
                       controller: _inputController,
                       style: const TextStyle(color: Colors.white, fontSize: 16),
-                      keyboardType: tab.type == 'Phone No'
+                      keyboardType: tab.type == 'Phone' || tab.type == 'Payment'
                           ? TextInputType.phone
                           : tab.type == 'URL'
                               ? TextInputType.url
-                              : TextInputType.number,
+                              : tab.type == 'Message'
+                                  ? TextInputType.multiline
+                                  : TextInputType.number,
+                      maxLines: tab.type == 'Message' ? 5 : 1,
+                      minLines: 1,
                       decoration: InputDecoration(
                         hintText: tab.hint,
                         hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 15),
@@ -376,27 +386,34 @@ class CheckResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCritical = result.level == 'critical';
     final isHigh = result.level == 'high';
     final isMedium = result.level == 'medium';
 
-    final Color riskColor = isHigh
-        ? const Color(0xFFEF4444)
-        : isMedium
-            ? const Color(0xFFF59E0B)
-            : const Color(0xFF22C55E);
+    final Color riskColor = isCritical
+        ? Colors.purple
+        : isHigh
+            ? const Color(0xFFEF4444)
+            : isMedium
+                ? const Color(0xFFF59E0B)
+                : const Color(0xFF22C55E);
 
-    final IconData riskIcon = isHigh
-        ? Icons.gpp_bad_rounded
-        : isMedium
-            ? Icons.gpp_maybe_rounded
-            : Icons.gpp_good_rounded;
+    final IconData riskIcon = isCritical
+        ? Icons.security_rounded
+        : isHigh
+            ? Icons.gpp_bad_rounded
+            : isMedium
+                ? Icons.gpp_maybe_rounded
+                : Icons.gpp_good_rounded;
 
-    final String riskLabel = isHigh ? 'High Risk' : isMedium ? 'Suspicious' : 'Looks Safe';
-    final String riskSubtitle = isHigh
-        ? 'This appears to be fraudulent. Do not proceed.'
-        : isMedium
-            ? 'Proceed with caution and verify further.'
-            : 'No threats found. Appears to be safe.';
+    final String riskLabel = isCritical ? 'Critical Threat' : isHigh ? 'High Risk' : isMedium ? 'Suspicious' : 'Looks Safe';
+    final String riskSubtitle = isCritical
+        ? 'Dangerous scam attempt identified. Block and report immediately.'
+        : isHigh
+            ? 'This appears to be fraudulent. Do not proceed.'
+            : isMedium
+                ? 'Proceed with caution and verify further.'
+                : 'No threats found. Appears to be safe.';
 
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
@@ -485,6 +502,95 @@ class CheckResultScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+
+            // ── Advanced Analysis (if Quishing/NLP) ────────
+            if (result.scamType != null || result.language != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.psychology_outlined, color: Colors.purpleAccent, size: 20),
+                        const SizedBox(width: 8),
+                        Text('AI Deep Scan', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (result.scamType != null)
+                      _infoRow('Scam category', result.scamType!.toUpperCase(), Colors.purpleAccent),
+                    if (result.language != null)
+                      _infoRow('Detected language', result.language!.toUpperCase(), Colors.blueAccent),
+                    
+                    if (result.highlightedPhrases.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text('High-risk phrases detected:', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: result.highlightedPhrases.map((p) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.withOpacity(0.2)),
+                          ),
+                          child: Text(p, style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                        )).toList(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+            if (result.redirectChain.isNotEmpty)
+              Container(
+                 width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                     Row(
+                      children: [
+                        const Icon(Icons.alt_route_rounded, color: Colors.orangeAccent, size: 20),
+                        const SizedBox(width: 8),
+                        Text('Redirect Path', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    for (int i=0; i<result.redirectChain.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          '${i+1}. ${result.redirectChain[i]}',
+                          style: const TextStyle(color: Colors.white54, fontSize: 11, fontFamily: 'Courier'),
+                        ),
+                      ),
+                    if (result.finalUrl != null) ...[
+                       const Divider(color: Colors.white12),
+                       Text('Final Destination:', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                       const SizedBox(height: 4),
+                       Text(result.finalUrl!, style: const TextStyle(color: Colors.orangeAccent, fontSize: 13, fontWeight: FontWeight.bold)),
+                    ]
+                  ],
+                ),
+              ),
+
+            if (result.scamType != null || result.redirectChain.isNotEmpty)
+              const SizedBox(height: 20),
 
             // ── Community Reports Badge ───────────────────
             if (result.communityReports > 0)
@@ -636,13 +742,13 @@ class CheckResultScreen extends StatelessWidget {
             const SizedBox(height: 28),
 
             // ── Quick Actions ───────────────────────────────
-            if (isHigh) ...[
+            if (isHigh || isCritical) ...[
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Calling PDRM (Mock)')),
+                      const SnackBar(content: Text('Calling NSRC (997) - Direct Emergency Line')),
                     );
                   },
                   icon: const Icon(Icons.local_police_rounded, color: Colors.white),
@@ -661,15 +767,28 @@ class CheckResultScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isHigh ? const Color(0xFF1E293B) : AppColors.primaryBlue,
+                  backgroundColor: (isHigh || isCritical) ? const Color(0xFF1E293B) : AppColors.primaryBlue,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: Text(isHigh ? 'Go Back' : 'Check Another', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                child: Text((isHigh || isCritical) ? 'Go Back' : 'Check Another', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _infoRow(String label, String value, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
+          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+        ],
       ),
     );
   }

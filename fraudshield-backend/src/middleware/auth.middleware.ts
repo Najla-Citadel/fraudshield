@@ -14,7 +14,11 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
             // Allow basic profile access even if unverified (for sync/status display)
             // Also allow public safety features like trending alerts
             const isAllowedPath = (req.path === '/profile' && req.method === 'GET') ||
-                (req.path === '/trending' && req.method === 'GET');
+                (req.path === '/trending' && req.method === 'GET') ||
+                (req.path === '/daily-digest' && req.method === 'GET') ||
+                (req.path === '/preferences' && req.method === 'GET') ||
+                (req.path === '/subscribe' && req.method === 'POST') ||
+                (req.path === '/' && req.method === 'GET'); // For transaction history
 
             if (isAllowedPath) {
                 req.user = user;
