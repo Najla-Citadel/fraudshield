@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { AuditService } from '../services/audit.service';
 
 export class AdminController {
     static async getAlerts(req: Request, res: Response, next: NextFunction) {
@@ -33,6 +34,14 @@ export class AdminController {
                     data: { isRead: true }, // or add a 'processed' field to Alert model
                 });
             }
+
+            await AuditService.logAction({
+                adminId: userId,
+                action: 'LABEL_TRANSACTION',
+                targetType: 'Transaction',
+                targetId: txId,
+                payload: { label, alertId }
+            });
 
             res.json({ message: 'Transaction labeled successfully' });
         } catch (error) {
@@ -91,6 +100,15 @@ export class AdminController {
                 where: { id: id as string },
                 data: { role },
                 select: { id: true, role: true },
+            });
+
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_USER_ROLE',
+                targetType: 'User',
+                targetId: id as string,
+                payload: { role }
             });
 
             res.json(updatedUser);
@@ -201,6 +219,15 @@ export class AdminController {
                 }
             });
 
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_USER',
+                targetType: 'User',
+                targetId: id as string,
+                payload: req.body
+            });
+
             res.json(updatedUser);
         } catch (error) {
             next(error);
@@ -255,6 +282,15 @@ export class AdminController {
                 data: { status },
             });
 
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_REPORT_STATUS',
+                targetType: 'ScamReport',
+                targetId: id as string,
+                payload: { status }
+            });
+
             res.json(updatedReport);
         } catch (error) {
             next(error);
@@ -268,6 +304,14 @@ export class AdminController {
             await prisma.scamReport.update({
                 where: { id: id as string },
                 data: { deletedAt: new Date() },
+            });
+
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'DELETE_REPORT',
+                targetType: 'ScamReport',
+                targetId: id as string
             });
 
             res.json({ message: 'Report soft-deleted successfully' });
@@ -291,6 +335,15 @@ export class AdminController {
             const plan = await prisma.subscriptionPlan.create({
                 data: { name, price, features, durationDays },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_SUBSCRIPTION_PLAN',
+                targetType: 'SubscriptionPlan',
+                targetId: plan.id,
+                payload: req.body
+            });
+
             res.status(201).json(plan);
         } catch (error) {
             next(error);
@@ -305,6 +358,15 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, price, features, durationDays },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_SUBSCRIPTION_PLAN',
+                targetType: 'SubscriptionPlan',
+                targetId: id as string,
+                payload: req.body
+            });
+
             res.json(updatedPlan);
         } catch (error) {
             next(error);
@@ -328,6 +390,14 @@ export class AdminController {
             await prisma.subscriptionPlan.delete({
                 where: { id: id as string },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'DELETE_SUBSCRIPTION_PLAN',
+                targetType: 'SubscriptionPlan',
+                targetId: id as string
+            });
+
             res.json({ message: 'Plan deleted successfully' });
         } catch (error) {
             next(error);
@@ -349,6 +419,15 @@ export class AdminController {
             const badge = await prisma.badgeDefinition.create({
                 data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_BADGE',
+                targetType: 'BadgeDefinition',
+                targetId: badge.id,
+                payload: req.body
+            });
+
             res.status(201).json(badge);
         } catch (error) {
             next(error);
@@ -363,6 +442,15 @@ export class AdminController {
                 where: { id: id as string },
                 data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_BADGE',
+                targetType: 'BadgeDefinition',
+                targetId: id as string,
+                payload: req.body
+            });
+
             res.json(updatedBadge);
         } catch (error) {
             next(error);
@@ -375,6 +463,14 @@ export class AdminController {
             await prisma.badgeDefinition.delete({
                 where: { id: id as string },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'DELETE_BADGE',
+                targetType: 'BadgeDefinition',
+                targetId: id as string
+            });
+
             res.json({ message: 'Badge deleted successfully' });
         } catch (error) {
             next(error);
@@ -398,6 +494,15 @@ export class AdminController {
             const reward = await prisma.reward.create({
                 data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_REWARD',
+                targetType: 'Reward',
+                targetId: reward.id,
+                payload: req.body
+            });
+
             res.status(201).json(reward);
         } catch (error) {
             next(error);
@@ -412,6 +517,15 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_REWARD',
+                targetType: 'Reward',
+                targetId: id as string,
+                payload: req.body
+            });
+
             res.json(updatedReward);
         } catch (error) {
             next(error);
@@ -424,6 +538,14 @@ export class AdminController {
             await prisma.reward.delete({
                 where: { id: id as string },
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'DELETE_REWARD',
+                targetType: 'Reward',
+                targetId: id as string
+            });
+
             res.json({ message: 'Reward deleted successfully' });
         } catch (error) {
             next(error);
@@ -458,6 +580,15 @@ export class AdminController {
                     reward: { select: { name: true, type: true } }
                 }
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_REDEMPTION_STATUS',
+                targetType: 'Redemption',
+                targetId: id as string,
+                payload: { status }
+            });
+
             res.json(updatedRedemption);
         } catch (error) {
             next(error);
@@ -510,6 +641,14 @@ export class AdminController {
             const result = await prisma.alert.createMany({
                 data: alertData as any,
                 skipDuplicates: true,
+            });
+
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_BROADCAST',
+                targetType: 'Alert',
+                payload: { title, message, recipients: result.count }
             });
 
             res.status(201).json({
@@ -589,6 +728,15 @@ export class AdminController {
                 });
             }
 
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_FRAUD_LABEL',
+                targetType: 'FraudLabel',
+                targetId: fraudLabel.id,
+                payload: { txId, label }
+            });
+
             res.status(201).json(fraudLabel);
         } catch (error) {
             next(error);
@@ -601,6 +749,14 @@ export class AdminController {
             await prisma.fraudLabel.delete({
                 where: { id: id as string }
             });
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'DELETE_FRAUD_LABEL',
+                targetType: 'FraudLabel',
+                targetId: id as string
+            });
+
             res.json({ message: 'Fraud label deleted successfully' });
         } catch (error) {
             next(error);

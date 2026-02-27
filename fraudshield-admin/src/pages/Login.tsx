@@ -17,7 +17,7 @@ const Login = () => {
 
         try {
             const response = await api.post('/auth/login', { email, password });
-            const { token, user } = response.data;
+            const { token, refreshToken, user } = response.data;
 
             if (user.role !== 'admin') {
                 setError('Access denied. You do not have administrative privileges.');
@@ -26,6 +26,7 @@ const Login = () => {
             }
 
             localStorage.setItem('adminToken', token);
+            localStorage.setItem('adminRefreshToken', refreshToken);
             localStorage.setItem('adminUser', JSON.stringify(user));
             navigate('/');
         } catch (err: any) {

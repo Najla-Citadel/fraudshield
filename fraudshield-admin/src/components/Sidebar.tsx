@@ -6,6 +6,8 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminRefreshToken');
+        localStorage.removeItem('adminUser');
         navigate('/login');
     };
 

@@ -104,7 +104,7 @@ export class AuthService {
             fullName: user.fullName,
             role: user.role,
             createdAt: user.createdAt.toISOString(),
-            isEmailVerified: true, // Mocked for now to match UserModel
+            isEmailVerified: user.emailVerified, // Get actual status from database
             profile: user.profile ? {
                 id: user.profile.id,
                 bio: user.profile.bio,
