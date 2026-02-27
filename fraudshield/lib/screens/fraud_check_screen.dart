@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
@@ -37,7 +38,56 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   Future<void> _check() async {
     final tab = _tabs[_selectedIndex];
 
-    if (_inputController.text.isEmpty && tab.type != 'Document') {
+    // Document tab → open file picker immediately, no text input needed
+    if (tab.type == 'Document') {
+      setState(() => _isLoading = true);
+      try {
+        final picked = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['pdf', 'apk'],
+          withData: false,
+          withReadStream: false,
+        );
+
+        if (picked == null || picked.files.isEmpty || picked.files.first.path == null) {
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        final filePath = picked.files.first.path!;
+        final fileName = picked.files.first.name;
+        final result = await RiskEvaluator.evaluateDocument(filePath);
+
+        await RecentChecksService.addCheck(RecentCheckItem(
+          type: 'Document',
+          value: fileName,
+          timestamp: DateTime.now(),
+        ));
+
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CheckResultScreen(
+              type: 'Document',
+              value: fileName,
+              result: result,
+            ),
+          ),
+        );
+      } catch (e) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Document scan failed: $e'), backgroundColor: Colors.red.shade700),
+        );
+      }
+      return;
+    }
+
+    if (_inputController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Please enter a ${tab.label}'),
@@ -50,28 +100,19 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     setState(() => _isLoading = true);
 
     RiskResult result;
-    if (tab.type == 'Document') {
-      await Future.delayed(const Duration(milliseconds: 400));
-      result = RiskResult(level: 'low', score: 10, reasons: ['No malware found', 'File appears legitimate']);
-    } else if (tab.type == 'URL') {
-      // Use async API-backed evaluation for URLs
+    if (tab.type == 'URL') {
       result = await RiskEvaluator.evaluateUrl(_inputController.text.trim());
     } else if (tab.type == 'Message') {
-      // Use NLP analysis for messages
       result = await RiskEvaluator.analyzeMessage(_inputController.text.trim());
     } else {
-      // Unified payment (phone/bank/merchant) pre-check
       result = await RiskEvaluator.evaluatePayment(type: 'Payment', value: _inputController.text.trim());
     }
 
-    // Save to recent checks
-    if (tab.type != 'Document') {
-      await RecentChecksService.addCheck(RecentCheckItem(
-        type: tab.label, // Use label (Phone, URL, Bank Acc) to match UI
-        value: _inputController.text.trim(),
-        timestamp: DateTime.now(),
-      ));
-    }
+    await RecentChecksService.addCheck(RecentCheckItem(
+      type: tab.label,
+      value: _inputController.text.trim(),
+      timestamp: DateTime.now(),
+    ));
 
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -81,7 +122,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
       MaterialPageRoute(
         builder: (_) => CheckResultScreen(
           type: tab.label,
-          value: tab.type == 'Document' ? 'Uploaded File' : _inputController.text.trim(),
+          value: _inputController.text.trim(),
           result: result,
         ),
       ),
@@ -593,6 +634,66 @@ class CheckResultScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
             // ── Community Reports Badge ───────────────────
+            // ── Document Scan Details (PDF/APK) ──────────
+            if (type == 'Document' && (result.dangerousPermissions.isNotEmpty || result.extractedLinks.isNotEmpty || result.packageName != null || result.pageCount != null))
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      const Icon(Icons.document_scanner_outlined, color: Colors.amberAccent, size: 20),
+                      const SizedBox(width: 8),
+                      Text('Document Insights', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                    ]),
+                    const SizedBox(height: 16),
+                    if (result.pageCount != null)
+                      _infoRow('Page Count', '${result.pageCount} pages', Colors.white70),
+                    if (result.extractedLinks.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text('Embedded Links (${result.extractedLinks.length}):', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                      const SizedBox(height: 8),
+                      ...result.extractedLinks.take(5).map((l) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text('🔗 $l', style: const TextStyle(color: Colors.orangeAccent, fontSize: 11, fontFamily: 'Courier')),
+                      )),
+                      if (result.extractedLinks.length > 5)
+                        Text('...and ${result.extractedLinks.length - 5} more', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                    ],
+                    if (result.packageName != null)
+                      _infoRow('Package Name', result.packageName!, Colors.blueAccent),
+                    if (result.dangerousPermissions.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text('Dangerous Permissions:', style: TextStyle(color: Colors.red.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      ...result.dangerousPermissions.map((p) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(children: [
+                          const Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 14),
+                          const SizedBox(width: 6),
+                          Expanded(child: Text(p, style: const TextStyle(color: Colors.white70, fontSize: 12))),
+                        ]),
+                      )),
+                    ],
+                    if (result.sha256 != null) ...[
+                      const SizedBox(height: 12),
+                      const Divider(color: Colors.white10),
+                      const SizedBox(height: 8),
+                      Text('SHA-256:', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                      const SizedBox(height: 2),
+                      Text(result.sha256!, style: const TextStyle(color: Colors.white24, fontSize: 10, fontFamily: 'Courier')),
+                    ],
+                  ],
+                ),
+              ),
+
             if (result.communityReports > 0)
               Container(
                 width: double.infinity,

@@ -550,6 +550,45 @@ class ApiService {
     return await post('/features/analyze-message', {'message': message});
   }
 
+  // 2E: PDF Document Scanning
+  Future<Map<String, dynamic>> scanPdf(String filePath) async {
+    return await _uploadFileToEndpoint(filePath, '/features/scan-pdf');
+  }
+
+  // 2G: APK & Malicious File Detection
+  Future<Map<String, dynamic>> scanApk(String filePath) async {
+    return await _uploadFileToEndpoint(filePath, '/features/scan-apk');
+  }
+
+  /// Generic multipart file upload helper
+  Future<Map<String, dynamic>> _uploadFileToEndpoint(String filePath, String endpoint) async {
+    try {
+      await _checkCertificatePinning();
+      final url = Uri.parse('$baseUrl$endpoint');
+      final request = http.MultipartRequest('POST', url);
+
+      // Copy auth headers (exclude Content-Type — multer sets it for multipart)
+      final headersWithoutContentType = Map<String, String>.from(_headers)
+        ..remove('Content-Type');
+      request.headers.addAll(headersWithoutContentType);
+
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+
+      final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        final body = jsonDecode(response.body);
+        throw Exception(body['message'] ?? 'Upload failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('ApiService upload to $endpoint error: $e');
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> lookupPaymentRisk({
     required String type,
     required String value,

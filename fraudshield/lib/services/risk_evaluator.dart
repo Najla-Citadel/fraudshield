@@ -24,6 +24,13 @@ class RiskResult {
   final List<String> matchedPatterns;
   final List<String> highlightedPhrases;
 
+  // Document scan (PDF/APK) specific fields
+  final List<String> extractedLinks; // URLs found embedded in PDF
+  final String? packageName;         // APK package name
+  final List<String> dangerousPermissions; // APK dangerous permissions
+  final int? pageCount;              // PDF page count
+  final String? sha256;              // File fingerprint
+
   RiskResult({
     required this.score,
     required this.level,
@@ -40,6 +47,11 @@ class RiskResult {
     this.language,
     this.matchedPatterns = const [],
     this.highlightedPhrases = const [],
+    this.extractedLinks = const [],
+    this.packageName,
+    this.dangerousPermissions = const [],
+    this.pageCount,
+    this.sha256,
   });
 }
 
@@ -189,6 +201,54 @@ class RiskEvaluator {
         score: 0,
         level: 'low',
         reasons: ['⚡ Message analysis service is currently unavailable'],
+        apiChecked: false,
+      );
+    }
+  }
+
+  // ── New: Evaluate Document (PDF/APK) ──
+  static Future<RiskResult> evaluateDocument(String filePath) async {
+    try {
+      final ext = filePath.split('.').last.toLowerCase();
+      final Map<String, dynamic> raw;
+
+      if (ext == 'pdf') {
+        raw = await _api.scanPdf(filePath);
+      } else if (ext == 'apk') {
+        raw = await _api.scanApk(filePath);
+      } else {
+        return RiskResult(
+          score: 10,
+          level: 'low',
+          reasons: ['⚠️ Unsupported file type: .$ext'],
+          apiChecked: false,
+        );
+      }
+
+      // Both PdfScanResult and ApkScanResult share the same top-level envelope
+      final data = raw['data'] as Map<String, dynamic>? ?? raw;
+
+      return RiskResult(
+        score: (data['score'] as num?)?.toInt() ?? 0,
+        level: data['level'] as String? ?? 'low',
+        reasons: (data['reasons'] as List? ?? []).cast<String>(),
+        apiChecked: true,
+        sha256: data['sha256'] as String?,
+
+        // PDF-specific
+        extractedLinks: (data['extractedLinks'] as List? ?? []).cast<String>(),
+        pageCount: (data['metadata'] as Map?)?.cast<String, dynamic>()['pageCount'] as int?,
+
+        // APK-specific
+        packageName: data['packageName'] as String?,
+        dangerousPermissions: (data['dangerousPermissions'] as List? ?? []).cast<String>(),
+      );
+    } catch (e) {
+      log('Document scan failed: $e');
+      return RiskResult(
+        score: 0,
+        level: 'low',
+        reasons: ['⚡ Document scan service is currently unavailable. Please try again.'],
         apiChecked: false,
       );
     }

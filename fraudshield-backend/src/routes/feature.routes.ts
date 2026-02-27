@@ -1,16 +1,24 @@
 import { Router } from 'express';
 import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
-import { RewardsController } from '../controllers/rewards.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
 import { RiskEvaluationController } from '../controllers/risk-evaluation.controller';
 import { LeaderboardController } from '../controllers/leaderboard.controller';
 import { QuishingController } from '../controllers/quishing.controller';
 import { NlpMessageController } from '../controllers/nlp-message.controller';
+import { PdfScanController } from '../controllers/pdf-scan.controller';
+import { ApkScanController } from '../controllers/apk-scan.controller';
+import multer from 'multer';
 
 import passport from 'passport';
 
 const router = Router();
+
+// Memory storage: file bytes available as req.file.buffer
+const memoryUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB max (for APKs)
+});
 
 // Protect all feature routes
 router.use(passport.authenticate('jwt', { session: false }));
@@ -25,6 +33,12 @@ router.post('/check-qr', QuishingController.checkQr);
 // 2H: NLP-based Message Analysis
 router.post('/analyze-message', NlpMessageController.analyzeMessage);
 
+// 2E: PDF Document Scanning
+router.post('/scan-pdf', memoryUpload.single('file'), PdfScanController.scanPdf);
+
+// 2G: APK & Malicious File Detection
+router.post('/scan-apk', memoryUpload.single('file'), ApkScanController.scanApk);
+
 // AI Risk Score V2 — Centralized Evaluator
 router.post('/evaluate-risk', RiskEvaluationController.evaluate);
 
@@ -37,10 +51,6 @@ router.post('/subscription', SubscriptionController.createSubscription);
 router.get('/points', PointsController.getMyPoints);
 router.post('/points', PointsController.addPoints);
 
-// Points
-router.get('/points', PointsController.getMyPoints);
-router.post('/points', PointsController.addPoints);
-
 // Leaderboards
 router.get('/leaderboard', LeaderboardController.getGlobalLeaderboard);
 router.get('/leaderboard/me', LeaderboardController.getMyRank);
@@ -48,7 +58,6 @@ router.get('/leaderboard/me', LeaderboardController.getMyRank);
 // Badges
 router.get('/badges', BadgeController.getMyBadges);
 router.get('/badges/all', BadgeController.getAllBadges);
-
 
 router.post('/behavioral', BehavioralController.logEvent);
 router.get('/behavioral', BehavioralController.getMyEvents);
