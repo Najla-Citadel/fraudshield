@@ -43,8 +43,8 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/scam-map'),
       child: Container(
-        height: 200,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        height: 180,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
@@ -82,7 +82,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
 
               // 3. Content
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -290,17 +290,7 @@ class RadarGridPainter extends CustomPainter {
       canvas.drawCircle(center, i * 40.0, paint..style = PaintingStyle.stroke);
     }
 
-    // Draw lines
-    for (var i = 0; i < 8; i++) {
-      final angle = (i * 45) * (3.14159 / 180);
-      final p2 = Offset(
-        center.dx + 200 * (angle == 0 ? 1 : angle == 3.14159 ? -1 : 0), // simplified for brevity
-        center.dy + 200 * (angle == 1.5708 ? 1 : angle == 4.7124 ? -1 : 0),
-      );
-      // More accurate trig for grid
-      final dx = 200 * (center.dx + 200 * 0); // placeholder for simple lines
-      // Actually let's just draw 4 main lines
-    }
+    // Actually let's just draw 4 main lines
     
     canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
     canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);

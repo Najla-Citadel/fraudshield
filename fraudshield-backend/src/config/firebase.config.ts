@@ -1,6 +1,4 @@
 import * as admin from 'firebase-admin';
-import path from 'path';
-import fs from 'fs';
 
 let isInitialized = false;
 
@@ -15,20 +13,15 @@ export const initializeFirebase = () => {
                 serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
                 console.log('✅ Loading Firebase credentials from environment variable');
             } catch (parseError) {
-                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var:', parseError);
-            }
-        }
-
-        if (!serviceAccount) {
-            // Determine the path to the service account key (fallback for local dev)
-            const serviceAccountPath = path.resolve(__dirname, '../../fraudshield-271b0-firebase-adminsdk-fbsvc-2a70150a06.json');
-
-            if (!fs.existsSync(serviceAccountPath)) {
-                console.warn('⚠️ Firebase service account key not found. Push notifications will be disabled.');
+                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var. Ensure it is a valid JSON string.');
                 return;
             }
-
-            serviceAccount = require(serviceAccountPath);
+        } else {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is required in production.');
+            }
+            console.warn('⚠️ FIREBASE_SERVICE_ACCOUNT environment variable not found. Push notifications will be disabled.');
+            return;
         }
 
         admin.initializeApp({

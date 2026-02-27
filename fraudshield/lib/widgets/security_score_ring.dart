@@ -64,8 +64,8 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               builder: (context, child) {
                 double pulse = widget.isScanning ? (0.1 + 0.1 * sin(_scanController.value * 2 * pi)) : 0.1;
                 return Container(
-                  width: 260,
-                  height: 260,
+                  width: 200,
+                  height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -82,11 +82,11 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
             
             // 2. Background Circle (Track)
             SizedBox(
-              width: 220,
-              height: 220,
+              width: 160,
+              height: 160,
               child: CircularProgressIndicator(
                 value: 1.0,
-                strokeWidth: 20,
+                strokeWidth: 16,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Colors.white.withOpacity(0.05),
                 ),
@@ -103,12 +103,12 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 );
               },
               child: SizedBox(
-                width: 220,
-                height: 220,
+                width: 160,
+                height: 160,
                 child: CustomPaint(
                   painter: _GradientArcPainter(
                     percent: widget.isScanning ? 0.75 : widget.score / 100.0, // Show partial arc during scan
-                    strokeWidth: 20,
+                    strokeWidth: 16,
                     gradient: const LinearGradient(
                       colors: [
                         Color(0xFF10B981), // Emerald 500
@@ -158,7 +158,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                   widget.isScanning ? '${(DateTime.now().millisecond % 99)}' : '${widget.score}',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 72,
+                    fontSize: 56,
                     fontWeight: FontWeight.bold,
                     height: 1.0,
                   ),

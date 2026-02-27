@@ -18,79 +18,108 @@ class FraudCheckScreen extends StatefulWidget {
 
 class _FraudCheckScreenState extends State<FraudCheckScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedIndex = 0;
   final _inputController = TextEditingController();
   bool _isLoading = false;
-
-  static const _tabs = [
-    _TabItem(label: 'Phone / Bank', icon: Icons.payment_rounded, hint: 'Bank acc, phone, or merchant', type: 'Payment'),
-    _TabItem(label: 'URL', icon: Icons.link_rounded, hint: 'e.g. https://bank.com', type: 'URL'),
-    _TabItem(label: 'Message', icon: Icons.chat_bubble_outline_rounded, hint: 'Paste message content', type: 'Message'),
-    _TabItem(label: 'Document', icon: Icons.description_outlined, hint: 'Upload a file', type: 'Document'),
-  ];
+  
+  String _detectedType = 'Phone / Bank';
+  IconData _detectedIcon = Icons.payment_rounded;
 
   @override
-  void dispose() {
-    _inputController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _inputController.addListener(_onInputChanged);
   }
 
-  Future<void> _check() async {
-    final tab = _tabs[_selectedIndex];
-
-    // Document tab → open file picker immediately, no text input needed
-    if (tab.type == 'Document') {
-      setState(() => _isLoading = true);
-      try {
-        final picked = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['pdf', 'apk'],
-          withData: false,
-          withReadStream: false,
-        );
-
-        if (picked == null || picked.files.isEmpty || picked.files.first.path == null) {
-          setState(() => _isLoading = false);
-          return;
-        }
-
-        final filePath = picked.files.first.path!;
-        final fileName = picked.files.first.name;
-        final result = await RiskEvaluator.evaluateDocument(filePath);
-
-        await RecentChecksService.addCheck(RecentCheckItem(
-          type: 'Document',
-          value: fileName,
-          timestamp: DateTime.now(),
-        ));
-
-        if (!mounted) return;
-        setState(() => _isLoading = false);
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CheckResultScreen(
-              type: 'Document',
-              value: fileName,
-              result: result,
-            ),
-          ),
-        );
-      } catch (e) {
-        if (!mounted) return;
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Document scan failed: $e'), backgroundColor: Colors.red.shade700),
-        );
+  void _onInputChanged() {
+    final text = _inputController.text.trim();
+    if (text.isEmpty) {
+      if (_detectedType != 'Phone / Bank') {
+        setState(() {
+          _detectedType = 'Phone / Bank';
+          _detectedIcon = Icons.payment_rounded;
+        });
       }
       return;
     }
 
+    String newType = 'Message';
+    IconData newIcon = Icons.chat_bubble_outline_rounded;
+
+    if (RegExp(r'^(http|https)://').hasMatch(text) || RegExp(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}').hasMatch(text)) {
+      newType = 'URL';
+      newIcon = Icons.link_rounded;
+    } else if (RegExp(r'^[\d\s+\-()]+$').hasMatch(text) && text.length >= 5) {
+      newType = 'Payment';
+      newIcon = Icons.payment_rounded;
+    }
+
+    if (newType != _detectedType) {
+      setState(() {
+        _detectedType = newType;
+        _detectedIcon = newIcon;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _inputController.removeListener(_onInputChanged);
+    _inputController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _uploadDocument() async {
+    setState(() => _isLoading = true);
+    try {
+      final picked = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'apk'],
+        withData: false,
+        withReadStream: false,
+      );
+
+      if (picked == null || picked.files.isEmpty || picked.files.first.path == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final filePath = picked.files.first.path!;
+      final fileName = picked.files.first.name;
+      final result = await RiskEvaluator.evaluateDocument(filePath);
+
+      await RecentChecksService.addCheck(RecentCheckItem(
+        type: 'Document',
+        value: fileName,
+        timestamp: DateTime.now(),
+      ));
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CheckResultScreen(
+            type: 'Document',
+            value: fileName,
+            result: result,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Document scan failed: $e'), backgroundColor: Colors.red.shade700),
+      );
+    }
+  }
+
+  Future<void> _check() async {
     if (_inputController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please enter a ${tab.label}'),
+          content: const Text('Please enter content to check'),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -100,16 +129,18 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     setState(() => _isLoading = true);
 
     RiskResult result;
-    if (tab.type == 'URL') {
+    if (_detectedType == 'URL') {
       result = await RiskEvaluator.evaluateUrl(_inputController.text.trim());
-    } else if (tab.type == 'Message') {
+    } else if (_detectedType == 'Message') {
       result = await RiskEvaluator.analyzeMessage(_inputController.text.trim());
     } else {
       result = await RiskEvaluator.evaluatePayment(type: 'Payment', value: _inputController.text.trim());
     }
 
+    final displayLabel = _detectedType == 'Payment' ? 'Phone / Bank' : _detectedType;
+
     await RecentChecksService.addCheck(RecentCheckItem(
-      type: tab.label,
+      type: displayLabel,
       value: _inputController.text.trim(),
       timestamp: DateTime.now(),
     ));
@@ -121,7 +152,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
       context,
       MaterialPageRoute(
         builder: (_) => CheckResultScreen(
-          type: tab.label,
+          type: displayLabel,
           value: _inputController.text.trim(),
           result: result,
         ),
@@ -131,8 +162,6 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
   @override
   Widget build(BuildContext context) {
-    final tab = _tabs[_selectedIndex];
-
     return AdaptiveScaffold(
       title: 'Fraud Check',
       backgroundColor: AppColors.deepNavy,
@@ -174,56 +203,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             ),
             const SizedBox(height: 28),
 
-            // ── Tab Chips ────────────────────────────────
-            SizedBox(
-              height: 48,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _tabs.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (_, i) {
-                  final selected = i == _selectedIndex;
-                  return GestureDetector(
-                    onTap: () => setState(() {
-                      _selectedIndex = i;
-                      _inputController.clear();
-                    }),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 220),
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: selected ? AppColors.primaryBlue : const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: selected ? AppColors.primaryBlue : Colors.white.withOpacity(0.08),
-                        ),
-                        boxShadow: selected
-                            ? [BoxShadow(color: AppColors.primaryBlue.withOpacity(0.35), blurRadius: 12, offset: const Offset(0, 4))]
-                            : [],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(_tabs[i].icon, size: 15, color: selected ? Colors.white : Colors.white54),
-                          const SizedBox(width: 6),
-                          Text(
-                            _tabs[i].label,
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.white54,
-                              fontSize: 13,
-                              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 22),
-
-            // ── Input Card ───────────────────────────────
+            // ── Smart Omnibar ───────────────────────────────
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
@@ -234,41 +214,77 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Enter ${tab.label}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12, letterSpacing: 0.8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Smart Input',
+                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12, letterSpacing: 0.8),
+                      ),
+                      if (_inputController.text.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            _detectedType == 'Payment' ? 'Phone/Bank Detected' : '$_detectedType Detected',
+                            style: const TextStyle(color: AppColors.primaryBlue, fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 10),
-                  if (tab.type == 'Document')
-                    _DocumentUploadHint()
-                  else
-                    TextField(
-                      controller: _inputController,
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                      keyboardType: tab.type == 'Phone' || tab.type == 'Payment'
-                          ? TextInputType.phone
-                          : tab.type == 'URL'
-                              ? TextInputType.url
-                              : tab.type == 'Message'
-                                  ? TextInputType.multiline
-                                  : TextInputType.number,
-                      maxLines: tab.type == 'Message' ? 5 : 1,
-                      minLines: 1,
-                      decoration: InputDecoration(
-                        hintText: tab.hint,
-                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 15),
-                        prefixIcon: Icon(tab.icon, color: Colors.white38, size: 20),
-                        filled: true,
-                        fillColor: Colors.white.withOpacity(0.05),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  TextField(
+                    controller: _inputController,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 4,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: 'Paste phone, account, URL, or message...',
+                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 15),
+                      prefixIcon: Icon(_detectedIcon, color: Colors.white38, size: 20),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.05),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
                       ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
+                  ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20),
+
+            // ── Quick Actions ──────────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.upload_file_rounded,
+                    label: 'Upload File',
+                    subtext: 'PDF or APK',
+                    onTap: _uploadDocument,
+                    color: Colors.amber,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _QuickActionButton(
+                    icon: Icons.qr_code_scanner_rounded,
+                    label: 'Scan QR',
+                    subtext: 'Camera check',
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const QRDetectionScreen()));
+                    },
+                    color: AppColors.accentGreen,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 
@@ -276,7 +292,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             SizedBox(
               width: double.infinity,
               child: AdaptiveButton(
-                text: 'Check Now',
+                text: _inputController.text.isEmpty ? 'Check Now' : 'Analyze ${_detectedType == 'Payment' ? 'Input' : _detectedType}',
                 isLoading: _isLoading,
                 onPressed: _check,
               ),
@@ -291,19 +307,16 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             // ── Recent Checks ────────────────────────────
             RecentChecksWidget(
               onCheckSelected: (item) {
-                // Find index of tab
-                int index = 0;
-                for (int i = 0; i < _tabs.length; i++) {
-                  // _tabs[i].label is 'Phone', 'URL' etc. item.type should match
-                  if (_tabs[i].label == item.type) {
-                    index = i;
-                    break;
-                  }
+                if (item.type == 'Document') {
+                  // Cannot autofill Document type using omnibar text.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Cannot reuse document uploads from history yet.')),
+                  );
+                  return;
                 }
-                
                 setState(() {
-                  _selectedIndex = index;
                   _inputController.text = item.value;
+                  // _onInputChanged will handle detecting correct type
                 });
               },
             ),
@@ -318,37 +331,54 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
 // ── Helper classes ──────────────────────────────────
 
-class _TabItem {
-  final String label;
+class _QuickActionButton extends StatelessWidget {
   final IconData icon;
-  final String hint;
-  final String type;
-  const _TabItem({required this.label, required this.icon, required this.hint, required this.type});
-}
+  final String label;
+  final String subtext;
+  final VoidCallback onTap;
+  final Color color;
 
-class _DocumentUploadHint extends StatelessWidget {
+  const _QuickActionButton({
+    required this.icon,
+    required this.label,
+    required this.subtext,
+    required this.onTap,
+    required this.color,
+  });
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('File upload coming soon')),
-      ),
+      onTap: onTap,
       child: Container(
-        height: 80,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white24, style: BorderStyle.solid),
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.06)),
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.upload_file_outlined, color: Colors.white38, size: 28),
-              const SizedBox(height: 6),
-              Text('Tap to upload a document', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 13)),
-            ],
-          ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 4),
+                  Text(subtext, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11, overflow: TextOverflow.ellipsis)),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

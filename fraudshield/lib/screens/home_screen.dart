@@ -322,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Customize Quick Actions',
+                    'Customize Services',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -579,6 +579,16 @@ class _HomeTab extends StatelessWidget {
     required this.newsKey,
   });
 
+  String _getDynamicGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning,';
+    } else if (hour < 17) {
+      return 'Good Afternoon,';
+    }
+    return 'Good Evening,';
+  }
+
   @override
   Widget build(BuildContext context) {
     // Wrap entire HomeTab in AnimatedBackground for that premium feel
@@ -601,7 +611,7 @@ class _HomeTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Good Evening,',
+                        _getDynamicGreeting(),
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 14,
@@ -652,173 +662,24 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 16),
               _buildMonitoringPill(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-              const DailyDigestWidget(),
+              // 3. SERVICES ROW
+              _buildQuickActions(context),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
 
-              // 4. QUICK ACTIONS ROW
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'QUICK ACTIONS',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onCustomize,
-                    child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              if (activeQuickActions.isEmpty)
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.1)),
-                  ),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.add_circle_outline, color: Colors.grey, size: 30),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Add Quick Actions',
-                        style: TextStyle(color: Colors.white.withOpacity(0.5)),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (activeQuickActions.contains('fraud_check'))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _BigActionButton(
-                          label: 'Fraud Check',
-                          icon: Icons.health_and_safety,
-                          color: const Color(0xFF3B82F6), // Blue
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
-                          ),
-                        ),
-                      ),
-                    if (activeQuickActions.contains('qr_scan'))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _BigActionButton(
-                          label: 'QR Scan',
-                          icon: Icons.qr_code_scanner,
-                          color: const Color(0xFF1E293B), // Dark Button
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
-                          ),
-                        ),
-                      ),
-                    if (activeQuickActions.contains('report_scam'))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _BigActionButton(
-                          label: 'Report',
-                          icon: Icons.warning_amber_rounded,
-                          color: const Color(0xFF1E293B), // Dark Button
-                          isAlert: true,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
-                          ),
-                        ),
-                      ),
-                    if (activeQuickActions.contains('voice_detection'))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _BigActionButton(
-                          label: 'Voice Check',
-                          icon: Icons.mic,
-                          color: const Color(0xFF1E293B),
-                          isLocked: !isSubscribed,
-                          onTap: () {
-                             if (isSubscribed) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
-                                );
-                             } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Subscribe to unlock Voice Check!'),
-                                    action: SnackBarAction(
-                                      label: 'UPGRADE',
-                                      onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                             }
-                          },
-                        ),
-                      ),
-                    if (activeQuickActions.contains('phishing_protection'))
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: _BigActionButton(
-                          label: 'Phishing',
-                          icon: Icons.shield,
-                          color: const Color(0xFF1E293B),
-                          isLocked: !isSubscribed,
-                          onTap: () {
-                             if (isSubscribed) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
-                                );
-                             } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Subscribe to unlock Phishing Protection!'),
-                                    action: SnackBarAction(
-                                      label: 'UPGRADE',
-                                      onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                             }
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // NEW: TRENDING ALERTS CARD
+              // 4. TRENDING ALERTS CARD
               _buildTrendingAlertsCard(context),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
-              // NEW: PAYMENT JOURNAL CARD
+              // 5. DAILY INSIGHTS
+              const DailyDigestWidget(),
+
+              const SizedBox(height: 24),
+
+              // 6. PAYMENT JOURNAL CARD
               _buildPaymentJournalCard(context),
 
               const SizedBox(height: 32),
@@ -925,162 +786,7 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // 5. ALL SERVICES (Renamed from PROTECTION STATUS)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'ALL SERVICES',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              _StatusItem(
-                icon: Icons.health_and_safety,
-                title: 'Fraud Check',
-                subtitle: 'Scan QR or check ID',
-                isActive: true,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
-                ),
-              ),
-              const SizedBox(height: 12),
-              _StatusItem(
-                icon: Icons.qr_code_scanner,
-                title: 'QR Scan',
-                subtitle: 'Scan any QR code safely',
-                isActive: true,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
-                ),
-              ),
-              const SizedBox(height: 12),
-              _StatusItem(
-                icon: Icons.warning_amber_rounded,
-                title: 'Report Scam',
-                subtitle: 'Report a number or a website',
-                isActive: true,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
-                ),
-              ),
-              const SizedBox(height: 12),
-              _StatusItem(
-                icon: Icons.edit_document,
-                title: 'Log Payment',
-                subtitle: 'Securely track your transactions',
-                isActive: true,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // 6. PRO SERVICES
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    Text(
-                      'PRO SERVICES',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: Colors.amber.withOpacity(0.5), width: 1),
-                      ),
-                      child: const Text('PREMIUM', style: TextStyle(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              _StatusItem(
-                icon: Icons.mic,
-                title: 'Voice Detection',
-                subtitle: 'Analyze suspicious calls in real-time',
-                isActive: isSubscribed,
-                isLocked: !isSubscribed,
-                onTap: () {
-                  if (isSubscribed) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Subscribe to unlock Voice Detection!'),
-                        action: SnackBarAction(
-                          label: 'UPGRADE',
-                          onPressed: () {
-                            // Navigate to subscription screen
-                            // Since we are in HomeTab, we might need a way to switch tabs or push screen
-                            // For now, simpler to push SubscriptionScreen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 12),
-              _StatusItem(
-                icon: Icons.shield,
-                title: 'Phishing Protection',
-                subtitle: 'Check links and messages safety',
-                isActive: isSubscribed,
-                isLocked: !isSubscribed,
-                onTap: () {
-                  if (isSubscribed) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Subscribe to unlock Phishing Protection!'),
-                        action: SnackBarAction(
-                          label: 'UPGRADE',
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-
-              const SizedBox(height: 32),
+              // Redundant services list removed
 
               // 7. THREAT INSIGHTS
               Row(
@@ -1109,6 +815,164 @@ class _HomeTab extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'SERVICES',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.0,
+              ),
+            ),
+            GestureDetector(
+              onTap: onCustomize,
+              child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (activeQuickActions.isEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.add_circle_outline, color: Colors.grey, size: 30),
+                const SizedBox(height: 8),
+                Text(
+                  'Add Services',
+                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                ),
+              ],
+            ),
+          )
+        else
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if (activeQuickActions.contains('fraud_check'))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _BigActionButton(
+                      label: 'Fraud Check',
+                      icon: Icons.health_and_safety,
+                      color: const Color(0xFF3B82F6), // Blue
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+                      ),
+                    ),
+                  ),
+                if (activeQuickActions.contains('qr_scan'))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _BigActionButton(
+                      label: 'QR Scan',
+                      icon: Icons.qr_code_scanner,
+                      color: const Color(0xFF1E293B), // Dark Button
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
+                      ),
+                    ),
+                  ),
+                if (activeQuickActions.contains('report_scam'))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _BigActionButton(
+                      label: 'Report',
+                      icon: Icons.warning_amber_rounded,
+                      color: const Color(0xFF1E293B), // Dark Button
+                      isAlert: true,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                      ),
+                    ),
+                  ),
+                if (activeQuickActions.contains('voice_detection'))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _BigActionButton(
+                      label: 'Voice Check',
+                      icon: Icons.mic,
+                      color: const Color(0xFF1E293B),
+                      isLocked: !isSubscribed,
+                      onTap: () {
+                        if (isSubscribed) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Subscribe to unlock Voice Check!'),
+                              action: SnackBarAction(
+                                label: 'UPGRADE',
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                if (activeQuickActions.contains('phishing_protection'))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _BigActionButton(
+                      label: 'Phishing',
+                      icon: Icons.shield,
+                      color: const Color(0xFF1E293B),
+                      isLocked: !isSubscribed,
+                      onTap: () {
+                        if (isSubscribed) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Subscribe to unlock Phishing Protection!'),
+                              action: SnackBarAction(
+                                label: 'UPGRADE',
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 

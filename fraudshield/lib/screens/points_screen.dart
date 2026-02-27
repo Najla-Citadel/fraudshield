@@ -4,13 +4,12 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_history_screen.dart';
-import 'badges_screen.dart';
 import 'points_details_screen.dart';
-import '../models/badge_model.dart';
 import 'package:fraudshield/constants/colors.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
@@ -189,7 +188,7 @@ class PointsScreenState extends State<PointsScreen> {
                     ))
                 .toList(),
             if (_rewards.where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION').isEmpty)
-              const Text('No security upgrades available', style: TextStyle(color: Colors.white54)),
+              _buildEmptyState(LucideIcons.shieldAlert, 'No security upgrades available'),
             const SizedBox(height: 32),
           ],
           
@@ -212,7 +211,7 @@ class PointsScreenState extends State<PointsScreen> {
               },
             ),
             if (_rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').isEmpty)
-              const Text('No store items available', style: TextStyle(color: Colors.white54)),
+              _buildEmptyState(LucideIcons.packageOpen, 'No store items available'),
             const SizedBox(height: 32),
           ],
 
@@ -238,11 +237,21 @@ class PointsScreenState extends State<PointsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F2633), // Dark Teal/Navy
+          color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF0F2633), Color(0xFF0A1A24)],
+          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E293B).withOpacity(0.8), 
+              const Color(0xFF0F172A).withOpacity(0.8)
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -345,34 +354,45 @@ class PointsScreenState extends State<PointsScreen> {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         children: [
-          _categoryChip('All', isActive: _selectedCategory == 'All'),
+          _categoryChip('All', LucideIcons.layers, isActive: _selectedCategory == 'All'),
           const SizedBox(width: 12),
-          _categoryChip('Vouchers', isActive: _selectedCategory == 'Vouchers'),
+          _categoryChip('Vouchers', LucideIcons.ticket, isActive: _selectedCategory == 'Vouchers'),
           const SizedBox(width: 12),
-          _categoryChip('Security', isActive: _selectedCategory == 'Security'),
+          _categoryChip('Security', LucideIcons.shieldCheck, isActive: _selectedCategory == 'Security'),
         ],
       ),
     );
   }
 
-  Widget _categoryChip(String label, {bool isActive = false}) {
+  Widget _categoryChip(String label, IconData icon, {bool isActive = false}) {
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(22),
           border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Colors.black87 : Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isActive ? Colors.black87 : Colors.white70,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: isActive ? Colors.black87 : Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -475,7 +495,7 @@ class PointsScreenState extends State<PointsScreen> {
           
           // Content Area
           Padding(
-            padding: EdgeInsets.all(isFeatured ? 20 : 16),
+            padding: EdgeInsets.all(isFeatured ? 16 : 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -504,28 +524,27 @@ class PointsScreenState extends State<PointsScreen> {
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  child: OutlinedButton(
+                  child: ElevatedButton(
                     onPressed: (canAfford && !isLocked) ? () => _redeemReward(reward) : null,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isFeatured ? AppColors.accentGreen : Colors.white,
-                      side: BorderSide(
-                        color: (canAfford && !isLocked) 
-                          ? (isFeatured ? AppColors.accentGreen : Colors.white.withOpacity(0.3))
-                          : Colors.white.withOpacity(0.05)
-                      ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: (canAfford && !isLocked) 
+                          ? (isFeatured ? AppColors.accentGreen : const Color(0xFF2563EB))
+                          : Colors.white.withOpacity(0.05),
+                      foregroundColor: (canAfford && !isLocked) 
+                          ? (isFeatured ? Colors.black87 : Colors.white)
+                          : Colors.white.withOpacity(0.4),
+                      elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: EdgeInsets.symmetric(vertical: isFeatured ? 14 : 10),
+                      padding: EdgeInsets.symmetric(vertical: isFeatured ? 12 : 8),
                     ),
                     child: Text(
                       isLocked 
                         ? 'Unlock at $requiredTier' 
                         : (canAfford ? (isFeatured ? 'Redeem Now' : 'Redeem') : 'Not Enough'), 
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: (canAfford && !isLocked) 
-                          ? (isFeatured ? AppColors.accentGreen : Colors.white) 
-                          : Colors.white.withOpacity(0.3)
+                        letterSpacing: 0.5,
                       )
                     ),
                   ),
@@ -603,6 +622,29 @@ class PointsScreenState extends State<PointsScreen> {
     if (totalPoints >= 5000) return 'Gold Protector';
     if (totalPoints >= 1000) return 'Silver Protector';
     return 'Bronze Protector';
+  }
+
+  Widget _buildEmptyState(IconData icon, String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.02),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 48, color: Colors.white24),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w500),
+          ),
+        ],
+      ),
+    );
   }
 }
 

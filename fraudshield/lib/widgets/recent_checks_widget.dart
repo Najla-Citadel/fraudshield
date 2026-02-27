@@ -93,18 +93,25 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
     Color color;
 
     switch (item.type) {
+      case 'Phone / Bank':
+      case 'Payment':
       case 'Phone No':
       case 'Phone':
-        icon = Icons.phone_outlined;
+      case 'Bank Acc':
+        icon = Icons.payment_rounded;
         color = Colors.blueAccent;
         break;
       case 'URL':
-        icon = Icons.link;
+        icon = Icons.link_rounded;
         color = Colors.purpleAccent;
         break;
-      case 'Bank Acc':
-        icon = Icons.account_balance_outlined;
-        color = Colors.orangeAccent;
+      case 'Message':
+        icon = Icons.chat_bubble_outline_rounded;
+        color = Colors.greenAccent;
+        break;
+      case 'Document':
+        icon = Icons.description_outlined;
+        color = Colors.amber;
         break;
       default:
         icon = Icons.search;

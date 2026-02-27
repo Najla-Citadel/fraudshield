@@ -14,7 +14,7 @@ import 'package:fraudshield/main.dart';
 void main() {
   testWidgets('App renders Login screen smoke test', (WidgetTester tester) async {
     // Load mock env vars for testing
-    dotenv.testLoad(fileInput: 'API_BASE_URL=http://localhost:3000/api/v1');
+    dotenv.loadFromString('API_BASE_URL=http://localhost:3000/api/v1');
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(const FraudShieldApp());

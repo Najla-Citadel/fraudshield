@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
@@ -29,17 +30,18 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   String? _selectedCategory;
   bool _isNearMe = false;
   bool _isSearchVisible = false;
+  bool _isFabExtended = true;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  final List<String> _categories = [
-    'Job',
-    'Investment',
-    'Phishing',
-    'E-commerce',
-    'Impersonation',
-    'Loan',
-    'Others'
+  final List<Map<String, dynamic>> _categories = [
+    {'name': 'Job', 'icon': LucideIcons.briefcase},
+    {'name': 'Investment', 'icon': LucideIcons.trendingUp},
+    {'name': 'Phishing', 'icon': LucideIcons.link2},
+    {'name': 'E-commerce', 'icon': LucideIcons.shoppingBag},
+    {'name': 'Impersonation', 'icon': LucideIcons.users},
+    {'name': 'Loan', 'icon': LucideIcons.banknote},
+    {'name': 'Others', 'icon': LucideIcons.moreHorizontal}
   ];
 
   @override
@@ -58,6 +60,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   }
 
   void _onScroll() {
+    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if (_isFabExtended && mounted) setState(() => _isFabExtended = false);
+    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+      if (!_isFabExtended && mounted) setState(() => _isFabExtended = true);
+    }
+
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
       if (!_isFetchingMore && _hasMore && !_isLoading) {
         _fetchFeed();
@@ -281,17 +289,23 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         itemCount: _categories.length + 1,
         itemBuilder: (context, index) {
           final isAll = index == 0;
-          final category = isAll ? 'All' : _categories[index - 1];
-          final isSelected = isAll ? _selectedCategory == null : _selectedCategory == category;
+          final categoryName = isAll ? 'All' : _categories[index - 1]['name'] as String;
+          final categoryIcon = isAll ? LucideIcons.functionSquare : _categories[index - 1]['icon'] as IconData;
+          final isSelected = isAll ? _selectedCategory == null : _selectedCategory == categoryName;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label: Text(category),
+              avatar: Icon(
+                categoryIcon,
+                size: 14,
+                color: isSelected ? Colors.black : Colors.white70,
+              ),
+              label: Text(categoryName),
               selected: isSelected,
               onSelected: (selected) {
                 setState(() {
-                  _selectedCategory = isAll ? null : category;
+                  _selectedCategory = isAll ? null : categoryName;
                 });
                 _fetchFeed(reset: true);
               },
@@ -376,11 +390,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
           );
         },
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: const Color(0xFF2563EB), // Sleek blue
+        isExtended: _isFabExtended,
         icon: const Icon(LucideIcons.plusCircle, color: Colors.white),
         label: const Text(
           'Report a Scam',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
         ),
       ),
     );

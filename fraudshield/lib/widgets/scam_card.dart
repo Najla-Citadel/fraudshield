@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../screens/report_details_screen.dart';
-// import 'glass_card.dart'; // No longer using generic GlassCard to have more control over specific design
-
+import 'package:lucide_icons/lucide_icons.dart';
+import 'dart:ui'; // For ImageFilter if needed
 class ScamCard extends StatelessWidget {
   final Map<String, dynamic> report;
   final VoidCallback onVerify;
@@ -25,19 +25,19 @@ class ScamCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+        margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
         decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Dark Slate
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.08)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+          color: const Color(0xFF1E293B).withOpacity(0.8), // Slightly transparent dark slate
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.12), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -86,26 +86,38 @@ class ScamCard extends StatelessWidget {
                           // Badge
                           Container(
                             margin: const EdgeInsets.only(left: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
                               color: isVerified 
-                                  ? const Color(0xFF10B981).withOpacity(0.2) 
-                                  : Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
+                                  ? const Color(0xFF10B981).withOpacity(0.15) 
+                                  : const Color(0xFFF59E0B).withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(20), // Pill shape
                               border: Border.all(
                                 color: isVerified 
                                     ? const Color(0xFF10B981).withOpacity(0.5)
-                                    : Colors.white.withOpacity(0.2),
+                                    : const Color(0xFFF59E0B).withOpacity(0.5),
+                                width: 1.5,
                               ),
                             ),
-                            child: Text(
-                              isVerified ? 'VERIFIED' : 'PENDING',
-                              style: TextStyle(
-                                color: isVerified ? const Color(0xFF10B981) : Colors.white.withOpacity(0.6),
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  isVerified ? LucideIcons.checkCircle2 : LucideIcons.clock,
+                                  size: 12,
+                                  color: isVerified ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  isVerified ? 'VERIFIED' : 'PENDING',
+                                  style: TextStyle(
+                                    color: isVerified ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -217,42 +229,58 @@ class ScamCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Avatar Pile (Mock)
+                // Avatar Pile & Count
                 if (verificationCount > 0)
                   Row(
                     children: [
                       _buildAvatarPile(verificationCount),
                       const SizedBox(width: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.priority_high_rounded, color: Colors.redAccent, size: 14),
-                          Text(
-                            ' $verificationCount people flagged this',
-                            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 11),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                // Alert Action
-                InkWell(
-                  onTap: () {
-                     // TODO: Implement alert sharing
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.ios_share_rounded, size: 16, color: Colors.white.withOpacity(0.7)),
-                      const SizedBox(width: 6),
                       Text(
-                        'Alert Others',
+                        '$verificationCount ${verificationCount == 1 ? "person" : "people"} flagged this',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withOpacity(0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
+                  )
+                else
+                  Text(
+                    'Be the first to flag this',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.4),
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+
+                // Alert Action Button
+                InkWell(
+                  onTap: () {
+                     // TODO: Implement alert sharing
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(LucideIcons.share2, size: 14, color: Color(0xFF60A5FA)),
+                        SizedBox(width: 6),
+                        Text(
+                          'Share Alert',
+                          style: TextStyle(
+                            color: Color(0xFF60A5FA),
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -338,11 +366,4 @@ class ScamCard extends StatelessWidget {
     }
   }
 
-  // NOTE: Kept original logic for reference but unused in new UI to match design strictly
-  Color _getTrustColor(num score) {
-    if (score >= 50) return Colors.purpleAccent;
-    if (score >= 20) return Colors.lightBlueAccent;
-    if (score > 0) return AppColors.accentGreen;
-    return Colors.grey;
-  }
 }
