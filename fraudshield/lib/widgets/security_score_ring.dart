@@ -50,6 +50,12 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
     super.dispose();
   }
 
+  Color _getStatusColor(int score) {
+    if (score >= 75) return const Color(0xFF10B981); // Emerald 500 (Green)
+    if (score >= 50) return const Color(0xFFF59E0B); // Amber 500
+    return const Color(0xFFEF4444); // Red 500
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -70,7 +76,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF10B981).withValues(alpha: pulse),
+                        color: _getStatusColor(widget.score).withValues(alpha: pulse),
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
@@ -109,10 +115,10 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                   painter: _GradientArcPainter(
                     percent: widget.isScanning ? 0.75 : widget.score / 100.0, // Show partial arc during scan
                     strokeWidth: 16,
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       colors: [
-                        Color(0xFF10B981), // Emerald 500
-                        Color(0xFF34D399), // Emerald 400
+                        _getStatusColor(widget.score),
+                        _getStatusColor(widget.score).withValues(alpha: 0.8),
                       ],
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
@@ -127,10 +133,10 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.isScanning)
-                  const Text(
+                  Text(
                     'SCANNING...',
                     style: TextStyle(
-                      color: Color(0xFF10B981),
+                      color: _getStatusColor(widget.score),
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
@@ -139,13 +145,13 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 else
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.shield, color: Color(0xFF10B981), size: 16),
-                      SizedBox(width: 6),
+                    children: [
+                      Icon(Icons.shield, color: _getStatusColor(widget.score), size: 16),
+                      const SizedBox(width: 6),
                       Text(
-                        'PROTECTED',
+                        widget.status.toUpperCase(),
                         style: TextStyle(
-                          color: Color(0xFF10B981),
+                          color: _getStatusColor(widget.score),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
