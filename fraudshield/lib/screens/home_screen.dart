@@ -12,14 +12,12 @@ import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
 import 'scam_reporting_screen.dart';
 import 'scam_alerts_screen.dart';
-import 'awareness_tips_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
 import 'account_screen.dart';
 import 'community_feed_screen.dart';
 import '../widgets/glass_surface.dart';
 // import '../widgets/animated_background.dart';
-import '../widgets/fade_slide_route.dart';
 // import '../widgets/fade_in_list.dart';
 import '../widgets/skeleton_loader.dart';
 import 'activity_screen.dart';
@@ -30,6 +28,7 @@ import '../widgets/security_report_sheet.dart';
 import 'transaction_journal_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/daily_digest_widget.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,6 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Security Center State
   bool _isScanning = false;
+  int _securityScore = 85; // Initial placeholder
+  String _securityStatus = 'GOOD';
   List<dynamic> _recentTransactions = [];
 
   @override
@@ -60,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadProfile();
     _loadQuickActions();
     _loadRecentTransactions();
+    _fetchSecurityHealth();
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
@@ -91,10 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const Icon(Icons.security, size: 64, color: AppColors.accentGreen),
                 const SizedBox(height: 16),
-                const Text(
-                  'Welcome to Security Center',
+                Text(
+                  AppLocalizations.of(context)!.homeWelcomeTitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -102,10 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'This score represents your current defense level. Tapping the ring shows a detailed security report and how to improve your score to 100.',
+                  AppLocalizations.of(context)!.homeWelcomeDesc,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                     height: 1.5,
                   ),
@@ -124,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Got it!'),
+                    child: Text(AppLocalizations.of(context)!.homeWelcomeBtn),
                   ),
                 ),
               ],
@@ -136,18 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int _calculateSecurityScore(bool isSubscribed) {
-    final authProvider = context.read<AuthProvider>();
-    int score = 70; // Base score
-    if (isSubscribed) score += 15;
-    
-    final fullName = authProvider.userProfile?.fullName;
-    if (fullName != null && fullName.trim().isNotEmpty) {
-      score += 5; // Profile set
-    }
-    
-    // Future: Check permissions
-    if (_activeQuickActions.isNotEmpty) score += 5;
-    return score;
+    return _securityScore;
   }
 
   void _runQuickScan(bool isSubscribed) {
@@ -196,6 +187,25 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
     );
+  }
+
+  Future<void> _fetchSecurityHealth() async {
+    try {
+      final health = await ApiService.instance.getSecurityHealth();
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        setState(() {
+          _securityScore = health['score'];
+          final score = _securityScore;
+          if (score >= 90) _securityStatus = l10n.statusExcellent;
+          else if (score >= 75) _securityStatus = l10n.statusGood;
+          else if (score >= 50) _securityStatus = l10n.statusProtected;
+          else _securityStatus = l10n.statusAtRisk;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching security health: $e');
+    }
   }
 
   Future<void> _saveQuickActions(List<String> actions) async {
@@ -332,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Select which actions to display on your dashboard.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
                   ),
                   const SizedBox(height: 24),
                   
@@ -466,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -477,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
               value: value,
               onChanged: onChanged,
               activeColor: AppColors.accentGreen,
-              activeTrackColor: AppColors.accentGreen.withOpacity(0.3),
+              activeTrackColor: AppColors.accentGreen.withValues(alpha: 0.3),
             ),
           ],
         ),
@@ -530,6 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
             isSubscribed: isSubscribed,
             isScanning: _isScanning,
             score: _calculateSecurityScore(isSubscribed),
+            status: _securityStatus,
             onScan: () => _runQuickScan(isSubscribed),
             onShowReport: () => _showSecurityReport(isSubscribed),
             recentTransactions: _recentTransactions,
@@ -559,6 +570,7 @@ class _HomeTab extends StatelessWidget {
   // New props for security center
   final bool isScanning;
   final int score;
+  final String status;
   final VoidCallback onScan;
   final VoidCallback onShowReport;
   final List<dynamic> recentTransactions;
@@ -573,20 +585,22 @@ class _HomeTab extends StatelessWidget {
     required this.isSubscribed,
     required this.isScanning,
     required this.score,
+    required this.status,
     required this.onScan,
     required this.onShowReport,
     required this.recentTransactions,
     required this.newsKey,
   });
 
-  String _getDynamicGreeting() {
+  String _getDynamicGreeting(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Good Morning,';
+      return l10n.homeGreetingMorning;
     } else if (hour < 17) {
-      return 'Good Afternoon,';
+      return l10n.homeGreetingAfternoon;
     }
-    return 'Good Evening,';
+    return l10n.homeGreetingEvening;
   }
 
   @override
@@ -611,9 +625,9 @@ class _HomeTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _getDynamicGreeting(),
+                        _getDynamicGreeting(context),
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           fontSize: 14,
                         ),
                       ),
@@ -653,7 +667,7 @@ class _HomeTab extends StatelessWidget {
                 },
                 child: SecurityScoreRing(
                   score: score,
-                  status: score >= 90 ? 'Excellent' : 'Good',
+                  status: status,
                   isScanning: isScanning,
                   onTap: onScan,
                   onInfoTap: onShowReport,
@@ -691,9 +705,9 @@ class _HomeTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'RECENT CHECKS',
+                      AppLocalizations.of(context)!.homeRecentChecks,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -705,7 +719,7 @@ class _HomeTab extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
                       ),
                       child: Text(
-                        'View All',
+                        AppLocalizations.of(context)!.homeViewAll,
                         style: TextStyle(
                           color: AppColors.accentGreen,
                           fontSize: 12,
@@ -727,9 +741,9 @@ class _HomeTab extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                       Icon(LucideIcons.shieldCheck, color: Colors.grey.withOpacity(0.5), size: 32),
+                       Icon(LucideIcons.shieldCheck, color: Colors.grey.withValues(alpha: 0.5), size: 32),
                        const SizedBox(height: 8),
-                       Text('No recent scans recorded.', style: TextStyle(color: Colors.grey)),
+                       Text(AppLocalizations.of(context)!.homeNoRecentScans, style: const TextStyle(color: Colors.grey)),
                     ],
                   ),
                 )
@@ -764,7 +778,7 @@ class _HomeTab extends StatelessWidget {
                          Container(
                            padding: const EdgeInsets.all(8),
                            decoration: BoxDecoration(
-                             color: color.withOpacity(0.1),
+                             color: color.withValues(alpha: 0.1),
                              borderRadius: BorderRadius.circular(8),
                            ),
                            child: Icon(icon, color: color, size: 16),
@@ -793,9 +807,9 @@ class _HomeTab extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'THREAT INSIGHTS',
+                    AppLocalizations.of(context)!.homeThreatInsights,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -826,9 +840,9 @@ class _HomeTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'SERVICES',
+              AppLocalizations.of(context)!.homeServices,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
@@ -846,9 +860,9 @@ class _HomeTab extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Column(
               children: [
@@ -856,7 +870,7 @@ class _HomeTab extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   'Add Services',
-                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                 ),
               ],
             ),
@@ -911,7 +925,7 @@ class _HomeTab extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: _BigActionButton(
-                      label: 'Voice Check',
+                      label: AppLocalizations.of(context)!.homeVoiceCheck,
                       icon: Icons.mic,
                       color: const Color(0xFF1E293B),
                       isLocked: !isSubscribed,
@@ -924,9 +938,9 @@ class _HomeTab extends StatelessWidget {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Subscribe to unlock Voice Check!'),
+                              content: Text(AppLocalizations.of(context)!.homeUnlockVoice),
                               action: SnackBarAction(
-                                label: 'UPGRADE',
+                                label: AppLocalizations.of(context)!.homeUpgrade,
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
@@ -942,7 +956,7 @@ class _HomeTab extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: _BigActionButton(
-                      label: 'Phishing',
+                      label: AppLocalizations.of(context)!.homePhishing,
                       icon: Icons.shield,
                       color: const Color(0xFF1E293B),
                       isLocked: !isSubscribed,
@@ -955,9 +969,9 @@ class _HomeTab extends StatelessWidget {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Subscribe to unlock Phishing Protection!'),
+                              content: Text(AppLocalizations.of(context)!.homeUnlockPhishing),
                               action: SnackBarAction(
-                                label: 'UPGRADE',
+                                label: AppLocalizations.of(context)!.homeUpgrade,
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
@@ -990,10 +1004,10 @@ class _HomeTab extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
           boxShadow: [
             BoxShadow(
-              color: Colors.orange.withOpacity(0.05),
+              color: Colors.orange.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -1006,8 +1020,8 @@ class _HomeTab extends StatelessWidget {
               children: [
                 const Icon(Icons.warning_rounded, color: Colors.orange, size: 20),
                 const SizedBox(width: 8),
-                const Text(
-                  'TRENDING THREATS',
+                Text(
+                  AppLocalizations.of(context)!.homeTrendingThreats,
                   style: TextStyle(
                     color: Colors.orange,
                     fontSize: 12,
@@ -1016,12 +1030,12 @@ class _HomeTab extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.5), size: 14),
+                Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.5), size: 14),
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
-              'Stay ahead of the latest scams in your area. Check the threat intelligence dashboard now.',
+            Text(
+              AppLocalizations.of(context)!.homeTrendingDesc,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
@@ -1045,11 +1059,11 @@ class _HomeTab extends StatelessWidget {
             color: const Color(0xFF1E293B), // Dark Slate
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.accentGreen.withOpacity(0.3 * value),
+              color: AppColors.accentGreen.withValues(alpha: 0.3 * value),
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.accentGreen.withOpacity(0.1 * value),
+                color: AppColors.accentGreen.withValues(alpha: 0.1 * value),
                 blurRadius: 8 * value,
                 spreadRadius: 2,
               ),
@@ -1060,12 +1074,12 @@ class _HomeTab extends StatelessWidget {
             children: [
               Icon(
                 Icons.circle,
-                color: AppColors.accentGreen.withOpacity(value),
+                color: AppColors.accentGreen.withValues(alpha: value),
                 size: 8,
               ),
               const SizedBox(width: 8),
-              const Text(
-                'System Shield Active',
+              Text(
+                AppLocalizations.of(context)!.homeSystemActive,
                 style: TextStyle(
                   color: AppColors.accentGreen,
                   fontSize: 12,
@@ -1087,10 +1101,10 @@ class _HomeTab extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Match trending alerts style
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accentGreen.withOpacity(0.3), width: 1),
+        border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
         boxShadow: [
           BoxShadow(
-            color: AppColors.accentGreen.withOpacity(0.1),
+            color: AppColors.accentGreen.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -1117,7 +1131,7 @@ class _HomeTab extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Unsure about a seller? Log the payment here before you transfer money.',
-            style: TextStyle(color: Colors.white.withOpacity(0.8), height: 1.4),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), height: 1.4),
           ),
           const SizedBox(height: 16),
           Align(
@@ -1178,7 +1192,7 @@ class _BigActionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -1214,7 +1228,7 @@ class _BigActionButton extends StatelessWidget {
               Positioned(
                 top: 0,
                 right: 0,
-                child: Icon(Icons.lock, size: 16, color: Colors.white.withOpacity(0.7)),
+                child: Icon(Icons.lock, size: 16, color: Colors.white.withValues(alpha: 0.7)),
               ),
           ],
         ),
@@ -1249,14 +1263,14 @@ class _StatusItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(20),
-          border: onTap != null ? Border.all(color: Colors.white.withOpacity(0.05)) : null,
+          border: onTap != null ? Border.all(color: Colors.white.withValues(alpha: 0.05)) : null,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: Colors.blueAccent),
@@ -1278,7 +1292,7 @@ class _StatusItem extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 13,
                     ),
                   ),
@@ -1288,7 +1302,7 @@ class _StatusItem extends StatelessWidget {
             if (isLocked)
               Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: Icon(Icons.lock, color: Colors.white.withOpacity(0.5), size: 20),
+                child: Icon(Icons.lock, color: Colors.white.withValues(alpha: 0.5), size: 20),
               )
             else if (isActive)
               Container(
@@ -1298,12 +1312,12 @@ class _StatusItem extends StatelessWidget {
                   color: AppColors.accentGreen,
                   shape: BoxShape.circle,
                   boxShadow: [
-                     BoxShadow(color: AppColors.accentGreen.withOpacity(0.5), blurRadius: 6)
+                     BoxShadow(color: AppColors.accentGreen.withValues(alpha: 0.5), blurRadius: 6)
                   ],
                 ),
               )
             else if (onTap != null)
-              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withOpacity(0.3)),
+              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withValues(alpha: 0.3)),
           ],
         ),
       ),

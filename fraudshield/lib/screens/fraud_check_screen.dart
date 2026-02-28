@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../services/recent_checks_service.dart';
 import '../widgets/recent_checks_widget.dart';
-import 'message_analysis_screen.dart';
 import 'qr_detection_screen.dart';
 
 class FraudCheckScreen extends StatefulWidget {
@@ -163,7 +163,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   @override
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
-      title: 'Fraud Check',
+      title: AppLocalizations.of(context)!.fraudCheckTitle,
       backgroundColor: AppColors.deepNavy,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -177,7 +177,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.15),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(Icons.shield_outlined, color: AppColors.primaryBlue, size: 28),
@@ -187,15 +187,15 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Think it might be a scam?',
+                      AppLocalizations.of(context)!.fraudThinkScam,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Instant AI-powered fraud detection',
-                      style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                      AppLocalizations.of(context)!.fraudAiDesc,
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
                     ),
                   ],
                 ),
@@ -208,7 +208,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.07)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
               ),
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -218,14 +218,14 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Smart Input',
-                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12, letterSpacing: 0.8),
+                        AppLocalizations.of(context)!.fraudSmartInput,
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12, letterSpacing: 0.8),
                       ),
                       if (_inputController.text.isNotEmpty)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryBlue.withOpacity(0.2),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -243,11 +243,11 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                     maxLines: 4,
                     minLines: 1,
                     decoration: InputDecoration(
-                      hintText: 'Paste phone, account, URL, or message...',
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.25), fontSize: 15),
+                      hintText: AppLocalizations.of(context)!.fraudHint,
+                      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.25), fontSize: 15),
                       prefixIcon: Icon(_detectedIcon, color: Colors.white38, size: 20),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
+                      fillColor: Colors.white.withValues(alpha: 0.05),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -266,8 +266,8 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                 Expanded(
                   child: _QuickActionButton(
                     icon: Icons.upload_file_rounded,
-                    label: 'Upload File',
-                    subtext: 'PDF or APK',
+                    label: AppLocalizations.of(context)!.fraudUploadFile,
+                    subtext: AppLocalizations.of(context)!.fraudPdfApk,
                     onTap: _uploadDocument,
                     color: Colors.amber,
                   ),
@@ -276,8 +276,8 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                 Expanded(
                   child: _QuickActionButton(
                     icon: Icons.qr_code_scanner_rounded,
-                    label: 'Scan QR',
-                    subtext: 'Camera check',
+                    label: AppLocalizations.of(context)!.fraudScanQr,
+                    subtext: AppLocalizations.of(context)!.fraudCameraCheck,
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const QRDetectionScreen()));
                     },
@@ -292,7 +292,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             SizedBox(
               width: double.infinity,
               child: AdaptiveButton(
-                text: _inputController.text.isEmpty ? 'Check Now' : 'Analyze ${_detectedType == 'Payment' ? 'Input' : _detectedType}',
+                text: _inputController.text.isEmpty 
+                    ? AppLocalizations.of(context)!.fraudCheckNow 
+                    : '${AppLocalizations.of(context)!.fraudAnalyze} ${_detectedType == 'Payment' ? 'Input' : _detectedType}',
                 isLoading: _isLoading,
                 onPressed: _check,
               ),
@@ -355,14 +357,14 @@ class _QuickActionButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withOpacity(0.06)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 22),
@@ -374,7 +376,7 @@ class _QuickActionButton extends StatelessWidget {
                 children: [
                   Text(label, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 4),
-                  Text(subtext, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 11, overflow: TextOverflow.ellipsis)),
+                  Text(subtext, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11, overflow: TextOverflow.ellipsis)),
                 ],
               ),
             ),
@@ -399,7 +401,7 @@ class _SafetyTipsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.06)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,9 +411,9 @@ class _SafetyTipsCard extends StatelessWidget {
               const Icon(Icons.lightbulb_outline_rounded, color: Colors.amber, size: 18),
               const SizedBox(width: 8),
               Text(
-                'Stay Protected',
+                AppLocalizations.of(context)!.fraudStayProtected,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
@@ -425,7 +427,7 @@ class _SafetyTipsCard extends StatelessWidget {
               children: [
                 Icon(t.icon, color: AppColors.accentGreen, size: 16),
                 const SizedBox(width: 10),
-                Expanded(child: Text(t.text, style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 13))),
+                Expanded(child: Text(t.text, style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 13))),
               ],
             ),
           )),
@@ -492,7 +494,7 @@ class CheckResultScreen extends StatelessWidget {
         backgroundColor: AppColors.deepNavy,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text('Check Result', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.fraudCheckResult, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -503,16 +505,16 @@ class CheckResultScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
               decoration: BoxDecoration(
-                color: riskColor.withOpacity(0.1),
+                color: riskColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: riskColor.withOpacity(0.3), width: 1.5),
+                border: Border.all(color: riskColor.withValues(alpha: 0.3), width: 1.5),
               ),
               child: Column(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: riskColor.withOpacity(0.15),
+                      color: riskColor.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(riskIcon, color: riskColor, size: 52),
@@ -526,7 +528,7 @@ class CheckResultScreen extends StatelessWidget {
                   Text(
                     riskSubtitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14, height: 1.5),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14, height: 1.5),
                   ),
                 ],
               ),
@@ -540,19 +542,19 @@ class CheckResultScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: Colors.white.withOpacity(0.06)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Checked $type', style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12)),
+                  Text('Checked $type', style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 12)),
                   const SizedBox(height: 6),
                   Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                   const Divider(color: Colors.white12, height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Risk Score', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14)),
+                      Text('Risk Score', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14)),
                       Text(
                         '${result.score} / 100',
                         style: TextStyle(color: riskColor, fontWeight: FontWeight.bold, fontSize: 16),
@@ -565,7 +567,7 @@ class CheckResultScreen extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: result.score / 100,
                       minHeight: 8,
-                      backgroundColor: Colors.white.withOpacity(0.08),
+                      backgroundColor: Colors.white.withValues(alpha: 0.08),
                       valueColor: AlwaysStoppedAnimation<Color>(riskColor),
                     ),
                   ),
@@ -582,7 +584,7 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -591,7 +593,7 @@ class CheckResultScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.psychology_outlined, color: Colors.purpleAccent, size: 20),
                         const SizedBox(width: 8),
-                        Text('AI Deep Scan', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text('AI Deep Scan', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -602,7 +604,7 @@ class CheckResultScreen extends StatelessWidget {
                     
                     if (result.highlightedPhrases.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      Text('High-risk phrases detected:', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                      Text('High-risk phrases detected:', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -610,9 +612,9 @@ class CheckResultScreen extends StatelessWidget {
                         children: result.highlightedPhrases.map((p) => Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red.withOpacity(0.2)),
+                            border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
                           ),
                           child: Text(p, style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                         )).toList(),
@@ -629,7 +631,7 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -638,7 +640,7 @@ class CheckResultScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.alt_route_rounded, color: Colors.orangeAccent, size: 20),
                         const SizedBox(width: 8),
-                        Text('Redirect Path', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text('Redirect Path', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 14),
@@ -652,7 +654,7 @@ class CheckResultScreen extends StatelessWidget {
                       ),
                     if (result.finalUrl != null) ...[
                        const Divider(color: Colors.white12),
-                       Text('Final Destination:', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                       Text('Final Destination:', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
                        const SizedBox(height: 4),
                        Text(result.finalUrl!, style: const TextStyle(color: Colors.orangeAccent, fontSize: 13, fontWeight: FontWeight.bold)),
                     ]
@@ -673,7 +675,7 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -681,27 +683,27 @@ class CheckResultScreen extends StatelessWidget {
                     Row(children: [
                       const Icon(Icons.document_scanner_outlined, color: Colors.amberAccent, size: 20),
                       const SizedBox(width: 8),
-                      Text('Document Insights', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text('Document Insights', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                     ]),
                     const SizedBox(height: 16),
                     if (result.pageCount != null)
                       _infoRow('Page Count', '${result.pageCount} pages', Colors.white70),
                     if (result.extractedLinks.isNotEmpty) ...[
                       const SizedBox(height: 10),
-                      Text('Embedded Links (${result.extractedLinks.length}):', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                      Text('Embedded Links (${result.extractedLinks.length}):', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
                       const SizedBox(height: 8),
                       ...result.extractedLinks.take(5).map((l) => Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: Text('🔗 $l', style: const TextStyle(color: Colors.orangeAccent, fontSize: 11, fontFamily: 'Courier')),
                       )),
                       if (result.extractedLinks.length > 5)
-                        Text('...and ${result.extractedLinks.length - 5} more', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                        Text('...and ${result.extractedLinks.length - 5} more', style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11)),
                     ],
                     if (result.packageName != null)
                       _infoRow('Package Name', result.packageName!, Colors.blueAccent),
                     if (result.dangerousPermissions.isNotEmpty) ...[
                       const SizedBox(height: 10),
-                      Text('Dangerous Permissions:', style: TextStyle(color: Colors.red.withOpacity(0.7), fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text('Dangerous Permissions:', style: TextStyle(color: Colors.red.withValues(alpha: 0.7), fontSize: 12, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       ...result.dangerousPermissions.map((p) => Padding(
                         padding: const EdgeInsets.only(bottom: 4),
@@ -716,7 +718,7 @@ class CheckResultScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       const Divider(color: Colors.white10),
                       const SizedBox(height: 8),
-                      Text('SHA-256:', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                      Text('SHA-256:', style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11)),
                       const SizedBox(height: 2),
                       Text(result.sha256!, style: const TextStyle(color: Colors.white24, fontSize: 10, fontFamily: 'Courier')),
                     ],
@@ -731,7 +733,7 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -740,14 +742,14 @@ class CheckResultScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.people_outline_rounded, color: AppColors.primaryBlue, size: 20),
                         const SizedBox(width: 8),
-                        Text('Community Insights', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text('Community Insights', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 14),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Reports Found', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+                        Text('Reports Found', style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14)),
                         Text('${result.communityReports}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                       ],
                     ),
@@ -755,7 +757,7 @@ class CheckResultScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Verified by Others', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+                        Text('Verified by Others', style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 14)),
                         Text('${result.verifiedReports}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                       ],
                     ),
@@ -767,13 +769,13 @@ class CheckResultScreen extends StatelessWidget {
                         children: result.categories.map((cat) => Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white.withOpacity(0.1)),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                           ),
                           child: Text(
                             cat,
-                            style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11),
                           ),
                         )).toList(),
                       ),
@@ -793,7 +795,7 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -802,7 +804,7 @@ class CheckResultScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.policy_outlined, color: Colors.blueAccent, size: 20),
                         const SizedBox(width: 8),
-                        Text('Verification Sources', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text('Verification Sources', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                       ],
                     ),
                     const SizedBox(height: 14),
@@ -814,9 +816,9 @@ class CheckResultScreen extends StatelessWidget {
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: Colors.blueAccent.withOpacity(0.15),
+                              color: Colors.blueAccent.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.blueAccent.withOpacity(0.3)),
+                              border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -848,12 +850,12 @@ class CheckResultScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.06)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Analysis Details', style: TextStyle(color: Colors.white.withOpacity(0.9), fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text('Analysis Details', style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.bold, fontSize: 14)),
                     const SizedBox(height: 14),
                     ...result.reasons.map((r) => Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -862,7 +864,7 @@ class CheckResultScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.chevron_right_rounded, color: riskColor, size: 18),
                           const SizedBox(width: 8),
-                          Expanded(child: Text(r, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4))),
+                          Expanded(child: Text(r, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, height: 1.4))),
                         ],
                       ),
                     )),
@@ -917,7 +919,7 @@ class CheckResultScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13)),
+          Text(label, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13)),
           Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
         ],
       ),
@@ -928,16 +930,16 @@ class CheckResultScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: color, size: 16),
           const SizedBox(width: 6),
-          Text(text, style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13)),
+          Text(text, style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13)),
         ],
       ),
     );

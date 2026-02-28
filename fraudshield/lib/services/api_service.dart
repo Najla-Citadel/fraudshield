@@ -204,6 +204,11 @@ class ApiService {
     await delete('/users/me');
   }
 
+  Future<Map<String, dynamic>> getSecurityHealth() async {
+    final response = await get('/users/security-health');
+    return response as Map<String, dynamic>;
+  }
+
   // ---------------- Admin ----------------
 
   Future<List<Map<String, dynamic>>> getAdminAlerts() async {

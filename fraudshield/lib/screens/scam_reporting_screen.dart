@@ -11,6 +11,7 @@ import '../widgets/adaptive_text_field.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:lucide_icons/lucide_icons.dart';
+import '../l10n/app_localizations.dart';
 
 class ScamReportingScreen extends StatefulWidget {
   final double? prefilledLat;
@@ -295,7 +296,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        title: const Text('Report Scam', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(AppLocalizations.of(context)!.scamReportTitle, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.deepNavy,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -370,10 +371,10 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
 
   String _getStepTitle() {
     switch (_currentStep) {
-      case 0: return 'Scammer Identity';
-      case 1: return 'Scam Category';
-      case 2: return 'The Story';
-      case 3: return 'Review & Submit';
+      case 0: return AppLocalizations.of(context)!.reportStepIdentity;
+      case 1: return AppLocalizations.of(context)!.reportStepCategory;
+      case 2: return AppLocalizations.of(context)!.reportStepStory;
+      case 3: return AppLocalizations.of(context)!.reportStepReview;
       default: return '';
     }
   }
@@ -382,11 +383,11 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        const Text('What information do you have?', 
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(AppLocalizations.of(context)!.reportIdentityTitle, 
+          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        const Text('Select the main identifier for the scammer.', 
-          style: TextStyle(color: Colors.white60, fontSize: 14)),
+        Text(AppLocalizations.of(context)!.reportIdentityDesc, 
+          style: const TextStyle(color: Colors.white60, fontSize: 14)),
         const SizedBox(height: 24),
         
         GridView.builder(
@@ -407,10 +408,10 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryBlue.withOpacity(0.1) : const Color(0xFF1E293B),
+                  color: isSelected ? AppColors.primaryBlue.withValues(alpha: 0.1) : const Color(0xFF1E293B),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: isSelected ? AppColors.primaryBlue : Colors.white.withOpacity(0.05),
+                    color: isSelected ? AppColors.primaryBlue : Colors.white.withValues(alpha: 0.05),
                     width: 2,
                   ),
                 ),
@@ -533,10 +534,10 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isSelected ? (cat['color'] as Color).withOpacity(0.1) : const Color(0xFF1E293B),
+                color: isSelected ? (cat['color'] as Color).withValues(alpha: 0.1) : const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? (cat['color'] as Color) : Colors.white.withOpacity(0.05),
+                  color: isSelected ? (cat['color'] as Color) : Colors.white.withValues(alpha: 0.05),
                 ),
               ),
               child: Row(
@@ -594,7 +595,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _selectedFileName != null ? AppColors.accentGreen : Colors.white.withOpacity(0.1),
+            color: _selectedFileName != null ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.1),
             style: BorderStyle.solid,
           ),
         ),
@@ -657,7 +658,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -691,7 +692,9 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           Expanded(
             flex: 2,
             child: AdaptiveButton(
-              text: _currentStep == _totalSteps - 1 ? 'Submit Report' : 'Continue',
+              text: _currentStep == _totalSteps - 1 
+                  ? AppLocalizations.of(context)!.reportSubmit 
+                  : AppLocalizations.of(context)!.btnNext,
               isLoading: _isSubmitting,
               onPressed: _currentStep == _totalSteps - 1 ? _submitReport : _nextStep,
             ),
@@ -713,18 +716,18 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               Container(
                  padding: const EdgeInsets.all(24),
                  decoration: BoxDecoration(
-                   color: AppColors.accentGreen.withOpacity(0.1),
+                   color: AppColors.accentGreen.withValues(alpha: 0.1),
                    shape: BoxShape.circle,
                  ),
                  child: const Icon(LucideIcons.checkCircle, color: AppColors.accentGreen, size: 80),
               ),
               const SizedBox(height: 32),
-              const Text('Report Submitted!', 
-                style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(AppLocalizations.of(context)!.reportSubmitted, 
+                style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              Text('Thank you for keeping the community safe. We will verify your report shortly.',
+              Text(AppLocalizations.of(context)!.reportSuccessDesc,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 15, height: 1.5)),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 15, height: 1.5)),
               const SizedBox(height: 48),
               SizedBox(
                 width: 220,

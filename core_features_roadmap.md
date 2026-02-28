@@ -1,7 +1,7 @@
 # FraudShield — Core Features Development Roadmap
 
-> **Last updated:** 27 Feb 2026
-> **Status:** MVP 🚀 Live · NLP / APK / PDF / QR Scanning Backend ✅ · Community Feed & Rewards UX Polished
+> **Last updated:** 28 Feb 2026
+> **Status:** MVP 🚀 Live · NLP / Voice (Phase B) / APK / PDF / QR Scanning Backend ✅ · Community Feed Polished
 
 ---
 
@@ -13,7 +13,7 @@
 | **QR Scanner** | ✅ | ✅ | ✅ Real — Redirect chain + Safe Browsing + VirusTotal (QuishingService) |
 | **Scam Reporting** | ✅ | ✅ | ✅ Real — PostgreSQL with evidence |
 | **Community Feed + Verification** | ✅ | ✅ | ✅ Real — gamification, badges, points |
-| **Voice Scam Detection** | ✅ | ❌ | 🚫 Hidden behind "Coming Soon" |
+| **Voice Scam Detection** | ✅ | ✅ | ✅ Real — Whisper AI + Behavioral Heuristics |
 | **Transaction Journal** | ✅ | ✅ | ✅ Real — manual logging with categories (PHONE/BANK/DOC) |
 | **Subscription System** | ✅ | ✅ | ⚠️ DB & plans exist, no payment gateway |
 | **Rewards / Points Store** | ✅ | ✅ | ✅ Real — catalog, redemptions, points history |
@@ -22,8 +22,8 @@
 | **User Auth** | ✅ | ✅ | ✅ Real — full flow incl. forgot password |
 | **User Profile** | ✅ | ✅ | ✅ Real — view, edit, statistics |
 | **PDPA Compliance** | ✅ | ✅ | ✅ Privacy Policy, ToS, consent, deletion |
-| **Transaction Risk Alerts** | ✅ | ❌ | 🚫 Mock — no real transaction monitoring |
-| **Security Health Score** | ✅ | ❌ | 🟠 UI built (compact ring), logic mock |
+| **Transaction Risk Alerts** | ✅ | 🟠 | � In Progress — UI built, basic rules engine pending |
+| **Security Health Score** | ✅ | 🟠 | 🟠 In Progress — UI built, logic integration started |
 | **Push Notifications** | ✅ | ✅ | ✅ Real — FCM integrated via AlertEngine |
 | **NLP Message Analysis** | ✅ | ✅ | ✅ Real — multi-language (EN/BM/ZH) regex + urgency scoring |
 | **PDF Document Scanning** | ✅ | ✅ | ✅ Real — pdf-parse + keyword engine + VirusTotal hash check |
@@ -210,7 +210,7 @@
 | 7.1 | Security Health Score (Refined UI) | 2 wks | ✅ UI Done |
 | 7.2 | Family protection | 2 wks |
 | 7.3 | Android home screen widget | 1 wk |
-| 7.4 | Voice detection POC (Whisper API) | 3 wks |
+| 7.4 | Voice detection POC (Whisper API) | 3 wks | ✅ Done |
 | 7.5 | Telco API partnerships | Ongoing |
 | 7.6 | Bank API partnerships | Ongoing |
 | 7.7 | B2B data licensing | Ongoing |

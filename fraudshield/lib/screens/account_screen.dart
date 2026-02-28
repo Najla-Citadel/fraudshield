@@ -4,6 +4,8 @@ import 'dart:developer';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
+import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
 import '../constants/app_theme.dart';
 import 'login_screen.dart';
@@ -31,10 +33,6 @@ class _AccountScreenState extends State<AccountScreen> {
   // ================= STATE =================
   bool _loading = true;
   bool _hasError = false;
-  bool _savingName = false;
-  bool _editingName = false;
-
-  String _email = '';
   String _avatarSeed = 'Felix';
 
   // ================= LIFECYCLE =================
@@ -63,7 +61,6 @@ class _AccountScreenState extends State<AccountScreen> {
 
     final updatedProfile = authProvider.userProfile;
     _avatarSeed = updatedProfile?.profile?.avatar ?? 'Felix';
-    _email = authProvider.user?.email ?? '';
 
     setState(() {
       _loading = false;
@@ -174,12 +171,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
     // Using standard Scaffold for deep navy background
     return AdaptiveScaffold(
-      title: 'My Account',
+      title: AppLocalizations.of(context)!.accountMyAccount,
       backgroundColor: AppColors.deepNavy,
       actions: [
         IconButton(
           icon: const Icon(Icons.language, color: Colors.white),
-          onPressed: () => _openPlaceholder('Language Setting'),
+          onPressed: _showLanguagePicker,
         ),
       ],
       body: Padding(
@@ -195,25 +192,27 @@ class _AccountScreenState extends State<AccountScreen> {
 
             // Preferences
             SettingsGroup(
-              title: 'Preferences',
+              title: AppLocalizations.of(context)!.accountPreferences,
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               items: [
                 SettingsTile(
                   icon: Icons.card_membership,
-                  title: 'Subscription Plan',
+                  title: AppLocalizations.of(context)!.accountSubscriptionPlan,
                   trailing: Row(
                    mainAxisSize: MainAxisSize.min,
                    children: [
                      Text(
-                       context.watch<AuthProvider>().isSubscribed ? 'Premium' : 'Free', 
+                       context.watch<AuthProvider>().isSubscribed 
+                         ? AppLocalizations.of(context)!.accountPremium 
+                         : AppLocalizations.of(context)!.accountFree, 
                        style: TextStyle(
-                         color: context.watch<AuthProvider>().isSubscribed ? Colors.amber : Colors.white.withOpacity(0.5), 
+                         color: context.watch<AuthProvider>().isSubscribed ? Colors.amber : Colors.white.withValues(alpha: 0.5), 
                          fontSize: 13,
                          fontWeight: FontWeight.bold
                        )
                      ),
                      const SizedBox(width: 8),
-                     Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                     Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
                    ],
                  ),
                   onTap: () => Navigator.push(
@@ -223,7 +222,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 SettingsTile(
                   icon: Icons.dark_mode_rounded,
-                  title: 'Dark Mode',
+                  title: AppLocalizations.of(context)!.accountDarkMode,
                   trailing: Switch(
                     value: theme.brightness == Brightness.dark,
                     onChanged: (val) => context.read<ThemeProvider>().toggle(val),
@@ -233,8 +232,8 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 SettingsTile(
                   icon: Icons.notifications_active_outlined,
-                  title: 'Notification Setting',
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  title: AppLocalizations.of(context)!.accountNotificationSetting,
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
@@ -245,17 +244,17 @@ class _AccountScreenState extends State<AccountScreen> {
 
             // Security
             SettingsGroup(
-              title: 'Security',
+              title: AppLocalizations.of(context)!.accountSecurityTitle,
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               items: [
                 SettingsTile(
                   icon: Icons.lock_rounded,
-                  title: 'Change Password',
+                  title: AppLocalizations.of(context)!.accountChangePassword,
                   onTap: _openChangePassword,
                 ),
                 SettingsTile(
                   icon: Icons.security, 
-                  title: 'Two-Factor Authentication',
+                  title: AppLocalizations.of(context)!.accountTwoFactor,
                   onTap: () => _openPlaceholder('Two-Factor Authentication'),
                 ),
               ],
@@ -269,13 +268,13 @@ class _AccountScreenState extends State<AccountScreen> {
                 SettingsTile(
                   icon: Icons.policy_rounded,
                   title: 'Privacy Policy',
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
                   onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
                 ),
                  SettingsTile(
                   icon: Icons.description_rounded,
                   title: 'Terms of Service',
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
+                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
                   onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
                 ),
               ],
@@ -290,7 +289,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Text(
                   'Delete Account',
                   style: TextStyle(
-                    color: Colors.red.withOpacity(0.7),
+                    color: Colors.red.withValues(alpha: 0.7),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                   ),
@@ -300,53 +299,14 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 24),
             // Version text with manual white color for safety
             Text('Version 1.1.0',
-                style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.white.withOpacity(0.5))),
+                style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.white.withValues(alpha: 0.5))),
           ],
         ),
       ),
     );
   }
 
-  // =================THEME========================
-  void _openThemeSheet() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (sheetContext) {
-        return Builder(
-          builder: (context) {
-            final theme = context.watch<ThemeProvider>();
-
-            return Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Appearance',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SwitchListTile(
-                    value: theme.isDark,
-                    onChanged: (value) => theme.toggle(value),
-                    title: const Text('Dark Mode'),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-// =================PASSWORD===================
+  // =================PASSWORD===================
   void _openChangePassword() {
     final currentCtrl = TextEditingController();
     final newCtrl = TextEditingController();
@@ -440,12 +400,58 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
+  void _showLanguagePicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.deepNavy,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        final localeProvider = context.watch<LocaleProvider>();
+        final currentLocale = localeProvider.locale?.languageCode ?? 'en';
+
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Select Language',
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 24),
+              _buildLanguageItem('English', 'en', currentLocale == 'en', () {
+                localeProvider.setLocale(const Locale('en'));
+                Navigator.pop(context);
+              }),
+              _buildLanguageItem('Bahasa Malaysia', 'ms', currentLocale == 'ms', () {
+                localeProvider.setLocale(const Locale('ms'));
+                Navigator.pop(context);
+              }),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageItem(String name, String code, bool isSelected, VoidCallback onTap) {
+    return ListTile(
+      onTap: onTap,
+      leading: Text(code == 'en' ? '🇺🇸' : '🇲🇾', style: const TextStyle(fontSize: 24)),
+      title: Text(name, style: const TextStyle(color: Colors.white)),
+      trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.accentGreen) : null,
+    );
+  }
+
   // ================= COMPONENTS =================
 
   Widget _premiumProfileHeader() {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
-    final profile = user?.profile;
 
     return Center(
       child: Column(
@@ -460,7 +466,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 50,
@@ -506,7 +512,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
@@ -539,10 +545,10 @@ class _AccountScreenState extends State<AccountScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -559,7 +565,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     Text(
                       'TOTAL PROTECTION POINTS',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -586,7 +592,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.accentGreen.withOpacity(0.8),
+                                  color: AppColors.accentGreen.withValues(alpha: 0.8),
                                 ),
                               ),
                             ],
@@ -636,7 +642,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: Text(
                         'View Status Benefits ↗',
                         style: TextStyle(
-                          color: AppColors.accentGreen.withOpacity(0.8),
+                          color: AppColors.accentGreen.withValues(alpha: 0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -656,7 +662,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
@@ -665,7 +671,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           Text(
                             'RANK',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.4),
+                              color: Colors.white.withValues(alpha: 0.4),
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -689,7 +695,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Column(
@@ -698,7 +704,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         Text(
                           'SCAMS BLOCKED',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -793,19 +799,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return 'BRONZE PROTECTOR';
   }
 
-  String _getBadgeEmoji(String key) {
-    switch (key) {
-      case 'first_report': return '🎯';
-      case 'community_guardian': return '🛡️';
-      case 'senior_sentinel': return '🥇';
-      case 'first_verify': return '🔍';
-      case 'elite_verifier': return '⚖️';
-      case 'elite_sentinel': return '💎';
-      case 'streak_master': return '🔥';
-      default: return '🏅';
-    }
-  }
-
+  // Removed _getBadgeEmoji as it is unused
 }
 
 
