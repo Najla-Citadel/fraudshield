@@ -651,7 +651,12 @@ class _HomeTab extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.notifications_none, color: Colors.white),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -707,7 +712,7 @@ class _HomeTab extends StatelessWidget {
                     Text(
                       AppLocalizations.of(context)!.homeRecentChecks,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -809,7 +814,7 @@ class _HomeTab extends StatelessWidget {
                   Text(
                     AppLocalizations.of(context)!.homeThreatInsights,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.0,
@@ -842,7 +847,7 @@ class _HomeTab extends StatelessWidget {
             Text(
               AppLocalizations.of(context)!.homeServices,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
@@ -876,114 +881,128 @@ class _HomeTab extends StatelessWidget {
             ),
           )
         else
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                if (activeQuickActions.contains('fraud_check'))
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _BigActionButton(
-                      label: 'Fraud Check',
-                      icon: Icons.health_and_safety,
-                      color: const Color(0xFF3B82F6), // Blue
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+          ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.white, Colors.white.withValues(alpha: 0.0)],
+                stops: const [0.9, 1.0], // Fade out the last 10%
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstIn,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              // Add slight right padding to ensure the last item can be scrolled away from the edge manually if needed, 
+              // but mostly rely on the fading mask for the visual cue.
+              padding: const EdgeInsets.only(right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (activeQuickActions.contains('fraud_check'))
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _BigActionButton(
+                        label: 'Fraud Check',
+                        icon: Icons.health_and_safety,
+                        color: const Color(0xFF3B82F6), // Blue
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
+                        ),
                       ),
                     ),
-                  ),
-                if (activeQuickActions.contains('qr_scan'))
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _BigActionButton(
-                      label: 'QR Scan',
-                      icon: Icons.qr_code_scanner,
-                      color: const Color(0xFF1E293B), // Dark Button
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
+                  if (activeQuickActions.contains('qr_scan'))
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _BigActionButton(
+                        label: 'QR Scan',
+                        icon: Icons.qr_code_scanner,
+                        color: const Color(0xFF1E293B), // Dark Button
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
+                        ),
                       ),
                     ),
-                  ),
-                if (activeQuickActions.contains('report_scam'))
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _BigActionButton(
-                      label: 'Report',
-                      icon: Icons.warning_amber_rounded,
-                      color: const Color(0xFF1E293B), // Dark Button
-                      isAlert: true,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                  if (activeQuickActions.contains('report_scam'))
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _BigActionButton(
+                        label: 'Report',
+                        icon: Icons.warning_amber_rounded,
+                        color: const Color(0xFF1E293B), // Dark Button
+                        isAlert: true,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+                        ),
                       ),
                     ),
-                  ),
-                if (activeQuickActions.contains('voice_detection'))
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _BigActionButton(
-                      label: AppLocalizations.of(context)!.homeVoiceCheck,
-                      icon: Icons.mic,
-                      color: const Color(0xFF1E293B),
-                      isLocked: !isSubscribed,
-                      onTap: () {
-                        if (isSubscribed) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(AppLocalizations.of(context)!.homeUnlockVoice),
-                              action: SnackBarAction(
-                                label: AppLocalizations.of(context)!.homeUpgrade,
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                  if (activeQuickActions.contains('voice_detection'))
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _BigActionButton(
+                        label: AppLocalizations.of(context)!.homeVoiceCheck,
+                        icon: Icons.mic,
+                        color: const Color(0xFF1E293B),
+                        isLocked: !isSubscribed,
+                        onTap: () {
+                          if (isSubscribed) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(AppLocalizations.of(context)!.homeUnlockVoice),
+                                action: SnackBarAction(
+                                  label: AppLocalizations.of(context)!.homeUpgrade,
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }
-                      },
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                if (activeQuickActions.contains('phishing_protection'))
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _BigActionButton(
-                      label: AppLocalizations.of(context)!.homePhishing,
-                      icon: Icons.shield,
-                      color: const Color(0xFF1E293B),
-                      isLocked: !isSubscribed,
-                      onTap: () {
-                        if (isSubscribed) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(AppLocalizations.of(context)!.homeUnlockPhishing),
-                              action: SnackBarAction(
-                                label: AppLocalizations.of(context)!.homeUpgrade,
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                  if (activeQuickActions.contains('phishing_protection'))
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _BigActionButton(
+                        label: AppLocalizations.of(context)!.homePhishing,
+                        icon: Icons.shield,
+                        color: const Color(0xFF1E293B),
+                        isLocked: !isSubscribed,
+                        onTap: () {
+                          if (isSubscribed) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(AppLocalizations.of(context)!.homeUnlockPhishing),
+                                action: SnackBarAction(
+                                  label: AppLocalizations.of(context)!.homeUpgrade,
+                                  onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }
-                      },
+                            );
+                          }
+                        },
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
       ],
@@ -991,60 +1010,88 @@ class _HomeTab extends StatelessWidget {
   }
 
   Widget _buildTrendingAlertsCard(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
-        );
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.orange.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.warning_rounded, color: Colors.orange, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context)!.homeTrendingThreats,
-                  style: TextStyle(
-                    color: Colors.orange,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
+    return ListenableBuilder(
+      listenable: NotificationService.instance,
+      builder: (context, child) {
+        final alerts = NotificationService.instance.alerts;
+        final hasAlerts = alerts.isNotEmpty;
+        final latestAlert = hasAlerts ? alerts.first : null;
+
+        final isWarning = hasAlerts && (latestAlert!['severity'] == 'high' || latestAlert['severity'] == 'critical');
+        final iconColor = hasAlerts 
+            ? (isWarning ? Colors.redAccent : Colors.orangeAccent)
+            : AppColors.accentGreen;
+            
+        final iconData = hasAlerts ? LucideIcons.alertTriangle : LucideIcons.shieldCheck;
+        final title = hasAlerts 
+            ? (latestAlert!['title'] ?? AppLocalizations.of(context)!.homeTrendingThreats)
+            : 'No Active Threats';
+            
+        final subtitle = hasAlerts 
+            ? (latestAlert!['message'] ?? AppLocalizations.of(context)!.homeTrendingDesc)
+            : 'Your security environment is currently clear and protected.';
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+            );
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: hasAlerts ? iconColor.withValues(alpha: 0.3) : Colors.transparent,
+                width: 1,
+              ),
+              boxShadow: hasAlerts ? [
+                BoxShadow(
+                  color: iconColor.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-                const Spacer(),
-                Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.5), size: 14),
+              ] : [],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(iconData, color: iconColor, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: iconColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.5), size: 14),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              AppLocalizations.of(context)!.homeTrendingDesc,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -1162,7 +1209,7 @@ class _HomeTab extends StatelessWidget {
 /// WIDGETS
 ////////////////////////////////////////////////////////////////
 
-class _BigActionButton extends StatelessWidget {
+class _BigActionButton extends StatefulWidget {
   final String label;
   final IconData icon;
   final Color color;
@@ -1180,62 +1227,94 @@ class _BigActionButton extends StatelessWidget {
   });
 
   @override
+  State<_BigActionButton> createState() => _BigActionButtonState();
+}
+
+class _BigActionButtonState extends State<_BigActionButton> {
+  bool _isPressed = false;
+
+  void _handleTapDown(TapDownDetails details) {
+    setState(() => _isPressed = true);
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    setState(() => _isPressed = false);
+    widget.onTap();
+  }
+
+  void _handleTapCancel() {
+    setState(() => _isPressed = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 100, // Fixed width for uniformity
-        height: 115, // Increased height to prevent overflow
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Reduced horizontal padding
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.2),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 32,
-                  color: isAlert ? Colors.orange : Colors.white,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.visible, // Allow wrapping
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12, // Slightly smaller font
-                    height: 1.2,
-                  ),
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      child: AnimatedScale(
+        scale: _isPressed ? 0.94 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOutCubic,
+        child: AnimatedOpacity(
+          opacity: _isPressed ? 0.85 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          child: Container(
+            width: 100, // Fixed width for uniformity
+            height: 115, // Increased height to prevent overflow
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Reduced horizontal padding
+            decoration: BoxDecoration(
+              color: widget.color,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.color.withValues(alpha: _isPressed ? 0.05 : 0.2),
+                  blurRadius: _isPressed ? 4 : 12,
+                  offset: Offset(0, _isPressed ? 2 : 4),
                 ),
               ],
             ),
-            if (isLocked)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Icon(Icons.lock, size: 16, color: Colors.white.withValues(alpha: 0.7)),
-              ),
-          ],
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      widget.icon,
+                      size: 32,
+                      color: widget.isAlert ? Colors.orange : Colors.white,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.label,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.visible, // Allow wrapping
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12, // Slightly smaller font
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+                if (widget.isLocked)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Icon(Icons.lock, size: 16, color: Colors.white.withValues(alpha: 0.7)),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
 
 class _StatusItem extends StatelessWidget {
   final IconData icon;
