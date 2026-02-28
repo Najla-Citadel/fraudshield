@@ -11,7 +11,7 @@ import { ApkScanController } from '../controllers/apk-scan.controller';
 import { VoiceScanController } from '../controllers/voice-scan.controller';
 import multer from 'multer';
 
-import passport from 'passport';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -22,7 +22,7 @@ const memoryUpload = multer({
 });
 
 // Protect all feature routes
-router.use(passport.authenticate('jwt', { session: false }));
+router.use(authenticate);
 
 // Safe Browsing (legacy single URL check)
 router.post('/check-url', SafeBrowsingController.checkUrl);

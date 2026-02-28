@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { AdminController } from '../controllers/admin.controller';
 import { isAdmin } from '../middleware/admin.middleware';
-import passport from 'passport';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // Protected admin routes
-router.use(passport.authenticate('jwt', { session: false }));
+router.use(authenticate);
 router.use(isAdmin);
 
 router.get('/alerts', AdminController.getAlerts);

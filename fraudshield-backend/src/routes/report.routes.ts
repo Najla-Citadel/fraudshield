@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import { ReportController } from '../controllers/report.controller';
 import { CommentController } from '../controllers/comment.controller';
-import passport from 'passport';
+import { authenticate } from '../middleware/auth.middleware';
 import { validateReport } from '../middleware/validators';
 import { reportLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
-
-const authenticate = passport.authenticate('jwt', { session: false });
 
 // Public routes
 router.get('/search', ReportController.searchReports);

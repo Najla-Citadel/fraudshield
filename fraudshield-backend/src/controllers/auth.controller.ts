@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import passport from 'passport';
+import passport from '../config/passport';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';

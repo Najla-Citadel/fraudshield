@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { RewardsController } from '../controllers/rewards.controller';
-import passport from 'passport';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // Protect all rewards routes
-router.use(passport.authenticate('jwt', { session: false }));
+router.use(authenticate);
 
 // Available rewards
 router.get('/', RewardsController.getRewards);
