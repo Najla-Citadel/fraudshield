@@ -710,7 +710,21 @@ class _HomeTab extends StatelessWidget {
               const SizedBox(height: 24),
 
               // 5. DAILY INSIGHTS
-              const DailyDigestWidget(),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: const DailyDigestWidget(),
+              ),
 
               const SizedBox(height: 24),
 
@@ -850,8 +864,9 @@ class _HomeTab extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildQuickActions(BuildContext context) {
     return Column(
@@ -1158,15 +1173,28 @@ class _HomeTab extends StatelessWidget {
   }
 
   Widget _buildPaymentJournalCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Match trending alerts style
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
-        boxShadow: [
-          BoxShadow(
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOutQuint,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B), // Match trending alerts style
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
+          boxShadow: [
+            BoxShadow(
             color: AppColors.accentGreen.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
