@@ -126,7 +126,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -136,7 +136,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           children: [
                             const Text('Proactive Alerts', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            Text('Receive warnings about trending scams', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
+                            Text('Receive warnings about trending scams', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13)),
                           ],
                         ),
                         Switch(
@@ -156,7 +156,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +167,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                             children: [
                               const Text('Daily Email Digest', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 4),
-                              Text('Consolidated scam news in your inbox', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
+                              Text('Consolidated scam news in your inbox', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13)),
                             ],
                           ),
                         ),
@@ -190,7 +190,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           const SizedBox(height: 32),
                           const Text('LOCAL THREATS', style: TextStyle(color: AppColors.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                           const SizedBox(height: 8),
-                          Text('Alert radius for scams reported near you', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
+                          Text('Alert radius for scams reported near you', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14)),
                           const SizedBox(height: 16),
                           Row(
                             children: [
@@ -212,7 +212,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           const SizedBox(height: 32),
                           const Text('SCAM CATEGORIES', style: TextStyle(color: AppColors.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                           const SizedBox(height: 8),
-                          Text('Select which type of threats you want to monitor', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
+                          Text('Select which type of threats you want to monitor', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14)),
                           const SizedBox(height: 16),
                           
                           ..._availableCategories.map((cat) {
@@ -225,10 +225,10 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.primaryBlue.withOpacity(0.1) : Colors.transparent,
+                                    color: isSelected ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.transparent,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: isSelected ? AppColors.primaryBlue : Colors.white.withOpacity(0.1),
+                                      color: isSelected ? AppColors.primaryBlue : Colors.white.withValues(alpha: 0.1),
                                     ),
                                   ),
                                   child: Row(

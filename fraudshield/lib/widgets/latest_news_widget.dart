@@ -162,8 +162,8 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? Colors.blueAccent.withOpacity(0.2) 
-                                : Colors.white.withOpacity(0.05),
+                                ? Colors.blueAccent.withValues(alpha: 0.2) 
+                                : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected ? Colors.blueAccent : Colors.white10,
@@ -240,7 +240,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                 Expanded(
                   child: Text(
                     'Unable to load insights: $_error',
-                    style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   ),
                 ),
                 TextButton(onPressed: _loadNews, child: const Text('Retry')),
@@ -265,7 +265,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
           children: [
             Row(
               children: [
-                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: Colors.white.withOpacity(0.5)))),
+                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: Colors.white.withValues(alpha: 0.5)))),
                 TextButton(onPressed: _loadNews, child: const Text('Refresh')),
               ],
             ),
@@ -297,9 +297,9 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -325,7 +325,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.2),
+                              color: Colors.red.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),

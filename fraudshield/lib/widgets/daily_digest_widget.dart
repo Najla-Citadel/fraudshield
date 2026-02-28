@@ -99,12 +99,12 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.95), // Deeper, more integrated navy
+          color: const Color(0xFF0F172A).withValues(alpha: 0.95), // Deeper, more integrated navy
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.06)), // Subtle edge
+          border: Border.all(color: Colors.white.withValues(alpha: 0.06)), // Subtle edge
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -122,7 +122,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                     Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                        color: AppColors.accentGreen.withOpacity(0.12),
+                        color: AppColors.accentGreen.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Icon(LucideIcons.zap, color: AppColors.accentGreen, size: 14),
@@ -131,7 +131,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                     Text(
                       'DAILY INSIGHT',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                        color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1.2,
@@ -142,7 +142,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                 Text(
                   _digest!['date'] ?? '',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.35),
+                    color: Colors.white.withValues(alpha: 0.35),
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                   ),
@@ -172,7 +172,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                       Text(
                         reportLabel,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.4),
+                          color: Colors.white.withValues(alpha: 0.4),
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.8,
@@ -202,7 +202,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                         Text(
                           'TOP TRENDING THREAT',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 0.8,
@@ -219,9 +219,9 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.15), // Recessed/darker inner box
+                color: Colors.black.withValues(alpha: 0.15), // Recessed/darker inner box
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.04)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +245,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                         Text(
                           safetyTip,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 13,
                             height: 1.6,
                             fontWeight: FontWeight.w500,

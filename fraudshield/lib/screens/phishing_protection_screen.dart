@@ -167,10 +167,10 @@ class _PhishingProtectionScreenState extends State<PhishingProtectionScreen> {
                                   trailing: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: isSuspicious ? theme.colorScheme.error.withOpacity(0.1) : Colors.green.withOpacity(0.1),
+                                      color: isSuspicious ? theme.colorScheme.error.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
-                                        color: isSuspicious ? theme.colorScheme.error.withOpacity(0.5) : Colors.green.withOpacity(0.5),
+                                        color: isSuspicious ? theme.colorScheme.error.withValues(alpha: 0.5) : Colors.green.withValues(alpha: 0.5),
                                       ),
                                     ),
                                     child: Text(
@@ -188,7 +188,7 @@ class _PhishingProtectionScreenState extends State<PhishingProtectionScreen> {
                                     indent: 20, 
                                     endIndent: 20, 
                                     height: 1, 
-                                    color: theme.colorScheme.outline.withOpacity(0.5)
+                                    color: theme.colorScheme.outline.withValues(alpha: 0.5)
                                   ),
                               ],
                             ),

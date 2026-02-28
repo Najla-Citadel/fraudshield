@@ -177,8 +177,8 @@ class StatusDetailsScreen extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                tierColor.withOpacity(0.2),
-                tierColor.withOpacity(0.0),
+                tierColor.withValues(alpha: 0.2),
+                tierColor.withValues(alpha: 0.0),
               ],
             ),
           ),
@@ -191,7 +191,7 @@ class StatusDetailsScreen extends StatelessWidget {
                 color: const Color(0xFF1E293B),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -218,9 +218,9 @@ class StatusDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.accentGreen.withOpacity(0.1),
+            color: AppColors.accentGreen.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+            border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -266,7 +266,7 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   'Tier Progress',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -299,7 +299,7 @@ class StatusDetailsScreen extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 8,
-            backgroundColor: Colors.white.withOpacity(0.05),
+            backgroundColor: Colors.white.withValues(alpha: 0.05),
             valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
           ),
         ),
@@ -321,7 +321,7 @@ class StatusDetailsScreen extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
-        color: isActive ? Colors.white : Colors.white.withOpacity(0.2),
+        color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.2),
         fontSize: 10,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.0,
@@ -336,7 +336,7 @@ class StatusDetailsScreen extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.white.withValues(alpha: 0.4),
             fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0,
@@ -345,9 +345,9 @@ class StatusDetailsScreen extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withOpacity(0.5),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             children: benefits.asMap().entries.map((entry) {
@@ -359,7 +359,7 @@ class StatusDetailsScreen extends StatelessWidget {
                   if (index < benefits.length - 1)
                     Divider(
                       height: 1,
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       indent: 70,
                     ),
                 ],
@@ -380,15 +380,15 @@ class StatusDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: item.isLocked 
-                  ? Colors.white.withOpacity(0.05)
-                  : AppColors.accentGreen.withOpacity(0.1),
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : AppColors.accentGreen.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               item.icon,
               size: 20,
               color: item.isLocked 
-                  ? Colors.white.withOpacity(0.2)
+                  ? Colors.white.withValues(alpha: 0.2)
                   : AppColors.accentGreen,
             ),
           ),
@@ -400,7 +400,7 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   item.title,
                   style: TextStyle(
-                    color: item.isLocked ? Colors.white.withOpacity(0.4) : Colors.white,
+                    color: item.isLocked ? Colors.white.withValues(alpha: 0.4) : Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -409,7 +409,7 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   item.subtitle,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.3),
                     fontSize: 12,
                   ),
                 ),
@@ -419,7 +419,7 @@ class StatusDetailsScreen extends StatelessWidget {
           if (!item.isLocked)
             const Icon(Icons.check_circle_rounded, color: AppColors.accentGreen, size: 20)
           else
-            Icon(Icons.lock_rounded, color: Colors.white.withOpacity(0.2), size: 18),
+            Icon(Icons.lock_rounded, color: Colors.white.withValues(alpha: 0.2), size: 18),
         ],
       ),
     );
@@ -434,7 +434,7 @@ class StatusDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.accentGreen.withOpacity(0.3),
+            color: AppColors.accentGreen.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

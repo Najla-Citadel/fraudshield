@@ -93,7 +93,7 @@ class _BackgroundPainter extends CustomPainter {
       size.width * (0.2 + 0.3 * math.sin(progress * math.pi)),
       size.height * (0.2 + 0.2 * math.cos(progress * math.pi)),
     );
-    paint.color = color2.withOpacity(0.4);
+    paint.color = color2.withValues(alpha: 0.4);
     canvas.drawCircle(offset1, size.width * 0.6, paint);
 
     // Orb 2: Moving bottom-right to center
@@ -101,7 +101,7 @@ class _BackgroundPainter extends CustomPainter {
       size.width * (0.8 - 0.3 * math.sin(progress * math.pi)),
       size.height * (0.8 - 0.2 * math.cos(progress * math.pi)),
     );
-    paint.color = color3.withOpacity(0.4);
+    paint.color = color3.withValues(alpha: 0.4);
     canvas.drawCircle(offset2, size.width * 0.6, paint);
   }
 

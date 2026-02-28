@@ -73,7 +73,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.blue),
@@ -89,7 +89,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                       ),
                       Text(
                         'Detect phishing, impersonation, and scam hooks in messages.',
-                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
                       ),
                     ],
                   ),
@@ -106,7 +106,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF1E293B),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.07)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
               ),
               child: TextField(
                 controller: _controller,
@@ -115,7 +115,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                 style: const TextStyle(color: Colors.white, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: 'Paste a suspicious SMS, WhatsApp message, or email here...',
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 14),
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 14),
                   contentPadding: const EdgeInsets.all(20),
                   border: InputBorder.none,
                 ),
@@ -154,9 +154,9 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -167,7 +167,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                Text(desc, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
               ],
             ),
           ),

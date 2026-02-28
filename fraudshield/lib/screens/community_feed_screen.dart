@@ -218,7 +218,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: _isNearMe ? AppColors.accentGreen.withOpacity(0.1) : Colors.transparent,
+          color: _isNearMe ? AppColors.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isNearMe ? AppColors.accentGreen : Colors.white12,

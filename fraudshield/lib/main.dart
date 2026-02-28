@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,10 +11,15 @@ import 'services/notification_service.dart';
 import 'app_router.dart';
 import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
+import 'l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'providers/locale_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  print('--- FraudShield App Starting ---');
+  if (kDebugMode) {
+    debugPrint('--- FraudShield App Starting ---');
+  }
   await Firebase.initializeApp();
 
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
@@ -57,17 +61,31 @@ class FraudShieldApp extends StatelessWidget {
           };
           return service;
         }),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (_, theme, __) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (_, theme, localeProvider, __) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'FraudShield',
+            locale: localeProvider.locale,
 
               // ✅ THEME CONNECTION
             themeMode: theme.mode,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
+
+            // ✅ LOCALIZATION
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('ms'), // Bahasa Malaysia
+            ],
 
             // ✅ ROUTING
             navigatorKey: AppRouter.navigatorKey,

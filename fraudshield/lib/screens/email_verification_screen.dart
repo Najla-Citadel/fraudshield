@@ -124,7 +124,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryBlue.withOpacity(0.2),
+                                color: AppColors.primaryBlue.withValues(alpha: 0.2),
                                 blurRadius: 20,
                                 spreadRadius: -5,
                               ),
@@ -159,7 +159,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                               'Enter the 6-digit code we sent to\n${widget.email}',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                                 height: 1.5,
                               ),
                             ),
@@ -170,9 +170,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.only(bottom: 24),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.1),
+                                  color: Colors.red.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                                 ),
                                 child: Row(
                                   children: [

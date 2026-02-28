@@ -26,7 +26,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             Text(
               'Effective Date: February 20, 2026',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 32),
@@ -94,7 +94,7 @@ class TermsOfServiceScreen extends StatelessWidget {
           Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Colors.white.withOpacity(0.8),
+              color: Colors.white.withValues(alpha: 0.8),
               height: 1.5,
             ),
           ),

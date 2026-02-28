@@ -89,7 +89,7 @@ class _HalfCircleTextPainter extends CustomPainter {
       canvas.rotate(angle + pi / 2);
 
       final glowPaint = Paint()
-        ..color = Colors.orange.withOpacity(0.4 + 0.3 * sin(glowPhase * 2 * pi))
+        ..color = Colors.orange.withValues(alpha: 0.4 + 0.3 * sin(glowPhase * 2 * pi))
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
 
       final tp = TextPainter(

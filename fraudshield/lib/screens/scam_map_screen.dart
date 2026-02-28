@@ -117,8 +117,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
           circleId: const CircleId('search_radius'),
           center: LatLng(lat, lng),
           radius: radiusKm * 1000,
-          fillColor: AppColors.accentGreen.withOpacity(0.05),
-          strokeColor: AppColors.accentGreen.withOpacity(0.2),
+          fillColor: AppColors.accentGreen.withValues(alpha: 0.05),
+          strokeColor: AppColors.accentGreen.withValues(alpha: 0.2),
           strokeWidth: 1,
         ),
       );
@@ -292,7 +292,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 'Search areas...',
-                                style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                               ),
                             ],
                           ),
@@ -324,7 +324,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                              color: isSelected ? AppColors.accentGreen : AppColors.deepNavy.withOpacity(0.7),
+                              color: isSelected ? AppColors.accentGreen : AppColors.deepNavy.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected ? AppColors.accentGreen : Colors.white24,
@@ -401,11 +401,11 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
                   children: [
-                    Icon(Icons.touch_app_outlined, color: AppColors.accentGreen.withOpacity(0.7), size: 14),
+                    Icon(Icons.touch_app_outlined, color: AppColors.accentGreen.withValues(alpha: 0.7), size: 14),
                     const SizedBox(width: 6),
                     Text(
                       'Long press to report a scam at a location',
-                      style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 10),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 10),
                     ),
                   ],
                 ),

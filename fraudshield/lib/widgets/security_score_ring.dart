@@ -70,7 +70,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF10B981).withOpacity(pulse),
+                        color: const Color(0xFF10B981).withValues(alpha: pulse),
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
@@ -88,7 +88,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 value: 1.0,
                 strokeWidth: 16,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white.withOpacity(0.05),
+                  Colors.white.withValues(alpha: 0.05),
                 ),
               ),
             ),
@@ -167,7 +167,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -180,7 +180,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               child: IconButton(
                 icon: Icon(
                   Icons.info_outline,
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   size: 20,
                 ),
                 onPressed: widget.onInfoTap,

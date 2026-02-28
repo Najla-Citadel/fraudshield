@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -20,15 +21,15 @@ class FloatingNavBar extends StatelessWidget {
         child: Container(
           height: 70,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withOpacity(0.95), // Slightly more opaque for solid feel
+            color: const Color(0xFF1E293B).withValues(alpha: 0.95), // Slightly more opaque for solid feel
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -43,31 +44,31 @@ class FloatingNavBar extends StatelessWidget {
                 children: [
                   _NavItem(
                     icon: Icons.home_rounded,
-                    label: 'Home',
+                    label: AppLocalizations.of(context)!.navHome,
                     isSelected: currentIndex == 0,
                     onTap: () => onTap(0),
                   ),
                   _NavItem(
                     icon: Icons.people_rounded,
-                    label: 'Community',
+                    label: AppLocalizations.of(context)!.navCommunity,
                     isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),
                   _NavItem(
                     icon: Icons.card_giftcard,
-                    label: 'Rewards',
+                    label: AppLocalizations.of(context)!.navRewards,
                     isSelected: currentIndex == 3, // PointsScreen is index 3
                     onTap: () => onTap(3),
                   ),
                   _NavItem(
                     icon: Icons.receipt_long_rounded,
-                    label: 'Journal',
+                    label: AppLocalizations.of(context)!.navJournal,
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
                     icon: Icons.person_rounded,
-                    label: 'Account',
+                    label: AppLocalizations.of(context)!.navAccount,
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),

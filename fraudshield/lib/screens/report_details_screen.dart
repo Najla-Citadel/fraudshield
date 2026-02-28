@@ -75,7 +75,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         title: Text(
           'REPORT DETAILS',
           style: theme.textTheme.labelMedium?.copyWith(
-            color: AppColors.textLight.withOpacity(0.7),
+            color: AppColors.textLight.withValues(alpha: 0.7),
             letterSpacing: 1.5,
             fontWeight: FontWeight.bold,
           ),
@@ -115,9 +115,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     margin: const EdgeInsets.only(left: 12, top: 4),
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.accentGreen.withOpacity(0.15),
+                      color: AppColors.accentGreen.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                      border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -141,19 +141,19 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.access_time_rounded, size: 16, color: AppColors.textLight.withOpacity(0.5)),
+                Icon(Icons.access_time_rounded, size: 16, color: AppColors.textLight.withValues(alpha: 0.5)),
                 const SizedBox(width: 6),
                 Text(
                   'Reported ${_getTimeAgo(widget.report['createdAt'])}',
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.7), fontSize: 13),
                 ),
                 const SizedBox(width: 12),
-                Container(width: 4, height: 4, decoration: BoxDecoration(color: AppColors.textLight.withOpacity(0.3), shape: BoxShape.circle)),
+                Container(width: 4, height: 4, decoration: BoxDecoration(color: AppColors.textLight.withValues(alpha: 0.3), shape: BoxShape.circle)),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     widget.report['location'] ?? 'Petaling Jaya',
-                    style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
+                    style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.7), fontSize: 13),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -178,7 +178,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF162032),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Text(
                 '"${widget.report['description'] ?? 'No content available.'}"',
@@ -205,9 +205,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.05),
+                color: AppColors.accentGreen.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.accentGreen.withOpacity(0.1)),
+                border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.1)),
               ),
               child: Column(
                 children: [
@@ -240,7 +240,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 const SizedBox(width: 8),
                 Text('COMMUNITY DISCUSSION', style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                 const Spacer(),
-                Text('${_comments.length} comments', style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 11)),
+                Text('${_comments.length} comments', style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.5), fontSize: 11)),
               ],
             ),
             const SizedBox(height: 16),
@@ -263,7 +263,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 padding: const EdgeInsets.only(top: 12),
                 child: Text(
                   'Screenshots are anonymized to protect user privacy.',
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.4), fontSize: 11, fontStyle: FontStyle.italic),
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.4), fontSize: 11, fontStyle: FontStyle.italic),
                 ),
               ),
             ),
@@ -282,7 +282,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF162032),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Row(
             children: [
@@ -298,7 +298,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   style: const TextStyle(color: AppColors.textLight, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Add a comment...',
-                    hintStyle: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 14),
+                    hintStyle: TextStyle(color: AppColors.textLight.withValues(alpha: 0.3), fontSize: 14),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
@@ -323,9 +323,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                Icon(Icons.chat_bubble_outline_rounded, color: AppColors.textLight.withOpacity(0.1), size: 48),
+                Icon(Icons.chat_bubble_outline_rounded, color: AppColors.textLight.withValues(alpha: 0.1), size: 48),
                 const SizedBox(height: 12),
-                Text('No comments yet. Be the first to discuss!', style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 13)),
+                Text('No comments yet. Be the first to discuss!', style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.3), fontSize: 13)),
               ],
             ),
           )
@@ -345,7 +345,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 children: [
                    CircleAvatar(
                     radius: 16,
-                    backgroundColor: Colors.white.withOpacity(0.05),
+                    backgroundColor: Colors.white.withValues(alpha: 0.05),
                     child: Text(
                       (userData['fullName'] ?? '?').substring(0, 1),
                       style: const TextStyle(color: AppColors.textLight, fontSize: 12),
@@ -365,7 +365,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                             const SizedBox(width: 8),
                             Text(
                               _getTimeAgo(comment['createdAt']),
-                              style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 11),
+                              style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.3), fontSize: 11),
                             ),
                           ],
                         ),
@@ -373,12 +373,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.03),
+                            color: Colors.white.withValues(alpha: 0.03),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             comment['text'] ?? '',
-                            style: TextStyle(color: AppColors.textLight.withOpacity(0.8), fontSize: 14, height: 1.4),
+                            style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.8), fontSize: 14, height: 1.4),
                           ),
                         ),
                       ],
@@ -429,14 +429,14 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF162032),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E3A8A).withOpacity(0.4),
+              color: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
@@ -453,7 +453,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   sublabel,
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.5), fontSize: 13),
                 ),
               ],
             ),
@@ -569,7 +569,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 ),
                 TextSpan(
                   text: desc,
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.8)),
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.8)),
                 ),
               ],
             ),
@@ -584,7 +584,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       aspectRatio: 3/4,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: ClipRRect(
@@ -596,16 +596,16 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                Column(
                  mainAxisAlignment: MainAxisAlignment.center,
                  children: [
-                   Icon(Icons.image, color: Colors.white.withOpacity(0.2), size: 32),
+                   Icon(Icons.image, color: Colors.white.withValues(alpha: 0.2), size: 32),
                  ],
                ),
                // Blur it
                BackdropFilter(
                  filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                 child: Container(color: Colors.black.withOpacity(0.1)),
+                 child: Container(color: Colors.black.withValues(alpha: 0.1)),
                ),
                Center(
-                 child: Icon(Icons.visibility_off, color: Colors.white.withOpacity(0.5), size: 24),
+                 child: Icon(Icons.visibility_off, color: Colors.white.withValues(alpha: 0.5), size: 24),
                ),
              ],
            ),

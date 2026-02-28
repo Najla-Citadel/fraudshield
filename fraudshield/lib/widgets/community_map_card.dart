@@ -48,10 +48,10 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -73,7 +73,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -94,7 +94,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(LucideIcons.maximize, color: Colors.white70, size: 14),
@@ -130,7 +130,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                         Text(
                           'Tap to view interactive heat map',
                           style: TextStyle(
-                            color: AppColors.accentGreen.withOpacity(0.8),
+                            color: AppColors.accentGreen.withValues(alpha: 0.8),
                             fontSize: 13,
                           ),
                         ),
@@ -163,7 +163,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFF3B82F6).withOpacity(1.0 - _pulseAnimation.value),
+                  color: const Color(0xFF3B82F6).withValues(alpha: 1.0 - _pulseAnimation.value),
                   width: 2,
                 ),
               ),
@@ -177,7 +177,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF3B82F6).withOpacity(1.0 - (_pulseAnimation.value - 0.5) * 2),
+                    color: const Color(0xFF3B82F6).withValues(alpha: 1.0 - (_pulseAnimation.value - 0.5) * 2),
                     width: 1,
                   ),
                 ),
@@ -187,9 +187,9 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF1E3A8A).withOpacity(0.3),
+                color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.5)),
+                border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.5)),
               ),
               child: const Icon(LucideIcons.radar, color: Color(0xFF60A5FA), size: 40),
             ),
@@ -213,9 +213,9 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF4444).withOpacity(0.15),
+        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.5)),
+        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

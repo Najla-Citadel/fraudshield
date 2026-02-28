@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               'Sign in to continue to FraudShield',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.7),
+                                color: Colors.white.withValues(alpha: 0.7),
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -298,19 +298,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             // 🔘 OR Divider
                             Row(
                               children: [
-                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                                Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 16),
                                   child: Text(
                                     'OR',
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.4),
+                                      color: Colors.white.withValues(alpha: 0.4),
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
+                                Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.2))),
                               ],
                             ),
 
@@ -324,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 opacity: 0.1,
                                 padding: const EdgeInsets.symmetric(vertical: 12),
                                 borderRadius: 16,
-                                borderColor: Colors.white.withOpacity(0.2),
+                                borderColor: Colors.white.withValues(alpha: 0.2),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -373,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don’t have an account? ",
-                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -403,7 +403,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Privacy Policy',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 12,
                             decoration: TextDecoration.underline,
                           ),

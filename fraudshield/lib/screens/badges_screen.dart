@@ -99,7 +99,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 child: CircularProgressIndicator(
                   value: _allBadges.isEmpty ? 0 : _earned.length / _allBadges.length,
                   strokeWidth: 8,
-                  backgroundColor: Colors.white.withOpacity(0.05),
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
                   valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
                 ),
               ),
@@ -112,7 +112,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                   ),
                   Text(
                     '/${_allBadges.length}',
-                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
+                    style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.5)),
                   ),
                 ],
               ),
@@ -130,7 +130,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'You\'ve unlocked ${(_allBadges.isEmpty ? 0 : (_earned.length / _allBadges.length * 100).toInt())}% of all security badges.',
-                  style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.6)),
+                  style: TextStyle(fontSize: 14, color: Colors.white.withValues(alpha: 0.6)),
                 ),
               ],
             ),
@@ -157,9 +157,9 @@ class _BadgesScreenState extends State<BadgesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
+                color: isActive ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
+                border: isActive ? null : Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: Text(
                 tier,
@@ -183,7 +183,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
           padding: const EdgeInsets.only(top: 40),
           child: Text(
             'No $_selectedTier badges yet.',
-            style: TextStyle(color: Colors.white.withOpacity(0.4)),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
           ),
         ),
       );
@@ -224,10 +224,10 @@ class _BadgesScreenState extends State<BadgesScreen> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: badge.isEarned ? tierColor.withOpacity(0.1) : Colors.white.withOpacity(0.03),
+                color: badge.isEarned ? tierColor.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: badge.isEarned ? tierColor.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                  color: badge.isEarned ? tierColor.withValues(alpha: 0.3) : Colors.white.withValues(alpha: 0.05),
                   width: 1.5,
                 ),
               ),
@@ -243,7 +243,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: tierColor.withOpacity(0.4),
+                            color: tierColor.withValues(alpha: 0.4),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
@@ -256,7 +256,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                     badge.icon,
                     style: TextStyle(
                       fontSize: 32,
-                      color: badge.isEarned ? null : Colors.white.withOpacity(0.1),
+                      color: badge.isEarned ? null : Colors.white.withValues(alpha: 0.1),
                     ),
                   ),
 
@@ -265,7 +265,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                     Positioned(
                       bottom: 8,
                       right: 8,
-                      child: Icon(Icons.lock, size: 14, color: Colors.white.withOpacity(0.2)),
+                      child: Icon(Icons.lock, size: 14, color: Colors.white.withValues(alpha: 0.2)),
                     ),
                 ],
               ),
@@ -280,7 +280,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: badge.isEarned ? FontWeight.bold : FontWeight.normal,
-              color: badge.isEarned ? Colors.white : Colors.white.withOpacity(0.4),
+              color: badge.isEarned ? Colors.white : Colors.white.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -326,7 +326,7 @@ class _BadgeDetailSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -338,10 +338,10 @@ class _BadgeDetailSheet extends StatelessWidget {
             height: 100,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: badge.isEarned ? tierColor.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+              color: badge.isEarned ? tierColor.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
               border: Border.all(
-                color: badge.isEarned ? tierColor.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+                color: badge.isEarned ? tierColor.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.1),
                 width: 2,
               ),
             ),
@@ -349,7 +349,7 @@ class _BadgeDetailSheet extends StatelessWidget {
               badge.icon,
               style: TextStyle(
                 fontSize: 48,
-                color: badge.isEarned ? null : Colors.white.withOpacity(0.2),
+                color: badge.isEarned ? null : Colors.white.withValues(alpha: 0.2),
               ),
             ),
           ),
@@ -364,7 +364,7 @@ class _BadgeDetailSheet extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: tierColor.withOpacity(0.2),
+              color: tierColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -382,7 +382,7 @@ class _BadgeDetailSheet extends StatelessWidget {
           Text(
             badge.description,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.7), height: 1.5),
+            style: TextStyle(fontSize: 16, color: Colors.white.withValues(alpha: 0.7), height: 1.5),
           ),
           
           const SizedBox(height: 32),
@@ -391,9 +391,9 @@ class _BadgeDetailSheet extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: AppColors.accentGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -415,7 +415,7 @@ class _BadgeDetailSheet extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -434,7 +434,7 @@ class _BadgeDetailSheet extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.05),
+                backgroundColor: Colors.white.withValues(alpha: 0.05),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 padding: const EdgeInsets.symmetric(vertical: 16),

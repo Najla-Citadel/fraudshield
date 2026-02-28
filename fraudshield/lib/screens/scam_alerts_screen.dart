@@ -138,10 +138,10 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.03),
+              color: Colors.white.withValues(alpha: 0.03),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.notifications_off_rounded, size: 64, color: Colors.white.withOpacity(0.2)),
+            child: Icon(Icons.notifications_off_rounded, size: 64, color: Colors.white.withValues(alpha: 0.2)),
           ),
           const SizedBox(height: 32),
           Text(
@@ -152,7 +152,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           const SizedBox(height: 16),
           Text(
             'Enable proactive alerts to see real-time trends and nearby threats in your area.',
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 16, height: 1.5),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 16, height: 1.5),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 48),
@@ -186,9 +186,9 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withOpacity(0.1),
+        color: AppColors.primaryBlue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +201,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                 child: Text('${alert['reportCount']} Reports', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
               ),
               const Spacer(),
-              Text('Within ${alert['radius']}', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+              Text('Within ${alert['radius']}', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
             ],
           ),
           const SizedBox(height: 12),
@@ -221,7 +221,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +238,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: severityColor.withOpacity(0.15),
+                  color: severityColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -257,7 +257,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           const SizedBox(height: 8),
           Text(
             alert['description'] ?? '',
-            style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13, height: 1.4),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, height: 1.4),
           ),
           const SizedBox(height: 16),
           const Divider(color: Colors.white12, height: 1),
@@ -267,15 +267,15 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.report_problem_outlined, color: Colors.white.withOpacity(0.4), size: 16),
+                  Icon(Icons.report_problem_outlined, color: Colors.white.withValues(alpha: 0.4), size: 16),
                   const SizedBox(width: 6),
-                  Text('${alert['reportCount']} incidents past ${alert['timeframe']}', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                  Text('${alert['reportCount']} incidents past ${alert['timeframe']}', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
                 ],
               ),
                if (alert['latestReportAt'] != null)
                  Text(
                    DateFormat('MMM d, h:mm a').format(DateTime.parse(alert['latestReportAt']).toLocal()),
-                   style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11),
+                   style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
                  ),
             ],
           ),

@@ -33,14 +33,14 @@ class GlassSurface extends StatelessWidget {
 
     // Premium base color: Surface color with transparency
     final baseColor = isDark 
-        ? Colors.white.withOpacity(0.05) // Subtle glass for dark mode
-        : Colors.white.withOpacity(0.65);
+        ? Colors.white.withValues(alpha: 0.05) // Subtle glass for dark mode
+        : Colors.white.withValues(alpha: 0.65);
 
     // Subtle border color
-    final effectiveBorderColor = borderColor ?? accentColor?.withOpacity(0.3) ?? 
+    final effectiveBorderColor = borderColor ?? accentColor?.withValues(alpha: 0.3) ?? 
         (isDark 
-            ? Colors.white.withOpacity(0.1) 
-            : Colors.white.withOpacity(0.6));
+            ? Colors.white.withValues(alpha: 0.1) 
+            : Colors.white.withValues(alpha: 0.6));
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
@@ -51,8 +51,8 @@ class GlassSurface extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(borderRadius),
-            highlightColor: colorScheme.primary.withOpacity(0.1),
-            splashColor: colorScheme.primary.withOpacity(0.1),
+            highlightColor: colorScheme.primary.withValues(alpha: 0.1),
+            splashColor: colorScheme.primary.withValues(alpha: 0.1),
             child: Container(
               padding: padding ?? const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -65,13 +65,13 @@ class GlassSurface extends StatelessWidget {
                 boxShadow: [
                   // 1. Ambient Shadow (Soft)
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.05),
+                    color: colorScheme.shadow.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
                   // 2. Direct Shadow (Keeps it grounded)
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(isDark ? 0.3 : 0.05),
+                    color: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.05),
                     blurRadius: 5,
                     offset: const Offset(0, 2),
                   ),

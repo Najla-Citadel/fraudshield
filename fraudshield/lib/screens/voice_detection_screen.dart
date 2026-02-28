@@ -182,7 +182,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.75), fontSize: 13, height: 1.4)),
+                    color: Colors.white.withValues(alpha: 0.75), fontSize: 13, height: 1.4)),
           ),
         ],
       );
@@ -410,7 +410,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withOpacity(0.15),
+          color: AppColors.primaryBlue.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(14),
         ),
         child: const Icon(Icons.mic_none_outlined, color: AppColors.primaryBlue, size: 28),
@@ -429,7 +429,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             ),
             Text(
               'AI-powered scam call detection',
-              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
             ),
           ],
         ),
@@ -478,7 +478,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   ? [Colors.blueGrey.shade700, Colors.blueGrey.shade900]
                   : _isRecording
                       ? [Colors.redAccent.shade400, Colors.red.shade800]
-                      : [AppColors.primaryBlue, AppColors.primaryBlue.withOpacity(0.75)],
+                      : [AppColors.primaryBlue, AppColors.primaryBlue.withValues(alpha: 0.75)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -486,12 +486,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             boxShadow: [
               BoxShadow(
                 color: (_isRecording ? Colors.red : AppColors.primaryBlue)
-                    .withOpacity(0.4),
+                    .withValues(alpha: 0.4),
                 blurRadius: _isRecording ? 28 : 18,
                 spreadRadius: _isRecording ? 8 : 4,
               ),
             ],
-            border: Border.all(color: Colors.white.withOpacity(0.1), width: 2),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
           ),
           child: _isAnalyzing
               ? const Center(
@@ -515,9 +515,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withOpacity(0.1),
+          color: AppColors.primaryBlue.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primaryBlue.withOpacity(0.3)),
+          border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -549,9 +549,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -595,7 +595,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           const SizedBox(height: 8),
           Text(
             'Tap Stop when done (min. 5 seconds)',
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
           ),
         ],
       );
@@ -603,7 +603,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     return Text(
       'Tap mic to start scanning',
       style: TextStyle(
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withValues(alpha: 0.4),
         fontSize: 15,
         letterSpacing: 0.5,
       ),
@@ -614,9 +614,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     width: double.infinity,
     padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
-      color: Colors.red.withOpacity(0.08),
+      color: Colors.red.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+      border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
     ),
     child: Row(
       children: [
@@ -649,16 +649,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: cardColor.withOpacity(0.08),
+                  color: cardColor.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: cardColor.withOpacity(0.35), width: 1.5),
+                  border: Border.all(color: cardColor.withValues(alpha: 0.35), width: 1.5),
                 ),
                 child: Column(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: cardColor.withOpacity(0.15),
+                        color: cardColor.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -682,7 +682,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                       child: LinearProgressIndicator(
                         value: r.riskScore / 100,
                         minHeight: 8,
-                        backgroundColor: Colors.white.withOpacity(0.08),
+                        backgroundColor: Colors.white.withValues(alpha: 0.08),
                         valueColor: AlwaysStoppedAnimation<Color>(cardColor),
                       ),
                     ),
@@ -690,7 +690,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                     Text(
                       'Risk Score: ${r.riskScore}/100',
                       style: TextStyle(
-                          color: Colors.white.withOpacity(0.5), fontSize: 12),
+                          color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
                     ),
                   ],
                 ),
@@ -705,7 +705,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withOpacity(0.07)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -730,7 +730,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                             ? '${r.transcript.substring(0, 400)}…'
                             : r.transcript,
                         style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                             fontSize: 13,
                             height: 1.6),
                       ),
@@ -748,7 +748,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   decoration: BoxDecoration(
                     color: const Color(0xFF1E293B),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withOpacity(0.07)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -785,14 +785,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.03),
+                  color: Colors.white.withValues(alpha: 0.03),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.07)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
                 ),
                 child: Text(
                   r.disclaimer,
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.35),
+                      color: Colors.white.withValues(alpha: 0.35),
                       fontSize: 11,
                       height: 1.6),
                   textAlign: TextAlign.center,
@@ -828,7 +828,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.65),
+                    color: Colors.white.withValues(alpha: 0.65),
                     fontSize: 13,
                     height: 1.4)),
           ),
@@ -856,7 +856,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
             letterSpacing: 0.5,
           ),
         ),
@@ -865,7 +865,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: AnimationLimiter(
             child: ListView.separated(
@@ -873,7 +873,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               physics: const NeverScrollableScrollPhysics(),
               itemCount: all.length,
               separatorBuilder: (_, __) =>
-                  Divider(color: Colors.white.withOpacity(0.05), height: 1),
+                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
               itemBuilder: (_, index) {
                 final item = all[index];
                 final isBad = item['result'] == 'Suspicious';
@@ -902,8 +902,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                                 padding: const EdgeInsets.all(9),
                                 decoration: BoxDecoration(
                                   color: isBad
-                                      ? Colors.redAccent.withOpacity(0.15)
-                                      : AppColors.accentGreen.withOpacity(0.15),
+                                      ? Colors.redAccent.withValues(alpha: 0.15)
+                                      : AppColors.accentGreen.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
@@ -935,7 +935,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                                       item['date'] as String,
                                       style: TextStyle(
                                           fontSize: 12,
-                                          color: Colors.white.withOpacity(0.4)),
+                                          color: Colors.white.withValues(alpha: 0.4)),
                                     ),
                                   ],
                                 ),
@@ -948,13 +948,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                                         horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: isBad
-                                          ? Colors.redAccent.withOpacity(0.15)
-                                          : AppColors.accentGreen.withOpacity(0.15),
+                                          ? Colors.redAccent.withValues(alpha: 0.15)
+                                          : AppColors.accentGreen.withValues(alpha: 0.15),
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
                                         color: isBad
-                                            ? Colors.redAccent.withOpacity(0.3)
-                                            : AppColors.accentGreen.withOpacity(0.3),
+                                            ? Colors.redAccent.withValues(alpha: 0.3)
+                                            : AppColors.accentGreen.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     child: Text(
@@ -971,7 +971,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                                   Text(
                                     'Score: $score',
                                     style: TextStyle(
-                                        color: Colors.white.withOpacity(0.3),
+                                        color: Colors.white.withValues(alpha: 0.3),
                                         fontSize: 11),
                                   ),
                                 ],
@@ -1003,7 +1003,7 @@ class WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withOpacity(0.8)
+      ..color = color.withValues(alpha: 0.8)
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
 

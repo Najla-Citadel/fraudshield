@@ -163,7 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         'Join the community to stay protected',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -229,7 +229,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 Expanded(
                                   child: RichText(
                                     text: TextSpan(
-                                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.4),
+                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13, height: 1.4),
                                       children: [
                                         const TextSpan(text: 'I agree to the '),
                                         TextSpan(
@@ -273,7 +273,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           Text(
                             "Already have an account? ",
-                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                           ),
                           GestureDetector(
                             onTap: () {
