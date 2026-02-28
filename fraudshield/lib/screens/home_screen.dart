@@ -495,6 +495,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _handleRefresh() async {
+    await Future.wait([
+      _loadProfile(),
+      _loadQuickActions(),
+      _loadRecentTransactions(),
+      _fetchSecurityHealth(),
+    ]);
+  }
+
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
 
@@ -545,6 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onShowReport: () => _showSecurityReport(isSubscribed),
             recentTransactions: _recentTransactions,
             newsKey: _newsKey,
+            onRefresh: _handleRefresh,
           ),
           const CommunityFeedScreen(),
           const ActivityScreen(),
@@ -575,7 +585,7 @@ class _HomeTab extends StatelessWidget {
   final VoidCallback onShowReport;
   final List<dynamic> recentTransactions;
   final GlobalKey<LatestNewsWidgetState> newsKey;
-
+  final Future<void> Function() onRefresh;
 
   const _HomeTab({
     required this.userName,
@@ -590,6 +600,7 @@ class _HomeTab extends StatelessWidget {
     required this.onShowReport,
     required this.recentTransactions,
     required this.newsKey,
+    required this.onRefresh,
   });
 
   String _getDynamicGreeting(BuildContext context) {
@@ -612,9 +623,14 @@ class _HomeTab extends StatelessWidget {
       ),
       child: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 100), // Extra bottom padding for nav bar
-          child: Column(
+        child: RefreshIndicator(
+          onRefresh: onRefresh,
+          color: AppColors.accentGreen,
+          backgroundColor: const Color(0xFF1E293B),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 100), // Extra bottom padding for nav bar
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // 1. HEADER
