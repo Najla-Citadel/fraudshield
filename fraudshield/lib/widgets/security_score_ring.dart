@@ -160,15 +160,35 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     ],
                   ),
                 const SizedBox(height: 8),
-                Text(
-                  widget.isScanning ? '${(DateTime.now().millisecond % 99)}' : '${widget.score}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 56,
-                    fontWeight: FontWeight.bold,
-                    height: 1.0,
-                  ),
-                ),
+                widget.isScanning
+                    ? AnimatedBuilder(
+                        animation: _scanController,
+                        builder: (context, child) {
+                          // Simple pulsing opacity based on scan cycle
+                          double opacity = 0.3 + 0.7 * (0.5 * (1 + sin(_scanController.value * 4 * pi)));
+                          return Opacity(
+                            opacity: opacity,
+                            child: const Text(
+                              '...',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 56,
+                                fontWeight: FontWeight.bold,
+                                height: 1.0,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Text(
+                        '${widget.score}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 56,
+                          fontWeight: FontWeight.bold,
+                          height: 1.0,
+                        ),
+                      ),
                 const SizedBox(height: 8),
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
