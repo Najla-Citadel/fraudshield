@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:intl/intl.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
-import 'package:intl/intl.dart';
-import 'alert_preferences_screen.dart';
-import '../widgets/skeleton_card.dart';
 
 class ScamAlertsScreen extends StatefulWidget {
   const ScamAlertsScreen({Key? key}) : super(key: key);
@@ -13,10 +13,8 @@ class ScamAlertsScreen extends StatefulWidget {
 }
 
 class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
+  List<dynamic> _alerts = [];
   bool _isLoading = true;
-  bool _alertsDisabled = false;
-  List<dynamic> _trending = [];
-  List<dynamic> _nearYou = [];
 
   @override
   void initState() {
@@ -26,17 +24,10 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
   Future<void> _fetchAlerts() async {
     try {
-      // Hardcoded KL coordinates for demo (Phase 2 will use real geolocation)
-      final data = await ApiService.instance.getTrendingAlerts(
-        hours: 72,
-        lat: 3.1390,
-        lng: 101.6869,
-      );
+      final alerts = await ApiService.instance.getUserAlerts();
       if (mounted) {
         setState(() {
-          _trending = data['trending'] ?? [];
-          _nearYou = data['nearYou'] ?? [];
-          _alertsDisabled = data['alertsDisabled'] ?? false;
+          _alerts = alerts;
           _isLoading = false;
         });
       }
@@ -44,243 +35,388 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load alerts: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Failed to load alerts: $e')),
         );
       }
+    }
+  }
+
+  Future<void> _markAllAsRead() async {
+    try {
+      await ApiService.instance.markAlertsAsRead();
+      _fetchAlerts(); // Refresh
+    } catch (e) {
+      debugPrint('Error marking alerts as read: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: AppColors.lightBg,
       appBar: AppBar(
-        title: const Text('Threat Intelligence', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.deepNavy,
+        backgroundColor: AppColors.lightBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
-              );
-              // Refresh alerts if preferences possibly changed
-              if (result == true) {
-                _fetchAlerts();
-              }
-            },
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Security Alerts',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _markAllAsRead,
+            child: const Text(
+              'Mark All as Read',
+              style: TextStyle(
+                color: AppColors.primaryBlue,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: _isLoading
-          ? ListView.builder(
-              padding: const EdgeInsets.all(24),
-              itemCount: 4,
-              itemBuilder: (context, index) => const SkeletonCard(height: 160, margin: EdgeInsets.only(bottom: 16)),
-            )
-          : _alertsDisabled
-              ? _buildDisabledPlaceholder()
+          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryBlue))
+          : _alerts.isEmpty
+              ? _buildEmptyState()
               : RefreshIndicator(
                   onRefresh: _fetchAlerts,
                   color: AppColors.primaryBlue,
-                  backgroundColor: const Color(0xFF1E293B),
-              child: ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                   // ── Near You Section (if any) ───────────────────────────
-                  if (_nearYou.isNotEmpty) ...[
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on_rounded, color: AppColors.primaryBlue, size: 24),
-                        const SizedBox(width: 8),
-                        Text('Near You', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ..._nearYou.map((alert) => _buildNearYouCard(alert)),
-                    const SizedBox(height: 32),
-                  ],
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(24),
+                    itemCount: _alerts.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final alert = _alerts[index];
+                      final category = alert['category'] ?? 'COMMUNITY';
+                      final severity = alert['severity'] ?? 'LOW';
 
-                  // ── Trending Nationwide ────────────────────────────────
-                  Row(
-                    children: [
-                      const Icon(Icons.trending_up_rounded, color: Colors.orange, size: 24),
-                      const SizedBox(width: 8),
-                      Text('Trending Threats', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ],
+                      if (category == 'PHISHING' && (severity == 'HIGH' || severity == 'CRITICAL')) {
+                        return _buildHighRiskAlertCard(alert);
+                      }
+
+                      return _buildStandardAlertCard(alert);
+                    },
                   ),
-                  const SizedBox(height: 16),
-                  if (_trending.isEmpty)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: Text('No trending scams detected recently. Stay safe!', style: TextStyle(color: Colors.white54)),
-                      ),
-                    )
-                  else
-                    ..._trending.map((alert) => _buildTrendingCard(alert)),
-                ],
-              ),
-            ),
+                ),
     );
   }
 
-  Widget _buildDisabledPlaceholder() {
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Center(
-        child: Column(
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.03),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.notifications_off_rounded, size: 64, color: Colors.white.withValues(alpha: 0.2)),
+          Icon(LucideIcons.shieldCheck, size: 64, color: AppColors.greyText.withValues(alpha: 0.3)),
+          const SizedBox(height: 16),
+          const Text(
+            'All Clear!',
+            style: TextStyle(color: AppColors.textDark, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'No active security alerts for your account.',
+            style: TextStyle(color: AppColors.greyText, fontSize: 14),
           ),
           const SizedBox(height: 32),
-          Text(
-            'Proactive Alerts Disabled',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Enable proactive alerts to see real-time trends and nearby threats in your area.',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 16, height: 1.5),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 48),
           SizedBox(
-            width: double.infinity,
+            width: 200,
             child: ElevatedButton(
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
-                );
-                if (result == true) _fetchAlerts();
-              },
+              onPressed: _seedDemoAlerts,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(vertical: 12),
               ),
-              child: const Text('Turn on Proactive Alerts', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text('Fetch Demo Alerts', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
-        ],
-      ),
-    ),
-  );
-}
-
-  Widget _buildNearYouCard(dynamic alert) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: AppColors.primaryBlue, borderRadius: BorderRadius.circular(20)),
-                child: Text('${alert['reportCount']} Reports', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-              ),
-              const Spacer(),
-              Text('Within ${alert['radius']}', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(alert['message'], style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.4)),
         ],
       ),
     );
   }
 
-  Widget _buildTrendingCard(dynamic alert) {
-    final isHigh = alert['severity'] == 'high';
-    final severityColor = isHigh ? Colors.red.shade400 : Colors.orange.shade400;
+  Future<void> _seedDemoAlerts() async {
+    setState(() => _isLoading = true);
+    try {
+      await ApiService.instance.get('/alerts/seed');
+      await _fetchAlerts(); 
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to seed alerts: $e')),
+        );
+      }
+    }
+  }
+
+  Widget _buildHighRiskAlertCard(dynamic alert) {
+    final metadata = alert['metadata'] as Map<String, dynamic>? ?? {};
+    final createdAt = DateTime.parse(alert['createdAt']).toLocal();
+    final timeStr = DateFormat('h:mm a').format(createdAt);
+    final dateStr = DateFormat('MMM d, yyyy').format(createdAt);
+    final isToday = DateUtils.isSameDay(createdAt, DateTime.now());
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        color: const Color(0xFFFFF0F0), // Light red bg
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFFCA5A5).withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  alert['title'] ?? 'Scam Alert',
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: severityColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  children: [
-                    Icon(isHigh ? Icons.warning_rounded : Icons.info_outline_rounded, color: severityColor, size: 14),
-                    const SizedBox(width: 4),
-                    Text(
-                      isHigh ? 'HIGH RISK' : 'WATCHLIST',
-                      style: TextStyle(color: severityColor, fontSize: 10, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            alert['description'] ?? '',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13, height: 1.4),
-          ),
-          const SizedBox(height: 16),
-          const Divider(color: Colors.white12, height: 1),
-          const SizedBox(height: 16),
-          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.report_problem_outlined, color: Colors.white.withValues(alpha: 0.4), size: 16),
-                  const SizedBox(width: 6),
-                  Text('${alert['reportCount']} incidents past ${alert['timeframe']}', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
-                ],
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF43F5E), // Rose red
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(LucideIcons.alertTriangle, color: Colors.white, size: 24),
               ),
-               if (alert['latestReportAt'] != null)
-                 Text(
-                   DateFormat('MMM d, h:mm a').format(DateTime.parse(alert['latestReportAt']).toLocal()),
-                   style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
-                 ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF43F5E).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'HIGH RISK',
+                  style: TextStyle(
+                    color: Color(0xFFF43F5E),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            alert['title'] ?? 'Suspicious activity detected',
+            style: const TextStyle(
+              color: AppColors.textDark,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            '${isToday ? 'Today' : dateStr} at $timeStr',
+            style: const TextStyle(
+              color: AppColors.greyText,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      color: AppColors.textDark,
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic,
+                      height: 1.5,
+                    ),
+                    children: [
+                      TextSpan(text: '"${alert['message']}"'),
+                    ],
+                  ),
+                ),
+                if (metadata.containsKey('sender')) ...[
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      const Icon(Icons.chat_bubble, color: AppColors.greyText, size: 14),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Sender: ${metadata['sender']}',
+                        style: TextStyle(
+                          color: AppColors.greyText.withValues(alpha: 0.8),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE11D48), // Deep Rose
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Block & Report Sender', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF1F5F9), // Slate 100
+                foregroundColor: AppColors.textDark,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Not a Scam', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildStandardAlertCard(dynamic alert) {
+    final category = alert['category'] ?? 'COMMUNITY';
+    final severity = alert['severity'] ?? 'LOW';
+    final createdAt = DateTime.parse(alert['createdAt']).toLocal();
+    final dateStr = DateFormat('MMM d, yyyy').format(createdAt);
+    final timeStr = DateFormat('h:mm a').format(createdAt);
+    final isToday = DateUtils.isSameDay(createdAt, DateTime.now());
+
+    Color iconColor;
+    Color bgColor;
+    IconData icon;
+    
+    switch (category) {
+      case 'LOGIN':
+        iconColor = const Color(0xFFF59E0B);
+        bgColor = const Color(0xFFFEF3C7);
+        icon = Icons.person_outline;
+        break;
+      case 'SYSTEM_SCAN':
+        iconColor = const Color(0xFF2563EB);
+        bgColor = const Color(0xFFDBEAFE);
+        icon = Icons.shield_outlined;
+        break;
+      case 'NETWORK':
+        iconColor = const Color(0xFF9CA3AF);
+        bgColor = const Color(0xFFF3F4F6);
+        icon = LucideIcons.link2Off;
+        break;
+      default:
+        iconColor = AppColors.primaryBlue;
+        bgColor = AppColors.primaryBlue.withValues(alpha: 0.1);
+        icon = Icons.notifications_none;
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  alert['title'] ?? 'Security Update',
+                  style: const TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${isToday ? 'Today' : dateStr} at $timeStr',
+                  style: const TextStyle(
+                    color: AppColors.greyText,
+                    fontSize: 12,
+                  ),
+                ),
+                if (alert['message'] != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    alert['message'],
+                    style: const TextStyle(
+                      color: AppColors.textDark,
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                  ),
+                ]
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.arrow_forward_ios, color: AppColors.greyText, size: 16),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _resolveAlert(String alertId, String action) async {
+    try {
+      await ApiService.instance.resolveAlert(alertId, action);
+      _fetchAlerts(); // Refresh
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Alert ${action == 'BLOCK' ? 'blocked' : 'dismissed'}')),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error resolving alert: $e');
+    }
   }
 }

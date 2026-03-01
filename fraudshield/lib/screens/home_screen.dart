@@ -21,11 +21,14 @@ import '../widgets/glass_surface.dart';
 // import '../widgets/fade_in_list.dart';
 import '../widgets/skeleton_loader.dart';
 import 'activity_screen.dart';
+import 'trending_scams_screen.dart';
 import '../constants/colors.dart';
 import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
 import '../widgets/security_report_sheet.dart';
+import 'security_score_detail_screen.dart';
 import 'transaction_journal_screen.dart';
+import 'message_analysis_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/daily_digest_widget.dart';
 import '../l10n/app_localizations.dart';
@@ -52,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Security Center State
   bool _isScanning = false;
   int _securityScore = 85; // Initial placeholder
+  Map<String, dynamic> _healthData = {'score': 85, 'breakdown': {}};
   String _securityStatus = 'GOOD';
   List<dynamic> _recentTransactions = [];
 
@@ -218,6 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         setState(() {
+          _healthData = health;
           _securityScore = health['score'];
           final score = _securityScore;
           if (score >= 90) _securityStatus = l10n.statusExcellent;
@@ -578,11 +583,12 @@ class _HomeScreenState extends State<HomeScreen> {
             recentTransactions: _recentTransactions,
             newsKey: _newsKey,
             onRefresh: _handleRefresh,
+            healthData: _healthData,
           ),
-          const CommunityFeedScreen(),
-          const ActivityScreen(),
-          PointsScreen(key: _pointsKey),
-          const AccountScreen(),
+          const ActivityScreen(), // CHECK tab (index 1)
+          TrendingScamsScreen(), // BOARD tab (index 2)
+          const CommunityFeedScreen(), // SOCIAL tab (index 3)
+          const AccountScreen(), // PROFILE tab (index 4)
         ],
       ),
       bottomNavigationBar: FloatingNavBar(
@@ -609,6 +615,7 @@ class _HomeTab extends StatelessWidget {
   final List<dynamic> recentTransactions;
   final GlobalKey<LatestNewsWidgetState> newsKey;
   final Future<void> Function() onRefresh;
+  final Map<String, dynamic> healthData;
 
   const _HomeTab({
     required this.userName,
@@ -624,6 +631,7 @@ class _HomeTab extends StatelessWidget {
     required this.recentTransactions,
     required this.newsKey,
     required this.onRefresh,
+    required this.healthData,
   });
 
   String _getDynamicGreeting(BuildContext context) {
@@ -639,20 +647,19 @@ class _HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Wrap entire HomeTab in AnimatedBackground for that premium feel
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.deepNavy, // Force Deep Navy background for this tab
+        color: AppColors.lightBg, // Light theme background
       ),
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           onRefresh: onRefresh,
-          color: AppColors.accentGreen,
-          backgroundColor: const Color(0xFF1E293B),
+          color: AppColors.primaryBlue,
+          backgroundColor: Colors.white,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 100), // Extra bottom padding for nav bar
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
             child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -660,36 +667,32 @@ class _HomeTab extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _getDynamicGreeting(context),
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      loading
-                          ? const SkeletonLoader(width: 100, height: 24, borderRadius: 4)
-                          : Text(
-                              userName,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                height: 1.2, // Fixed: height, not maxHeight
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                    ],
-                  ),
                   Row(
                     children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryBlue,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(LucideIcons.shieldCheck, color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'FraudShield',
+                        style: TextStyle(
+                          color: AppColors.textDark,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Stack(
+                    children: [
                       IconButton(
-                        icon: const Icon(Icons.notifications_none, color: Colors.white),
+                        icon: const Icon(LucideIcons.bell, color: AppColors.textDark),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -697,190 +700,47 @@ class _HomeTab extends StatelessWidget {
                           );
                         },
                       ),
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
 
-              const SizedBox(height: 40),
-
-              // 2. SECURITY SCORE RING (Interactive)
-              GestureDetector(
-                onTap: () {
-                  if (!isScanning) onScan();
-                },
-                child: SecurityScoreRing(
-                  score: score,
-                  status: status,
-                  isScanning: isScanning,
-                  onTap: onScan,
-                  onInfoTap: onShowReport,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-              _buildMonitoringPill(),
               const SizedBox(height: 24),
+
+              // 2. SECURITY HEALTH SCORE (Gradient Card)
+              _buildSecurityHealthCard(context),
+
+              const SizedBox(height: 32),
 
               // 3. SERVICES ROW
               _buildQuickActions(context),
 
               const SizedBox(height: 24),
 
-              // 4. TRENDING ALERTS CARD
-              _buildTrendingAlertsCard(context),
+              // 4. PREMIUM PROTECTION
+              _buildPremiumProtectionSection(context),
 
               const SizedBox(height: 24),
 
-              // 5. DAILY INSIGHTS
-              TweenAnimationBuilder<double>(
-                tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeOutCubic,
-                builder: (context, value, child) {
-                  return Opacity(
-                    opacity: value,
-                    child: Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: child,
-                    ),
-                  );
-                },
-                child: const DailyDigestWidget(),
-              ),
+              // 5. ALERT CENTER
+              _buildAlertCenterCard(context),
 
               const SizedBox(height: 24),
 
-              // 6. PAYMENT JOURNAL CARD
-              _buildPaymentJournalCard(context),
-
-              const SizedBox(height: 32),
-
-              // NEW: RECENT CHECKS (formerly SECURITY JOURNAL)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.homeRecentChecks,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.homeViewAll,
-                        style: TextStyle(
-                          color: AppColors.accentGreen,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (recentTransactions.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                       Icon(LucideIcons.shieldCheck, color: Colors.grey.withValues(alpha: 0.5), size: 32),
-                       const SizedBox(height: 8),
-                       Text(AppLocalizations.of(context)!.homeNoRecentScans, style: const TextStyle(color: Colors.grey)),
-                    ],
-                  ),
-                )
-              else
-                ...recentTransactions.map((tx) {
-                   final type = tx['checkType'] ?? 'UNKNOWN';
-                   final target = tx['target'] ?? '';
-                   final status = tx['status'] ?? 'SAFE';
-                   
-                   IconData icon;
-                   switch (type) {
-                     case 'URL': icon = LucideIcons.link; break;
-                     case 'PHONE': icon = LucideIcons.phone; break;
-                     case 'BANK': icon = LucideIcons.building; break;
-                     default: icon = LucideIcons.fileText;
-                   }
-
-                   Color color;
-                   if (status == 'SAFE') color = AppColors.accentGreen;
-                   else if (status == 'SUSPICIOUS') color = Colors.orangeAccent;
-                   else color = Colors.redAccent;
-
-                   return Container(
-                     margin: const EdgeInsets.only(bottom: 8),
-                     padding: const EdgeInsets.all(12),
-                     decoration: BoxDecoration(
-                       color: const Color(0xFF1E293B),
-                       borderRadius: BorderRadius.circular(12),
-                     ),
-                     child: Row(
-                       children: [
-                         Container(
-                           padding: const EdgeInsets.all(8),
-                           decoration: BoxDecoration(
-                             color: color.withValues(alpha: 0.1),
-                             borderRadius: BorderRadius.circular(8),
-                           ),
-                           child: Icon(icon, color: color, size: 16),
-                         ),
-                         const SizedBox(width: 12),
-                         Expanded(
-                           child: Column(
-                             crossAxisAlignment: CrossAxisAlignment.start,
-                             children: [
-                               Text(target, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-                               Text(status, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                             ],
-                           ),
-                         ),
-                       ],
-                     ),
-                   );
-                }),
-
-              const SizedBox(height: 32),
-
-              // Redundant services list removed
-
-              // 7. THREAT INSIGHTS
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.homeThreatInsights,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => newsKey.currentState?.showCustomization(),
-                    child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              LatestNewsWidget(key: newsKey),
+              // 6. SCAM INSIGHTS
+              _buildScamInsightsCard(context),
 
               const SizedBox(height: 40), // Bottom padding
             ],
@@ -891,174 +751,429 @@ class _HomeTab extends StatelessWidget {
   );
 }
 
+  Widget _buildSecurityHealthCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SecurityScoreDetailScreen(healthData: healthData),
+          ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.healthGradientStart,
+              AppColors.healthGradientEnd,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.healthGradientEnd.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            )
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Background faint shield icon
+            Positioned(
+              right: -20,
+              top: 0,
+              child: Icon(
+                LucideIcons.shieldCheck,
+                size: 120,
+                color: Colors.white.withValues(alpha: 0.15),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SECURITY HEALTH SCORE',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      score.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 64,
+                        fontWeight: FontWeight.w900,
+                        height: 1.0,
+                      ),
+                    ),
+                    const Text(
+                      ' /100',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Status Pill
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.verified, color: Colors.white, size: 16),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Protected Environment',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildQuickActions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Text(
+          'Quick Protection',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Expanded(child: _buildGridButton(context, 'Report Scam', LucideIcons.flag, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScamReportingScreen())))),
+            const SizedBox(width: 16),
+            Expanded(child: _buildGridButton(context, 'Phone/Bank Check', LucideIcons.wallet, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FraudCheckScreen())))),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(child: _buildGridButton(context, 'URL Link Check', LucideIcons.globe, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhishingProtectionScreen())))),
+            const SizedBox(width: 16),
+            Expanded(child: _buildGridButton(context, 'QR Scanner', LucideIcons.qrCode, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QRDetectionScreen())))),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGridButton(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.textDark, size: 28),
+            const SizedBox(height: 12),
             Text(
-              AppLocalizations.of(context)!.homeServices,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 12,
+              title,
+              style: const TextStyle(
+                color: AppColors.textDark,
+                fontSize: 13,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
               ),
             ),
-            GestureDetector(
-              onTap: onCustomize,
-              child: const Icon(Icons.tune, color: Colors.blueAccent, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPremiumProtectionSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'Premium Protection',
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF7E6), // Light yellow tint
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFFFCC00).withValues(alpha: 0.5)),
+              ),
+              child: const Text(
+                'GOLD TIER',
+                style: TextStyle(
+                  color: Color(0xFFE5A800),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        if (activeQuickActions.isEmpty)
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          child: Row(
+            children: [
+              _buildPremiumCard(
+                context, 
+                'AI Message Scanner', 
+                LucideIcons.messageSquare,
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => MessageAnalysisScreen())),
+              ),
+              const SizedBox(width: 16),
+              _buildPremiumCard(context, 'Call Screen', LucideIcons.phoneCall, () {}),
+              const SizedBox(width: 16),
+              _buildPremiumCard(context, 'File Security', LucideIcons.fileLock, () {}),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPremiumCard(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 120,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Column(
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                const Icon(Icons.add_circle_outline, color: Colors.grey, size: 30),
-                const SizedBox(height: 8),
-                Text(
-                  'Add Services',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                Icon(icon, color: AppColors.textDark.withValues(alpha: 0.6), size: 28),
+                Positioned(
+                  bottom: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.stars, color: Color(0xFFFFCC00), size: 14),
+                  ),
                 ),
               ],
             ),
-          )
-        else
-          ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [Colors.white, Colors.white.withValues(alpha: 0.0)],
-                stops: const [0.9, 1.0], // Fade out the last 10%
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstIn,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              // Add slight right padding to ensure the last item can be scrolled away from the edge manually if needed, 
-              // but mostly rely on the fading mask for the visual cue.
-              padding: const EdgeInsets.only(right: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  if (activeQuickActions.contains('fraud_check'))
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _BigActionButton(
-                        label: 'Fraud Check',
-                        icon: Icons.health_and_safety,
-                        color: const Color(0xFF3B82F6), // Blue
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const FraudCheckScreen()),
-                        ),
-                      ),
-                    ),
-                  if (activeQuickActions.contains('qr_scan'))
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _BigActionButton(
-                        label: 'QR Scan',
-                        icon: Icons.qr_code_scanner,
-                        color: const Color(0xFF1E293B), // Dark Button
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const QRDetectionScreen()),
-                        ),
-                      ),
-                    ),
-                  if (activeQuickActions.contains('report_scam'))
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _BigActionButton(
-                        label: 'Report',
-                        icon: Icons.warning_amber_rounded,
-                        color: const Color(0xFF1E293B), // Dark Button
-                        isAlert: true,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
-                        ),
-                      ),
-                    ),
-                  if (activeQuickActions.contains('voice_detection'))
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _BigActionButton(
-                        label: AppLocalizations.of(context)!.homeVoiceCheck,
-                        icon: Icons.mic,
-                        color: const Color(0xFF1E293B),
-                        isLocked: !isSubscribed,
-                        onTap: () {
-                          if (isSubscribed) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const VoiceDetectionScreen()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppLocalizations.of(context)!.homeUnlockVoice),
-                                action: SnackBarAction(
-                                  label: AppLocalizations.of(context)!.homeUpgrade,
-                                  onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  if (activeQuickActions.contains('phishing_protection'))
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _BigActionButton(
-                        label: AppLocalizations.of(context)!.homePhishing,
-                        icon: Icons.shield,
-                        color: const Color(0xFF1E293B),
-                        isLocked: !isSubscribed,
-                        onTap: () {
-                          if (isSubscribed) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const PhishingProtectionScreen()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(AppLocalizations.of(context)!.homeUnlockPhishing),
-                                action: SnackBarAction(
-                                  label: AppLocalizations.of(context)!.homeUpgrade,
-                                  onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                ],
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppColors.textDark,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAlertCenterCard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Alert Center',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+            );
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF0F0), // Light red background
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF43F5E), // Rose red
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(LucideIcons.alertTriangle, color: Colors.white, size: 24),
+                ),
+                const SizedBox(width: 16),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Suspicious activity detected',
+                        style: TextStyle(
+                          color: Color(0xFF881337), // Dark rose
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Phishing pattern found in recent incoming messages from an unknown sender.',
+                        style: TextStyle(
+                          color: Color(0xFFBE123C), // Medium rose
+                          fontSize: 13,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_ios, color: Color(0xFFF43F5E), size: 16),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScamInsightsCard(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Scam Insights',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF7ED), // Orange light
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(LucideIcons.trendingUp, color: Color(0xFFEA580C), size: 24), // Orange icon
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Delivery scam trending',
+                      style: TextStyle(
+                        color: AppColors.textDark,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Increasing reports in your area',
+                      style: TextStyle(
+                        color: AppColors.greyText,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_ios, color: AppColors.greyText, size: 16),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -1072,16 +1187,16 @@ class _HomeTab extends StatelessWidget {
         final latestAlert = hasAlerts ? alerts.first : null;
 
         final isWarning = hasAlerts && (latestAlert!['severity'] == 'high' || latestAlert['severity'] == 'critical');
-        final iconColor = hasAlerts 
+        final iconColor = hasAlerts
             ? (isWarning ? Colors.redAccent : Colors.orangeAccent)
             : AppColors.accentGreen;
-            
+
         final iconData = hasAlerts ? LucideIcons.alertTriangle : LucideIcons.shieldCheck;
-        final title = hasAlerts 
+        final title = hasAlerts
             ? (latestAlert!['title'] ?? AppLocalizations.of(context)!.homeTrendingThreats)
             : 'No Active Threats';
-            
-        final subtitle = hasAlerts 
+
+        final subtitle = hasAlerts
             ? (latestAlert!['message'] ?? AppLocalizations.of(context)!.homeTrendingDesc)
             : 'Your security environment is currently clear and protected.';
 
@@ -1191,7 +1306,7 @@ class _HomeTab extends StatelessWidget {
           ),
         );
       },
-      onEnd: () {}, 
+      onEnd: () {},
     );
   }
 

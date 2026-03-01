@@ -10,7 +10,8 @@ import '../widgets/recent_checks_widget.dart';
 import 'qr_detection_screen.dart';
 
 class FraudCheckScreen extends StatefulWidget {
-  const FraudCheckScreen({super.key});
+  final String? initialType;
+  const FraudCheckScreen({super.key, this.initialType});
 
   @override
   State<FraudCheckScreen> createState() => _FraudCheckScreenState();
@@ -28,6 +29,20 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   void initState() {
     super.initState();
     _inputController.addListener(_onInputChanged);
+    
+    if (widget.initialType != null) {
+      _detectedType = widget.initialType == 'PHONE' || widget.initialType == 'BANK' 
+          ? 'Payment' 
+          : widget.initialType!;
+          
+      if (_detectedType == 'Payment') {
+        _detectedIcon = Icons.payment_rounded;
+      } else if (_detectedType == 'URL') {
+        _detectedIcon = Icons.link_rounded;
+      } else if (_detectedType == 'DOC') {
+        _detectedIcon = Icons.upload_file_rounded;
+      }
+    }
   }
 
   void _onInputChanged() {

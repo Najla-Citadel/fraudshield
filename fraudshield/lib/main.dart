@@ -24,6 +24,7 @@ Future<void> main() async {
 
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = (errorDetails) {
+    FlutterError.dumpErrorToConsole(errorDetails);
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
 

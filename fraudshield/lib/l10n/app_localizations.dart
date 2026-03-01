@@ -674,11 +674,11 @@ abstract class AppLocalizations {
   /// **'Voice Check'**
   String get homeVoiceCheck;
 
-  /// No description provided for @homePhishing.
+  /// No description provided for @homeMessageScan.
   ///
   /// In en, this message translates to:
-  /// **'Phishing'**
-  String get homePhishing;
+  /// **'AI Message Scanner'**
+  String get homeMessageScan;
 
   /// No description provided for @homeUnlockVoice.
   ///

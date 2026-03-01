@@ -300,7 +300,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeVoiceCheck => 'Voice Check';
 
   @override
-  String get homePhishing => 'Phishing';
+  String get homeMessageScan => 'AI Message Scanner';
 
   @override
   String get homeUnlockVoice => 'Subscribe to unlock Voice Check!';

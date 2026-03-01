@@ -498,6 +498,24 @@ class ApiService {
     return response as List;
   }
 
+  // ---------------- Alerts ----------------
+
+  Future<List<dynamic>> getUserAlerts() async {
+    final response = await get('/alerts');
+    if (response is List) {
+      return response;
+    }
+    return [];
+  }
+
+  Future<void> markAlertsAsRead() async {
+    await patch('/alerts/read-all', {});
+  }
+
+  Future<Map<String, dynamic>> resolveAlert(String alertId, String action) async {
+    return await post('/alerts/$alertId/resolve', {'action': action});
+  }
+
   // ---------------- Rewards ----------------
 
   Future<Map<String, dynamic>> getRewards() async {

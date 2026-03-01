@@ -180,7 +180,7 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ],
       body: Padding(
-        padding: const EdgeInsets.only(bottom: 40),
+        padding: const EdgeInsets.only(bottom: 100),
         child: Column(
           children: [
             const SizedBox(height: 20),

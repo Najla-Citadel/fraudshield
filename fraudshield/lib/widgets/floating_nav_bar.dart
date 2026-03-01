@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../l10n/app_localizations.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../constants/colors.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -14,61 +15,64 @@ class FloatingNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-        child: Container(
-          height: 70,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withValues(alpha: 0.95), // Slightly more opaque for solid feel
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1),
-              width: 1,
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+        height: 80,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(36),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(36),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(36),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _NavItem(
-                    icon: Icons.home_rounded,
-                    label: AppLocalizations.of(context)!.navHome,
+                   _NavItem(
+                    icon: LucideIcons.home,
+                    label: 'Home',
                     isSelected: currentIndex == 0,
                     onTap: () => onTap(0),
                   ),
                   _NavItem(
-                    icon: Icons.people_rounded,
-                    label: AppLocalizations.of(context)!.navCommunity,
+                    icon: LucideIcons.shieldCheck,
+                    label: 'Security',
                     isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),
                   _NavItem(
-                    icon: Icons.card_giftcard,
-                    label: AppLocalizations.of(context)!.navRewards,
-                    isSelected: currentIndex == 3, // PointsScreen is index 3
-                    onTap: () => onTap(3),
-                  ),
-                  _NavItem(
-                    icon: Icons.receipt_long_rounded,
-                    label: AppLocalizations.of(context)!.navJournal,
+                    icon: LucideIcons.layoutGrid,
+                    label: 'Board',
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
-                    icon: Icons.person_rounded,
-                    label: AppLocalizations.of(context)!.navAccount,
+                    icon: LucideIcons.users,
+                    label: 'Social',
+                    isSelected: currentIndex == 3,
+                    onTap: () => onTap(3),
+                  ),
+                  _NavItem(
+                    icon: LucideIcons.user,
+                    label: 'Profile',
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
@@ -100,32 +104,33 @@ class _NavItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected 
-              ? const Color(0xFF3B82F6).withValues(alpha: 0.15) 
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFF3B82F6) : Colors.grey,
-              size: 24,
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primaryBlue : Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? Colors.white : AppColors.greyText,
+                size: 20,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF3B82F6) : Colors.grey,
+                color: isSelected ? AppColors.primaryBlue : AppColors.greyText,
                 fontSize: 10,
-                fontWeight: FontWeight.w600,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                letterSpacing: 0.2,
               ),
             ),
           ],

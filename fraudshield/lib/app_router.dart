@@ -10,6 +10,8 @@ import 'screens/splash_screen.dart';
 import 'screens/privacy_policy_screen.dart';
 import 'screens/terms_of_service_screen.dart';
 import 'screens/leaderboard_screen.dart';
+import 'screens/alert_center_screen.dart';
+import 'screens/scam_insight_screen.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -34,6 +36,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const ScamMapScreen());
       case '/leaderboard':
         return MaterialPageRoute(builder: (_) => const LeaderboardScreen());
+      case '/alert-center':
+        return MaterialPageRoute(builder: (_) => const AlertCenterScreen());
+      case '/scam-insight':
+        return MaterialPageRoute(builder: (_) => const ScamInsightScreen());
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }

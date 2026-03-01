@@ -1,8 +1,7 @@
-// lib/screens/message_analysis_screen.dart
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import 'fraud_check_screen.dart';
 
@@ -60,62 +59,63 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveScaffold(
-      title: 'Message Analysis',
-      backgroundColor: AppColors.deepNavy,
+    return Scaffold(
+      backgroundColor: AppColors.lightBg,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'AI Message Scanner',
+          style: TextStyle(
+            color: AppColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.blue),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'AI Chat Defense',
-                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        'Detect phishing, impersonation, and scam hooks in messages.',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            _buildInfoCard(),
             const SizedBox(height: 32),
             const Text(
               'Paste Message Content',
-              style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: TextField(
                 controller: _controller,
-                maxLines: 10,
+                maxLines: 8,
                 minLines: 5,
-                style: const TextStyle(color: Colors.white, fontSize: 15),
+                style: const TextStyle(color: AppColors.textDark, fontSize: 15),
                 decoration: InputDecoration(
                   hintText: 'Paste a suspicious SMS, WhatsApp message, or email here...',
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 14),
+                  hintStyle: TextStyle(
+                    color: AppColors.textDark.withValues(alpha: 0.3),
+                    fontSize: 14,
+                  ),
                   contentPadding: const EdgeInsets.all(20),
                   border: InputBorder.none,
                 ),
@@ -124,24 +124,47 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: AdaptiveButton(
-                text: 'Analyze Message',
-                isLoading: _isLoading,
-                onPressed: _analyze,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _analyze,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(
+                        'Analyze Message',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 40),
-            _infoCard(
+            _featureRow(
               'Language Agnostic',
               'Analyzes English, Bahasa Malaysia, and Mandarin.',
-              Icons.translate_rounded,
+              LucideIcons.languages,
               Colors.orange,
             ),
             const SizedBox(height: 16),
-             _infoCard(
+            _featureRow(
               'Hook Detection',
-              'Identifies urgency, financial triggers, and impersonation signals.',
-              Icons.radar_rounded,
+              'Identifies urgency, financial triggers, and impersonation.',
+              LucideIcons.radar,
               Colors.green,
             ),
           ],
@@ -150,13 +173,63 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     );
   }
 
-  Widget _infoCard(String title, String desc, IconData icon, Color color) {
+  Widget _buildInfoCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.healthGradientStart, AppColors.healthGradientEnd],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(LucideIcons.shieldCheck, color: Colors.white),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'AI Chat Defense',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Instantly detect phishing, impersonation, and scam hooks.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _featureRow(String title, String desc, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: AppColors.lightBg),
       ),
       child: Row(
         children: [
@@ -166,8 +239,20 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                Text(desc, style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: AppColors.textDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    color: AppColors.textDark.withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),

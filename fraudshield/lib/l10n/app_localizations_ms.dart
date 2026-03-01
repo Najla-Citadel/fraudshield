@@ -301,7 +301,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get homeVoiceCheck => 'Semakan Suara';
 
   @override
-  String get homePhishing => 'Phishing';
+  String get homeMessageScan => 'Pengimbas Mesej AI';
 
   @override
   String get homeUnlockVoice => 'Langgan untuk membuka Semakan Suara!';

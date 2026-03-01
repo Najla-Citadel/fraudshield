@@ -57,6 +57,7 @@ dependencies:
   google_sign_in: any
   shimmer: ^3.0.0
   package_info_plus: ^8.2.0
+  fl_chart: ^1.1.1
 
 dev_dependencies:
   flutter_test:

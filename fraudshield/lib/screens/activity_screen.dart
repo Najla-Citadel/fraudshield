@@ -45,7 +45,7 @@ class ActivityScreen extends StatelessWidget {
           final grouped = _groupActivities(activities);
 
           return ListView.builder(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
             itemCount: grouped.length,
             itemBuilder: (context, index) {
               final group = grouped.keys.elementAt(index);
