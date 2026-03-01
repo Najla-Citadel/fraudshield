@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AlertEngineService } from '../services/alert-engine.service';
+import { AlertService } from '../services/alert.service';
 import { prisma } from '../config/database';
 
 /**
@@ -208,6 +209,128 @@ export class AlertController {
             }
 
             res.json(subscription);
+        } catch (error) {
+            next(error);
+        }
+    }
+    /**
+     * @openapi
+     * /api/v1/alerts:
+     *   get:
+     *     summary: Get all personal alerts for the logged-in user
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of personal alerts
+     */
+    static async getUserAlerts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const alerts = await AlertService.getUserAlerts(userId);
+            res.json(alerts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/read-all:
+     *   patch:
+     *     summary: Mark all unread alerts for the user as read
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       204:
+     *         description: Successfully marked all alerts as read
+     */
+    static async markAllAsRead(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            await AlertService.markAllAsRead(userId);
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/{id}/resolve:
+     *   post:
+     *     summary: Resolve an individual alert with a specific action
+     *     tags: [Alerts]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               action:
+     *                 type: string
+     *                 enum: [BLOCK, WHITELIST, DISMISS]
+     *     responses:
+     *       200:
+     *         description: Alert resolved successfully
+     */
+    static async resolveAlert(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const { id } = req.params;
+            const { action } = req.body as { action: string };
+            const alert = await AlertService.resolveAlert(id, userId, action);
+            res.json(alert);
+        } catch (error) {
+            next(error);
+        }
+    }
+    /**
+     * Diagnostic endpoint to seed demo alerts for the current user
+     */
+    static async seedDemoAlerts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const { AlertCategory, AlertSeverity } = require('@prisma/client');
+
+            // 1. Welcome Alert
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.COMMUNITY,
+                severity: AlertSeverity.LOW,
+                title: 'Welcome to FraudShield',
+                message: 'Your account is now protected. We are monitoring for threats in your area.',
+            });
+
+            // 2. System Scan Alert
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.SYSTEM_SCAN,
+                severity: AlertSeverity.LOW,
+                title: 'Initial System Scan Completed',
+                message: '0 threats found. Your device security is up to date.',
+            });
+
+            // 3. Phishing Alert (High Risk)
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.PHISHING,
+                severity: AlertSeverity.HIGH,
+                title: 'Suspicious activity detected',
+                message: 'Your account has been restricted. Please verify your identity at: bit.ly/secure-auth-342',
+                metadata: { sender: '+1 (555) ••• 829' }
+            });
+
+            res.json({ message: 'Demo alerts seeded successfully' });
         } catch (error) {
             next(error);
         }

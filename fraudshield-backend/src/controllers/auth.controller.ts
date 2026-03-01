@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
+import { AlertService } from '../services/alert.service';
+import { AlertCategory, AlertSeverity } from '@prisma/client';
 
 /**
  * @openapi
@@ -194,6 +196,23 @@ export class AuthController {
             await prisma.user.update({
                 where: { id: user.id },
                 data: { refreshToken },
+            });
+
+            // FOR DEMO: Generate a "Welcome" alert and a "Security Scan" alert
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.COMMUNITY,
+                severity: AlertSeverity.LOW,
+                title: 'Welcome to FraudShield',
+                message: 'Your account is now protected. We are monitoring for threats in your area.',
+            });
+
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.SYSTEM_SCAN,
+                severity: AlertSeverity.LOW,
+                title: 'Initial System Scan Completed',
+                message: '0 threats found. Your device security is up to date.',
             });
 
             res.json({

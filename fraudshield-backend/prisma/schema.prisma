@@ -18,6 +18,21 @@ enum CheckType {
   VOICE
 }
 
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertCategory {
+  PHISHING
+  LOGIN
+  SYSTEM_SCAN
+  NETWORK
+  COMMUNITY
+}
+
 model User {
   id                  String              @id @default(uuid())
   email               String              @unique
@@ -165,17 +180,22 @@ model BehavioralEvent {
 }
 
 model Alert {
-  id        String   @id @default(uuid())
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  userId    String
-  createdAt DateTime @default(now())
+  id          String        @id @default(uuid())
+  category    AlertCategory @default(COMMUNITY)
+  severity    AlertSeverity @default(LOW)
+  title       String
+  message     String
+  metadata    Json          @default("{}")
+  isRead      Boolean       @default(false)
+  actionTaken String?
+  userId      String
+  createdAt   DateTime      @default(now())
+  user        User          @relation(fields: [userId], references: [id])
+
+  // Kept for backward compatibility
   txId      String?
   riskScore Int?
   decision  String?
-  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Transaction {

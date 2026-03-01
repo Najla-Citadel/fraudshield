@@ -52,11 +52,14 @@ export class SafeBrowsingController {
                 },
             };
 
+            console.log(`[SafeBrowsing] Checking URL: ${url}`);
             const response = await fetch(`${SAFE_BROWSING_URL}?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody),
             });
+
+            console.log(`[SafeBrowsing] Google API responded with status: ${response.status}`);
 
             if (!response.ok) {
                 const errorText = await response.text();
