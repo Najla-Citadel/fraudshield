@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 
@@ -23,9 +24,15 @@ class FloatingNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(36),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 30,
+              spreadRadius: -5,
+              offset: const Offset(0, 15),
+            ),
+            BoxShadow(
+              color: AppColors.primaryBlue.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -39,8 +46,8 @@ class FloatingNavBar extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(36),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  width: 1.5,
+                  color: Colors.white.withValues(alpha: 0.6),
+                  width: 1.0,
                 ),
               ),
               child: Row(
@@ -101,39 +108,54 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryBlue : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
+    return Semantics(
+      label: '$label tab',
+      selected: isSelected,
+      button: true,
+      container: true,
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedScale(
+                scale: isSelected ? 1.15 : 1.0,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.elasticOut,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? AppColors.primaryBlue : Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected ? Colors.white : AppColors.greyText,
+                    size: 20,
+                  ),
+                ),
               ),
-              child: Icon(
-                icon,
-                color: isSelected ? Colors.white : AppColors.greyText,
-                size: 20,
+              const SizedBox(height: 4),
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 300),
+                style: TextStyle(
+                  color: isSelected ? AppColors.primaryBlue : AppColors.greyText,
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                  letterSpacing: 0.2,
+                ),
+                child: Text(label),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? AppColors.primaryBlue : AppColors.greyText,
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

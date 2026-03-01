@@ -671,7 +671,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeVoiceCheck.
   ///
   /// In en, this message translates to:
-  /// **'Voice Check'**
+  /// **'AI Voice Scanner'**
   String get homeVoiceCheck;
 
   /// No description provided for @homeMessageScan.
@@ -683,13 +683,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeUnlockVoice.
   ///
   /// In en, this message translates to:
-  /// **'Subscribe to unlock Voice Check!'**
+  /// **'Subscribe to unlock AI Voice Scanner!'**
   String get homeUnlockVoice;
 
   /// No description provided for @homeUnlockPhishing.
   ///
   /// In en, this message translates to:
-  /// **'Subscribe to unlock Phishing Protection!'**
+  /// **'Subscribe to unlock AI File Scanner!'**
   String get homeUnlockPhishing;
 
   /// No description provided for @homeUpgrade.

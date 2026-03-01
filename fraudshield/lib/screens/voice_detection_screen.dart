@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../services/api_service.dart';
 
 // ─── Data model ───────────────────────────────────────────────────────────────
@@ -86,7 +87,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   // Disclaimer
   bool _disclaimerAccepted = false;
 
-  // Recent analysis list (session-only, persists within screen lifetime)
+  // Recent analysis list (session-only)
   final List<Map<String, dynamic>> _recentAnalysis = [];
 
   // Waveform state
@@ -122,15 +123,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: const Row(
           children: [
-            Icon(Icons.shield_outlined, color: AppColors.primaryBlue, size: 22),
-            SizedBox(width: 10),
+            Icon(LucideIcons.shieldAlert, color: AppColors.primaryBlue, size: 22),
+            SizedBox(width: 12),
             Text(
               'Before You Start',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 17),
+              style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
@@ -138,37 +140,39 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _disclaimerItem(Icons.psychology_outlined,
+            _disclaimerItem(LucideIcons.brainCircuit,
                 'AI-assisted analysis — not a guarantee of fraud or safety.'),
-            const SizedBox(height: 12),
-            _disclaimerItem(Icons.lock_outline,
+            const SizedBox(height: 16),
+            _disclaimerItem(LucideIcons.lock,
                 'Audio is never stored. Only a transcript and hash are retained.'),
-            const SizedBox(height: 12),
-            _disclaimerItem(Icons.gavel_outlined,
-                'Malaysia: recording requires consent of at least one party (you). Do not record others without their knowledge.'),
-            const SizedBox(height: 12),
-            _disclaimerItem(Icons.emergency_outlined,
+            const SizedBox(height: 16),
+            _disclaimerItem(LucideIcons.gavel,
+                'Malaysia: recording requires consent of at least one party (you).'),
+            const SizedBox(height: 16),
+            _disclaimerItem(LucideIcons.phoneCall,
                 'If you suspect fraud, contact your bank or PDRM: 03-2610 1559.'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+              elevation: 0,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('I Understand', style: TextStyle(color: Colors.white)),
+            child: const Text('I Understand', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
     );
     if (accepted == true) {
-      setState(() => _disclaimerAccepted = true);
+      if (mounted) setState(() => _disclaimerAccepted = true);
       return true;
     }
     return false;
@@ -177,12 +181,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   Widget _disclaimerItem(IconData icon, String text) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.primaryBlue, size: 18),
-          const SizedBox(width: 10),
+          Icon(icon, color: AppColors.primaryBlue.withValues(alpha: 0.6), size: 18),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.75), fontSize: 13, height: 1.4)),
+                    color: AppColors.textDark.withValues(alpha: 0.7), fontSize: 13, height: 1.4)),
           ),
         ],
       );
@@ -200,10 +204,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   }
 
   Future<void> _startRecording() async {
-    // Show disclaimer first
     if (!await _showDisclaimerIfNeeded()) return;
 
-    // Request microphone permission
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       if (mounted) {
@@ -226,13 +228,11 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       path: _recordingPath!,
     );
 
-    // Listen to amplitude for waveform
     _amplitudeSubscription = _recorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
       if (mounted) {
         setState(() {
-          // Process dB: -160 to 0 range → normalize to 0.0 to 1.0
           double normalized = (amp.current + 160) / 160;
           normalized = normalized.clamp(0.05, 1.0);
           _amplitudes.removeAt(0);
@@ -246,7 +246,6 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       _result = null;
       _errorMessage = null;
       _recordingSeconds = 0;
-      // Reset waveform
       for (int i = 0; i < _amplitudes.length; i++) {
         _amplitudes[i] = 0.05;
       }
@@ -254,7 +253,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
     _pulseController.repeat(reverse: true);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() => _recordingSeconds++);
+      if (mounted) setState(() => _recordingSeconds++);
     });
   }
 
@@ -266,19 +265,20 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     final path = await _recorder.stop();
     await _amplitudeSubscription?.cancel();
 
-    setState(() {
-      _isRecording = false;
-      _isAnalyzing = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isRecording = false;
+        _isAnalyzing = true;
+      });
+    }
 
     try {
       final file = File(path ?? _recordingPath ?? '');
       if (!file.existsSync()) throw Exception('Recording file not found.');
 
-      setState(() => _analysisStatus = 'Transcribing audio...');
+      if (mounted) setState(() => _analysisStatus = 'Transcribing audio...');
       final response = await ApiService.instance.analyzeVoice(file.path);
 
-      // Add a slight delay for "Heuristic Cross-Check" to feel thorough
       if (mounted) {
         setState(() {
           _isDeepAnalyzing = true;
@@ -289,16 +289,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         await Future.delayed(const Duration(milliseconds: 800));
       }
 
-      // Parse the nested data object
       final data = response['data'] as Map<String, dynamic>? ?? response;
       final analysisResult = VoiceAnalysisResult.fromJson(data);
 
-      // Add to recent list
       final now = DateTime.now();
-      final dateStr =
-          '${now.day.toString().padLeft(2, '0')} ${_monthAbbr(now.month)} ${now.year}';
-      final nameStr =
-          'Voice_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+      final dateStr = '${now.day.toString().padLeft(2, '0')} ${_monthAbbr(now.month)} ${now.year}';
+      final nameStr = 'Voice_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
 
       if (mounted) {
         setState(() {
@@ -314,7 +310,6 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         });
       }
 
-      // Clean up temp file
       try {
         file.deleteSync();
       } catch (_) {}
@@ -330,29 +325,27 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     }
   }
 
-  String _monthAbbr(int m) =>
-      ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1];
+  String _monthAbbr(int m) => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1];
 
-  String _formatDuration(int s) =>
-      '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+  String _formatDuration(int s) => '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
 
   // ─── UI helpers ──────────────────────────────────────────────────────────────
 
   Color get _levelColor {
     switch (_result?.level) {
-      case 'critical': return Colors.red.shade400;
-      case 'high':     return Colors.orange.shade400;
-      case 'medium':   return Colors.amber.shade400;
-      default:         return Colors.green.shade400;
+      case 'critical': return Colors.purple;
+      case 'high':     return const Color(0xFFEF4444);
+      case 'medium':   return const Color(0xFFF59E0B);
+      default:         return const Color(0xFF22C55E);
     }
   }
 
   String get _levelLabel {
     switch (_result?.level) {
-      case 'critical': return '🚨 Critical Risk';
-      case 'high':     return '⚠️ High Risk';
-      case 'medium':   return '🟡 Medium Risk';
-      default:         return '✅ Low Risk — Safe';
+      case 'critical': return 'Critical Risk';
+      case 'high':     return 'High Risk';
+      case 'medium':   return 'Suspicious';
+      default:         return 'Looks Safe';
     }
   }
 
@@ -360,639 +353,337 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveScaffold(
-      title: 'Voice Detection',
-      backgroundColor: AppColors.deepNavy,
+    return Scaffold(
+      backgroundColor: AppColors.lightBg,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Call Screen',
+          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+        padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ── Header ──
-            _buildHeader(),
-            const SizedBox(height: 8),
-
-            // ── Premium badge ──
-            _buildPremiumBadge(),
+            _buildInfoCard(),
             const SizedBox(height: 48),
+            _buildMicSection(),
+            const SizedBox(height: 48),
+            
+            if (_errorMessage != null) _buildErrorCard(),
 
-            // ── Mic button ──
-            _buildMicButton(),
-            const SizedBox(height: 28),
+            if (_result != null && !_isAnalyzing) _buildResultCard(),
 
-            // ── Status text ──
-            _buildStatusText(),
-            const SizedBox(height: 40),
-
-            // ── Error card ──
-            if (_errorMessage != null) ...[
-              _buildErrorCard(),
-              const SizedBox(height: 32),
-            ],
-
-            // ── Result card ──
-            if (_result != null && !_isAnalyzing) ...[
-              _buildResultCard(),
-              const SizedBox(height: 40),
-            ],
-
-            // ── Recent analysis ──
+            const SizedBox(height: 32),
             _buildRecentSection(),
-            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() => Row(
-    children: [
-      Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: const Icon(Icons.mic_none_outlined, color: AppColors.primaryBlue, size: 28),
-      ),
-      const SizedBox(width: 14),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Voice Analysis',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              'AI-powered scam call detection',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-
-  Widget _buildPremiumBadge() => Align(
-    alignment: Alignment.centerLeft,
-    child: Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+  Widget _buildInfoCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.star_rounded, color: Colors.black, size: 14),
-          SizedBox(width: 5),
-          Text(
-            'Premium Feature',
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-    ),
-  );
-
-  Widget _buildMicButton() => GestureDetector(
-    onTap: _toggleRecording,
-    child: AnimatedBuilder(
-      animation: _pulseAnimation,
-      builder: (ctx, _) => Transform.scale(
-        scale: _isRecording ? _pulseAnimation.value : 1.0,
-        child: Container(
-          width: 140,
-          height: 140,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: _isAnalyzing
-                  ? [Colors.blueGrey.shade700, Colors.blueGrey.shade900]
-                  : _isRecording
-                      ? [Colors.redAccent.shade400, Colors.red.shade800]
-                      : [AppColors.primaryBlue, AppColors.primaryBlue.withValues(alpha: 0.75)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: (_isRecording ? Colors.red : AppColors.primaryBlue)
-                    .withValues(alpha: 0.4),
-                blurRadius: _isRecording ? 28 : 18,
-                spreadRadius: _isRecording ? 8 : 4,
-              ),
-            ],
-            border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 2),
-          ),
-          child: _isAnalyzing
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    strokeWidth: 3,
-                  ),
-                )
-              : Icon(
-                  _isRecording ? Icons.stop_rounded : Icons.mic_none_rounded,
-                  color: Colors.white,
-                  size: 64,
-                ),
-        ),
-      ),
-    ),
-  );
-
-  Widget _buildStatusText() {
-    if (_isAnalyzing) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.3)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 14,
-              height: 14,
-              child: CircularProgressIndicator(
-                strokeWidth: 2, 
-                color: _isDeepAnalyzing ? Colors.orangeAccent : AppColors.primaryBlue
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              _analysisStatus,
-              style: TextStyle(
-                color: _isDeepAnalyzing ? Colors.orangeAccent : AppColors.primaryBlue,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    if (_isRecording) {
-      return Column(
+      child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: const Icon(LucideIcons.phoneIncoming, color: AppColors.primaryBlue, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                      color: Colors.redAccent, shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 8),
                 const Text(
-                  'Listening…',
-                  style: TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
+                  'Voice Analysis',
+                  style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                Text(
+                  'Instantly scan calls for scam patterns and deepfake markers.',
+                  style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 12),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          // Waveform visualizer
-          SizedBox(
-            height: 60,
-            width: double.infinity,
-            child: CustomPaint(
-              painter: WaveformPainter(amplitudes: _amplitudes, color: Colors.redAccent),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            _formatDuration(_recordingSeconds),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 42,
-              fontFeatures: [FontFeature.tabularFigures()],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tap Stop when done (min. 5 seconds)',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
-          ),
         ],
-      );
-    }
-    return Text(
-      'Tap mic to start scanning',
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.4),
-        fontSize: 15,
-        letterSpacing: 0.5,
       ),
     );
   }
 
-  Widget _buildErrorCard() => Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: Colors.red.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
-    ),
-    child: Row(
+  Widget _buildMicSection() {
+    return Column(
       children: [
-        const Icon(Icons.error_outline, color: Colors.redAccent, size: 24),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Text(
-            _errorMessage ?? 'An error occurred.',
-            style: const TextStyle(color: Colors.redAccent, fontSize: 14, height: 1.4),
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget _buildResultCard() {
-    final r = _result!;
-    final isSuspicious = r.riskScore >= 55;
-    final cardColor = _levelColor;
-
-    return AnimationConfiguration.synchronized(
-      child: FadeInAnimation(
-        duration: const Duration(milliseconds: 500),
-        child: SlideAnimation(
-          verticalOffset: 20,
-          child: Column(
-            children: [
-              // ── Risk score ──
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
+        GestureDetector(
+          onTap: _toggleRecording,
+          child: AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (ctx, _) => Transform.scale(
+              scale: _isRecording ? _pulseAnimation.value : 1.0,
+              child: Container(
+                width: 140,
+                height: 140,
                 decoration: BoxDecoration(
-                  color: cardColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: cardColor.withValues(alpha: 0.35), width: 1.5),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: cardColor.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isSuspicious ? Icons.gpp_bad_rounded : Icons.gpp_good_rounded,
-                        color: cardColor,
-                        size: 48,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      _levelLabel,
-                      style: TextStyle(
-                          color: cardColor,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    // Risk score bar
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: r.riskScore / 100,
-                        minHeight: 8,
-                        backgroundColor: Colors.white.withValues(alpha: 0.08),
-                        valueColor: AlwaysStoppedAnimation<Color>(cardColor),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Risk Score: ${r.riskScore}/100',
-                      style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                  gradient: LinearGradient(
+                    colors: _isAnalyzing
+                        ? [Colors.grey.shade300, Colors.grey.shade400]
+                        : _isRecording
+                            ? [const Color(0xFFEF4444), const Color(0xFFB91C1C)]
+                            : [AppColors.primaryBlue, AppColors.primaryBlue.withValues(alpha: 0.8)],
+                  ),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: (_isRecording ? Colors.red : AppColors.primaryBlue).withValues(alpha: 0.3),
+                      blurRadius: _isRecording ? 30 : 20,
+                      spreadRadius: _isRecording ? 10 : 2,
                     ),
                   ],
                 ),
+                child: Center(
+                  child: _isAnalyzing
+                      ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                      : Icon(
+                          _isRecording ? LucideIcons.square : LucideIcons.mic,
+                          color: Colors.white,
+                          size: 52,
+                        ),
+                ),
               ),
-              const SizedBox(height: 16),
-
-              // ── Transcript ──
-              if (r.transcript.isNotEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.text_snippet_outlined,
-                              color: AppColors.primaryBlue, size: 16),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Transcript${r.language.isNotEmpty ? '  (${r.language.toUpperCase()})' : ''}',
-                            style: const TextStyle(
-                                color: AppColors.primaryBlue,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        r.transcript.length > 400
-                            ? '${r.transcript.substring(0, 400)}…'
-                            : r.transcript,
-                        style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontSize: 13,
-                            height: 1.6),
-                      ),
-                    ],
-                  ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        if (_isAnalyzing)
+          Column(
+            children: [
+              Text(_analysisStatus, style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const SizedBox(width: 100, child: LinearProgressIndicator(minHeight: 2, backgroundColor: AppColors.lightBg)),
+            ],
+          )
+        else if (_isRecording)
+          Column(
+            children: [
+              Text(
+                _formatDuration(_recordingSeconds),
+                style: const TextStyle(
+                  color: AppColors.textDark,
+                  fontSize: 42,
+                  fontWeight: FontWeight.w900,
+                  fontFeatures: [FontFeature.tabularFigures()],
                 ),
-              const SizedBox(height: 12),
-
-              // ── Detected patterns ──
-              if (r.contentAnalysis.matchedPatterns.isNotEmpty ||
-                  r.voiceAnalysis.flags.isNotEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.flag_outlined,
-                              color: isSuspicious ? Colors.orange : Colors.green,
-                              size: 16),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Detection Flags',
-                            style: TextStyle(
-                                color: isSuspicious ? Colors.orange : Colors.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      ...r.contentAnalysis.matchedPatterns.map(
-                        (p) => _flagRow('📝', p),
-                      ),
-                      ...r.voiceAnalysis.flags.map(
-                        (f) => _flagRow('🔊', f),
-                      ),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 12),
-
-              // ── Disclaimer ──
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.03),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
-                ),
-                child: Text(
-                  r.disclaimer,
-                  style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.35),
-                      fontSize: 11,
-                      height: 1.6),
-                  textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Listening for scam patterns...',
+                style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 13),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 40,
+                child: CustomPaint(
+                  painter: WaveformPainter(amplitudes: _amplitudes, color: const Color(0xFFEF4444)),
+                  size: const Size(double.infinity, 40),
                 ),
               ),
             ],
+          )
+        else
+          Text(
+            'Tap to start voice analysis',
+            style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontWeight: FontWeight.w500),
           ),
-        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorCard() {
+    return Container(
+      margin: const EdgeInsets.only(top: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        children: [
+          const Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(_errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _flagRow(String emoji, String text) {
-    // Phase B: Select more specific icons for voice heuristics
-    Widget icon;
-    if (text.contains('Repetitive')) {
-        icon = const Icon(Icons.loop_rounded, color: Colors.orange, size: 16);
-    } else if (text.contains('Robotic')) {
-        icon = const Icon(Icons.precision_manufacturing_outlined, color: Colors.orange, size: 16);
-    } else if (text.contains('silence ratio')) {
-        icon = const Icon(Icons.graphic_eq_rounded, color: Colors.orange, size: 16);
-    } else {
-        icon = Text(emoji, style: const TextStyle(fontSize: 13));
-    }
+  Widget _buildResultCard() {
+    final r = _result!;
+    final isRisky = r.riskScore >= 55;
+    final color = _levelColor;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(width: 20, child: Center(child: icon)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(text,
-                style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.65),
-                    fontSize: 13,
-                    height: 1.4)),
+    return Container(
+      margin: const EdgeInsets.only(top: 32),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
       ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck, color: color, size: 40),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _levelLabel,
+            style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 24),
+          _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: r.riskScore / 100,
+              minHeight: 8,
+              backgroundColor: AppColors.lightBg,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
+            ),
+          ),
+          if (r.transcript.isNotEmpty) ...[
+            const Divider(height: 48),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Transcript Analysis', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              r.transcript,
+              style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.6), height: 1.5, fontSize: 13),
+            ),
+          ],
+          if (r.contentAnalysis.matchedPatterns.isNotEmpty) ...[
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: r.contentAnalysis.matchedPatterns.map((p) => Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.lightBg,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(p, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+              )).toList(),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _resultRow(String label, String value, Color color, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 14)),
+        Text(value, style: TextStyle(color: color, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 14)),
+      ],
     );
   }
 
   Widget _buildRecentSection() {
-    final all = [
-      ..._recentAnalysis,
-      // Seed with demo items if list is empty
-      if (_recentAnalysis.isEmpty) ...[
-        {'name': 'Call_20251101_1805', 'result': 'Safe', 'score': 12, 'date': '01 Nov 2025'},
-        {'name': 'Call_20251029_1420', 'result': 'Suspicious', 'score': 78, 'date': '29 Oct 2025'},
-        {'name': 'Voice_20251025_1032', 'result': 'Safe', 'score': 8, 'date': '25 Oct 2025'},
-      ],
-    ];
+    if (_recentAnalysis.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Recent Analysis',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white.withValues(alpha: 0.9),
-            letterSpacing: 0.5,
-          ),
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Recent Analysis', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         const SizedBox(height: 16),
-        Container(
+        ..._recentAnalysis.map((item) => Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: AnimationLimiter(
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: all.length,
-              separatorBuilder: (_, __) =>
-                  Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
-              itemBuilder: (_, index) {
-                final item = all[index];
-                final isBad = item['result'] == 'Suspicious';
-                final score = item['score'] as int? ?? 0;
-
-                return AnimationConfiguration.staggeredList(
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: SlideAnimation(
-                    verticalOffset: 30.0,
-                    child: FadeInAnimation(
-                      child: InkWell(
-                        onTap: () {},
-                        borderRadius: index == 0
-                            ? const BorderRadius.vertical(top: Radius.circular(20))
-                            : index == all.length - 1
-                                ? const BorderRadius.vertical(
-                                    bottom: Radius.circular(20))
-                                : BorderRadius.zero,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 14),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(9),
-                                decoration: BoxDecoration(
-                                  color: isBad
-                                      ? Colors.redAccent.withValues(alpha: 0.15)
-                                      : AppColors.accentGreen.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  isBad
-                                      ? Icons.warning_amber_rounded
-                                      : Icons.check_circle,
-                                  color: isBad
-                                      ? Colors.redAccent
-                                      : AppColors.accentGreen,
-                                  size: 18,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['name'] as String,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          color: Colors.white),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      item['date'] as String,
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.white.withValues(alpha: 0.4)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: isBad
-                                          ? Colors.redAccent.withValues(alpha: 0.15)
-                                          : AppColors.accentGreen.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: isBad
-                                            ? Colors.redAccent.withValues(alpha: 0.3)
-                                            : AppColors.accentGreen.withValues(alpha: 0.3),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      item['result'] as String,
-                                      style: TextStyle(
-                                          color: isBad
-                                              ? Colors.redAccent
-                                              : AppColors.accentGreen,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    'Score: $score',
-                                    style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.3),
-                                        fontSize: 11),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+          child: Row(
+            children: [
+              const Icon(LucideIcons.fileAudio, color: AppColors.textDark, size: 20),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                    Text(item['date'], style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 12)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: (item['score'] >= 55 ? const Color(0xFFEF4444) : const Color(0xFF22C55E)).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  item['result'],
+                  style: TextStyle(
+                    color: item['score'] >= 55 ? const Color(0xFFEF4444) : const Color(0xFF22C55E),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-        ),
+        )),
       ],
     );
   }
 }
-
-// ─── Waveform Painter ─────────────────────────────────────────────────────────
 
 class WaveformPainter extends CustomPainter {
   final List<double> amplitudes;
@@ -1003,30 +694,22 @@ class WaveformPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withValues(alpha: 0.8)
-      ..style = PaintingStyle.fill
+      ..color = color
+      ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
 
-    final double width = size.width;
-    final double height = size.height;
-    final double spacing = width / amplitudes.length;
-    final double barWidth = spacing * 0.6;
-
+    final spacing = size.width / (amplitudes.length - 1);
     for (int i = 0; i < amplitudes.length; i++) {
-        final double barHeight = amplitudes[i] * height;
-        final double x = i * spacing + (spacing - barWidth) / 2;
-        final double y = (height - barHeight) / 2;
-        
-        canvas.drawRRect(
-            RRect.fromRectAndRadius(
-                Rect.fromLTWH(x, y, barWidth, barHeight),
-                const Radius.circular(10),
-            ),
-            paint,
-        );
+       final x = i * spacing;
+       final h = amplitudes[i] * size.height;
+       canvas.drawLine(
+         Offset(x, size.height / 2 - h / 2),
+         Offset(x, size.height / 2 + h / 2),
+         paint,
+       );
     }
   }
 
   @override
-  bool shouldRepaint(covariant WaveformPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

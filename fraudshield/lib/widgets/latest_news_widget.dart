@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../screens/article_reader_screen.dart';
+import '../constants/colors.dart';
 import '../models/news_item.dart' as model;
 import '../services/news_service.dart' as news_service;
 import '../constants/news_categories.dart';
@@ -106,9 +107,9 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
   void showCustomization() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF0B1121),
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -122,10 +123,10 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Customize Insights',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.textDark,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -162,11 +163,11 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? Colors.blueAccent.withValues(alpha: 0.2) 
-                                : Colors.white.withValues(alpha: 0.05),
+                                ? AppColors.primaryBlue.withValues(alpha: 0.1) 
+                                : AppColors.lightBg,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected ? Colors.blueAccent : Colors.white10,
+                              color: isSelected ? AppColors.primaryBlue : Colors.black.withValues(alpha: 0.05),
                             ),
                           ),
                           child: Row(
@@ -180,7 +181,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                               Text(
                                 cat.label,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white70,
+                                  color: isSelected ? AppColors.primaryBlue : AppColors.textDark,
                                   fontSize: 13,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -200,10 +201,10 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                         _loadNews();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
+                        backgroundColor: AppColors.primaryBlue,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: const Text('Update Feed'),
                     ),
@@ -226,7 +227,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: const Center(child: CircularProgressIndicator(color: Colors.blueAccent)),
+        child: Center(child: CircularProgressIndicator(color: AppColors.primaryBlue)),
       );
     }
 
@@ -240,7 +241,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                 Expanded(
                   child: Text(
                     'Unable to load insights: $_error',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                    style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.7)),
                   ),
                 ),
                 TextButton(onPressed: _loadNews, child: const Text('Retry')),
@@ -265,7 +266,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
           children: [
             Row(
               children: [
-                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: Colors.white.withValues(alpha: 0.5)))),
+                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5)))),
                 TextButton(onPressed: _loadNews, child: const Text('Refresh')),
               ],
             ),
@@ -295,11 +296,11 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
             child: Container(
               width: 280,
               decoration: BoxDecoration(
-                color: const Color(0xFF1E293B),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -335,8 +336,8 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                             item.title,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppColors.textDark,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               height: 1.2,

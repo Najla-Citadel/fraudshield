@@ -298,17 +298,16 @@ class AppLocalizationsMs extends AppLocalizations {
       'Terima kasih kerana memastikan komuniti selamat. Kami akan mengesahkan laporan anda sebentar lagi.';
 
   @override
-  String get homeVoiceCheck => 'Semakan Suara';
+  String get homeVoiceCheck => 'Pengimbas Suara AI';
 
   @override
   String get homeMessageScan => 'Pengimbas Mesej AI';
 
   @override
-  String get homeUnlockVoice => 'Langgan untuk membuka Semakan Suara!';
+  String get homeUnlockVoice => 'Langgan untuk membuka Pengimbas Suara AI!';
 
   @override
-  String get homeUnlockPhishing =>
-      'Langgan untuk membuka Perlindungan Phishing!';
+  String get homeUnlockPhishing => 'Langgan untuk membuka Pengimbas Fail AI!';
 
   @override
   String get homeUpgrade => 'NAIK TARAF';

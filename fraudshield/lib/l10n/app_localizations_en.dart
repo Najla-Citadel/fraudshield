@@ -297,16 +297,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Thank you for keeping the community safe. We will verify your report shortly.';
 
   @override
-  String get homeVoiceCheck => 'Voice Check';
+  String get homeVoiceCheck => 'AI Voice Scanner';
 
   @override
   String get homeMessageScan => 'AI Message Scanner';
 
   @override
-  String get homeUnlockVoice => 'Subscribe to unlock Voice Check!';
+  String get homeUnlockVoice => 'Subscribe to unlock AI Voice Scanner!';
 
   @override
-  String get homeUnlockPhishing => 'Subscribe to unlock Phishing Protection!';
+  String get homeUnlockPhishing => 'Subscribe to unlock AI File Scanner!';
 
   @override
   String get homeUpgrade => 'UPGRADE';

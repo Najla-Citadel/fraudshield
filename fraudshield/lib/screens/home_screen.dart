@@ -10,6 +10,7 @@ import 'fraud_check_screen.dart';
 import 'phishing_protection_screen.dart';
 import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
+import 'ai_file_scanner_screen.dart';
 import 'scam_reporting_screen.dart';
 import 'scam_alerts_screen.dart';
 import 'subscription_screen.dart';
@@ -22,6 +23,7 @@ import '../widgets/glass_surface.dart';
 import '../widgets/skeleton_loader.dart';
 import 'activity_screen.dart';
 import 'trending_scams_screen.dart';
+import 'news_screen.dart';
 import '../constants/colors.dart';
 import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
@@ -734,13 +736,8 @@ class _HomeTab extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // 5. ALERT CENTER
-              _buildAlertCenterCard(context),
-
-              const SizedBox(height: 24),
-
-              // 6. SCAM INSIGHTS
-              _buildScamInsightsCard(context),
+              // 5. SECURITY NEWS & INSIGHTS
+              _buildSecurityNewsSection(context),
 
               const SizedBox(height: 40), // Bottom padding
             ],
@@ -968,10 +965,19 @@ class _HomeTab extends StatelessWidget {
                 LucideIcons.messageSquare,
                 () => Navigator.push(context, MaterialPageRoute(builder: (_) => MessageAnalysisScreen())),
               ),
+              _buildPremiumCard(
+                context, 
+                'AI Voice Scanner', 
+                LucideIcons.phoneCall, 
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VoiceDetectionScreen())),
+              ),
               const SizedBox(width: 16),
-              _buildPremiumCard(context, 'Call Screen', LucideIcons.phoneCall, () {}),
-              const SizedBox(width: 16),
-              _buildPremiumCard(context, 'File Security', LucideIcons.fileLock, () {}),
+              _buildPremiumCard(
+                context, 
+                'AI File Scanner', 
+                LucideIcons.fileLock, 
+                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AIFileScannerScreen())),
+              ),
             ],
           ),
         ),
@@ -1033,150 +1039,7 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildAlertCenterCard(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Alert Center',
-          style: TextStyle(
-            color: AppColors.textDark,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
-            );
-          },
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFF0F0), // Light red background
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF43F5E), // Rose red
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(LucideIcons.alertTriangle, color: Colors.white, size: 24),
-                ),
-                const SizedBox(width: 16),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Suspicious activity detected',
-                        style: TextStyle(
-                          color: Color(0xFF881337), // Dark rose
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Phishing pattern found in recent incoming messages from an unknown sender.',
-                        style: TextStyle(
-                          color: Color(0xFFBE123C), // Medium rose
-                          fontSize: 13,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward_ios, color: Color(0xFFF43F5E), size: 16),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildScamInsightsCard(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Scam Insights',
-          style: TextStyle(
-            color: AppColors.textDark,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF7ED), // Orange light
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(LucideIcons.trendingUp, color: Color(0xFFEA580C), size: 24), // Orange icon
-              ),
-              const SizedBox(width: 16),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Delivery scam trending',
-                      style: TextStyle(
-                        color: AppColors.textDark,
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Increasing reports in your area',
-                      style: TextStyle(
-                        color: AppColors.greyText,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward_ios, color: AppColors.greyText, size: 16),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildTrendingAlertsCard(BuildContext context) {
     return ListenableBuilder(
@@ -1385,7 +1248,37 @@ class _HomeTab extends StatelessWidget {
       ),
     ),
   );
-}
+  }
+
+  Widget _buildSecurityNewsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Security News',
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen())),
+              child: const Text(
+                'See All',
+                style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LatestNewsWidget(limit: 5),
+      ],
+    );
+  }
 }
 
 ////////////////////////////////////////////////////////////////
