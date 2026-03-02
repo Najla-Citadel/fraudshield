@@ -16,7 +16,8 @@ class CommunityMapCard extends StatefulWidget {
   State<CommunityMapCard> createState() => _CommunityMapCardState();
 }
 
-class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerProviderStateMixin {
+class _CommunityMapCardState extends State<CommunityMapCard>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -46,12 +47,12 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
         height: 180,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -64,7 +65,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
               // 1. Radar Pulse Background
               _buildRadarBackground(),
 
-              // 2. Gradient Overlay for Typography (Soft White Fade)
+              // 2. Gradient Overlay for Typography (Soft Dark Fade)
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -72,8 +73,8 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.white.withValues(alpha: 0.2),
-                        Colors.white.withValues(alpha: 0.85),
+                        const Color(0xFF1E293B).withValues(alpha: 0.2),
+                        const Color(0xFF1E293B).withValues(alpha: 0.9),
                       ],
                     ),
                   ),
@@ -92,22 +93,24 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                       children: [
                         _buildLiveBadge(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(LucideIcons.maximize, color: Color(0xFF64748B), size: 14),
+                          child: const Icon(LucideIcons.maximize,
+                              color: Colors.white, size: 14),
                         ),
                       ],
                     ),
                     const Spacer(),
-                    
+
                     // Stat Section
-                    const Text(
+                    Text(
                       'Live Threat Scanner',
                       style: TextStyle(
-                        color: Color(0xFF64748B),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.bold,
@@ -117,7 +120,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                     Text(
                       '${widget.threatCount} Clusters in ${widget.locationName}',
                       style: const TextStyle(
-                        color: Color(0xFF0F172A),
+                        color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
                       ),
@@ -125,12 +128,13 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                     const SizedBox(height: 8),
                     const Row(
                       children: [
-                        Icon(LucideIcons.navigation, color: AppColors.primaryBlue, size: 14),
+                        Icon(LucideIcons.navigation,
+                            color: AppColors.accentGreen, size: 14),
                         SizedBox(width: 6),
                         Text(
                           'Tap to view interactive heat map',
                           style: TextStyle(
-                            color: AppColors.primaryBlue,
+                            color: AppColors.accentGreen,
                             fontSize: 13,
                           ),
                         ),
@@ -155,7 +159,7 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
           children: [
             // Static grid lines
             _buildGrid(),
-            
+
             // Pulse 1
             Container(
               width: 300 * _pulseAnimation.value,
@@ -163,12 +167,13 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.primaryBlue.withValues(alpha: 0.5 * (1.0 - _pulseAnimation.value)),
+                  color: AppColors.accentGreen
+                      .withValues(alpha: 0.5 * (1.0 - _pulseAnimation.value)),
                   width: 2,
                 ),
               ),
             ),
-            
+
             // Pulse 2 (delayed offset)
             if (_pulseAnimation.value > 0.5)
               Container(
@@ -177,7 +182,8 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.5 * (1.0 - (_pulseAnimation.value - 0.5) * 2)),
+                    color: AppColors.accentGreen.withValues(
+                        alpha: 0.5 * (1.0 - (_pulseAnimation.value - 0.5) * 2)),
                     width: 1,
                   ),
                 ),
@@ -187,11 +193,12 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF), // Soft Blue
+                color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFBFDBFE)), // Light Blue Border
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
-              child: const Icon(LucideIcons.radar, color: AppColors.primaryBlue, size: 40),
+              child: const Icon(LucideIcons.radar,
+                  color: AppColors.accentGreen, size: 40),
             ),
           ],
         );
@@ -215,7 +222,8 @@ class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerPr
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
+        border:
+            Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -242,7 +250,8 @@ class _BlinkingDot extends StatefulWidget {
   State<_BlinkingDot> createState() => _BlinkingDotState();
 }
 
-class _BlinkingDotState extends State<_BlinkingDot> with SingleTickerProviderStateMixin {
+class _BlinkingDotState extends State<_BlinkingDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -280,20 +289,22 @@ class RadarGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = const Color(0xFFCBD5E1) // Slate 300 for grid lines
+      ..color = Colors.white.withValues(alpha: 0.1) // Subtle white lines
       ..strokeWidth = 1.0;
 
     final center = Offset(size.width / 2, size.height / 2);
-    
+
     // Draw circles
     for (var i = 1; i <= 4; i++) {
       canvas.drawCircle(center, i * 40.0, paint..style = PaintingStyle.stroke);
     }
 
     // Actually let's just draw 4 main lines
-    
-    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
-    canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
+
+    canvas.drawLine(
+        Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
+    canvas.drawLine(
+        Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
   }
 
   @override

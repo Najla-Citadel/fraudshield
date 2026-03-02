@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../constants/colors.dart';
 
 class SkeletonCard extends StatelessWidget {
   final double? height;
@@ -19,13 +18,13 @@ class SkeletonCard extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey[200]!,
-        highlightColor: Colors.grey[100]!,
+        baseColor: const Color(0xFF1E293B),
+        highlightColor: const Color(0xFF334155),
         child: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: Column(
@@ -40,7 +39,7 @@ class SkeletonCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
@@ -51,18 +50,30 @@ class SkeletonCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(width: 150, height: 16, color: Colors.white),
+                        Container(
+                            width: 150,
+                            height: 16,
+                            color: Colors.white.withValues(alpha: 0.1)),
                         const SizedBox(height: 8),
-                        Container(width: 100, height: 12, color: Colors.white),
+                        Container(
+                            width: 100,
+                            height: 12,
+                            color: Colors.white.withValues(alpha: 0.1)),
                       ],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              Container(width: double.infinity, height: 12, color: Colors.white),
+              Container(
+                  width: double.infinity,
+                  height: 12,
+                  color: Colors.white.withValues(alpha: 0.1)),
               const SizedBox(height: 8),
-              Container(width: 200, height: 12, color: Colors.white),
+              Container(
+                  width: 200,
+                  height: 12,
+                  color: Colors.white.withValues(alpha: 0.1)),
             ],
           ),
         ),

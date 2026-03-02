@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
-import 'points_history_screen.dart';
 import 'points_details_screen.dart';
 import 'package:fraudshield/constants/colors.dart';
 import '../widgets/glass_card.dart';
@@ -53,7 +53,8 @@ class PointsScreenState extends State<PointsScreen> {
       final rewardsRes = await _api.getRewards();
       if (mounted) {
         setState(() {
-          _rewards = List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
+          _rewards =
+              List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
           _userTier = rewardsRes['userTier'] ?? 'BRONZE';
           _userDiscount = (rewardsRes['userDiscount'] ?? 0).toDouble();
         });
@@ -65,7 +66,7 @@ class PointsScreenState extends State<PointsScreen> {
       if (e.toString().contains('403')) {
         // likely email not verified, profiles sync failed but we let it pass
         if (mounted) {
-           setState(() => _hasError = false);
+          setState(() => _hasError = false);
         }
       } else if (mounted) {
         setState(() => _hasError = true);
@@ -77,16 +78,20 @@ class PointsScreenState extends State<PointsScreen> {
     final points = context.read<AuthProvider>().user?.profile?.points ?? 0;
     final pointsCost = reward['pointsCost'] as int;
     if (points < pointsCost) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Insufficient points!'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Insufficient points!'), backgroundColor: Colors.red));
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Redeem ${reward['name']}?'),
-        content: Text('Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
+        content: Text(
+            'Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -99,13 +104,17 @@ class PointsScreenState extends State<PointsScreen> {
     try {
       await _api.redeemReward(reward['id']);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ Redeemed ${reward['name']}!'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('✅ Redeemed ${reward['name']}!'),
+            backgroundColor: Colors.green));
         // Refresh local rewards AND global balance
         await context.read<AuthProvider>().refreshProfile();
         refreshData();
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
@@ -113,33 +122,68 @@ class PointsScreenState extends State<PointsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        title: const Text('Rewards', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24)),
-        centerTitle: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
+      body: Stack(
+        children: [
+          // Background Gradient
           Container(
-            margin: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF0F172A), // Slate 900
+                  AppColors.deepNavy, // Deep navy
+                  Color(0xFF1E3A8A), // Blue 900
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.5, 1.0],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(context),
+                Expanded(child: _buildBody()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text('Rewards',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 24)),
+          Container(
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: IconButton(
-              icon: const Icon(Icons.history_rounded, size: 20, color: Colors.white),
+              icon: const Icon(Icons.history_rounded,
+                  size: 20, color: Colors.white),
               onPressed: () {
-                 Navigator.push(
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PointsHistoryScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const PointsDetailsScreen()),
                 );
               },
-              tooltip: 'History',
+              tooltip: 'Points History',
             ),
           ),
         ],
       ),
-      body: _buildBody(),
     );
   }
 
@@ -163,62 +207,88 @@ class PointsScreenState extends State<PointsScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Balance Card
-          _buildBalanceCard(),
-          const SizedBox(height: 16),
-
-          // 2. Category Selector
-          _buildCategorySelector(),
-          const SizedBox(height: 16),
-
-          // 3. Sections
-          if (_selectedCategory == 'All' || _selectedCategory == 'Security') ...[
-            _buildSectionHeader('Security Upgrades'),
-            const SizedBox(height: 12),
-            ..._rewards
-                .where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
-                .map((r) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _buildFeaturedReward(r),
-                    ))
-                .toList(),
-            if (_rewards.where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION').isEmpty)
-              _buildEmptyState(LucideIcons.shieldAlert, 'No security upgrades available'),
-            const SizedBox(height: 32),
-          ],
-          
-          if (_selectedCategory == 'All' || _selectedCategory == 'Vouchers') ...[
-            _buildSectionHeader('Store Items & Vouchers'),
-            const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                mainAxisExtent: 260, // Fixed height for consistency
-              ),
-              itemCount: _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').length,
-              itemBuilder: (context, index) {
-                final r = _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').toList()[index];
-                return _buildRewardCard(r, false);
-              },
+    return AnimationLimiter(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: AnimationConfiguration.toStaggeredList(
+            duration: const Duration(milliseconds: 375),
+            childAnimationBuilder: (widget) => SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(child: widget),
             ),
-            if (_rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').isEmpty)
-              _buildEmptyState(LucideIcons.packageOpen, 'No store items available'),
-            const SizedBox(height: 32),
-          ],
+            children: [
+              // 1. Balance Card
+              _buildBalanceCard(),
+              const SizedBox(height: 16),
 
-          _buildDonationCard(),
-          
-          const SizedBox(height: 100), // Bottom padding for FAB
-        ],
+              // 2. Category Selector
+              _buildCategorySelector(),
+              const SizedBox(height: 16),
+
+              // 3. Sections
+              if (_selectedCategory == 'All' ||
+                  _selectedCategory == 'Security') ...[
+                _buildSectionHeader('Security Upgrades'),
+                const SizedBox(height: 12),
+                ..._rewards
+                    .where((r) =>
+                        r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
+                    .map((r) => Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildFeaturedReward(r),
+                        )),
+                if (_rewards
+                    .where((r) =>
+                        r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
+                    .isEmpty)
+                  _buildEmptyState(LucideIcons.shieldAlert,
+                      'No security upgrades available'),
+                const SizedBox(height: 32),
+              ],
+
+              if (_selectedCategory == 'All' ||
+                  _selectedCategory == 'Vouchers') ...[
+                _buildSectionHeader('Store Items & Vouchers'),
+                const SizedBox(height: 12),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: 260, // Fixed height for consistency
+                  ),
+                  itemCount: _rewards
+                      .where((r) =>
+                          r['type'].toString().toUpperCase() != 'SUBSCRIPTION')
+                      .length,
+                  itemBuilder: (context, index) {
+                    final r = _rewards
+                        .where((r) =>
+                            r['type'].toString().toUpperCase() !=
+                            'SUBSCRIPTION')
+                        .toList()[index];
+                    return _buildRewardCard(r, false);
+                  },
+                ),
+                if (_rewards
+                    .where((r) =>
+                        r['type'].toString().toUpperCase() != 'SUBSCRIPTION')
+                    .isEmpty)
+                  _buildEmptyState(
+                      LucideIcons.packageOpen, 'No store items available'),
+                const SizedBox(height: 32),
+              ],
+
+              _buildDonationCard(),
+
+              const SizedBox(height: 100), // Bottom padding for FAB
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -239,7 +309,8 @@ class PointsScreenState extends State<PointsScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
+          border: Border.all(
+              color: Colors.white.withValues(alpha: 0.1), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
@@ -249,7 +320,7 @@ class PointsScreenState extends State<PointsScreen> {
           ],
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF1E293B).withValues(alpha: 0.8), 
+              const Color(0xFF1E293B).withValues(alpha: 0.8),
               const Color(0xFF0F172A).withValues(alpha: 0.8)
             ],
             begin: Alignment.topLeft,
@@ -308,16 +379,19 @@ class PointsScreenState extends State<PointsScreen> {
             if (_userDiscount > 0) ...[
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.accentGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
+                  border: Border.all(
+                      color: AppColors.accentGreen.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.local_offer_rounded, size: 14, color: AppColors.accentGreen),
+                    const Icon(Icons.local_offer_rounded,
+                        size: 14, color: AppColors.accentGreen),
                     const SizedBox(width: 6),
                     Text(
                       '${(_userDiscount * 100).toInt()}% $_userTier Discount Active',
@@ -354,11 +428,14 @@ class PointsScreenState extends State<PointsScreen> {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         children: [
-          _categoryChip('All', LucideIcons.layers, isActive: _selectedCategory == 'All'),
+          _categoryChip('All', LucideIcons.layers,
+              isActive: _selectedCategory == 'All'),
           const SizedBox(width: 12),
-          _categoryChip('Vouchers', LucideIcons.ticket, isActive: _selectedCategory == 'Vouchers'),
+          _categoryChip('Vouchers', LucideIcons.ticket,
+              isActive: _selectedCategory == 'Vouchers'),
           const SizedBox(width: 12),
-          _categoryChip('Security', LucideIcons.shieldCheck, isActive: _selectedCategory == 'Security'),
+          _categoryChip('Security', LucideIcons.shieldCheck,
+              isActive: _selectedCategory == 'Security'),
         ],
       ),
     );
@@ -371,9 +448,13 @@ class PointsScreenState extends State<PointsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.05),
+          color: isActive
+              ? AppColors.accentGreen
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(22),
-          border: isActive ? null : Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: isActive
+              ? null
+              : Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -453,28 +534,42 @@ class PointsScreenState extends State<PointsScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isFeatured 
-                  ? [Colors.blue.withValues(alpha: 0.2), Colors.blue.withValues(alpha: 0.05)]
-                  : [AppColors.accentGreen.withValues(alpha: 0.1), AppColors.accentGreen.withValues(alpha: 0.02)],
+                colors: isFeatured
+                    ? [
+                        Colors.blue.withValues(alpha: 0.2),
+                        Colors.blue.withValues(alpha: 0.05)
+                      ]
+                    : [
+                        AppColors.accentGreen.withValues(alpha: 0.1),
+                        AppColors.accentGreen.withValues(alpha: 0.02)
+                      ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(isFeatured ? 24 : 20)),
+              borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(isFeatured ? 24 : 20)),
             ),
             child: Stack(
               children: [
                 Center(
                   child: Icon(
-                    isLocked ? Icons.lock_outline_rounded : (isFeatured ? Icons.security : Icons.card_giftcard), 
-                    size: isFeatured ? 64 : 40, 
-                    color: isLocked ? Colors.white24 : (isFeatured ? Colors.blue.withValues(alpha: 0.5) : AppColors.accentGreen.withValues(alpha: 0.5)),
+                    isLocked
+                        ? Icons.lock_outline_rounded
+                        : (isFeatured ? Icons.security : Icons.card_giftcard),
+                    size: isFeatured ? 64 : 40,
+                    color: isLocked
+                        ? Colors.white24
+                        : (isFeatured
+                            ? Colors.blue.withValues(alpha: 0.5)
+                            : AppColors.accentGreen.withValues(alpha: 0.5)),
                   ),
                 ),
                 Positioned(
                   top: 12,
                   right: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: isLocked ? Colors.black54 : AppColors.accentGreen,
                       borderRadius: BorderRadius.circular(8),
@@ -492,7 +587,7 @@ class PointsScreenState extends State<PointsScreen> {
               ],
             ),
           ),
-          
+
           // Content Area
           Padding(
             padding: EdgeInsets.all(isFeatured ? 16 : 12),
@@ -525,28 +620,35 @@ class PointsScreenState extends State<PointsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: (canAfford && !isLocked) ? () => _redeemReward(reward) : null,
+                    onPressed: (canAfford && !isLocked)
+                        ? () => _redeemReward(reward)
+                        : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: (canAfford && !isLocked) 
-                          ? (isFeatured ? AppColors.accentGreen : const Color(0xFF2563EB))
+                      backgroundColor: (canAfford && !isLocked)
+                          ? (isFeatured
+                              ? AppColors.accentGreen
+                              : const Color(0xFF2563EB))
                           : Colors.white.withValues(alpha: 0.05),
-                      foregroundColor: (canAfford && !isLocked) 
+                      foregroundColor: (canAfford && !isLocked)
                           ? (isFeatured ? Colors.black87 : Colors.white)
                           : Colors.white.withValues(alpha: 0.4),
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: EdgeInsets.symmetric(vertical: isFeatured ? 12 : 8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: isFeatured ? 12 : 8),
                     ),
                     child: Text(
-                      isLocked 
-                        ? 'Unlock at $requiredTier' 
-                        : (canAfford ? (isFeatured ? 'Redeem Now' : 'Redeem') : 'Not Enough'), 
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      )
-                    ),
+                        isLocked
+                            ? 'Unlock at $requiredTier'
+                            : (canAfford
+                                ? (isFeatured ? 'Redeem Now' : 'Redeem')
+                                : 'Not Enough'),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        )),
                   ),
                 ),
               ],
@@ -559,62 +661,65 @@ class PointsScreenState extends State<PointsScreen> {
 
   Widget _buildDonationCard() {
     return GlassCard(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: AppColors.accentGreen.withValues(alpha: 0.2), // Darker teal
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.volunteer_activism, color: AppColors.accentGreen),
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color:
+                  AppColors.accentGreen.withValues(alpha: 0.2), // Darker teal
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Support Cyber Victims',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+            child: const Icon(Icons.volunteer_activism,
+                color: AppColors.accentGreen),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Support Cyber Victims',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Donate 200 pts to provide legal aid to victims.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6),
-                      fontSize: 12,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Donate 200 pts to provide legal aid to victims.',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontSize: 12,
                   ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: (){},
-                    child: Row(
-                      children: const [
-                         Text(
-                          'Donate Now',
-                          style: TextStyle(
-                            color: AppColors.accentGreen,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () {},
+                  child: Row(
+                    children: const [
+                      Text(
+                        'Donate Now',
+                        style: TextStyle(
+                          color: AppColors.accentGreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
-                        Icon(Icons.arrow_forward, size: 12, color: AppColors.accentGreen),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      ),
+                      Icon(Icons.arrow_forward,
+                          size: 12, color: AppColors.accentGreen),
+                    ],
+                  ),
+                )
+              ],
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   String _calculateTierName(int totalPoints) {
@@ -640,11 +745,11 @@ class PointsScreenState extends State<PointsScreen> {
           const SizedBox(height: 16),
           Text(
             message,
-            style: const TextStyle(color: Colors.white54, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+                color: Colors.white54, fontWeight: FontWeight.w500),
           ),
         ],
       ),
     );
   }
 }
-

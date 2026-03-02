@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../constants/colors.dart';
@@ -31,7 +32,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       final res = await ApiService.instance.getMyPoints();
       // Sync auth provider to get latest spendable/total points
       await context.read<AuthProvider>().refreshProfile();
-      
+
       if (mounted) {
         setState(() {
           _transactions = res['transactions'] ?? [];
@@ -46,10 +47,14 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         if (mounted) {
           setState(() {
             _loading = false;
-            _hasError = false; // We can still show cached points from ApiService query
+            _hasError =
+                false; // We can still show cached points from ApiService query
           });
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Note: Please verify your email to sync latest status.'), duration: Duration(seconds: 2)),
+            const SnackBar(
+                content: Text(
+                    'Note: Please verify your email to sync latest status.'),
+                duration: Duration(seconds: 2)),
           );
         }
       } else if (mounted) {
@@ -65,28 +70,60 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-        onPressed: () => Navigator.pop(context),
+      body: Stack(
+        children: [
+          // Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF0F172A), // Slate 900
+                  AppColors.deepNavy, // Deep navy
+                  Color(0xFF1E3A8A), // Blue 900
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.5, 1.0],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(),
+                Expanded(child: _buildBody()),
+              ],
+            ),
+          ),
+        ],
       ),
-      title: const Text(
-        'Points Details',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new,
+                color: Colors.white, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
+          const Text(
+            'Points Details',
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          IconButton(
+            icon: const Icon(Icons.info_outline, color: Colors.white),
+            onPressed: () {
+              // Future: Show points info/rules
+            },
+          ),
+        ],
       ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.info_outline, color: Colors.white),
-          onPressed: () {
-            // Future: Show points info/rules
-          },
-        ),
-      ],
-      ),
-      body: _buildBody(),
     );
   }
 
@@ -117,29 +154,39 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          _buildSummaryHeader(),
-          const SizedBox(height: 24),
-          _buildLeaderboardCard(),
-          const SizedBox(height: 32),
-          _buildHistoryHeader(),
-          const SizedBox(height: 16),
-          _buildTransactionHistory(),
-          const SizedBox(height: 40),
-        ],
+    return AnimationLimiter(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: AnimationConfiguration.toStaggeredList(
+            duration: const Duration(milliseconds: 375),
+            childAnimationBuilder: (widget) => SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(child: widget),
+            ),
+            children: [
+              const SizedBox(height: 20),
+              _buildSummaryHeader(),
+              const SizedBox(height: 24),
+              _buildLeaderboardCard(),
+              const SizedBox(height: 32),
+              _buildHistoryHeader(),
+              const SizedBox(height: 16),
+              _buildTransactionHistory(),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildSummaryHeader() {
     final points = context.watch<AuthProvider>().user?.profile?.points ?? 0;
-    final totalPoints = context.watch<AuthProvider>().user?.profile?.totalPoints ?? 0;
-    
+    final totalPoints =
+        context.watch<AuthProvider>().user?.profile?.totalPoints ?? 0;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -234,11 +281,16 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 children: [
                   Text(
                     _calculateTier(totalPoints),
-                    style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        color: AppColors.accentGreen,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold),
                   ),
                   Text(
                     'Next level at ${_getNextTierTarget(totalPoints)}',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 10),
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        fontSize: 10),
                   ),
                 ],
               ),
@@ -248,7 +300,8 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 child: LinearProgressIndicator(
                   value: _getTierProgress(totalPoints),
                   backgroundColor: Colors.white.withValues(alpha: 0.05),
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.accentGreen),
                   minHeight: 4,
                 ),
               ),
@@ -276,9 +329,10 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   double _getTierProgress(int totalPoints) {
     int target = _getNextTierTarget(totalPoints);
     int start = 0;
-    if (totalPoints >= 5000) start = 5000;
+    if (totalPoints >= 5000)
+      start = 5000;
     else if (totalPoints >= 1000) start = 1000;
-    
+
     double progress = (totalPoints - start) / (target - start);
     return progress.clamp(0.0, 1.0);
   }
@@ -302,7 +356,8 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 color: AppColors.accentGreen.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.emoji_events_rounded, color: AppColors.accentGreen, size: 24),
+              child: const Icon(Icons.emoji_events_rounded,
+                  color: AppColors.accentGreen, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -311,17 +366,23 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 children: [
                   const Text(
                     'Global Leaderboard',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'See how you rank against other protectors.',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 13),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
+            Icon(Icons.arrow_forward_ios,
+                color: Colors.white.withValues(alpha: 0.2), size: 14),
           ],
         ),
       ),
@@ -374,7 +435,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
     for (var tx in _transactions) {
       final date = DateTime.parse(tx['createdAt']);
-      if (date.year == now.year && date.month == now.month && date.day == now.day) {
+      if (date.year == now.year &&
+          date.month == now.month &&
+          date.day == now.day) {
         todayTransactions.add(tx);
       } else if (date.year == now.year && date.month == now.month) {
         thisMonthTransactions.add(tx);
@@ -426,7 +489,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     final isPositive = amount > 0;
     final date = DateTime.parse(tx['createdAt']);
     final formattedDate = DateFormat('MMM dd, yyyy').format(date);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: Row(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:async';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/scam_card.dart';
@@ -60,13 +61,16 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
       if (_isFabExtended && mounted) setState(() => _isFabExtended = false);
-    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
       if (!_isFabExtended && mounted) setState(() => _isFabExtended = true);
     }
 
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       if (!_isFetchingMore && _hasMore && !_isLoading) {
         _fetchFeed();
       }
@@ -101,7 +105,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
       final response = await ApiService.instance.getPublicFeed(
         category: _selectedCategory,
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
+        search:
+            _searchController.text.isNotEmpty ? _searchController.text : null,
         lat: lat,
         lng: lng,
         radius: radius,
@@ -110,7 +115,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       );
 
       final List<dynamic> newReports = response['results'] ?? [];
-      
+
       if (mounted) {
         setState(() {
           _reports.addAll(newReports);
@@ -135,26 +140,49 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Slate 50
-      body: RefreshIndicator(
-        onRefresh: () => _fetchFeed(reset: true),
-        color: AppColors.primaryBlue,
-        backgroundColor: Colors.white,
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            _buildAppBar(),
-            SliverToBoxAdapter(child: _buildFilters()),
-            _buildFeedList(),
-            if (_isFetchingMore)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                ),
+      backgroundColor: AppColors.deepNavy,
+      body: Stack(
+        children: [
+          // Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0F172A), // Slate 900
+                  Color(0xFF0A0F1F), // Deep Navy
+                  Color(0xFF1E3A8A), // Blue 900
+                ],
+                stops: [0.0, 0.5, 1.0],
               ),
-          ],
-        ),
+            ),
+          ),
+          // Main Content
+          RefreshIndicator(
+            onRefresh: () => _fetchFeed(reset: true),
+            color: AppColors.accentGreen,
+            backgroundColor: const Color(0xFF1E293B),
+            child: AnimationLimiter(
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  _buildAppBar(),
+                  SliverToBoxAdapter(child: _buildFilters()),
+                  _buildFeedList(),
+                  if (_isFetchingMore)
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: _buildFAB(),
     );
@@ -162,7 +190,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor:
+          Colors.transparent, // Update to transparent over gradient
       floating: true,
       snap: true,
       elevation: 0,
@@ -180,19 +209,26 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 children: [
                   Text(
                     'Community Feed',
-                    style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 24, letterSpacing: -0.5),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 24,
+                        letterSpacing: -0.5),
                   ),
                   Text(
                     'Live scam reports near you',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                    style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
                   ),
                 ],
               ),
               Row(
                 children: [
                   IconButton(
-                    onPressed: () => setState(() => _isSearchVisible = !_isSearchVisible),
-                    icon: Icon(_isSearchVisible ? LucideIcons.x : LucideIcons.search, color: const Color(0xFF475569)),
+                    onPressed: () =>
+                        setState(() => _isSearchVisible = !_isSearchVisible),
+                    icon: Icon(
+                        _isSearchVisible ? LucideIcons.x : LucideIcons.search,
+                        color: Colors.white),
                   ),
                   _buildNearMeToggle(),
                 ],
@@ -218,10 +254,14 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: _isNearMe ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
+          color: _isNearMe
+              ? AppColors.accentGreen.withValues(alpha: 0.15)
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isNearMe ? AppColors.primaryBlue : const Color(0xFFE2E8F0),
+            color: _isNearMe
+                ? AppColors.accentGreen
+                : Colors.white.withValues(alpha: 0.1),
           ),
         ),
         child: Row(
@@ -229,13 +269,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             Icon(
               LucideIcons.mapPin,
               size: 16,
-              color: _isNearMe ? AppColors.primaryBlue : const Color(0xFF64748B),
+              color: _isNearMe ? AppColors.accentGreen : Colors.white,
             ),
             const SizedBox(width: 4),
             Text(
               'Near Me',
               style: TextStyle(
-                color: _isNearMe ? AppColors.primaryBlue : const Color(0xFF64748B),
+                color: _isNearMe ? AppColors.accentGreen : Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -250,26 +290,28 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     return Container(
       height: 45,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9), // Slate 100
+        color: const Color(0xFF1E293B), // Slate 800
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)), // Slate 200
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: Color(0xFF0F172A)),
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: 'Search scams...',
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-          prefixIcon: const Icon(LucideIcons.search, size: 18, color: Color(0xFF94A3B8)),
-          suffixIcon: _searchController.text.isNotEmpty 
-            ? IconButton(
-                icon: const Icon(LucideIcons.x, size: 16, color: Color(0xFF94A3B8)),
-                onPressed: () {
-                  _searchController.clear();
-                  _fetchFeed(reset: true);
-                },
-              )
-            : null,
+          prefixIcon: const Icon(LucideIcons.search,
+              size: 18, color: Color(0xFF94A3B8)),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(LucideIcons.x,
+                      size: 16, color: Color(0xFF94A3B8)),
+                  onPressed: () {
+                    _searchController.clear();
+                    _fetchFeed(reset: true);
+                  },
+                )
+              : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
@@ -290,38 +332,60 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         itemCount: _categories.length + 1,
         itemBuilder: (context, index) {
           final isAll = index == 0;
-          final categoryName = isAll ? 'All' : _categories[index - 1]['name'] as String;
-          final categoryIcon = isAll ? LucideIcons.functionSquare : _categories[index - 1]['icon'] as IconData;
-          final isSelected = isAll ? _selectedCategory == null : _selectedCategory == categoryName;
+          final categoryName =
+              isAll ? 'All' : _categories[index - 1]['name'] as String;
+          final categoryIcon = isAll
+              ? LucideIcons.functionSquare
+              : _categories[index - 1]['icon'] as IconData;
+          final isSelected = isAll
+              ? _selectedCategory == null
+              : _selectedCategory == categoryName;
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              avatar: Icon(
-                categoryIcon,
-                size: 14,
-                color: isSelected ? Colors.white : const Color(0xFF64748B),
-              ),
-              label: Text(categoryName),
-              selected: isSelected,
-              onSelected: (selected) {
+            child: GestureDetector(
+              onTap: () {
                 setState(() {
                   _selectedCategory = isAll ? null : categoryName;
                 });
                 _fetchFeed(reset: true);
               },
-              backgroundColor: Colors.white,
-              selectedColor: AppColors.primaryBlue,
-              checkmarkColor: Colors.white,
-              side: BorderSide(
-                color: isSelected ? AppColors.primaryBlue : const Color(0xFFE2E8F0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.accentGreen
+                      : Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.accentGreen
+                        : Colors.white.withValues(alpha: 0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      categoryIcon,
+                      size: 14,
+                      color: isSelected ? Colors.black87 : Colors.white,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      categoryName,
+                      style: TextStyle(
+                        color: isSelected ? Colors.black87 : Colors.white,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF475569),
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             ),
           );
         },
@@ -331,7 +395,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildFeedList() {
     if (_hasError && _reports.isEmpty) {
-      return SliverFillRemaining(child: ErrorState(onRetry: () => _fetchFeed(reset: true)));
+      return SliverFillRemaining(
+          child: ErrorState(onRetry: () => _fetchFeed(reset: true)));
     }
 
     if (_isLoading && _reports.isEmpty) {
@@ -349,9 +414,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.shieldAlert, size: 64, color: Color(0xFFCBD5E1)),
+              const Icon(LucideIcons.shieldAlert,
+                  size: 64, color: Color(0xFFCBD5E1)),
               const SizedBox(height: 16),
-              const Text('No reports found', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+              const Text('No reports found',
+                  style: TextStyle(
+                      color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -363,19 +431,32 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
+            Widget childWidget;
             if (index == 0) {
-              return CommunityMapCard(threatCount: _reports.length);
+              childWidget = CommunityMapCard(threatCount: _reports.length);
+            } else {
+              final report = _reports[index - 1];
+              childWidget = ScamCard(
+                report: report,
+                onVerify: () => _fetchFeed(reset: true),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => ReportDetailsScreen(report: report)),
+                  );
+                },
+              );
             }
-            final report = _reports[index - 1];
-            return ScamCard(
-              report: report,
-              onVerify: () => _fetchFeed(reset: true),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ReportDetailsScreen(report: report)),
-                );
-              },
+            return AnimationConfiguration.staggeredList(
+              position: index,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: childWidget,
+                ),
+              ),
             );
           },
           childCount: _reports.length + 1,
@@ -394,12 +475,15 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
           );
         },
-        backgroundColor: const Color(0xFF2563EB), // Sleek blue
+        backgroundColor: AppColors.accentGreen,
         isExtended: _isFabExtended,
-        icon: const Icon(LucideIcons.plusCircle, color: Colors.white),
+        icon: const Icon(LucideIcons.plusCircle, color: Colors.black87),
         label: const Text(
           'Report a Scam',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+              letterSpacing: 0.5),
         ),
       ),
     );
