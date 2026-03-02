@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'dart:developer';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
@@ -14,7 +13,6 @@ import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate;
-import 'badges_screen.dart';
 import 'status_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -165,8 +163,6 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    final theme = Theme.of(context);
-
     // Using standard Scaffold for deep navy background
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
@@ -255,19 +251,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                               .SubscriptionScreen())),
                                 ),
                                 SettingsTile(
-                                  icon: Icons.dark_mode_rounded,
-                                  title: AppLocalizations.of(context)!
-                                      .accountDarkMode,
-                                  trailing: Switch(
-                                    value: theme.brightness == Brightness.dark,
-                                    onChanged: (val) => context
-                                        .read<ThemeProvider>()
-                                        .toggle(val),
-                                    activeColor: AppColors.accentGreen,
-                                  ),
-                                  onTap: () {}, // Handled by switch
-                                ),
-                                SettingsTile(
                                   icon: Icons.notifications_active_outlined,
                                   title: AppLocalizations.of(context)!
                                       .accountNotificationSetting,
@@ -298,13 +281,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                       .accountChangePassword,
                                   onTap: _openChangePassword,
                                 ),
-                                SettingsTile(
-                                  icon: Icons.security,
-                                  title: AppLocalizations.of(context)!
-                                      .accountTwoFactor,
-                                  onTap: () => _openPlaceholder(
-                                      'Two-Factor Authentication'),
-                                ),
                               ],
                             ),
 
@@ -333,6 +309,16 @@ class _AccountScreenState extends State<AccountScreen> {
                                       size: 14),
                                   onTap: () => Navigator.pushNamed(
                                       context, '/terms-of-service'),
+                                ),
+                                SettingsTile(
+                                  icon: Icons.gavel_rounded,
+                                  title: 'Manage Consent',
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () =>
+                                      _openPlaceholder('Manage Consent'),
                                 ),
                               ],
                             ),
@@ -672,7 +658,6 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _statisticsCard() {
     final authProvider = context.watch<AuthProvider>();
     final profile = authProvider.user?.profile;
-    final points = profile?.points ?? 1250; // Use real points from profile
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -695,172 +680,114 @@ class _AccountScreenState extends State<AccountScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'TOTAL PROTECTION POINTS',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
-                      ),
+                // Tier Badge
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const StatusDetailsScreen()),
+                  ),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: '$points',
-                                style: const TextStyle(
-                                  fontSize: 42,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              TextSpan(
-                                text: ' PTS',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.accentGreen
-                                      .withValues(alpha: 0.8),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Tier Badge beside points
-                        GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const BadgesScreen()),
-                          ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.shield_rounded,
-                                    color: Colors.black, size: 12),
-                                const SizedBox(width: 6),
-                                Text(
-                                  _calculateTierName(profile?.totalPoints ?? 0),
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        const Icon(Icons.shield_rounded,
+                            color: Colors.black, size: 14),
+                        const SizedBox(width: 8),
+                        Text(
+                          _calculateTierName(profile?.totalPoints ?? 0),
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(height: 8),
-                    // View Status Benefits under points
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const StatusDetailsScreen()),
-                        );
-                      },
-                      child: Text(
-                        'View Status Benefits ↗',
-                        style: TextStyle(
-                          color: AppColors.accentGreen.withValues(alpha: 0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => Navigator.pushNamed(context, '/leaderboard'),
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.05),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'RANK',
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.4),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Top 5%',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Benefits and Plan Info Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Plan Indicator
+                GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const crate.SubscriptionScreen()),
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.05)),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          'SCAMS BLOCKED',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.4),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Icon(
+                          context.watch<AuthProvider>().isSubscribed
+                              ? Icons.auto_awesome
+                              : Icons.person_outline,
+                          color: context.watch<AuthProvider>().isSubscribed
+                              ? Colors.amber
+                              : Colors.white.withValues(alpha: 0.4),
+                          size: 14,
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          '142',
+                        const SizedBox(width: 8),
+                        Text(
+                          context.watch<AuthProvider>().isSubscribed
+                              ? 'Premium Protector'
+                              : 'Free Plan',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
+                            color: context.watch<AuthProvider>().isSubscribed
+                                ? Colors.amber
+                                : Colors.white.withValues(alpha: 0.6),
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
+                  ),
+                ),
+                // View Benefits Link
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const StatusDetailsScreen()),
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Benefits',
+                        style: TextStyle(
+                          color: AppColors.accentGreen.withValues(alpha: 0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_rounded,
+                          color: AppColors.accentGreen.withValues(alpha: 0.8),
+                          size: 14),
+                    ],
                   ),
                 ),
               ],

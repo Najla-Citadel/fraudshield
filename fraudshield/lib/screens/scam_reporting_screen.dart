@@ -6,7 +6,6 @@ import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'report_history_screen.dart';
 import '../widgets/selection_sheet.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import 'package:geolocator/geolocator.dart';
@@ -56,6 +55,27 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   bool _isPublic = true;
   bool _isSubmitting = false;
   bool _reportSent = false;
+  double? _selectedLat;
+  double? _selectedLng;
+
+  final Map<String, Map<String, double>> _malaysiaStates = {
+    'Johor': {'lat': 1.4854, 'lng': 103.7618},
+    'Kedah': {'lat': 6.1184, 'lng': 100.3686},
+    'Kelantan': {'lat': 6.1254, 'lng': 102.2381},
+    'Melaka': {'lat': 2.1896, 'lng': 102.2501},
+    'Negeri Sembilan': {'lat': 2.7258, 'lng': 101.9424},
+    'Pahang': {'lat': 3.8126, 'lng': 103.3256},
+    'Penang': {'lat': 5.4141, 'lng': 100.3288},
+    'Perak': {'lat': 4.5921, 'lng': 101.0901},
+    'Perlis': {'lat': 6.4449, 'lng': 100.2048},
+    'Sabah': {'lat': 5.9788, 'lng': 116.0753},
+    'Sarawak': {'lat': 1.5533, 'lng': 110.3592},
+    'Selangor': {'lat': 3.0738, 'lng': 101.5183},
+    'Terengganu': {'lat': 5.3117, 'lng': 103.1324},
+    'Kuala Lumpur': {'lat': 3.1390, 'lng': 101.6869},
+    'Labuan': {'lat': 5.2831, 'lng': 115.2443},
+    'Putrajaya': {'lat': 2.9264, 'lng': 101.6964},
+  };
 
   final List<Map<String, dynamic>> _targetTypeOptions = [
     {
@@ -202,6 +222,75 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     }
   }
 
+  Future<void> _showLocationPicker() async {
+    final selectedState = await SelectionSheet.show<String>(
+      context: context,
+      title: 'Select State',
+      options: _malaysiaStates.keys.toList()..sort(),
+      labelBuilder: (s) => s,
+    );
+
+    if (selectedState != null) {
+      final coords = _malaysiaStates[selectedState]!;
+      final targetLat = coords['lat']!;
+      final targetLng = coords['lng']!;
+
+      // Distance Check logic
+      bool proceed = true;
+      try {
+        final position = await Geolocator.getLastKnownPosition() ??
+            await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.low,
+              timeLimit: const Duration(seconds: 5),
+            );
+
+        final distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          targetLat,
+          targetLng,
+        );
+
+        if (distance > 100000) {
+          // > 100km
+          if (mounted) {
+            proceed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    backgroundColor: AppColors.deepNavy,
+                    title: const Text('Confirm Location',
+                        style: TextStyle(color: Colors.white)),
+                    content: Text(
+                        'The selected state ($selectedState) is far from your current location. Are you sure you want to report for this area?',
+                        style: const TextStyle(color: Colors.white70)),
+                    actions: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel')),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Yes, Correct',
+                              style: TextStyle(color: AppColors.accentGreen))),
+                    ],
+                  ),
+                ) ??
+                false;
+          }
+        }
+      } catch (e) {
+        log('Distance check non-fatal error: $e');
+      }
+
+      if (proceed && mounted) {
+        setState(() {
+          _locationController.text = selectedState;
+          _selectedLat = targetLat;
+          _selectedLng = targetLng;
+        });
+      }
+    }
+  }
+
   Future<void> _submitReport() async {
     if (!_validateCurrentStep()) return;
 
@@ -224,8 +313,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
     }
 
     try {
-      double? latitude = widget.prefilledLat;
-      double? longitude = widget.prefilledLng;
+      double? latitude = _selectedLat ?? widget.prefilledLat;
+      double? longitude = _selectedLng ?? widget.prefilledLng;
       final manualLocation = _locationController.text.trim();
 
       if (latitude == null || longitude == null) {
@@ -322,25 +411,6 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
         _showError('Failed to submit report: $e');
       }
     }
-  }
-
-  void _resetForm() {
-    setState(() {
-      _currentStep = 0;
-      _reportSent = false;
-      _phoneController.clear();
-      _bankNameController.clear();
-      _bankAccountController.clear();
-      _socialPlatformController.clear();
-      _socialHandleController.clear();
-      _websiteUrlController.clear();
-      _descController.clear();
-      _locationController.clear();
-      _selectedFilePath = null;
-      _selectedFileName = null;
-      _isPublic = true;
-    });
-    _pageController.jumpToPage(0);
   }
 
   @override
@@ -759,13 +829,20 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               textColor: Colors.white,
             ),
             const SizedBox(height: 24),
-            AdaptiveTextField(
-              controller: _locationController,
-              label: 'City / State (Optional)',
-              prefixIcon: LucideIcons.mapPin,
-              filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.05),
-              textColor: Colors.white,
+            GestureDetector(
+              onTap: _showLocationPicker,
+              child: AbsorbPointer(
+                child: AdaptiveTextField(
+                  controller: _locationController,
+                  label: 'State in Malaysia',
+                  placeholder: 'Tap to select state',
+                  prefixIcon: LucideIcons.mapPin,
+                  filled: true,
+                  fillColor: Colors.white.withValues(alpha: 0.05),
+                  textColor: Colors.white,
+                  suffixIcon: LucideIcons.chevronDown,
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             _buildFileUpload(),
@@ -1043,21 +1120,5 @@ class _ReviewItem extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  const _SectionLabel({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(label,
-        style: const TextStyle(
-          color: AppColors.primaryBlue,
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-          letterSpacing: 0.5,
-        ));
   }
 }

@@ -21,18 +21,15 @@ import '../widgets/glass_surface.dart';
 // import '../widgets/animated_background.dart';
 // import '../widgets/fade_in_list.dart';
 // import '../widgets/skeleton_loader.dart';
-import 'activity_screen.dart';
 import 'trending_scams_screen.dart';
 import 'news_screen.dart';
 import '../constants/colors.dart';
-import '../widgets/security_score_ring.dart';
 import '../widgets/floating_nav_bar.dart';
 import '../widgets/security_report_sheet.dart';
 import 'security_score_detail_screen.dart';
 import 'transaction_journal_screen.dart';
 import 'message_analysis_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../widgets/daily_digest_widget.dart';
 import '../l10n/app_localizations.dart';
 import 'report_details_screen.dart';
 import 'report_history_screen.dart';
@@ -1373,7 +1370,7 @@ class _HomeTab extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
               'Security News',
@@ -1383,6 +1380,20 @@ class _HomeTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: () => newsKey.currentState?.showCustomization(),
+              icon: Icon(
+                LucideIcons.slidersHorizontal,
+                size: 18,
+                color: Colors.white.withValues(alpha: 0.6),
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+              tooltip: 'Filter Categories',
+            ),
+            const Spacer(),
             TextButton(
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const NewsScreen())),
@@ -1395,7 +1406,7 @@ class _HomeTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        LatestNewsWidget(limit: 5),
+        LatestNewsWidget(key: newsKey, limit: 5),
       ],
     );
   }
