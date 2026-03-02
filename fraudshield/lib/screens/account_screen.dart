@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer';
 import '../services/api_service.dart';
@@ -9,7 +10,6 @@ import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
 import '../constants/app_theme.dart';
 import 'login_screen.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/settings_group.dart';
@@ -20,7 +20,6 @@ import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'profile_screen.dart';
 import 'alert_preferences_screen.dart';
-
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -67,7 +66,6 @@ class _AccountScreenState extends State<AccountScreen> {
       _hasError = false;
     });
   }
-
 
   Future<void> _saveAvatar(String seed) async {
     setState(() => _avatarSeed = seed);
@@ -170,138 +168,239 @@ class _AccountScreenState extends State<AccountScreen> {
     final theme = Theme.of(context);
 
     // Using standard Scaffold for deep navy background
-    return AdaptiveScaffold(
-      title: AppLocalizations.of(context)!.accountMyAccount,
+    return Scaffold(
       backgroundColor: AppColors.deepNavy,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.language, color: Colors.white),
-          onPressed: _showLanguagePicker,
-        ),
-      ],
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 100),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _premiumProfileHeader(),
-            const SizedBox(height: 16),
-            _statisticsCard(),
-            
-            const SizedBox(height: 24),
-
-            // Preferences
-            SettingsGroup(
-              title: AppLocalizations.of(context)!.accountPreferences,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              items: [
-                SettingsTile(
-                  icon: Icons.card_membership,
-                  title: AppLocalizations.of(context)!.accountSubscriptionPlan,
-                  trailing: Row(
-                   mainAxisSize: MainAxisSize.min,
-                   children: [
-                     Text(
-                       context.watch<AuthProvider>().isSubscribed 
-                         ? AppLocalizations.of(context)!.accountPremium 
-                         : AppLocalizations.of(context)!.accountFree, 
-                       style: TextStyle(
-                         color: context.watch<AuthProvider>().isSubscribed ? Colors.amber : Colors.white.withValues(alpha: 0.5), 
-                         fontSize: 13,
-                         fontWeight: FontWeight.bold
-                       )
-                     ),
-                     const SizedBox(width: 8),
-                     Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
-                   ],
-                 ),
-                  onTap: () => Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen())
-                  ),
-                ),
-                SettingsTile(
-                  icon: Icons.dark_mode_rounded,
-                  title: AppLocalizations.of(context)!.accountDarkMode,
-                  trailing: Switch(
-                    value: theme.brightness == Brightness.dark,
-                    onChanged: (val) => context.read<ThemeProvider>().toggle(val),
-                    activeColor: AppColors.accentGreen,
-                  ),
-                  onTap: () {}, // Handled by switch
-                ),
-                SettingsTile(
-                  icon: Icons.notifications_active_outlined,
-                  title: AppLocalizations.of(context)!.accountNotificationSetting,
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
-                  ),
-                ),
-              ],
-            ),
-
-            // Security
-            SettingsGroup(
-              title: AppLocalizations.of(context)!.accountSecurityTitle,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              items: [
-                SettingsTile(
-                  icon: Icons.lock_rounded,
-                  title: AppLocalizations.of(context)!.accountChangePassword,
-                  onTap: _openChangePassword,
-                ),
-                SettingsTile(
-                  icon: Icons.security, 
-                  title: AppLocalizations.of(context)!.accountTwoFactor,
-                  onTap: () => _openPlaceholder('Two-Factor Authentication'),
-                ),
-              ],
-            ),
-
-            // Legal
-             SettingsGroup(
-              title: 'Legal',
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              items: [
-                SettingsTile(
-                  icon: Icons.policy_rounded,
-                  title: 'Privacy Policy',
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
-                  onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
-                ),
-                 SettingsTile(
-                  icon: Icons.description_rounded,
-                  title: 'Terms of Service',
-                  trailing: Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.2), size: 14),
-                  onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _logoutButton(),
-            // Delete Account Button
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: TextButton(
-                onPressed: _confirmDeleteAccount,
-                child: Text(
-                  'Delete Account',
-                  style: TextStyle(
-                    color: Colors.red.withValues(alpha: 0.7),
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+      body: Stack(
+        children: [
+          // Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF0F172A), // Slate 900
+                  AppColors.deepNavy, // Deep navy
+                  Color(0xFF1E3A8A), // Blue 900
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.5, 1.0],
               ),
             ),
-            const SizedBox(height: 24),
-            // Version text with manual white color for safety
-            Text('Version 1.1.0',
-                style: AppTheme.darkTheme.textTheme.labelSmall?.copyWith(color: Colors.white.withValues(alpha: 0.5))),
-          ],
-        ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildAppBar(context),
+                Expanded(
+                  child: AnimationLimiter(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 100),
+                      child: Column(
+                        children: AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 375),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            verticalOffset: 50.0,
+                            child: FadeInAnimation(child: widget),
+                          ),
+                          children: [
+                            const SizedBox(height: 20),
+                            _premiumProfileHeader(),
+                            const SizedBox(height: 16),
+                            _statisticsCard(),
+
+                            const SizedBox(height: 24),
+
+                            // Preferences
+                            SettingsGroup(
+                              title: AppLocalizations.of(context)!
+                                  .accountPreferences,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              items: [
+                                SettingsTile(
+                                  icon: Icons.card_membership,
+                                  title: AppLocalizations.of(context)!
+                                      .accountSubscriptionPlan,
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                          context
+                                                  .watch<AuthProvider>()
+                                                  .isSubscribed
+                                              ? AppLocalizations.of(context)!
+                                                  .accountPremium
+                                              : AppLocalizations.of(context)!
+                                                  .accountFree,
+                                          style: TextStyle(
+                                              color: context
+                                                      .watch<AuthProvider>()
+                                                      .isSubscribed
+                                                  ? Colors.amber
+                                                  : Colors.white
+                                                      .withValues(alpha: 0.5),
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 8),
+                                      Icon(Icons.arrow_forward_ios,
+                                          color: Colors.white
+                                              .withValues(alpha: 0.2),
+                                          size: 14),
+                                    ],
+                                  ),
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => const crate
+                                              .SubscriptionScreen())),
+                                ),
+                                SettingsTile(
+                                  icon: Icons.dark_mode_rounded,
+                                  title: AppLocalizations.of(context)!
+                                      .accountDarkMode,
+                                  trailing: Switch(
+                                    value: theme.brightness == Brightness.dark,
+                                    onChanged: (val) => context
+                                        .read<ThemeProvider>()
+                                        .toggle(val),
+                                    activeColor: AppColors.accentGreen,
+                                  ),
+                                  onTap: () {}, // Handled by switch
+                                ),
+                                SettingsTile(
+                                  icon: Icons.notifications_active_outlined,
+                                  title: AppLocalizations.of(context)!
+                                      .accountNotificationSetting,
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const AlertPreferencesScreen()),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Security
+                            SettingsGroup(
+                              title: AppLocalizations.of(context)!
+                                  .accountSecurityTitle,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              items: [
+                                SettingsTile(
+                                  icon: Icons.lock_rounded,
+                                  title: AppLocalizations.of(context)!
+                                      .accountChangePassword,
+                                  onTap: _openChangePassword,
+                                ),
+                                SettingsTile(
+                                  icon: Icons.security,
+                                  title: AppLocalizations.of(context)!
+                                      .accountTwoFactor,
+                                  onTap: () => _openPlaceholder(
+                                      'Two-Factor Authentication'),
+                                ),
+                              ],
+                            ),
+
+                            // Legal
+                            SettingsGroup(
+                              title: 'Legal',
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 12),
+                              items: [
+                                SettingsTile(
+                                  icon: Icons.policy_rounded,
+                                  title: 'Privacy Policy',
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/privacy-policy'),
+                                ),
+                                SettingsTile(
+                                  icon: Icons.description_rounded,
+                                  title: 'Terms of Service',
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/terms-of-service'),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            _logoutButton(),
+                            // Delete Account Button
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: TextButton(
+                                onPressed: _confirmDeleteAccount,
+                                child: Text(
+                                  'Delete Account',
+                                  style: TextStyle(
+                                    color: Colors.red.withValues(alpha: 0.7),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Version text with manual white color for safety
+                            Text('Version 1.1.0',
+                                style: AppTheme.darkTheme.textTheme.labelSmall
+                                    ?.copyWith(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.5))),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'My Account',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E293B),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.language, color: Colors.white, size: 20),
+              onPressed: _showLanguagePicker,
+              tooltip: 'Change Language',
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -325,7 +424,9 @@ class _AccountScreenState extends State<AccountScreen> {
           builder: (context, setSheetState) {
             return Padding(
               padding: EdgeInsets.fromLTRB(
-                24, 24, 24,
+                24,
+                24,
+                24,
                 MediaQuery.of(sheetCtx).viewInsets.bottom + 24,
               ),
               child: Column(
@@ -358,37 +459,61 @@ class _AccountScreenState extends State<AccountScreen> {
                   const SizedBox(height: 24),
                   AdaptiveButton(
                     isLoading: isLoading,
-                    onPressed: isLoading ? null : () {
-                      final current = currentCtrl.text.trim();
-                      final next = newCtrl.text.trim();
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            final current = currentCtrl.text.trim();
+                            final next = newCtrl.text.trim();
 
-                      setSheetState(() => errorMessage = null);
+                            setSheetState(() => errorMessage = null);
 
-                      if (current.isEmpty) { setSheetState(() => errorMessage = 'Please enter your current password'); return; }
-                      if (next.isEmpty) { setSheetState(() => errorMessage = 'Please enter a new password'); return; }
-                      if (next.length < 8) { setSheetState(() => errorMessage = 'New password must be at least 8 characters'); return; }
-                      if (!next.contains(RegExp(r'[A-Z]'))) { setSheetState(() => errorMessage = 'New password must contain an uppercase letter'); return; }
-                      if (!next.contains(RegExp(r'[0-9]'))) { setSheetState(() => errorMessage = 'New password must contain a number'); return; }
+                            if (current.isEmpty) {
+                              setSheetState(() => errorMessage =
+                                  'Please enter your current password');
+                              return;
+                            }
+                            if (next.isEmpty) {
+                              setSheetState(() =>
+                                  errorMessage = 'Please enter a new password');
+                              return;
+                            }
+                            if (next.length < 8) {
+                              setSheetState(() => errorMessage =
+                                  'New password must be at least 8 characters');
+                              return;
+                            }
+                            if (!next.contains(RegExp(r'[A-Z]'))) {
+                              setSheetState(() => errorMessage =
+                                  'New password must contain an uppercase letter');
+                              return;
+                            }
+                            if (!next.contains(RegExp(r'[0-9]'))) {
+                              setSheetState(() => errorMessage =
+                                  'New password must contain a number');
+                              return;
+                            }
 
-                      setSheetState(() => isLoading = true);
-                      
-                      ApiService.instance.changePassword(current, next).then((_) {
-                        if (mounted) {
-                          Navigator.pop(sheetCtx);
-                          _toast('Password updated successfully');
-                        }
-                      }).catchError((e) {
-                        if (mounted) {
-                          setSheetState(() {
-                            isLoading = false;
-                            errorMessage = e.toString().contains('400') 
-                                ? 'Incorrect current password' 
-                                : 'Failed to update password';
-                          });
-                        }
-                        return <String, dynamic>{};
-                      });
-                    },
+                            setSheetState(() => isLoading = true);
+
+                            ApiService.instance
+                                .changePassword(current, next)
+                                .then((_) {
+                              if (mounted) {
+                                Navigator.pop(sheetCtx);
+                                _toast('Password updated successfully');
+                              }
+                            }).catchError((e) {
+                              if (mounted) {
+                                setSheetState(() {
+                                  isLoading = false;
+                                  errorMessage = e.toString().contains('400')
+                                      ? 'Incorrect current password'
+                                      : 'Failed to update password';
+                                });
+                              }
+                              return <String, dynamic>{};
+                            });
+                          },
                     text: 'Update Password',
                   ),
                 ],
@@ -419,14 +544,18 @@ class _AccountScreenState extends State<AccountScreen> {
             children: [
               const Text(
                 'Select Language',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               _buildLanguageItem('English', 'en', currentLocale == 'en', () {
                 localeProvider.setLocale(const Locale('en'));
                 Navigator.pop(context);
               }),
-              _buildLanguageItem('Bahasa Malaysia', 'ms', currentLocale == 'ms', () {
+              _buildLanguageItem('Bahasa Malaysia', 'ms', currentLocale == 'ms',
+                  () {
                 localeProvider.setLocale(const Locale('ms'));
                 Navigator.pop(context);
               }),
@@ -438,12 +567,16 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildLanguageItem(String name, String code, bool isSelected, VoidCallback onTap) {
+  Widget _buildLanguageItem(
+      String name, String code, bool isSelected, VoidCallback onTap) {
     return ListTile(
       onTap: onTap,
-      leading: Text(code == 'en' ? '🇺🇸' : '🇲🇾', style: const TextStyle(fontSize: 24)),
+      leading: Text(code == 'en' ? '🇺🇸' : '🇲🇾',
+          style: const TextStyle(fontSize: 24)),
       title: Text(name, style: const TextStyle(color: Colors.white)),
-      trailing: isSelected ? const Icon(Icons.check_circle, color: AppColors.accentGreen) : null,
+      trailing: isSelected
+          ? const Icon(Icons.check_circle, color: AppColors.accentGreen)
+          : null,
     );
   }
 
@@ -466,7 +599,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 50,
@@ -485,7 +619,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       color: AppColors.accentGreen,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 14),
+                    child: const Icon(Icons.camera_alt_rounded,
+                        color: Colors.white, size: 14),
                   ),
                 ),
               ],
@@ -510,7 +645,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   MaterialPageRoute(builder: (_) => const ProfileScreen()),
                 ),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -592,7 +728,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: AppColors.accentGreen.withValues(alpha: 0.8),
+                                  color: AppColors.accentGreen
+                                      .withValues(alpha: 0.8),
                                 ),
                               ),
                             ],
@@ -603,10 +740,12 @@ class _AccountScreenState extends State<AccountScreen> {
                         GestureDetector(
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const BadgesScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const BadgesScreen()),
                           ),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15),
@@ -614,7 +753,8 @@ class _AccountScreenState extends State<AccountScreen> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.shield_rounded, color: Colors.black, size: 12),
+                                const Icon(Icons.shield_rounded,
+                                    color: Colors.black, size: 12),
                                 const SizedBox(width: 6),
                                 Text(
                                   _calculateTierName(profile?.totalPoints ?? 0),
@@ -636,7 +776,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const StatusDetailsScreen()),
+                          MaterialPageRoute(
+                              builder: (_) => const StatusDetailsScreen()),
                         );
                       },
                       child: Text(
@@ -730,16 +871,35 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-
-
-
   Widget _logoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AdaptiveButton(
-        onPressed: _logout,
-        text: 'Log Out',
-        isDestructive: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _logout,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.redAccent.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border:
+                  Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+            ),
+            child: const Center(
+              child: Text(
+                'Log Out',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -749,7 +909,8 @@ class _AccountScreenState extends State<AccountScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Delete Account?', style: TextStyle(color: Colors.white)),
+        title: const Text('Delete Account?',
+            style: TextStyle(color: Colors.white)),
         content: const Text(
           'This action cannot be undone. Your profile and personal data will be permanently removed. Your reports will remain anonymized.',
           style: TextStyle(color: Colors.white70),
@@ -802,9 +963,6 @@ class _AccountScreenState extends State<AccountScreen> {
   // Removed _getBadgeEmoji as it is unused
 }
 
-
-
-
 // ================= AVATAR PICKER =================
 class _AvatarPicker extends StatelessWidget {
   final String selected;
@@ -844,7 +1002,9 @@ class _AvatarPicker extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                border: isSelected ? Border.all(color: theme.colorScheme.primary, width: 3) : null,
+                border: isSelected
+                    ? Border.all(color: theme.colorScheme.primary, width: 3)
+                    : null,
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -852,8 +1012,9 @@ class _AvatarPicker extends StatelessWidget {
                   'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(child: CircularProgressIndicator(strokeWidth: 2));
+                    if (loadingProgress == null) return child;
+                    return Center(
+                        child: CircularProgressIndicator(strokeWidth: 2));
                   },
                 ),
               ),

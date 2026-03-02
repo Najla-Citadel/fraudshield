@@ -26,11 +26,13 @@ class ApiService {
   Future<bool>? _refreshFuture;
 
   // SHA-256 Fingerprint for api.fraudshieldprotect.com
-  static const String _prodFingerprint = '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
+  static const String _prodFingerprint =
+      '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
 
   Future<void> init() async {
-    final String rawBaseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
-    
+    final String rawBaseUrl =
+        dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
+
     // Use the .env value directly now that firewall is unblocked.
     // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
     baseUrl = rawBaseUrl;
@@ -82,7 +84,7 @@ class ApiService {
       'password': password,
       if (fullName != null) 'fullName': fullName,
     });
-    
+
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
   }
@@ -106,7 +108,7 @@ class ApiService {
       'email': email,
       'password': password,
     });
-    
+
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
   }
@@ -161,7 +163,8 @@ class ApiService {
         return true;
       } else {
         if (kDebugMode) {
-          debugPrint('ApiService: Token refresh failed (${response.statusCode})');
+          debugPrint(
+              'ApiService: Token refresh failed (${response.statusCode})');
         }
         await signOut();
         return false;
@@ -193,7 +196,8 @@ class ApiService {
     });
   }
 
-  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
+  Future<Map<String, dynamic>> changePassword(
+      String currentPassword, String newPassword) async {
     return post('/auth/change-password', {
       'currentPassword': currentPassword,
       'newPassword': newPassword,
@@ -264,8 +268,8 @@ class ApiService {
       'description': description,
       'target': target,
       'isPublic': isPublic,
-      'latitude': latitude,
-      'longitude': longitude,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
       'evidence': evidence ?? {},
     });
   }
@@ -297,13 +301,13 @@ class ApiService {
     if (search != null && search.isNotEmpty) {
       query += '&search=${Uri.encodeComponent(search)}';
     }
-    
+
     final response = await get('/reports/public$query');
-    
+
     if (response is Map<String, dynamic>) {
       return response;
     }
-    
+
     // Fallback for unexpected formats
     return {
       'results': response is List ? response : [],
@@ -359,7 +363,7 @@ class ApiService {
       if (category != null) 'category': category,
       if (dateFrom != null) 'dateFrom': dateFrom.toIso8601String(),
       if (dateTo != null) 'dateTo': dateTo.toIso8601String(),
-      if (minVerifications != null && minVerifications > 0) 
+      if (minVerifications != null && minVerifications > 0)
         'minVerifications': minVerifications.toString(),
       'sortBy': sortBy,
       'limit': limit.toString(),
@@ -369,7 +373,7 @@ class ApiService {
     final queryString = params.entries
         .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
         .join('&');
-    
+
     final response = await get('/reports/search?$queryString');
     return response as Map<String, dynamic>;
   }
@@ -395,7 +399,7 @@ class ApiService {
     if (type != null) {
       query += '&type=$type';
     }
-    
+
     final response = await get('/transactions$query');
     return response as Map<String, dynamic>;
   }
@@ -482,7 +486,7 @@ class ApiService {
   }
 
   // ---------------- Behavioral Events ----------------
- 
+
   Future<Map<String, dynamic>> logBehavioralEvent({
     required String type,
     Map<String, dynamic>? metadata,
@@ -492,7 +496,7 @@ class ApiService {
       'metadata': metadata ?? {},
     });
   }
- 
+
   Future<List<dynamic>> getRecentEvents({int limit = 50}) async {
     final response = await get('/features/behavioral?limit=$limit');
     return response as List;
@@ -512,7 +516,8 @@ class ApiService {
     await patch('/alerts/read-all', {});
   }
 
-  Future<Map<String, dynamic>> resolveAlert(String alertId, String action) async {
+  Future<Map<String, dynamic>> resolveAlert(
+      String alertId, String action) async {
     return await post('/alerts/$alertId/resolve', {'action': action});
   }
 
@@ -549,7 +554,6 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> claimDailyReward() async {
-
     return post('/rewards/daily', {});
   }
 
@@ -617,7 +621,8 @@ class ApiService {
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? 'Voice analysis failed: ${response.statusCode}');
+        throw Exception(
+            body['message'] ?? 'Voice analysis failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) debugPrint('ApiService analyzeVoiceBytes error: $e');
@@ -626,7 +631,8 @@ class ApiService {
   }
 
   /// Generic multipart file upload helper
-  Future<Map<String, dynamic>> _uploadFileToEndpoint(String filePath, String endpoint) async {
+  Future<Map<String, dynamic>> _uploadFileToEndpoint(
+      String filePath, String endpoint) async {
     try {
       await _checkCertificatePinning();
       final url = Uri.parse('$baseUrl$endpoint');
@@ -639,14 +645,16 @@ class ApiService {
 
       request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
+      final streamedResponse =
+          await request.send().timeout(const Duration(seconds: 60));
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
         final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? 'Upload failed: ${response.statusCode}');
+        throw Exception(
+            body['message'] ?? 'Upload failed: ${response.statusCode}');
       }
     } catch (e) {
       if (kDebugMode) debugPrint('ApiService upload to $endpoint error: $e');
@@ -675,10 +683,10 @@ class ApiService {
     });
   }
 
-
   // ---------------- Alerts ----------------
 
-  Future<Map<String, dynamic>> getTrendingAlerts({int hours = 72, double? lat, double? lng}) async {
+  Future<Map<String, dynamic>> getTrendingAlerts(
+      {int hours = 72, double? lat, double? lng}) async {
     String query = '?hours=$hours';
     if (lat != null && lng != null) {
       query += '&lat=$lat&lng=$lng';
@@ -724,8 +732,8 @@ class ApiService {
   }
 
   dynamic _processResponse(
-    http.Response response, 
-    String method, 
+    http.Response response,
+    String method,
     String path, {
     Map<String, dynamic>? body,
   }) async {
@@ -737,34 +745,46 @@ class ApiService {
       try {
         data = jsonDecode(response.body);
       } catch (e) {
-        debugPrint('ApiService: Failed to decode JSON response: ${response.body}');
+        debugPrint(
+            'ApiService: Failed to decode JSON response: ${response.body}');
       }
     }
 
-    if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        response.statusCode == 204) {
       return data ?? (response.body.isNotEmpty ? response.body : null);
-    } else if (response.statusCode == 401 && _refreshToken != null && !path.contains('/auth/refresh')) {
+    } else if (response.statusCode == 401 &&
+        _refreshToken != null &&
+        !path.contains('/auth/refresh')) {
       if (kDebugMode) {
-        debugPrint('ApiService: 401 Unauthorized for $path. Attempting refresh...');
+        debugPrint(
+            'ApiService: 401 Unauthorized for $path. Attempting refresh...');
       }
-      
+
       final success = await refreshToken();
       if (success) {
         if (kDebugMode) {
-          debugPrint('ApiService: Retrying $method $path after successful refresh');
+          debugPrint(
+              'ApiService: Retrying $method $path after successful refresh');
         }
         return _sendRequest(method, path, body: body);
       }
       throw Exception('Session expired');
     } else {
-      final message = isJson && data is Map 
-          ? (data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null))
+      final message = isJson && data is Map
+          ? (data['message'] ??
+              (data['errors'] != null
+                  ? (data['errors'] as List).map((e) => e['message']).join(', ')
+                  : null))
           : response.body;
-      throw Exception(message ?? '$method $path failed: ${response.statusCode}');
+      throw Exception(
+          message ?? '$method $path failed: ${response.statusCode}');
     }
   }
 
-  Future<dynamic> _sendRequest(String method, String path, {Map<String, dynamic>? body}) async {
+  Future<dynamic> _sendRequest(String method, String path,
+      {Map<String, dynamic>? body}) async {
     try {
       await _checkCertificatePinning();
 
@@ -773,16 +793,24 @@ class ApiService {
 
       switch (method) {
         case 'GET':
-          response = await http.get(uri, headers: _headers).timeout(const Duration(seconds: 10));
+          response = await http
+              .get(uri, headers: _headers)
+              .timeout(const Duration(seconds: 10));
           break;
         case 'POST':
-          response = await http.post(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
+          response = await http
+              .post(uri, headers: _headers, body: jsonEncode(body))
+              .timeout(const Duration(seconds: 10));
           break;
         case 'PATCH':
-          response = await http.patch(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
+          response = await http
+              .patch(uri, headers: _headers, body: jsonEncode(body))
+              .timeout(const Duration(seconds: 10));
           break;
         case 'DELETE':
-          response = await http.delete(uri, headers: _headers).timeout(const Duration(seconds: 10));
+          response = await http
+              .delete(uri, headers: _headers)
+              .timeout(const Duration(seconds: 10));
           break;
         default:
           throw Exception('Unsupported method: $method');
@@ -797,12 +825,14 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> post(
+      String path, Map<String, dynamic> body) async {
     final result = await _sendRequest('POST', path, body: body);
     return result is Map<String, dynamic> ? result : {'results': result};
   }
 
-  Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> patch(
+      String path, Map<String, dynamic> body) async {
     final result = await _sendRequest('PATCH', path, body: body);
     return result is Map<String, dynamic> ? result : {'results': result};
   }
@@ -816,7 +846,7 @@ class ApiService {
       await _checkCertificatePinning();
       final url = Uri.parse('$baseUrl/upload/single');
       final request = http.MultipartRequest('POST', url);
-      
+
       request.headers.addAll(_headers);
       request.files.add(await http.MultipartFile.fromPath('file', filePath));
 

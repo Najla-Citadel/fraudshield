@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
-import '../widgets/glass_surface.dart';
 import 'subscription_screen.dart';
-import 'qr_detection_screen.dart'; // Just as examples for navigation
 
 class SecurityScoreDetailScreen extends StatelessWidget {
   final Map<String, dynamic> healthData;
@@ -19,109 +18,148 @@ class SecurityScoreDetailScreen extends StatelessWidget {
     final Map<String, dynamic> breakdown = healthData['breakdown'] ?? {};
 
     return Scaffold(
-      backgroundColor: AppColors.lightBg,
+      backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
+          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Security Health',
           style: TextStyle(
-            color: AppColors.textDark,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Hero Score Section
-            _buildScoreHero(score),
-            const SizedBox(height: 32),
-            
-            const Text(
-              'Security Breakdown',
-              style: TextStyle(
-                color: AppColors.textDark,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          // Background Gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF0F172A), // Slate 900
+                  AppColors.deepNavy, // Deep navy
+                  Color(0xFF1E3A8A), // Blue 900
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.5, 1.0],
               ),
             ),
-            const SizedBox(height: 16),
+          ),
+          SafeArea(
+            child: AnimationLimiter(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: AnimationConfiguration.toStaggeredList(
+                    duration: const Duration(milliseconds: 375),
+                    childAnimationBuilder: (widget) => SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(child: widget),
+                    ),
+                    children: [
+                      // 1. Hero Score Section
+                      _buildScoreHero(score),
+                      const SizedBox(height: 32),
 
-            // 2. Breakdown Items
-            _buildBreakdownItem(
-              context,
-              title: 'Email Verification',
-              points: breakdown['verification'] ?? 0,
-              maxPoints: 20,
-              icon: LucideIcons.mail,
-              description: 'Verify your email to secure your account recovery.',
-              actionLabel: 'Verify Now',
-              onAction: () {
-                // Navigate to verification or show info
-              },
+                      const Text(
+                        'Security Breakdown',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // 2. Breakdown Items
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Email Verification',
+                        points: breakdown['verification'] ?? 0,
+                        maxPoints: 20,
+                        icon: LucideIcons.mail,
+                        description:
+                            'Verify your email to secure your account recovery.',
+                        actionLabel: 'Verify Now',
+                        onAction: () {
+                          // Navigate to verification or show info
+                        },
+                      ),
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Premium Protection',
+                        points: breakdown['subscription'] ?? 0,
+                        maxPoints: 30,
+                        icon: LucideIcons.shieldCheck,
+                        description:
+                            'Unlock advanced SMS and Call screening features.',
+                        actionLabel: 'Upgrade Plan',
+                        onAction: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SubscriptionScreen())),
+                      ),
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Profile Completeness',
+                        points: breakdown['profile'] ?? 0,
+                        maxPoints: 15,
+                        icon: LucideIcons.user,
+                        description:
+                            'A complete profile helps verify your identity.',
+                        actionLabel: 'Edit Profile',
+                        onAction: () => Navigator.pop(context),
+                      ),
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Community Reputation',
+                        points: breakdown['reputation'] ?? 0,
+                        maxPoints: 15,
+                        icon: LucideIcons.star,
+                        description:
+                            'Earn points by contributing accurate scan results.',
+                        actionLabel: 'Learn More',
+                        onAction: () {},
+                      ),
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Reporting Activity',
+                        points: breakdown['activity'] ?? 0,
+                        maxPoints: 10,
+                        icon: LucideIcons.flag,
+                        description:
+                            'Active reporting helps protect the community.',
+                        actionLabel: 'Report Now',
+                        onAction: () {},
+                      ),
+                      _buildBreakdownItem(
+                        context,
+                        title: 'Alert Monitoring',
+                        points: breakdown['alerts'] ?? 0,
+                        maxPoints: 10,
+                        icon: LucideIcons.bell,
+                        description:
+                            'Enable real-time push notifications for threats.',
+                        actionLabel: 'Enable Alerts',
+                        onAction: () {},
+                      ),
+
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            _buildBreakdownItem(
-              context,
-              title: 'Premium Protection',
-              points: breakdown['subscription'] ?? 0,
-              maxPoints: 30,
-              icon: LucideIcons.shieldCheck,
-              description: 'Unlock advanced SMS and Call screening features.',
-              actionLabel: 'Upgrade Plan',
-              onAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SubscriptionScreen())),
-            ),
-            _buildBreakdownItem(
-              context,
-              title: 'Profile Completeness',
-              points: breakdown['profile'] ?? 0,
-              maxPoints: 15,
-              icon: LucideIcons.user,
-              description: 'A complete profile helps verify your identity.',
-              actionLabel: 'Edit Profile',
-              onAction: () => Navigator.pop(context), // Go back and user can tap Profile
-            ),
-            _buildBreakdownItem(
-              context,
-              title: 'Community Reputation',
-              points: breakdown['reputation'] ?? 0,
-              maxPoints: 15,
-              icon: LucideIcons.star,
-              description: 'Earn points by contributing accurate scan results.',
-              actionLabel: 'Learn More',
-              onAction: () {},
-            ),
-            _buildBreakdownItem(
-              context,
-              title: 'Reporting Activity',
-              points: breakdown['activity'] ?? 0,
-              maxPoints: 10,
-              icon: LucideIcons.flag,
-              description: 'Active reporting helps protect the community.',
-              actionLabel: 'Report Now',
-              onAction: () {},
-            ),
-            _buildBreakdownItem(
-              context,
-              title: 'Alert Monitoring',
-              points: breakdown['alerts'] ?? 0,
-              maxPoints: 10,
-              icon: LucideIcons.bell,
-              description: 'Enable real-time push notifications for threats.',
-              actionLabel: 'Enable Alerts',
-              onAction: () {},
-            ),
-            
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -147,15 +185,12 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.healthGradientStart, AppColors.healthGradientEnd],
-        ),
+        color: const Color(0xFF1E293B), // Dark Slate
         borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.healthGradientEnd.withValues(alpha: 0.3),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -172,8 +207,9 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: score / 100,
                   strokeWidth: 12,
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.accentGreen),
                 ),
               ),
               Column(
@@ -246,16 +282,9 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,12 +294,17 @@ class SecurityScoreDetailScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: (isCompleted ? AppColors.accentGreen : AppColors.primaryBlue).withValues(alpha: 0.1),
+                  color: (isCompleted
+                          ? AppColors.accentGreen
+                          : AppColors.primaryBlue)
+                      .withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isCompleted ? LucideIcons.check : icon,
-                  color: isCompleted ? AppColors.accentGreen : AppColors.primaryBlue,
+                  color: isCompleted
+                      ? AppColors.accentGreen
+                      : AppColors.primaryBlue,
                   size: 20,
                 ),
               ),
@@ -282,7 +316,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: AppColors.textDark,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
@@ -290,9 +324,12 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                     Text(
                       isCompleted ? 'Completed' : '$points / $maxPoints points',
                       style: TextStyle(
-                        color: isCompleted ? AppColors.accentGreen : AppColors.greyText,
+                        color: isCompleted
+                            ? AppColors.accentGreen
+                            : Colors.white.withValues(alpha: 0.5),
                         fontSize: 13,
-                        fontWeight: isCompleted ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            isCompleted ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                   ],
@@ -302,7 +339,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                 TextButton(
                   onPressed: onAction,
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primaryBlue,
+                    foregroundColor: AppColors.accentGreen,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: Text(
@@ -316,7 +353,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
           Text(
             description,
             style: TextStyle(
-              color: AppColors.greyText.withValues(alpha: 0.8),
+              color: Colors.white.withValues(alpha: 0.6),
               fontSize: 13,
               height: 1.4,
             ),

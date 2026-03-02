@@ -48,10 +48,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   // Removed _userName and _loadingProfile - we will watch the provider directly
 
-
   // Key to refresh PointsScreen from Home
-  final GlobalKey<PointsScreenState> _pointsKey = GlobalKey<PointsScreenState>();
-  final GlobalKey<LatestNewsWidgetState> _newsKey = GlobalKey<LatestNewsWidgetState>();
+  final GlobalKey<PointsScreenState> _pointsKey =
+      GlobalKey<PointsScreenState>();
+  final GlobalKey<LatestNewsWidgetState> _newsKey =
+      GlobalKey<LatestNewsWidgetState>();
 
   // Customization State
   List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
@@ -72,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadRecentTransactions();
     _fetchSecurityHealth();
     _fetchMyReports();
-    
+
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
 
@@ -86,15 +87,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkSecurityGuide() async {
     final prefs = await SharedPreferences.getInstance();
     final seen = prefs.getBool('score_guide_seen') ?? false;
-    
+
     if (!seen && mounted) {
-      await Future.delayed(const Duration(milliseconds: 1500)); // Wait for initial animations
+      await Future.delayed(
+          const Duration(milliseconds: 1500)); // Wait for initial animations
       if (!mounted) return;
-      
+
       showGeneralDialog(
         context: context,
         barrierDismissible: true, // Allow tapping outside to close
-        barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+        barrierLabel:
+            MaterialLocalizations.of(context).modalBarrierDismissLabel,
         barrierColor: Colors.black54,
         transitionDuration: const Duration(milliseconds: 400),
         pageBuilder: (context, animation, secondaryAnimation) {
@@ -106,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.security, size: 64, color: AppColors.accentGreen),
+                  const Icon(Icons.security,
+                      size: 64, color: AppColors.accentGreen),
                   const SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.homeWelcomeTitle,
@@ -139,7 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         backgroundColor: AppColors.accentGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                       ),
                       child: Text(AppLocalizations.of(context)!.homeWelcomeBtn),
                     ),
@@ -176,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _runQuickScan(bool isSubscribed) {
     if (_isScanning) return;
-    
+
     setState(() => _isScanning = true);
 
     // Simulate system scan
@@ -231,10 +236,14 @@ class _HomeScreenState extends State<HomeScreen> {
           _healthData = health;
           _securityScore = health['score'];
           final score = _securityScore;
-          if (score >= 90) _securityStatus = l10n.statusExcellent;
-          else if (score >= 75) _securityStatus = l10n.statusGood;
-          else if (score >= 50) _securityStatus = l10n.statusProtected;
-          else _securityStatus = l10n.statusAtRisk;
+          if (score >= 90)
+            _securityStatus = l10n.statusExcellent;
+          else if (score >= 75)
+            _securityStatus = l10n.statusGood;
+          else if (score >= 50)
+            _securityStatus = l10n.statusProtected;
+          else
+            _securityStatus = l10n.statusAtRisk;
         });
       }
     } catch (e) {
@@ -261,7 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(latest['title'] ?? 'Fraud Warning', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(latest['title'] ?? 'Fraud Warning',
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(latest['message'] ?? 'Suspicious activity detected'),
             ],
           ),
@@ -269,12 +279,15 @@ class _HomeScreenState extends State<HomeScreen> {
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
           duration: const Duration(seconds: 5),
-          action: SnackBarAction(label: 'VIEW', textColor: Colors.white, onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
-            );
-          }),
+          action: SnackBarAction(
+              label: 'VIEW',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
+                );
+              }),
         ),
       );
     }
@@ -288,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadProfile() async {
     final authProvider = context.read<AuthProvider>();
-    
+
     // Trigger profile fetch if not already present
     if (authProvider.userProfile == null) {
       try {
@@ -314,7 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
           builder: (context) => _DailyRewardDialog(
             points: res['points'] ?? 0,
             streak: res['streak'] ?? 1,
-            message: res['message'] ?? 'Thanks for being part of the community!',
+            message:
+                res['message'] ?? 'Thanks for being part of the community!',
             nextReward: res['nextReward'] ?? 20,
           ),
         );
@@ -346,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Failed to load recent transactions on Home: $e');
     }
   }
-  
+
   Future<void> _fetchMyReports() async {
     try {
       final reports = await ApiService.instance.getMyReports();
@@ -377,118 +391,121 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Customize Services',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Select which actions to display on your dashboard.',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Toggles
-                  _buildToggleItem(
-                    'Fraud Check',
-                    'Scan QR or check ID',
-                    _activeQuickActions.contains('fraud_check'),
-                    (val) {
-                      setSheetState(() {
-                        if (val) {
-                          _activeQuickActions.add('fraud_check');
-                        } else {
-                          _activeQuickActions.remove('fraud_check');
-                        }
-                      });
-                      _saveQuickActions(_activeQuickActions); // Save immediately
-                    },
-                  ),
-                  _buildToggleItem(
-                    'QR Scan',
-                    'Scan any QR code safely',
-                    _activeQuickActions.contains('qr_scan'),
-                    (val) {
-                      setSheetState(() {
-                        if (val) {
-                          _activeQuickActions.add('qr_scan');
-                        } else {
-                          _activeQuickActions.remove('qr_scan');
-                        }
-                      });
-                      _saveQuickActions(_activeQuickActions);
-                    },
-                  ),
-                  _buildToggleItem(
-                    'Report Scam',
-                    'Report a number or a website',
-                    _activeQuickActions.contains('report_scam'),
-                    (val) {
-                      setSheetState(() {
-                        if (val) {
-                          _activeQuickActions.add('report_scam');
-                        } else {
-                          _activeQuickActions.remove('report_scam');
-                        }
-                      });
-                      _saveQuickActions(_activeQuickActions);
-                    },
-                  ),
-                  _buildToggleItem(
-                    'Voice Detection',
-                    'Analyze calls in real-time',
-                    _activeQuickActions.contains('voice_detection'),
-                    (val) {
-                      setSheetState(() {
-                        if (val) {
-                          _activeQuickActions.add('voice_detection');
-                        } else {
-                          _activeQuickActions.remove('voice_detection');
-                        }
-                      });
-                      _saveQuickActions(_activeQuickActions);
-                    },
-                  ),
-                  _buildToggleItem(
-                    'Phishing Protection',
-                    'Check links and messages',
-                    _activeQuickActions.contains('phishing_protection'),
-                    (val) {
-                      setSheetState(() {
-                        if (val) {
-                          _activeQuickActions.add('phishing_protection');
-                        } else {
-                          _activeQuickActions.remove('phishing_protection');
-                        }
-                      });
-                      _saveQuickActions(_activeQuickActions);
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  children: [
+                    const Text(
+                      'Customize Services',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      child: const Text('Done'),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Select which actions to display on your dashboard.',
+                      style:
+                          TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Toggles
+                    _buildToggleItem(
+                      'Fraud Check',
+                      'Scan QR or check ID',
+                      _activeQuickActions.contains('fraud_check'),
+                      (val) {
+                        setSheetState(() {
+                          if (val) {
+                            _activeQuickActions.add('fraud_check');
+                          } else {
+                            _activeQuickActions.remove('fraud_check');
+                          }
+                        });
+                        _saveQuickActions(
+                            _activeQuickActions); // Save immediately
+                      },
+                    ),
+                    _buildToggleItem(
+                      'QR Scan',
+                      'Scan any QR code safely',
+                      _activeQuickActions.contains('qr_scan'),
+                      (val) {
+                        setSheetState(() {
+                          if (val) {
+                            _activeQuickActions.add('qr_scan');
+                          } else {
+                            _activeQuickActions.remove('qr_scan');
+                          }
+                        });
+                        _saveQuickActions(_activeQuickActions);
+                      },
+                    ),
+                    _buildToggleItem(
+                      'Report Scam',
+                      'Report a number or a website',
+                      _activeQuickActions.contains('report_scam'),
+                      (val) {
+                        setSheetState(() {
+                          if (val) {
+                            _activeQuickActions.add('report_scam');
+                          } else {
+                            _activeQuickActions.remove('report_scam');
+                          }
+                        });
+                        _saveQuickActions(_activeQuickActions);
+                      },
+                    ),
+                    _buildToggleItem(
+                      'Voice Detection',
+                      'Analyze calls in real-time',
+                      _activeQuickActions.contains('voice_detection'),
+                      (val) {
+                        setSheetState(() {
+                          if (val) {
+                            _activeQuickActions.add('voice_detection');
+                          } else {
+                            _activeQuickActions.remove('voice_detection');
+                          }
+                        });
+                        _saveQuickActions(_activeQuickActions);
+                      },
+                    ),
+                    _buildToggleItem(
+                      'Phishing Protection',
+                      'Check links and messages',
+                      _activeQuickActions.contains('phishing_protection'),
+                      (val) {
+                        setSheetState(() {
+                          if (val) {
+                            _activeQuickActions.add('phishing_protection');
+                          } else {
+                            _activeQuickActions.remove('phishing_protection');
+                          }
+                        });
+                        _saveQuickActions(_activeQuickActions);
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accentGreen,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        child: const Text('Done'),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
           },
         );
       },
@@ -503,7 +520,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: GlassSurface( // Reusing GlassSurface for consistent look
+      child: GlassSurface(
+        // Reusing GlassSurface for consistent look
         borderRadius: 16,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -565,8 +583,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
-
 // ... inside HomeScreen build method ...
 
   @override
@@ -574,14 +590,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final authProvider = context.watch<AuthProvider>();
     final isSubscribed = authProvider.isSubscribed;
     final loading = authProvider.loading;
-    
+
     String? name = authProvider.userProfile?.fullName;
     if (name != null && name.trim().isEmpty) {
       name = null;
     }
-    final displayUserName = name ?? 
-                           authProvider.user?.email?.split('@').first ?? 
-                           'User';
+    final displayUserName =
+        name ?? authProvider.user?.email?.split('@').first ?? 'User';
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
@@ -626,7 +641,7 @@ class _HomeTab extends StatelessWidget {
   final List<String> activeQuickActions;
   final VoidCallback onCustomize;
   final bool isSubscribed;
-  
+
   // New props for security center
   final bool isScanning;
   final int score;
@@ -692,95 +707,98 @@ class _HomeTab extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1. HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue,
-                          borderRadius: BorderRadius.circular(12),
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // 1. HEADER
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(LucideIcons.shieldCheck,
+                              color: Colors.white, size: 24),
                         ),
-                        child: const Icon(LucideIcons.shieldCheck, color: Colors.white, size: 24),
-                      ),
-                      const SizedBox(width: 12),
-                       const Text(
-                        'FraudShield',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Stack(
-                    children: [
-                       IconButton(
-                        icon: const Icon(LucideIcons.bell, color: Colors.white),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
-                          );
-                        },
-                      ),
-                      Positioned(
-                        right: 12,
-                        top: 12,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
+                        const SizedBox(width: 12),
+                        const Text(
+                          'FraudShield',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.5,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                      ],
+                    ),
+                    Stack(
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(LucideIcons.bell, color: Colors.white),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const ScamAlertsScreen()),
+                            );
+                          },
+                        ),
+                        Positioned(
+                          right: 12,
+                          top: 12,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // 2. SECURITY HEALTH SCORE (Gradient Card)
-              _buildSecurityHealthCard(context),
+                // 2. SECURITY HEALTH SCORE (Gradient Card)
+                _buildSecurityHealthCard(context),
 
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
 
-              // 3. SERVICES ROW
-              _buildQuickActions(context),
+                // 3. SERVICES ROW
+                _buildQuickActions(context),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // 4. PREMIUM PROTECTION
-              _buildPremiumProtectionSection(context),
+                // 4. PREMIUM PROTECTION
+                _buildPremiumProtectionSection(context),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // 5. SECURITY NEWS & INSIGHTS
-              _buildSecurityNewsSection(context),
+                // 5. SECURITY NEWS & INSIGHTS
+                _buildSecurityNewsSection(context),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // 6. SUBMITTED REPORTS
-              _buildSubmittedReportsSection(context),
+                // 6. SUBMITTED REPORTS
+                _buildSubmittedReportsSection(context),
 
-              const SizedBox(height: 40), // Bottom padding
-            ],
+                const SizedBox(height: 40), // Bottom padding
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildSecurityHealthCard(BuildContext context) {
     return GestureDetector(
@@ -798,7 +816,8 @@ class _HomeTab extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
+          border: Border.all(
+              color: Colors.white.withValues(alpha: 0.1), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.3),
@@ -808,7 +827,7 @@ class _HomeTab extends StatelessWidget {
           ],
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF1E293B).withValues(alpha: 0.8), 
+              const Color(0xFF1E293B).withValues(alpha: 0.8),
               const Color(0xFF0F172A).withValues(alpha: 0.8)
             ],
             begin: Alignment.topLeft,
@@ -816,89 +835,91 @@ class _HomeTab extends StatelessWidget {
           ),
         ),
         child: Stack(
-            children: [
-              // Background faint shield icon
-              Positioned(
-                right: -20,
-                top: 0,
-                child: Icon(
-                  LucideIcons.shieldCheck,
-                  size: 120,
-                  color: Colors.white.withValues(alpha: 0.15),
-                ),
+          children: [
+            // Background faint shield icon
+            Positioned(
+              right: -20,
+              top: 0,
+              child: Icon(
+                LucideIcons.shieldCheck,
+                size: 120,
+                color: Colors.white.withValues(alpha: 0.15),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                     'SECURITY HEALTH SCORE',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                    ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SECURITY HEALTH SCORE',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        score.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 64,
-                          fontWeight: FontWeight.w900,
-                          height: 1.0,
-                        ),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      score.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 64,
+                        fontWeight: FontWeight.w900,
+                        height: 1.0,
                       ),
+                    ),
+                    const Text(
+                      ' /100',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Status Pill
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentGreen.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: AppColors.accentGreen.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       const Text(
-                        ' /100',
+                        'Environment Protected',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
+                          color: AppColors.accentGreen,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  // Status Pill
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                       color: AppColors.accentGreen.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                         const Text(
-                          'Environment Protected',
-                          style: TextStyle(
-                            color: AppColors.accentGreen,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
   Widget _buildQuickActions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-         const Text(
+        const Text(
           'Quick Protection',
           style: TextStyle(
             color: Colors.white,
@@ -909,29 +930,63 @@ class _HomeTab extends StatelessWidget {
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildGridButton(context, 'Report Scam', LucideIcons.flag, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ScamReportingScreen())))),
+            Expanded(
+                child: _buildGridButton(
+                    context,
+                    'Report Scam',
+                    LucideIcons.flag,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ScamReportingScreen())))),
             const SizedBox(width: 16),
-            Expanded(child: _buildGridButton(context, 'Phone/Bank Check', LucideIcons.wallet, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FraudCheckScreen())))),
+            Expanded(
+                child: _buildGridButton(
+                    context,
+                    'Phone/Bank Check',
+                    LucideIcons.wallet,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const FraudCheckScreen())))),
           ],
         ),
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildGridButton(context, 'URL Link Check', LucideIcons.globe, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PhishingProtectionScreen())))),
+            Expanded(
+                child: _buildGridButton(
+                    context,
+                    'URL Link Check',
+                    LucideIcons.globe,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                const PhishingProtectionScreen())))),
             const SizedBox(width: 16),
-            Expanded(child: _buildGridButton(context, 'QR Scanner', LucideIcons.qrCode, () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QRDetectionScreen())))),
+            Expanded(
+                child: _buildGridButton(
+                    context,
+                    'QR Scanner',
+                    LucideIcons.qrCode,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const QRDetectionScreen())))),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildGridButton(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildGridButton(
+      BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 100,
-         decoration: BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
@@ -939,7 +994,7 @@ class _HomeTab extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             Icon(icon, color: Colors.white, size: 28),
+            Icon(icon, color: Colors.white, size: 28),
             const SizedBox(height: 12),
             Text(
               title,
@@ -961,7 +1016,7 @@ class _HomeTab extends StatelessWidget {
       children: [
         Row(
           children: [
-             const Text(
+            const Text(
               'Premium Protection',
               style: TextStyle(
                 color: Colors.white,
@@ -975,7 +1030,8 @@ class _HomeTab extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF7E6), // Light yellow tint
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFFFCC00).withValues(alpha: 0.5)),
+                border: Border.all(
+                    color: const Color(0xFFFFCC00).withValues(alpha: 0.5)),
               ),
               child: const Text(
                 'GOLD TIER',
@@ -996,23 +1052,31 @@ class _HomeTab extends StatelessWidget {
           child: Row(
             children: [
               _buildPremiumCard(
-                context, 
-                'AI Message Scanner', 
+                context,
+                'AI Message Scanner',
                 LucideIcons.messageSquare,
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => MessageAnalysisScreen())),
-              ),
-              _buildPremiumCard(
-                context, 
-                'AI Voice Scanner', 
-                LucideIcons.phoneCall, 
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const VoiceDetectionScreen())),
+                () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => MessageAnalysisScreen())),
               ),
               const SizedBox(width: 16),
               _buildPremiumCard(
-                context, 
-                'AI File Scanner', 
-                LucideIcons.fileLock, 
-                () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AIFileScannerScreen())),
+                context,
+                'AI Voice Scanner',
+                LucideIcons.phoneCall,
+                () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const VoiceDetectionScreen())),
+              ),
+              const SizedBox(width: 16),
+              _buildPremiumCard(
+                context,
+                'AI File Scanner',
+                LucideIcons.fileLock,
+                () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const AIFileScannerScreen())),
               ),
             ],
           ),
@@ -1021,16 +1085,21 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildPremiumCard(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildPremiumCard(
+      BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 120,
+        height: 140, // Uniform height
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+        decoration: BoxDecoration(
+          color: Colors.white
+              .withValues(alpha: 0.08), // Increased opacity for consistency
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(
+              color: Colors.white
+                  .withValues(alpha: 0.1)), // Slightly more visible border
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1038,7 +1107,8 @@ class _HomeTab extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                 Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 28),
+                Icon(icon,
+                    color: Colors.white.withValues(alpha: 0.8), size: 28),
                 Positioned(
                   bottom: -4,
                   right: -4,
@@ -1048,7 +1118,8 @@ class _HomeTab extends StatelessWidget {
                       color: Color(0xFF0F172A),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.stars, color: Color(0xFFFFCC00), size: 14),
+                    child: const Icon(Icons.stars,
+                        color: Color(0xFFFFCC00), size: 14),
                   ),
                 ),
               ],
@@ -1069,8 +1140,6 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildTrendingAlertsCard(BuildContext context) {
     return ListenableBuilder(
       listenable: NotificationService.instance,
@@ -1079,18 +1148,23 @@ class _HomeTab extends StatelessWidget {
         final hasAlerts = alerts.isNotEmpty;
         final latestAlert = hasAlerts ? alerts.first : null;
 
-        final isWarning = hasAlerts && (latestAlert!['severity'] == 'high' || latestAlert['severity'] == 'critical');
+        final isWarning = hasAlerts &&
+            (latestAlert!['severity'] == 'high' ||
+                latestAlert['severity'] == 'critical');
         final iconColor = hasAlerts
             ? (isWarning ? Colors.redAccent : Colors.orangeAccent)
             : AppColors.accentGreen;
 
-        final iconData = hasAlerts ? LucideIcons.alertTriangle : LucideIcons.shieldCheck;
+        final iconData =
+            hasAlerts ? LucideIcons.alertTriangle : LucideIcons.shieldCheck;
         final title = hasAlerts
-            ? (latestAlert!['title'] ?? AppLocalizations.of(context)!.homeTrendingThreats)
+            ? (latestAlert!['title'] ??
+                AppLocalizations.of(context)!.homeTrendingThreats)
             : 'No Active Threats';
 
         final subtitle = hasAlerts
-            ? (latestAlert!['message'] ?? AppLocalizations.of(context)!.homeTrendingDesc)
+            ? (latestAlert!['message'] ??
+                AppLocalizations.of(context)!.homeTrendingDesc)
             : 'Your security environment is currently clear and protected.';
 
         return GestureDetector(
@@ -1107,16 +1181,20 @@ class _HomeTab extends StatelessWidget {
               color: const Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: hasAlerts ? iconColor.withValues(alpha: 0.3) : Colors.transparent,
+                color: hasAlerts
+                    ? iconColor.withValues(alpha: 0.3)
+                    : Colors.transparent,
                 width: 1,
               ),
-              boxShadow: hasAlerts ? [
-                BoxShadow(
-                  color: iconColor.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ] : [],
+              boxShadow: hasAlerts
+                  ? [
+                      BoxShadow(
+                        color: iconColor.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1135,7 +1213,8 @@ class _HomeTab extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.5), size: 14),
+                    Icon(Icons.arrow_forward_ios,
+                        color: Colors.white.withValues(alpha: 0.5), size: 14),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1223,61 +1302,70 @@ class _HomeTab extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Match trending alerts style
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
+          border: Border.all(
+              color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
           boxShadow: [
             BoxShadow(
-            color: AppColors.accentGreen.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.menu_book_rounded, color: AppColors.accentGreen, size: 24),
-              const SizedBox(width: 10),
-              const Text(
-                'PAYMENT JOURNAL',
-                style: TextStyle(
-                  color: AppColors.accentGreen,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.0,
+              color: AppColors.accentGreen.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.menu_book_rounded,
+                    color: AppColors.accentGreen, size: 24),
+                const SizedBox(width: 10),
+                const Text(
+                  'PAYMENT JOURNAL',
+                  style: TextStyle(
+                    color: AppColors.accentGreen,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Unsure about a seller? Log the payment here before you transfer money.',
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8), height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const TransactionJournalScreen()),
+                  );
+                },
+                icon: const Text('Log Now',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+                label: const Icon(Icons.arrow_forward_rounded,
+                    color: Colors.white, size: 18),
+                style: TextButton.styleFrom(
+                  backgroundColor: AppColors.accentGreen,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Unsure about a seller? Log the payment here before you transfer money.',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.8), height: 1.4),
-          ),
-          const SizedBox(height: 16),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
-                );
-              },
-              icon: const Text('Log Now', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              label: const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
-              style: TextButton.styleFrom(
-                backgroundColor: AppColors.accentGreen,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _buildSecurityNewsSection(BuildContext context) {
@@ -1287,7 +1375,7 @@ class _HomeTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             const Text(
+            const Text(
               'Security News',
               style: TextStyle(
                 color: Colors.white,
@@ -1296,10 +1384,12 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen())),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const NewsScreen())),
               child: const Text(
                 'See All',
-                style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1321,7 +1411,7 @@ class _HomeTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             const Text(
+            const Text(
               'My Reports',
               style: TextStyle(
                 color: Colors.white,
@@ -1336,7 +1426,8 @@ class _HomeTab extends StatelessWidget {
               ),
               child: const Text(
                 'See All',
-                style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: AppColors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1351,12 +1442,17 @@ class _HomeTab extends StatelessWidget {
     final category = report['category'] ?? 'Scam Report';
     final status = (report['status'] ?? 'PENDING').toString().toUpperCase();
     final date = _formatDate(report['createdAt'] ?? '');
-    
+
     Color statusColor;
     switch (status) {
-      case 'VERIFIED': statusColor = Colors.green; break;
-      case 'REJECTED': statusColor = Colors.red; break;
-      default: statusColor = Colors.orange;
+      case 'VERIFIED':
+        statusColor = Colors.green;
+        break;
+      case 'REJECTED':
+        statusColor = Colors.red;
+        break;
+      default:
+        statusColor = Colors.orange;
     }
 
     return GestureDetector(
@@ -1367,7 +1463,7 @@ class _HomeTab extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-         decoration: BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
@@ -1377,17 +1473,18 @@ class _HomeTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                 color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.fileText, color: Colors.white70, size: 20),
+              child: const Icon(LucideIcons.fileText,
+                  color: Colors.white70, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
+                  Text(
                     category,
                     style: const TextStyle(
                       color: Colors.white,
@@ -1398,7 +1495,9 @@ class _HomeTab extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     date,
-                    style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 12),
+                    style: TextStyle(
+                        color: AppColors.textDark.withValues(alpha: 0.5),
+                        fontSize: 12),
                   ),
                 ],
               ),
@@ -1430,7 +1529,7 @@ class _HomeTab extends StatelessWidget {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
       final diff = now.difference(date);
-      
+
       if (diff.inDays == 0) return 'Today';
       if (diff.inDays == 1) return 'Yesterday';
       if (diff.inDays < 7) return '${diff.inDays} days ago';
@@ -1498,13 +1597,15 @@ class _BigActionButtonState extends State<_BigActionButton> {
           child: Container(
             width: 100, // Fixed width for uniformity
             height: 115, // Increased height to prevent overflow
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // Reduced horizontal padding
+            padding: const EdgeInsets.symmetric(
+                vertical: 12, horizontal: 8), // Reduced horizontal padding
             decoration: BoxDecoration(
               color: widget.color,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: widget.color.withValues(alpha: _isPressed ? 0.05 : 0.2),
+                  color:
+                      widget.color.withValues(alpha: _isPressed ? 0.05 : 0.2),
                   blurRadius: _isPressed ? 4 : 12,
                   offset: Offset(0, _isPressed ? 2 : 4),
                 ),
@@ -1540,7 +1641,8 @@ class _BigActionButtonState extends State<_BigActionButton> {
                   Positioned(
                     top: 0,
                     right: 0,
-                    child: Icon(Icons.lock, size: 16, color: Colors.white.withValues(alpha: 0.7)),
+                    child: Icon(Icons.lock,
+                        size: 16, color: Colors.white.withValues(alpha: 0.7)),
                   ),
               ],
             ),
@@ -1550,7 +1652,6 @@ class _BigActionButtonState extends State<_BigActionButton> {
     );
   }
 }
-
 
 class _StatusItem extends StatelessWidget {
   final IconData icon;
@@ -1578,7 +1679,9 @@ class _StatusItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(20),
-          border: onTap != null ? Border.all(color: Colors.white.withValues(alpha: 0.05)) : null,
+          border: onTap != null
+              ? Border.all(color: Colors.white.withValues(alpha: 0.05))
+              : null,
         ),
         child: Row(
           children: [
@@ -1617,7 +1720,8 @@ class _StatusItem extends StatelessWidget {
             if (isLocked)
               Padding(
                 padding: const EdgeInsets.only(left: 8),
-                child: Icon(Icons.lock, color: Colors.white.withValues(alpha: 0.5), size: 20),
+                child: Icon(Icons.lock,
+                    color: Colors.white.withValues(alpha: 0.5), size: 20),
               )
             else if (isActive)
               Container(
@@ -1627,12 +1731,15 @@ class _StatusItem extends StatelessWidget {
                   color: AppColors.accentGreen,
                   shape: BoxShape.circle,
                   boxShadow: [
-                     BoxShadow(color: AppColors.accentGreen.withValues(alpha: 0.5), blurRadius: 6)
+                    BoxShadow(
+                        color: AppColors.accentGreen.withValues(alpha: 0.5),
+                        blurRadius: 6)
                   ],
                 ),
               )
             else if (onTap != null)
-              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white.withValues(alpha: 0.3)),
+              Icon(Icons.arrow_forward_ios,
+                  size: 14, color: Colors.white.withValues(alpha: 0.3)),
           ],
         ),
       ),
@@ -1666,7 +1773,10 @@ class _DailyRewardDialog extends StatelessWidget {
           children: [
             const Text(
               '🎉 Daily Bonus!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             const SizedBox(height: 16),
             const Icon(Icons.stars, size: 64, color: Colors.amber),
@@ -1699,7 +1809,8 @@ class _DailyRewardDialog extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Streak: $streak Days',
-                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ),
@@ -1707,7 +1818,8 @@ class _DailyRewardDialog extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Tomorrow\'s Reward: $nextReward Points',
-              style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.4)),
+              style: TextStyle(
+                  fontSize: 12, color: Colors.white.withValues(alpha: 0.4)),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -1718,7 +1830,8 @@ class _DailyRewardDialog extends StatelessWidget {
                   backgroundColor: AppColors.accentGreen,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text('Awesome!'),
               ),
