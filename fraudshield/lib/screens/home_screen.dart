@@ -20,7 +20,7 @@ import 'community_feed_screen.dart';
 import '../widgets/glass_surface.dart';
 // import '../widgets/animated_background.dart';
 // import '../widgets/fade_in_list.dart';
-import '../widgets/skeleton_loader.dart';
+// import '../widgets/skeleton_loader.dart';
 import 'activity_screen.dart';
 import 'trending_scams_screen.dart';
 import 'news_screen.dart';
@@ -672,14 +672,22 @@ class _HomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.lightBg, // Light theme background
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0F172A), // Slate 900
+            AppColors.deepNavy, // Base
+            Color(0xFF1E3A8A), // Blue 900
+          ],
+        ),
       ),
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           onRefresh: onRefresh,
-          color: AppColors.primaryBlue,
-          backgroundColor: Colors.white,
+          color: AppColors.accentGreen,
+          backgroundColor: const Color(0xFF1E293B),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
@@ -701,10 +709,10 @@ class _HomeTab extends StatelessWidget {
                         child: const Icon(LucideIcons.shieldCheck, color: Colors.white, size: 24),
                       ),
                       const SizedBox(width: 12),
-                      const Text(
+                       const Text(
                         'FraudShield',
                         style: TextStyle(
-                          color: AppColors.textDark,
+                          color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
@@ -714,8 +722,8 @@ class _HomeTab extends StatelessWidget {
                   ),
                   Stack(
                     children: [
-                      IconButton(
-                        icon: const Icon(LucideIcons.bell, color: AppColors.textDark),
+                       IconButton(
+                        icon: const Icon(LucideIcons.bell, color: Colors.white),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -788,111 +796,112 @@ class _HomeTab extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.healthGradientStart,
-              AppColors.healthGradientEnd,
-            ],
-          ),
-          borderRadius: BorderRadius.circular(24),
+          color: const Color(0xFF0F172A), // Slate 900
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: AppColors.healthGradientEnd.withValues(alpha: 0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
-            )
+            ),
           ],
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E293B).withValues(alpha: 0.8), 
+              const Color(0xFF0F172A).withValues(alpha: 0.8)
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
         child: Stack(
-          children: [
-            // Background faint shield icon
-            Positioned(
-              right: -20,
-              top: 0,
-              child: Icon(
-                LucideIcons.shieldCheck,
-                size: 120,
-                color: Colors.white.withValues(alpha: 0.15),
+            children: [
+              // Background faint shield icon
+              Positioned(
+                right: -20,
+                top: 0,
+                child: Icon(
+                  LucideIcons.shieldCheck,
+                  size: 120,
+                  color: Colors.white.withValues(alpha: 0.15),
+                ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SECURITY HEALTH SCORE',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      score.toString(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 64,
-                        fontWeight: FontWeight.w900,
-                        height: 1.0,
-                      ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                     'SECURITY HEALTH SCORE',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.5),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
                     ),
-                    const Text(
-                      ' /100',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Status Pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
-                      const Icon(Icons.verified, color: Colors.white, size: 16),
-                      const SizedBox(width: 8),
+                      Text(
+                        score.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 64,
+                          fontWeight: FontWeight.w900,
+                          height: 1.0,
+                        ),
+                      ),
                       const Text(
-                        'Protected Environment',
+                        ' /100',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(height: 24),
+                  // Status Pill
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                       color: AppColors.accentGreen.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                         const Text(
+                          'Environment Protected',
+                          style: TextStyle(
+                            color: AppColors.accentGreen,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildQuickActions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+         const Text(
           'Quick Protection',
           style: TextStyle(
-            color: AppColors.textDark,
+            color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -922,19 +931,20 @@ class _HomeTab extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 100,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF3F4F6),
+         decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.textDark, size: 28),
+             Icon(icon, color: Colors.white, size: 28),
             const SizedBox(height: 12),
             Text(
               title,
               style: const TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
@@ -951,10 +961,10 @@ class _HomeTab extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
+             const Text(
               'Premium Protection',
               style: TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1017,16 +1027,10 @@ class _HomeTab extends StatelessWidget {
       child: Container(
         width: 120,
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
+         decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1034,14 +1038,14 @@ class _HomeTab extends StatelessWidget {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Icon(icon, color: AppColors.textDark.withValues(alpha: 0.6), size: 28),
+                 Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 28),
                 Positioned(
                   bottom: -4,
                   right: -4,
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF0F172A),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.stars, color: Color(0xFFFFCC00), size: 14),
@@ -1054,7 +1058,7 @@ class _HomeTab extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
               ),
@@ -1283,10 +1287,10 @@ class _HomeTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+             const Text(
               'Security News',
               style: TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1295,7 +1299,7 @@ class _HomeTab extends StatelessWidget {
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen())),
               child: const Text(
                 'See All',
-                style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1317,10 +1321,10 @@ class _HomeTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+             const Text(
               'My Reports',
               style: TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1332,7 +1336,7 @@ class _HomeTab extends StatelessWidget {
               ),
               child: const Text(
                 'See All',
-                style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1363,37 +1367,30 @@ class _HomeTab extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
+         decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                 color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.fileText, color: AppColors.primaryBlue, size: 20),
+              child: const Icon(LucideIcons.fileText, color: Colors.white70, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                   Text(
                     category,
                     style: const TextStyle(
-                      color: AppColors.textDark,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -1669,7 +1666,7 @@ class _DailyRewardDialog extends StatelessWidget {
           children: [
             const Text(
               '🎉 Daily Bonus!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 16),
             const Icon(Icons.stars, size: 64, color: Colors.amber),
@@ -1686,13 +1683,13 @@ class _DailyRewardDialog extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[700]),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -1702,7 +1699,7 @@ class _DailyRewardDialog extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Streak: $streak Days',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                 ],
               ),
@@ -1710,7 +1707,7 @@ class _DailyRewardDialog extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Tomorrow\'s Reward: $nextReward Points',
-              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: 0.4)),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -1718,7 +1715,7 @@ class _DailyRewardDialog extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppColors.accentGreen,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

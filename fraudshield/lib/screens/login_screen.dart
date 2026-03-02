@@ -13,6 +13,7 @@ import 'forgot_password_screen.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -175,9 +176,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Theme(
       data: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: AppColors.deepNavy,
-        primaryColor: AppColors.primaryBlue,
+        primaryColor: AppColors.accentGreen,
         colorScheme: const ColorScheme.dark(
-          primary: AppColors.primaryBlue,
+          primary: AppColors.accentGreen,
           surface: AppColors.deepNavy,
           onSurface: Colors.white,
         ),
@@ -218,12 +219,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 32),
                     
                       // 🌫️ Glass Login Card
-                      GlassSurface(
-                        padding: const EdgeInsets.all(32),
-                        borderRadius: 24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
+                      AnimationConfiguration.synchronized(
+                        duration: const Duration(milliseconds: 800),
+                        child: FadeInAnimation(
+                          curve: Curves.easeOutCubic,
+                          child: SlideAnimation(
+                            verticalOffset: 30.0,
+                            child: GlassSurface(
+                              padding: const EdgeInsets.all(32),
+                              borderRadius: 24,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
                             // 🧭 Title
                             Text(
                               'Welcome Back',
@@ -277,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: const Text(
                                   'Forgot password?',
                                   style: TextStyle(
-                                    color: AppColors.primaryBlue, 
+                                    color: AppColors.accentGreen, 
                                     fontWeight: FontWeight.w600
                                   ),
                                 ),
@@ -353,12 +360,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
+                    ),
+                  ),
+                ),
 
-                      const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
                       // 👆 Biometric Placeholder
                       IconButton(
-                        icon: const Icon(Icons.fingerprint, size: 48, color: AppColors.primaryBlue),
+                        icon: const Icon(Icons.fingerprint, size: 48, color: AppColors.accentGreen),
                         onPressed: () {
                             ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Biometric Login coming soon!')),

@@ -107,7 +107,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
   void showCustomization() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.deepNavy,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -126,7 +126,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                       Text(
                         'Customize Insights',
                         style: TextStyle(
-                          color: AppColors.textDark,
+                          color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -163,11 +163,11 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? AppColors.primaryBlue.withValues(alpha: 0.1) 
-                                : AppColors.lightBg,
+                                ? AppColors.accentGreen.withValues(alpha: 0.1) 
+                                : Colors.white.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected ? AppColors.primaryBlue : Colors.black.withValues(alpha: 0.05),
+                              color: isSelected ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
                           child: Row(
@@ -181,7 +181,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                               Text(
                                 cat.label,
                                 style: TextStyle(
-                                  color: isSelected ? AppColors.primaryBlue : AppColors.textDark,
+                                  color: isSelected ? AppColors.accentGreen : Colors.white,
                                   fontSize: 13,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -201,7 +201,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                         _loadNews();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryBlue,
+                        backgroundColor: AppColors.accentGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -227,7 +227,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: Center(child: CircularProgressIndicator(color: AppColors.primaryBlue)),
+        child: Center(child: CircularProgressIndicator(color: AppColors.accentGreen)),
       );
     }
 
@@ -296,12 +296,9 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
             child: Container(
               width: 280,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-                ],
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,8 +333,8 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                             item.title,
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: AppColors.textDark,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               height: 1.2,

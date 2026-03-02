@@ -19,13 +19,13 @@ class SkeletonCard extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Dark Slate
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.white.withValues(alpha: 0.05),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        baseColor: Colors.grey[200]!,
+        highlightColor: Colors.grey[100]!,
         child: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
           child: Column(

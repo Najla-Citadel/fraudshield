@@ -135,11 +135,11 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: const Color(0xFFF8FAFC), // Slate 50
       body: RefreshIndicator(
         onRefresh: () => _fetchFeed(reset: true),
-        color: AppColors.accentGreen,
-        backgroundColor: const Color(0xFF1E293B),
+        color: AppColors.primaryBlue,
+        backgroundColor: Colors.white,
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
@@ -162,7 +162,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: const Color(0xFFF8FAFC),
       floating: true,
       snap: true,
       elevation: 0,
@@ -180,11 +180,11 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 children: [
                   Text(
                     'Community Feed',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+                    style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w800, fontSize: 24, letterSpacing: -0.5),
                   ),
                   Text(
                     'Live scam reports near you',
-                    style: TextStyle(color: Colors.white60, fontSize: 13),
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
                   ),
                 ],
               ),
@@ -192,7 +192,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 children: [
                   IconButton(
                     onPressed: () => setState(() => _isSearchVisible = !_isSearchVisible),
-                    icon: Icon(_isSearchVisible ? LucideIcons.x : LucideIcons.search, color: Colors.white70),
+                    icon: Icon(_isSearchVisible ? LucideIcons.x : LucideIcons.search, color: const Color(0xFF475569)),
                   ),
                   _buildNearMeToggle(),
                 ],
@@ -218,10 +218,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: _isNearMe ? AppColors.accentGreen.withValues(alpha: 0.1) : Colors.transparent,
+          color: _isNearMe ? AppColors.primaryBlue.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _isNearMe ? AppColors.accentGreen : Colors.white12,
+            color: _isNearMe ? AppColors.primaryBlue : const Color(0xFFE2E8F0),
           ),
         ),
         child: Row(
@@ -229,13 +229,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             Icon(
               LucideIcons.mapPin,
               size: 16,
-              color: _isNearMe ? AppColors.accentGreen : Colors.white70,
+              color: _isNearMe ? AppColors.primaryBlue : const Color(0xFF64748B),
             ),
             const SizedBox(width: 4),
             Text(
               'Near Me',
               style: TextStyle(
-                color: _isNearMe ? AppColors.accentGreen : Colors.white70,
+                color: _isNearMe ? AppColors.primaryBlue : const Color(0xFF64748B),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -250,19 +250,20 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     return Container(
       height: 45,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: const Color(0xFFF1F5F9), // Slate 100
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)), // Slate 200
       ),
       child: TextField(
         controller: _searchController,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Color(0xFF0F172A)),
         decoration: InputDecoration(
           hintText: 'Search scams...',
-          hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
-          prefixIcon: const Icon(LucideIcons.search, size: 18, color: Colors.white38),
+          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+          prefixIcon: const Icon(LucideIcons.search, size: 18, color: Color(0xFF94A3B8)),
           suffixIcon: _searchController.text.isNotEmpty 
             ? IconButton(
-                icon: const Icon(LucideIcons.x, size: 16, color: Colors.white38),
+                icon: const Icon(LucideIcons.x, size: 16, color: Color(0xFF94A3B8)),
                 onPressed: () {
                   _searchController.clear();
                   _fetchFeed(reset: true);
@@ -299,7 +300,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               avatar: Icon(
                 categoryIcon,
                 size: 14,
-                color: isSelected ? Colors.black : Colors.white70,
+                color: isSelected ? Colors.white : const Color(0xFF64748B),
               ),
               label: Text(categoryName),
               selected: isSelected,
@@ -309,11 +310,14 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 });
                 _fetchFeed(reset: true);
               },
-              backgroundColor: const Color(0xFF1E293B),
-              selectedColor: AppColors.accentGreen,
-              checkmarkColor: Colors.black,
+              backgroundColor: Colors.white,
+              selectedColor: AppColors.primaryBlue,
+              checkmarkColor: Colors.white,
+              side: BorderSide(
+                color: isSelected ? AppColors.primaryBlue : const Color(0xFFE2E8F0),
+              ),
               labelStyle: TextStyle(
-                color: isSelected ? Colors.black : Colors.white70,
+                color: isSelected ? Colors.white : const Color(0xFF475569),
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
               ),
@@ -345,9 +349,9 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.shieldAlert, size: 64, color: Colors.white10),
+              const Icon(LucideIcons.shieldAlert, size: 64, color: Color(0xFFCBD5E1)),
               const SizedBox(height: 16),
-              const Text('No reports found', style: TextStyle(color: Colors.white38)),
+              const Text('No reports found', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
             ],
           ),
         ),

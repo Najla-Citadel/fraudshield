@@ -27,12 +27,12 @@ class ScamCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.8), // Slightly transparent dark slate
+          color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 1.5),
+          border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -75,7 +75,7 @@ class ScamCard extends StatelessWidget {
                             child: Text(
                               report['category'] ?? 'Scam Report',
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: Color(0xFF0F172A),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -125,8 +125,8 @@ class ScamCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'Anonymous'}',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
+                        style: const TextStyle(
+                          color: Color(0xFF64748B),
                           fontSize: 12,
                         ),
                       ),
@@ -141,13 +141,13 @@ class ScamCard extends StatelessWidget {
             // --- Location (Mocked for now if not in API) ---
             Row(
               children: [
-                Icon(Icons.location_on, size: 16, color: Colors.white.withValues(alpha: 0.6)),
+                const Icon(Icons.location_on, size: 16, color: Color(0xFF94A3B8)),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     report['target'] ?? report['description']?.toString().split('\n').first ?? 'General Threat',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.8),
+                    style: const TextStyle(
+                      color: Color(0xFF475569),
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -165,17 +165,9 @@ class ScamCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF172554).withValues(alpha: 0.5), // Deep Blue tint
+                color: const Color(0xFFEFF6FF), // Very light blue
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.3)), // Blue border
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    const Color(0xFF1E3A8A).withValues(alpha: 0.4),
-                    const Color(0xFF1E293B).withValues(alpha: 0.1),
-                  ],
-                ),
+                border: Border.all(color: const Color(0xFFBFDBFE)), // Soft blue border
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,14 +185,14 @@ class ScamCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        const Row(
                           children: [
-                            const Icon(Icons.shield_outlined, size: 14, color: Color(0xFF60A5FA)),
-                            const SizedBox(width: 6),
-                            const Text(
+                            Icon(Icons.shield_outlined, size: 14, color: Color(0xFF2563EB)),
+                            SizedBox(width: 6),
+                            Text(
                               'Stay Safe:',
                               style: TextStyle(
-                                color: Color(0xFF60A5FA),
+                                color: Color(0xFF1E3A8A),
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -210,8 +202,8 @@ class ScamCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           _getStaySafeTip(report['category']),
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.9),
+                          style: const TextStyle(
+                            color: Color(0xFF1E3A8A),
                             fontSize: 12,
                             height: 1.4,
                           ),
@@ -237,8 +229,8 @@ class ScamCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '$verificationCount ${verificationCount == 1 ? "person" : "people"} flagged this',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
+                        style: const TextStyle(
+                          color: Color(0xFF64748B),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -246,10 +238,10 @@ class ScamCard extends StatelessWidget {
                     ],
                   )
                 else
-                  Text(
+                  const Text(
                     'Be the first to flag this',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
+                      color: Color(0xFF94A3B8),
                       fontSize: 12,
                       fontStyle: FontStyle.italic,
                     ),
@@ -264,17 +256,17 @@ class ScamCard extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: const Color(0xFFF1F5F9), // Slate 100
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Row(
                       children: [
-                        Icon(LucideIcons.share2, size: 14, color: Color(0xFF60A5FA)),
+                        Icon(LucideIcons.share2, size: 14, color: AppColors.primaryBlue),
                         SizedBox(width: 6),
                         Text(
                           'Share Alert',
                           style: TextStyle(
-                            color: Color(0xFF60A5FA),
+                            color: AppColors.primaryBlue,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -316,12 +308,12 @@ class ScamCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFF1E293B), width: 2),
+        border: Border.all(color: Colors.white, width: 2), // White border for pile
       ),
       child: Center(
         child: text != null 
             ? Text(text, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white))
-            : const Icon(Icons.person, size: 14, color: Colors.black54),
+            : const Icon(Icons.person, size: 14, color: Colors.white), // Using white icon on colorful bg
       ),
     );
   }
