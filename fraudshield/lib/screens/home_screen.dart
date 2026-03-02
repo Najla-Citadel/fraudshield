@@ -34,6 +34,8 @@ import 'message_analysis_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/daily_digest_widget.dart';
 import '../l10n/app_localizations.dart';
+import 'report_details_screen.dart';
+import 'report_history_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> _healthData = {'score': 85, 'breakdown': {}};
   String _securityStatus = 'GOOD';
   List<dynamic> _recentTransactions = [];
+  List<dynamic> _myReports = [];
 
   @override
   void initState() {
@@ -68,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadQuickActions();
     _loadRecentTransactions();
     _fetchSecurityHealth();
+    _fetchMyReports();
     
     // Listen for real-time alerts
     NotificationService.instance.addListener(_handleNewAlert);
@@ -342,6 +346,19 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Failed to load recent transactions on Home: $e');
     }
   }
+  
+  Future<void> _fetchMyReports() async {
+    try {
+      final reports = await ApiService.instance.getMyReports();
+      if (mounted) {
+        setState(() {
+          _myReports = reports;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch my reports on Home: $e');
+    }
+  }
 
   void _showCustomizationSheet() {
     showModalBottomSheet(
@@ -531,6 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadQuickActions(),
       _loadRecentTransactions(),
       _fetchSecurityHealth(),
+      _fetchMyReports(),
     ]);
   }
 
@@ -583,13 +601,14 @@ class _HomeScreenState extends State<HomeScreen> {
             onScan: () => _runQuickScan(isSubscribed),
             onShowReport: () => _showSecurityReport(isSubscribed),
             recentTransactions: _recentTransactions,
+            myReports: _myReports,
             newsKey: _newsKey,
             onRefresh: _handleRefresh,
             healthData: _healthData,
           ),
-          const ActivityScreen(), // CHECK tab (index 1)
-          TrendingScamsScreen(), // BOARD tab (index 2)
-          const CommunityFeedScreen(), // SOCIAL tab (index 3)
+          TrendingScamsScreen(), // BOARD tab (index 1)
+          const CommunityFeedScreen(), // SOCIAL tab (index 2)
+          PointsScreen(key: _pointsKey), // REWARDS tab (index 3)
           const AccountScreen(), // PROFILE tab (index 4)
         ],
       ),
@@ -615,6 +634,7 @@ class _HomeTab extends StatelessWidget {
   final VoidCallback onScan;
   final VoidCallback onShowReport;
   final List<dynamic> recentTransactions;
+  final List<dynamic> myReports;
   final GlobalKey<LatestNewsWidgetState> newsKey;
   final Future<void> Function() onRefresh;
   final Map<String, dynamic> healthData;
@@ -631,6 +651,7 @@ class _HomeTab extends StatelessWidget {
     required this.onScan,
     required this.onShowReport,
     required this.recentTransactions,
+    required this.myReports,
     required this.newsKey,
     required this.onRefresh,
     required this.healthData,
@@ -738,6 +759,11 @@ class _HomeTab extends StatelessWidget {
 
               // 5. SECURITY NEWS & INSIGHTS
               _buildSecurityNewsSection(context),
+
+              const SizedBox(height: 24),
+
+              // 6. SUBMITTED REPORTS
+              _buildSubmittedReportsSection(context),
 
               const SizedBox(height: 40), // Bottom padding
             ],
@@ -1278,6 +1304,143 @@ class _HomeTab extends StatelessWidget {
         LatestNewsWidget(limit: 5),
       ],
     );
+  }
+
+  Widget _buildSubmittedReportsSection(BuildContext context) {
+    if (myReports.isEmpty) return const SizedBox.shrink();
+
+    final displaysReports = myReports.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'My Reports',
+              style: TextStyle(
+                color: AppColors.textDark,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ReportHistoryScreen()),
+              ),
+              child: const Text(
+                'See All',
+                style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...displaysReports.map((report) => _buildReportCard(context, report)),
+      ],
+    );
+  }
+
+  Widget _buildReportCard(BuildContext context, Map<String, dynamic> report) {
+    final category = report['category'] ?? 'Scam Report';
+    final status = (report['status'] ?? 'PENDING').toString().toUpperCase();
+    final date = _formatDate(report['createdAt'] ?? '');
+    
+    Color statusColor;
+    switch (status) {
+      case 'VERIFIED': statusColor = Colors.green; break;
+      case 'REJECTED': statusColor = Colors.red; break;
+      default: statusColor = Colors.orange;
+    }
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ReportDetailsScreen(report: report)),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.05)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(LucideIcons.fileText, color: AppColors.primaryBlue, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category,
+                    style: const TextStyle(
+                      color: AppColors.textDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    date,
+                    style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                status,
+                style: TextStyle(
+                  color: statusColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(String dateString) {
+    if (dateString.isEmpty) return 'Recent';
+    try {
+      final date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final diff = now.difference(date);
+      
+      if (diff.inDays == 0) return 'Today';
+      if (diff.inDays == 1) return 'Yesterday';
+      if (diff.inDays < 7) return '${diff.inDays} days ago';
+      return '${date.day}/${date.month}/${date.year}';
+    } catch (e) {
+      return dateString;
+    }
   }
 }
 

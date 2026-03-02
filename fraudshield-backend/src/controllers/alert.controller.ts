@@ -286,7 +286,7 @@ export class AlertController {
     static async resolveAlert(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user!.id;
-            const { id } = req.params;
+            const { id } = req.params as { id: string };
             const { action } = req.body as { action: string };
             const alert = await AlertService.resolveAlert(id, userId, action);
             res.json(alert);
@@ -302,35 +302,67 @@ export class AlertController {
             const userId = req.user!.id;
             const { AlertCategory, AlertSeverity } = require('@prisma/client');
 
-            // 1. Welcome Alert
+            // Clear existing for this user to avoid clutter
+            await prisma.alert.deleteMany({ where: { userId } });
+
+            const now = new Date();
+            const today = new Date(now);
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // 1. Suspicious Login Attempt (TODAY, 2m ago)
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.LOGIN,
+                severity: AlertSeverity.HIGH,
+                title: 'Suspicious Login Attempt',
+                message: 'A login attempt was detected from a new device in Berlin, Germany. Was this you?',
+                metadata: { device: 'Chrome on Linux', location: 'Berlin, DE' }
+            });
+
+            // 2. New Scam Trend: AI Voice (TODAY, 1h ago)
             await AlertService.createAlert({
                 userId,
                 category: AlertCategory.COMMUNITY,
-                severity: AlertSeverity.LOW,
-                title: 'Welcome to FraudShield',
-                message: 'Your account is now protected. We are monitoring for threats in your area.',
+                severity: AlertSeverity.MEDIUM,
+                title: 'New Scam Trend: AI Voice',
+                message: 'Scammers are using AI to mimic family voices. Learn how to verify callers instantly.',
             });
 
-            // 2. System Scan Alert
+            // 3. System Update Successful (TODAY, 3h ago)
             await AlertService.createAlert({
                 userId,
                 category: AlertCategory.SYSTEM_SCAN,
                 severity: AlertSeverity.LOW,
-                title: 'Initial System Scan Completed',
-                message: '0 threats found. Your device security is up to date.',
+                title: 'System Update Successful',
+                message: 'FraudShield database v4.2.0 installed. Your protection is up to date.',
             });
 
-            // 3. Phishing Alert (High Risk)
-            await AlertService.createAlert({
-                userId,
-                category: AlertCategory.PHISHING,
-                severity: AlertSeverity.HIGH,
-                title: 'Suspicious activity detected',
-                message: 'Your account has been restricted. Please verify your identity at: bit.ly/secure-auth-342',
-                metadata: { sender: '+1 (555) ••• 829' }
+            // 4. Weekly Security Report (YESTERDAY, 1d ago)
+            await prisma.alert.create({
+                data: {
+                    userId,
+                    category: AlertCategory.SYSTEM_SCAN,
+                    severity: AlertSeverity.LOW,
+                    title: 'Weekly Security Report',
+                    message: "You've blocked 12 suspicious links and 3 spam calls this week. Keep it up!",
+                    createdAt: yesterday,
+                }
             });
 
-            res.json({ message: 'Demo alerts seeded successfully' });
+            // 5. Gold Tier Benefit (YESTERDAY, 1d ago)
+            await prisma.alert.create({
+                data: {
+                    userId,
+                    category: AlertCategory.COMMUNITY,
+                    severity: AlertSeverity.LOW,
+                    title: 'Gold Tier Benefit',
+                    message: 'New AI File Scanner is now available for your Gold account.',
+                    createdAt: yesterday,
+                }
+            });
+
+            res.json({ message: 'Demo alerts seeded successfully matching screenshot' });
         } catch (error) {
             next(error);
         }
