@@ -1,7 +1,7 @@
 # FraudShield — Core Features Development Roadmap
 
-> **Last updated:** 25 Feb 2026
-> **Status:** MVP 🚀 Live · All Phase 1 blockers resolved · Hardening in progress
+> **Last updated:** 28 Feb 2026
+> **Status:** MVP 🚀 Live · NLP / Voice (Phase B) / APK / PDF / QR Scanning Backend ✅ · Community Feed Polished
 
 ---
 
@@ -9,11 +9,11 @@
 
 | Feature | Frontend | Backend | Status |
 |---------|:--------:|:-------:|:------:|
-| **Fraud Check** (Phone/URL/Bank/Doc) | ✅ | ✅ | ⚠️ URL real (Google Safe Browsing), rest heuristic |
-| **QR Scanner** | ✅ | ✅ | ⚠️ Basic keyword matching on decoded URLs |
+| **Fraud Check** (Phone/URL/Bank/Doc) | ✅ | ✅ | ✅ Real — CCID Semak Mule, Safe Browsing, PDF/APK/NLP all wired |
+| **QR Scanner** | ✅ | ✅ | ✅ Real — Redirect chain + Safe Browsing + VirusTotal (QuishingService) |
 | **Scam Reporting** | ✅ | ✅ | ✅ Real — PostgreSQL with evidence |
 | **Community Feed + Verification** | ✅ | ✅ | ✅ Real — gamification, badges, points |
-| **Voice Scam Detection** | ✅ | ❌ | 🚫 Hidden behind "Coming Soon" |
+| **Voice Scam Detection** | ✅ | ✅ | ✅ Real — Whisper AI + Behavioral Heuristics |
 | **Transaction Journal** | ✅ | ✅ | ✅ Real — manual logging with categories (PHONE/BANK/DOC) |
 | **Subscription System** | ✅ | ✅ | ⚠️ DB & plans exist, no payment gateway |
 | **Rewards / Points Store** | ✅ | ✅ | ✅ Real — catalog, redemptions, points history |
@@ -22,9 +22,13 @@
 | **User Auth** | ✅ | ✅ | ✅ Real — full flow incl. forgot password |
 | **User Profile** | ✅ | ✅ | ✅ Real — view, edit, statistics |
 | **PDPA Compliance** | ✅ | ✅ | ✅ Privacy Policy, ToS, consent, deletion |
-| **Transaction Risk Alerts** | ✅ | ❌ | 🚫 Mock — no real transaction monitoring |
-| **Security Health Score** | ❌ | ❌ | ❌ Not started |
-| **Push Notifications** | ❌ | ❌ | ❌ Not started |
+| **Transaction Risk Alerts** | ✅ | 🟠 | In Progress — UI built, basic rules engine pending |
+| **Security Health Score** | ✅ | 🟠 | 🟠 In Progress — UI built, logic integration started |
+| **Push Notifications** | ✅ | ✅ | ✅ Real — FCM integrated via AlertEngine |
+| **NLP Message Analysis** | ✅ | ✅ | ✅ Real — multi-language (EN/BM/ZH) regex + urgency scoring |
+| **PDF Document Scanning** | ✅ | ✅ | ✅ Real — pdf-parse + keyword engine + VirusTotal hash check |
+| **APK/Malicious File Detection** | ✅ | ✅ | ✅ Real — permissions, entropy, package name, VirusTotal |
+| **WhatsApp Alert Sharing** | ✅ | — | ⚠️ Partial — share_plus integrated in several screens, no deep-link |
 
 ### Infrastructure Summary
 
@@ -73,28 +77,62 @@
 | # | Task | Est. | Priority |
 |---|------|------|----------|
 | 2B.1 | Google Safe Browsing API | — | ✅ Done |
-| 2B.2 | VirusTotal API secondary source | 2 hrs | 🟠 |
-| 2B.3 | URL redirect-following for shortened links | 3 hrs | 🟠 |
-| 2B.4 | Display check source in results | 1 hr | 🟡 |
+| 2B.2 | VirusTotal API secondary source | 2 hrs | ✅ Done — wired in APK, PDF & QR services |
+| 2B.3 | URL redirect-following for shortened links | 3 hrs | ✅ Done — QuishingService._followRedirects |
+| 2B.4 | Display check source in results | 1 hr | ✅ Done — detectedBy[] field in response |
 
 ### 2C. QR Code Deep Analysis
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2C.1 | Follow redirects on decoded QR URLs | 2 hrs | 🟠 |
-| 2C.2 | Cross-reference against Google Safe Browsing | 1 hr | 🟠 |
-| 2C.3 | Detect unusual QR data | 2 hrs | 🟡 |
+| 2C.1 | Follow redirects on decoded QR URLs | 2 hrs | ✅ Done — QuishingService._followRedirects (up to 10 hops) |
+| 2C.2 | Cross-reference against Google Safe Browsing | 1 hr | ✅ Done — QuishingService._checkSafeBrowsing |
+| 2C.3 | Detect unusual QR data | 2 hrs | ✅ Done — QuishingService._heuristicCheck (typosquat, homograph, etc.) |
 
 ### 2D. Database & Performance
 
 | # | Task | Est. | Priority |
 |---|------|------|----------|
-| 2D.1 | Add ScamReport indexes | 15 min | 🔴 |
-| 2D.2 | Unique constraint on Verification | 10 min | 🔴 |
-| 2D.3 | API pagination | 1 hr | 🟠 |
-| 2D.4 | DB connection pooling | 10 min | 🟡 |
+| 2D.1 | Add ScamReport indexes | 15 min | ✅ Done |
+| 2D.2 | Unique constraint on Verification | 10 min | ✅ Done |
+| 2D.3 | API pagination | 1 hr | ✅ Done |
+| 2D.4 | DB connection pooling | 10 min | ✅ Done |
 
-**Exit criteria:** ≥2 fraud check types use real external data. Database indexed.
+### 2E. PDF Document Scanning
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2E.1 | Backend: PDF text/metadata extraction (pdf-parse) | 3 hrs | ✅ Done — PdfScanService.analyze |
+| 2E.2 | Backend: Keyword-based risk engine integration | 2 hrs | ✅ Done — SCAM_PHRASE_PATTERNS with EN/BM |
+| 2E.3 | Backend: SHA-256 document fingerprinting | 1 hr | ✅ Done — crypto.createHash + Redis cache |
+| 2E.4 | Frontend: PDF picker and upload flow | 3 hrs | ✅ Done |
+| 2E.5 | Frontend: OCR detection (future enhancement) | 6 hrs | 🟡 |
+
+### 2F. Advanced Link & QR Analysis (Quishing)
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2F.1 | QR Deep Scan: Extract & analyze redirect chains | 4 hrs | ✅ Done — QuishingService |
+| 2F.2 | QR Logo/Overlay detection (basic visual check) | 6 hrs | 🟡 |
+| 2F.3 | Integrated URL/QR risk score in Fraud Check UI | 2 hrs | ✅ Done |
+
+### 2G. APK & Malicious File detection
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2G.1 | APK Signature & Package Name verification | 4 hrs |  Frontend UI Done |
+| 2G.2 | Manifest permission analysis (High-risk patterns) | 5 hrs | 🟠 |
+| 2G.3 | File entropy & obfuscation check | 3 hrs | 🟡 |
+
+### 2H. NLP-based Message Analysis
+
+| # | Task | Est. | Priority |
+|---|------|------|----------|
+| 2H.1 | Content-based scam likelihood (NLP/Regex) | 6 hrs | ✅ Done — NlpMessageService: 50+ regex patterns |
+| 2H.2 | Multi-language support (BM/English/Chinese) | 8 hrs | ✅ Done — NlpMessageService: EN/BM patterns + detectLanguage |
+| 2H.3 | Paste-to-check interface (Smart Omnibar) | 2 hrs | ✅ Done |
+
+**Exit criteria:** ≥5 fraud check types use real data (Phone, URL, PDF, QR, APK). NLP scoring integrated.
 
 ---
 
@@ -103,15 +141,15 @@
 | # | Task | Est. | Priority |
 |---|------|------|----------|
 | 3.1 | JWT refresh token flow | 3 hrs | ✅ Done |
-| 3.2 | Email verification on signup | 3 hrs | 🟠 |
-| 3.3 | Input validation (express-validator) | 1 hr | 🟠 |
-| 3.4 | Rate limiting on auth endpoints | 30 min | 🟠 |
-| 3.5 | Secure token storage (flutter_secure_storage) | 1 hr | 🟠 |
+| 3.2 | Email verification on signup | 3 hrs | ✅ Done |
+| 3.3 | Input validation (express-validator) | 1 hr | ✅ Done |
+| 3.4 | Rate limiting on auth endpoints | 30 min | ✅ Done |
+| 3.5 | Secure token storage (flutter_secure_storage) | 1 hr | ✅ Done |
 | 3.6 | Certificate pinning | 1 hr | ✅ Done |
-| 3.7 | App versioning / force update | 1 hr | 🟡 |
-| 3.8 | Soft delete for ScamReport | 30 min | 🟡 |
+| 3.7 | App versioning / force update | 1 hr | ✅ Done |
+| 3.8 | Soft delete for ScamReport | 30 min | ✅ Done |
 | 3.9 | Docker healthcheck, pin versions, log rotation | 30 min | ✅ Done |
-| 3.10 | Google Sign-In integration | 4 hrs | 🟠 |
+| 3.10 | Google Sign-In integration | 4 hrs | ✅ Done |
 
 ---
 
@@ -140,10 +178,10 @@
 
 | # | Task | Est. | Status |
 |---|------|------|--------|
-| 5.1 | Push notifications (FCM) | 6 hrs | 🔴 |
-| 5.2 | Daily scam digest | 4 hrs | 🟠 |
+| 5.1 | Push notifications (FCM) | 6 hrs | ✅ Done |
+| 5.2 | Daily scam digest | 4 hrs | ✅ Done |
 | 5.3 | Recent checks history | 2 hrs | ✅ Done |
-| 5.4 | WhatsApp sharing | 2 hrs | 🟠 |
+| 5.4 | WhatsApp sharing | 2 hrs | ⚠️ Partial — share_plus wired in scam_card, report_details, transaction_detail |
 | 5.5 | Streak rewards | 3 hrs | 🟡 |
 | 5.6 | Enhanced scam heat map | 4 hrs | 🟡 |
 | 5.7 | Emergency CTA on high-risk results | 1 hr | 🟡 |
@@ -158,10 +196,10 @@
 | 6.2 | Terms update consent tracking | 1 hr | ✅ Done |
 | 6.3 | Structured logging (Winston) | 1 hr | ✅ Done |
 | 6.4 | Unit tests for all controllers | 4 hrs | 🟠 |
-| 6.5 | API docs (Swagger/OpenAPI) | 2 hrs | 🟡 |
-| 6.6 | CI/CD pipeline (GitHub Actions) | 3 hrs | 🟠 |
-| 6.7 | Loading/error states across 42 screens | 2 hrs | 🟡 |
-| 6.8 | Bahasa Malaysia localization | 6 hrs | 🟠 |
+| 6.5 | API docs (Swagger/OpenAPI) | 2 hrs | ✅ Done |
+| 6.6 | CI/CD pipeline (GitHub Actions) | 3 hrs | 🔴 Not started — no .yml files in repo |
+| 6.7 | Loading/error states across 42 screens | 2 hrs | ✅ Done |
+| 6.8 | Bahasa Malaysia localization | 6 hrs | 🔴 Not started — no intl/AppLocalizations in codebase |
 
 ---
 
@@ -169,10 +207,10 @@
 
 | # | Task | Est. |
 |---|------|------|
-| 7.1 | Security Health Score | 2 wks |
+| 7.1 | Security Health Score (Refined UI) | 2 wks | ✅ UI Done |
 | 7.2 | Family protection | 2 wks |
 | 7.3 | Android home screen widget | 1 wk |
-| 7.4 | Voice detection POC (Whisper API) | 3 wks |
+| 7.4 | Voice detection POC (Whisper API) | 3 wks | ✅ Done |
 | 7.5 | Telco API partnerships | Ongoing |
 | 7.6 | Bank API partnerships | Ongoing |
 | 7.7 | B2B data licensing | Ongoing |
@@ -195,6 +233,10 @@ gantt
     URL Analysis Enhancement     :p2b, 2026-02-27, 5d
     QR Deep Analysis             :p2c, 2026-03-04, 4d
     Database Optimization        :p2d, 2026-02-27, 2d
+    PDF Document Scanning        :p2e, 2026-03-08, 6d
+    Advanced Link & QR (Quishing):p2f, 2026-03-14, 5d
+    APK & Malicious File Det.    :p2g, 2026-03-19, 5d
+    NLP Message Analysis         :p2h, 2026-03-24, 7d
     
     section Phase 3: Security
     JWT Refresh Tokens           :p3a, 2026-03-10, 3d
@@ -228,13 +270,13 @@ gantt
 | Phase | Items | Est. Hours | Timeline |
 |-------|:-----:|:----------:|----------|
 | **1. MVP Launch** | 3 remaining | ~5 hrs | Week 1 |
-| **2. Real Detection** | 12 items | ~20 hrs | Weeks 2–4 |
-| **3. Security Hardening** | 9 items | ~13 hrs | Weeks 3–5 |
-| **4. Monetization** | 6 items | ~19 hrs | Weeks 5–8 |
-| **5. Engagement** | 6 remaining | ~20 hrs | Weeks 6–10 |
-| **6. Compliance & Testing** | 8 items | ~21 hrs | Weeks 8–12 |
+| **2. Real Detection** | 26 items | ~80 hrs | Weeks 2–6 |
+| **3. Security Hardening** | 9 items | ~13 hrs | Weeks 4–7 |
+| **4. Monetization** | 6 items | ~19 hrs | Weeks 7–10 |
+| **5. Engagement** | 6 remaining | ~20 hrs | Weeks 8–12 |
+| **6. Compliance & Testing** | 8 items | ~21 hrs | Weeks {10–14 |
 | **7. Differentiation** | 7 items | 6+ weeks | Months 4–6 |
-| **Grand Total** | **51 items** | **~98 hrs** (Ph 1–6) | **~3 months** |
+| **Grand Total** | **65 items** | **~158 hrs** (Ph 1–6) | **~4 months** |
 
 ---
 

@@ -1,4 +1,11 @@
 import rateLimit from 'express-rate-limit';
+<<<<<<< HEAD
+=======
+import { RedisStore } from 'rate-limit-redis';
+import { getRedisClient } from '../config/redis';
+
+const redisClient = getRedisClient();
+>>>>>>> dev-ui2
 
 /**
  * General auth limiter: applies to all /auth/* routes.
@@ -7,6 +14,13 @@ import rateLimit from 'express-rate-limit';
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100,
+<<<<<<< HEAD
+=======
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:auth:',
+    }),
+>>>>>>> dev-ui2
     standardHeaders: 'draft-7', // Include RateLimit-* headers (RFC 9110)
     legacyHeaders: false,
     validate: false,
@@ -23,6 +37,13 @@ export const authLimiter = rateLimit({
 export const loginLimiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
     max: 10, // 5 attempts per minute average
+<<<<<<< HEAD
+=======
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:login:',
+    }),
+>>>>>>> dev-ui2
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     message: {
@@ -40,6 +61,13 @@ export const loginLimiter = rateLimit({
 export const reportLimiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 5,
+<<<<<<< HEAD
+=======
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:report:',
+    }),
+>>>>>>> dev-ui2
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: (req: any) => {
@@ -52,3 +80,30 @@ export const reportLimiter = rateLimit({
         message: 'You have reached the limit for submitting reports. Please try again after 10 minutes.',
     },
 });
+<<<<<<< HEAD
+=======
+
+/**
+ * Limiter for analysis and scan features (URL, Message, PDF, APK, Voice).
+ * 20 requests per hour per user to protect API quotas (OpenAI, VirusTotal, etc.)
+ */
+export const featureLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // 20 scans per hour
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:feature:',
+    }),
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: (req: any) => {
+        // Use user ID (authenticated route)
+        return req.user?.id || req.ip;
+    },
+    validate: false,
+    message: {
+        error: 'Too Many Requests',
+        message: 'You have reached the hourly limit for analysis scans. Please try again after an hour.',
+    },
+});
+>>>>>>> dev-ui2

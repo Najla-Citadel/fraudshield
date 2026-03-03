@@ -1,5 +1,9 @@
 import Queue from 'bull';
 import { AlertEngineService } from './alert-engine.service';
+<<<<<<< HEAD
+=======
+import { prisma } from '../config/database';
+>>>>>>> dev-ui2
 
 /**
  * AlertWorkerService handles background job scheduling for trending alerts.
@@ -8,6 +12,10 @@ import { AlertEngineService } from './alert-engine.service';
  */
 export class AlertWorkerService {
     private static trendingAlertQueue: Queue.Queue;
+<<<<<<< HEAD
+=======
+    private static dailyDigestQueue: Queue.Queue;
+>>>>>>> dev-ui2
     private static isInitialized = false;
 
     /**
@@ -59,20 +67,71 @@ export class AlertWorkerService {
         // If using a URL string, it can be passed as the second argument
         if (typeof redisOptions === 'string') {
             this.trendingAlertQueue = new Queue('trending-alerts', redisOptions, queueOptions);
+<<<<<<< HEAD
         } else {
             queueOptions.redis = redisOptions;
             this.trendingAlertQueue = new Queue('trending-alerts', queueOptions);
+=======
+            this.dailyDigestQueue = new Queue('daily-digest', redisOptions, queueOptions);
+        } else {
+            queueOptions.redis = redisOptions;
+            this.trendingAlertQueue = new Queue('trending-alerts', queueOptions);
+            this.dailyDigestQueue = new Queue('daily-digest', queueOptions);
+>>>>>>> dev-ui2
         }
 
         // 🏗️ Define the worker process
         this.trendingAlertQueue.process(async (job) => {
+<<<<<<< HEAD
             console.log(`👷 Worker: Processing job ${job.id} (${job.name})`);
+=======
+            console.log(`👷 Worker: Processing trending alert job ${job.id}`);
+>>>>>>> dev-ui2
             try {
                 await AlertEngineService.dispatchTrendingAlerts();
                 return { status: 'success' };
             } catch (error) {
+<<<<<<< HEAD
                 console.error(`❌ Worker Error in job ${job.id}:`, error);
                 throw error; // Re-throw to trigger Bull's retry logic
+=======
+                console.error(`❌ Worker Error in trending job ${job.id}:`, error);
+                throw error;
+            }
+        });
+
+        this.dailyDigestQueue.process(async (job) => {
+            console.log(`👷 Worker: Processing daily digest job ${job.id}`);
+            try {
+                const digest = await AlertEngineService.getDailySummary();
+
+                // Find users who opted in
+                const subscribers = await (prisma as any).alertSubscription.findMany({
+                    where: {
+                        emailDigestEnabled: true,
+                        isActive: true
+                    },
+                    include: { user: true }
+                });
+
+                console.log(`📧 Worker: Sending daily digest to ${subscribers.length} opted-in users...`);
+
+                for (const sub of subscribers) {
+                    if (sub.user.email) {
+                        try {
+                            const { EmailService } = require('./email.service');
+                            await EmailService.sendDailyDigestEmail(sub.user.email, digest);
+                        } catch (emailErr) {
+                            console.error(`❌ Failed to send digest email to ${sub.user.email}:`, emailErr);
+                        }
+                    }
+                }
+
+                return { status: 'success' };
+            } catch (error) {
+                console.error(`❌ Worker Error in digest job ${job.id}:`, error);
+                throw error;
+>>>>>>> dev-ui2
             }
         });
 
@@ -100,6 +159,27 @@ export class AlertWorkerService {
             jobId: 'trending-analysis-recurring'
         });
 
+<<<<<<< HEAD
+=======
+        // Daily Digest Email (Defauts to 9:00 AM)
+        const digestCron = process.env.DAILY_DIGEST_EMAIL_CRON || '0 9 * * *';
+        console.log(`⏰ Bull Queue: Scheduling daily digest email with cron: "${digestCron}"`);
+
+        try {
+            const repeatableDigestJobs = await this.dailyDigestQueue.getRepeatableJobs();
+            for (const job of repeatableDigestJobs) {
+                if (job.id === 'daily-digest-recurring') {
+                    await this.dailyDigestQueue.removeRepeatableByKey(job.key);
+                }
+            }
+        } catch (error) { }
+
+        await this.dailyDigestQueue.add({}, {
+            repeat: { cron: digestCron },
+            jobId: 'daily-digest-recurring'
+        });
+
+>>>>>>> dev-ui2
         this.trendingAlertQueue.on('error', (error) => {
             console.error('🔴 Bull Queue Error:', error);
         });
@@ -114,7 +194,15 @@ export class AlertWorkerService {
     static async shutdown() {
         if (this.trendingAlertQueue) {
             await this.trendingAlertQueue.close();
+<<<<<<< HEAD
             console.log('🛑 Alert Worker Service shut down');
         }
+=======
+        }
+        if (this.dailyDigestQueue) {
+            await this.dailyDigestQueue.close();
+        }
+        console.log('🛑 Alert Worker Service shut down');
+>>>>>>> dev-ui2
     }
 }

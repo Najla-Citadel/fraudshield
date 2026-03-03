@@ -6,6 +6,11 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
+<<<<<<< HEAD
+=======
+        localStorage.removeItem('adminRefreshToken');
+        localStorage.removeItem('adminUser');
+>>>>>>> dev-ui2
         navigate('/login');
     };
 

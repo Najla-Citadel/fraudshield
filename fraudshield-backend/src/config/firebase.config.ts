@@ -1,6 +1,9 @@
 import * as admin from 'firebase-admin';
+<<<<<<< HEAD
 import path from 'path';
 import fs from 'fs';
+=======
+>>>>>>> dev-ui2
 
 let isInitialized = false;
 
@@ -15,6 +18,7 @@ export const initializeFirebase = () => {
                 serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
                 console.log('✅ Loading Firebase credentials from environment variable');
             } catch (parseError) {
+<<<<<<< HEAD
                 console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var:', parseError);
             }
         }
@@ -29,6 +33,17 @@ export const initializeFirebase = () => {
             }
 
             serviceAccount = require(serviceAccountPath);
+=======
+                console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var. Ensure it is a valid JSON string.');
+                return;
+            }
+        } else {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('FIREBASE_SERVICE_ACCOUNT environment variable is required in production.');
+            }
+            console.warn('⚠️ FIREBASE_SERVICE_ACCOUNT environment variable not found. Push notifications will be disabled.');
+            return;
+>>>>>>> dev-ui2
         }
 
         admin.initializeApp({

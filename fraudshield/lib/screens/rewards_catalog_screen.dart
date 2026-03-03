@@ -235,7 +235,11 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
+<<<<<<< HEAD
             color: Colors.black.withOpacity(0.05),
+=======
+            color: Colors.black.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -250,7 +254,11 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
+<<<<<<< HEAD
                   color: iconColor.withOpacity(0.1),
+=======
+                  color: iconColor.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor, size: 32),

@@ -27,7 +27,11 @@ class ActivityScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
               shape: BoxShape.circle,
+<<<<<<< HEAD
               border: Border.all(color: Colors.white.withOpacity(0.1)),
+=======
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+>>>>>>> dev-ui2
             ),
             child: IconButton(
               icon: const Icon(Icons.tune, size: 20, color: Colors.white),
@@ -45,7 +49,11 @@ class ActivityScreen extends StatelessWidget {
           final grouped = _groupActivities(activities);
 
           return ListView.builder(
+<<<<<<< HEAD
             padding: const EdgeInsets.all(20),
+=======
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+>>>>>>> dev-ui2
             itemCount: grouped.length,
             itemBuilder: (context, index) {
               final group = grouped.keys.elementAt(index);
@@ -59,7 +67,11 @@ class ActivityScreen extends StatelessWidget {
                     child: Text(
                       group.toUpperCase(),
                       style: TextStyle(
+<<<<<<< HEAD
                         color: Colors.white.withOpacity(0.5),
+=======
+                        color: Colors.white.withValues(alpha: 0.5),
+>>>>>>> dev-ui2
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -164,6 +176,7 @@ class _ActivityCard extends StatelessWidget {
     switch (item['type']) {
       case 'danger':
         iconColor = Colors.orange;
+<<<<<<< HEAD
         iconBg = Colors.orange.withOpacity(0.1);
         break;
       case 'success':
@@ -173,11 +186,26 @@ class _ActivityCard extends StatelessWidget {
       case 'safe':
         iconColor = Colors.blue;
         iconBg = Colors.blue.withOpacity(0.1);
+=======
+        iconBg = Colors.orange.withValues(alpha: 0.1);
+        break;
+      case 'success':
+        iconColor = AppColors.accentGreen;
+        iconBg = AppColors.accentGreen.withValues(alpha: 0.1);
+        break;
+      case 'safe':
+        iconColor = Colors.blue;
+        iconBg = Colors.blue.withValues(alpha: 0.1);
+>>>>>>> dev-ui2
         break;
       case 'info':
       default:
         iconColor = Colors.blueAccent;
+<<<<<<< HEAD
         iconBg = Colors.blueAccent.withOpacity(0.1);
+=======
+        iconBg = Colors.blueAccent.withValues(alpha: 0.1);
+>>>>>>> dev-ui2
         break;
     }
 
@@ -190,7 +218,11 @@ class _ActivityCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(20),
+<<<<<<< HEAD
         border: Border.all(color: Colors.white.withOpacity(0.05)),
+=======
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+>>>>>>> dev-ui2
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,7 +256,11 @@ class _ActivityCard extends StatelessWidget {
                     Text(
                       _formatTime(item['timestamp']),
                       style: TextStyle(
+<<<<<<< HEAD
                         color: Colors.white.withOpacity(0.4),
+=======
+                        color: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
                         fontSize: 12,
                       ),
                     ),
@@ -234,7 +270,11 @@ class _ActivityCard extends StatelessWidget {
                 Text(
                   item['message'] ?? '',
                   style: TextStyle(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.6),
+=======
+                    color: Colors.white.withValues(alpha: 0.6),
+>>>>>>> dev-ui2
                     fontSize: 13,
                     height: 1.4,
                   ),

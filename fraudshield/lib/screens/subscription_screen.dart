@@ -170,7 +170,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 width: 280, height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+<<<<<<< HEAD
                   color: AppColors.accentGreen.withOpacity(0.08),
+=======
+                  color: AppColors.accentGreen.withValues(alpha: 0.08),
+>>>>>>> dev-ui2
                 ),
               ),
             ),
@@ -239,7 +243,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           Text(
             'Next-gen AI protection for your digital wealth.',
             textAlign: TextAlign.center,
+<<<<<<< HEAD
             style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 14),
+=======
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.55), fontSize: 14),
+>>>>>>> dev-ui2
           ),
         ],
       ),
@@ -280,16 +288,26 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
+<<<<<<< HEAD
               color: AppColors.accentGreen.withOpacity(0.1),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppColors.accentGreen.withOpacity(0.4), width: 1.5),
+=======
+              color: AppColors.accentGreen.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.4), width: 1.5),
+>>>>>>> dev-ui2
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
+<<<<<<< HEAD
                     color: AppColors.accentGreen.withOpacity(0.15),
+=======
+                    color: AppColors.accentGreen.withValues(alpha: 0.15),
+>>>>>>> dev-ui2
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.verified_rounded, color: AppColors.accentGreen, size: 44),
@@ -302,10 +320,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 const SizedBox(height: 6),
                 Text(
                   _expiryText,
+<<<<<<< HEAD
                   style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13),
                 ),
                 const SizedBox(height: 20),
                 Divider(color: Colors.white.withOpacity(0.1)),
+=======
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.55), fontSize: 13),
+                ),
+                const SizedBox(height: 20),
+                Divider(color: Colors.white.withValues(alpha: 0.1)),
+>>>>>>> dev-ui2
                 const SizedBox(height: 16),
                 ...([
                   'AI Real-time SMS Blocking',
@@ -318,7 +343,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     children: [
                       const Icon(Icons.check_circle_rounded, color: AppColors.accentGreen, size: 18),
                       const SizedBox(width: 10),
+<<<<<<< HEAD
                       Text(f, style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 14)),
+=======
+                      Text(f, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14)),
+>>>>>>> dev-ui2
                     ],
                   ),
                 ))),
@@ -341,7 +370,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.05),
+=======
+                    color: Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.settings_outlined, color: Colors.white70, size: 20),
@@ -352,7 +385,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Manage Subscription', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+<<<<<<< HEAD
                       Text('Cancel or modify at any time', style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12)),
+=======
+                      Text('Cancel or modify at any time', style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 12)),
+>>>>>>> dev-ui2
                     ],
                   ),
                 ),
@@ -374,7 +411,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(30),
+<<<<<<< HEAD
         border: Border.all(color: Colors.white.withOpacity(0.1)),
+=======
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+>>>>>>> dev-ui2
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -443,12 +484,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         color: const Color(0xFF162032),
         borderRadius: BorderRadius.circular(28),
         border: isPremium
+<<<<<<< HEAD
             ? Border.all(color: AppColors.accentGreen.withOpacity(0.5), width: 1.5)
             : Border.all(color: Colors.white.withOpacity(0.06)),
         gradient: isPremium
             ? LinearGradient(
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
                 colors: [AppColors.accentGreen.withOpacity(0.07), Colors.transparent])
+=======
+            ? Border.all(color: AppColors.accentGreen.withValues(alpha: 0.5), width: 1.5)
+            : Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        gradient: isPremium
+            ? LinearGradient(
+                begin: Alignment.topLeft, end: Alignment.bottomRight,
+                colors: [AppColors.accentGreen.withValues(alpha: 0.07), Colors.transparent])
+>>>>>>> dev-ui2
             : null,
       ),
       child: Column(
@@ -468,7 +518,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
+<<<<<<< HEAD
                     color: AppColors.accentGreen.withOpacity(0.15),
+=======
+                    color: AppColors.accentGreen.withValues(alpha: 0.15),
+>>>>>>> dev-ui2
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text('POPULAR', style: TextStyle(color: AppColors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
@@ -486,21 +540,33 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 TextSpan(
                   text: isPremium ? '/mo' : '',
+<<<<<<< HEAD
                   style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16),
+=======
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 16),
+>>>>>>> dev-ui2
                 ),
               ],
             ),
           ),
           if (isPremium) ...[
             const SizedBox(height: 4),
+<<<<<<< HEAD
             Text(billingText, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+=======
+            Text(billingText, style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12)),
+>>>>>>> dev-ui2
           ],
           const SizedBox(height: 12),
           Text(
             isPremium
                 ? 'Complete AI-powered protection with real-time alerts.'
                 : 'Basic protection for everyday use.',
+<<<<<<< HEAD
             style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+=======
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
+>>>>>>> dev-ui2
           ),
           const Spacer(),
           SizedBox(
@@ -509,7 +575,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ? OutlinedButton(
                     onPressed: null,
                     style: OutlinedButton.styleFrom(
+<<<<<<< HEAD
                       side: BorderSide(color: Colors.white.withOpacity(0.15)),
+=======
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
+>>>>>>> dev-ui2
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
@@ -541,7 +611,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
+<<<<<<< HEAD
           color: Colors.white.withOpacity(0.04),
+=======
+          color: Colors.white.withValues(alpha: 0.04),
+>>>>>>> dev-ui2
           borderRadius: BorderRadius.circular(28),
         ),
       ),
@@ -575,7 +649,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
+<<<<<<< HEAD
                     Text('FREE', style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 11, fontWeight: FontWeight.bold)),
+=======
+                    Text('FREE', style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 11, fontWeight: FontWeight.bold)),
+>>>>>>> dev-ui2
                     Text('PREMIUM', style: TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
                   ],
                 ),
@@ -583,7 +661,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ],
           ),
           const SizedBox(height: 12),
+<<<<<<< HEAD
           Divider(color: Colors.white.withOpacity(0.06)),
+=======
+          Divider(color: Colors.white.withValues(alpha: 0.06)),
+>>>>>>> dev-ui2
           const SizedBox(height: 4),
           ...features.map((f) => _featureRow(f.label, f.basic, f.premium, showActivePlan: showActivePlan)),
         ],
@@ -598,7 +680,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         children: [
           Expanded(
             child: Text(label,
+<<<<<<< HEAD
               style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 14)),
+=======
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14)),
+>>>>>>> dev-ui2
           ),
           SizedBox(
             width: 100,
@@ -616,7 +702,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _checkIcon(bool enabled, {bool isPremium = false, bool isHighlighted = false}) {
+<<<<<<< HEAD
     if (!enabled) return Container(width: 20, height: 2, color: Colors.white.withOpacity(0.15));
+=======
+    if (!enabled) return Container(width: 20, height: 2, color: Colors.white.withValues(alpha: 0.15));
+>>>>>>> dev-ui2
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
@@ -632,7 +722,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
+<<<<<<< HEAD
           BoxShadow(color: AppColors.accentGreen.withOpacity(0.35), blurRadius: 24, offset: const Offset(0, 6)),
+=======
+          BoxShadow(color: AppColors.accentGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 6)),
+>>>>>>> dev-ui2
         ],
       ),
       child: AdaptiveButton(

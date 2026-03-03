@@ -281,4 +281,47 @@ export class AlertEngineService {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Generates a consolidated daily summary including top trends and a safety tip
+     */
+    static async getDailySummary() {
+        // 1. Get trends from last 24 hours
+        const trends = await this.getTrendingAlerts(24);
+
+        // 2. Aggregate total reports in last 24h
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const totalReports = await prisma.scamReport.count({
+            where: {
+                createdAt: { gte: yesterday },
+                isPublic: true,
+                deletedAt: null
+            }
+        });
+
+        // 3. Define a Safety Tip of the Day
+        // In production, this could be pulled from a DB table or remote config
+        let safetyTip = "Always verify the identity of anyone asking for money or personal details via WhatsApp.";
+
+        if (trends.length > 0) {
+            const topCategory = trends[0].category.toLowerCase();
+            if (topCategory.includes('job')) {
+                safetyTip = "Legitimate employers will never ask for payment to process your application or 'secure' a job.";
+            } else if (topCategory.includes('investment')) {
+                safetyTip = "If an investment sounds too good to be true, it probably is. Check for Bank Negara Malaysia's alert list.";
+            } else if (topCategory.includes('phishing')) {
+                safetyTip = "Don't click on links in SMS messages claiming your account is blocked. Go directly to the official website.";
+            }
+        }
+
+        return {
+            date: new Date().toISOString().split('T')[0],
+            totalReports,
+            topTrends: trends.slice(0, 3),
+            safetyTip
+        };
+    }
+>>>>>>> dev-ui2
 }

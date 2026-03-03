@@ -13,6 +13,27 @@ class RiskResult {
   final List<String> categories;
   final List<String> sources; // e.g. ['community', 'ccid']
 
+<<<<<<< HEAD
+=======
+  // Quishing specific fields
+  final List<String> redirectChain;
+  final String? finalUrl;
+  final List<String> detectedBy;
+
+  // NLP specific fields
+  final String? scamType;
+  final String? language;
+  final List<String> matchedPatterns;
+  final List<String> highlightedPhrases;
+
+  // Document scan (PDF/APK) specific fields
+  final List<String> extractedLinks; // URLs found embedded in PDF
+  final String? packageName;         // APK package name
+  final List<String> dangerousPermissions; // APK dangerous permissions
+  final int? pageCount;              // PDF page count
+  final String? sha256;              // File fingerprint
+
+>>>>>>> dev-ui2
   RiskResult({
     required this.score,
     required this.level,
@@ -22,6 +43,21 @@ class RiskResult {
     this.verifiedReports = 0,
     this.categories = const [],
     this.sources = const [],
+<<<<<<< HEAD
+=======
+    this.redirectChain = const [],
+    this.finalUrl,
+    this.detectedBy = const [],
+    this.scamType,
+    this.language,
+    this.matchedPatterns = const [],
+    this.highlightedPhrases = const [],
+    this.extractedLinks = const [],
+    this.packageName,
+    this.dangerousPermissions = const [],
+    this.pageCount,
+    this.sha256,
+>>>>>>> dev-ui2
   });
 }
 
@@ -98,6 +134,135 @@ class RiskEvaluator {
     );
   }
 
+<<<<<<< HEAD
+=======
+  // ── New: Evaluate QR / Quishing (async, calls backend deep scan) ──
+  static Future<RiskResult> evaluateQr(String payload) async {
+    // 1. Run local heuristic for instant feedback
+    final heuristic = _heuristicUrlCheck(payload);
+    int score = heuristic.score;
+    List<String> reasons = List.from(heuristic.reasons);
+    bool apiChecked = false;
+
+    // 2. Call backend deep scan
+    try {
+      final res = await _api.checkQr(payload);
+      apiChecked = true;
+
+      final int apiScore = (res['score'] as num?)?.toInt() ?? 0;
+      final String apiLevel = res['level'] as String? ?? 'low';
+      final List<dynamic> apiReasons = res['reasons'] as List? ?? [];
+      final List<dynamic> chain = res['redirectChain'] as List? ?? [];
+      final String? finalUrl = res['finalUrl'] as String?;
+      final List<dynamic> detectedBy = res['detectedBy'] as List? ?? [];
+
+      if (apiScore >= score) {
+        score = apiScore;
+        reasons = apiReasons.cast<String>();
+      }
+
+      return RiskResult(
+        score: score.clamp(0, 100),
+        level: apiLevel,
+        reasons: reasons,
+        apiChecked: apiChecked,
+        redirectChain: chain.cast<String>(),
+        finalUrl: finalUrl,
+        detectedBy: detectedBy.cast<String>(),
+      );
+    } catch (e) {
+      log('QR deep scan failed, falling back to heuristics: $e');
+      reasons.add('⚡ Deep link analysis unavailable (offline check only)');
+      
+      String level = 'low';
+      if (score >= 80) level = 'critical';
+      else if (score >= 55) level = 'high';
+      else if (score >= 30) level = 'medium';
+
+      return RiskResult(
+        score: score.clamp(0, 100),
+        level: level,
+        reasons: reasons,
+        apiChecked: false,
+      );
+    }
+  }
+
+  // ── New: Analyze Message (NLP) ──
+  static Future<RiskResult> analyzeMessage(String message) async {
+    try {
+      final res = await _api.analyzeMessage(message);
+      
+      return RiskResult(
+        score: (res['score'] as num?)?.toInt() ?? 0,
+        level: res['level'] as String? ?? 'low',
+        reasons: (res['matchedPatterns'] as List? ?? []).cast<String>(),
+        apiChecked: true,
+        scamType: res['scamType'] as String?,
+        language: res['language'] as String?,
+        matchedPatterns: (res['matchedPatterns'] as List? ?? []).cast<String>(),
+        highlightedPhrases: (res['highlightedPhrases'] as List? ?? []).cast<String>(),
+      );
+    } catch (e) {
+      log('Message analysis failed: $e');
+      return RiskResult(
+        score: 0,
+        level: 'low',
+        reasons: ['⚡ Message analysis service is currently unavailable'],
+        apiChecked: false,
+      );
+    }
+  }
+
+  // ── New: Evaluate Document (PDF/APK) ──
+  static Future<RiskResult> evaluateDocument(String filePath) async {
+    try {
+      final ext = filePath.split('.').last.toLowerCase();
+      final Map<String, dynamic> raw;
+
+      if (ext == 'pdf') {
+        raw = await _api.scanPdf(filePath);
+      } else if (ext == 'apk') {
+        raw = await _api.scanApk(filePath);
+      } else {
+        return RiskResult(
+          score: 10,
+          level: 'low',
+          reasons: ['⚠️ Unsupported file type: .$ext'],
+          apiChecked: false,
+        );
+      }
+
+      // Both PdfScanResult and ApkScanResult share the same top-level envelope
+      final data = raw['data'] as Map<String, dynamic>? ?? raw;
+
+      return RiskResult(
+        score: (data['score'] as num?)?.toInt() ?? 0,
+        level: data['level'] as String? ?? 'low',
+        reasons: (data['reasons'] as List? ?? []).cast<String>(),
+        apiChecked: true,
+        sha256: data['sha256'] as String?,
+
+        // PDF-specific
+        extractedLinks: (data['extractedLinks'] as List? ?? []).cast<String>(),
+        pageCount: (data['metadata'] as Map?)?.cast<String, dynamic>()['pageCount'] as int?,
+
+        // APK-specific
+        packageName: data['packageName'] as String?,
+        dangerousPermissions: (data['dangerousPermissions'] as List? ?? []).cast<String>(),
+      );
+    } catch (e) {
+      log('Document scan failed: $e');
+      return RiskResult(
+        score: 0,
+        level: 'low',
+        reasons: ['⚡ Document scan service is currently unavailable. Please try again.'],
+        apiChecked: false,
+      );
+    }
+  }
+
+>>>>>>> dev-ui2
   static Future<RiskResult> evaluatePayment({
     required String type, // "bank_account", "phone", "url"
     required String value,

@@ -1,7 +1,29 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+<<<<<<< HEAD
 
 export class UserController {
+=======
+import { HealthScoreService } from '../services/health-score.service';
+
+export class UserController {
+    static async getSecurityHealth(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const health = await HealthScoreService.calculateScore(userId);
+
+            res.status(200).json(health);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+>>>>>>> dev-ui2
     static async deleteAccount(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;

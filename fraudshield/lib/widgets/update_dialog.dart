@@ -23,10 +23,17 @@ class UpdateDialog extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: AppColors.deepNavy.withOpacity(0.8),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: AppColors.accentGreen.withOpacity(0.3),
+=======
+            color: AppColors.deepNavy.withValues(alpha: 0.8),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.accentGreen.withValues(alpha: 0.3),
+>>>>>>> dev-ui2
               width: 1.5,
             ),
           ),
@@ -36,7 +43,11 @@ class UpdateDialog extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
+<<<<<<< HEAD
                   color: AppColors.accentGreen.withOpacity(0.1),
+=======
+                  color: AppColors.accentGreen.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -61,7 +72,11 @@ class UpdateDialog extends StatelessWidget {
                     : 'A new version of FraudShield is available with enhanced protection and new features.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
+<<<<<<< HEAD
                   color: Colors.white.withOpacity(0.7),
+=======
+                  color: Colors.white.withValues(alpha: 0.7),
+>>>>>>> dev-ui2
                   fontSize: 16,
                 ),
               ),
@@ -89,7 +104,11 @@ class UpdateDialog extends StatelessWidget {
                   child: Text(
                     'Later',
                     style: TextStyle(
+<<<<<<< HEAD
                       color: Colors.white.withOpacity(0.5),
+=======
+                      color: Colors.white.withValues(alpha: 0.5),
+>>>>>>> dev-ui2
                       fontSize: 16,
                     ),
                   ),

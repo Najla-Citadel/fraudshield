@@ -5,20 +5,25 @@ import 'package:xml/xml.dart' as xml;
 
 // model alias (your existing model file)
 import '../models/news_item.dart' as model;
+import '../constants/news_categories.dart';
 
 class NewsService {
-  /// Google News RSS search tuned for Malaysia + scam/fraud/phishing
-  /// - returns up to [limit] items
-  /// - example query: malaysia scam OR fraud OR phishing
-  static const _googleRss =
-      'https://news.google.com/rss/search?q=malaysia+scam+OR+fraud+OR+phishing&hl=en-MY&gl=MY&ceid=MY:en';
-
   /// Fetch latest articles from Google News RSS
-  Future<List<model.NewsItem>> fetchLatest({int limit = 3}) async {
-    final uri = Uri.parse(_googleRss);
+  /// [categories] is an optional list of NewsCategory to filter news.
+  Future<List<model.NewsItem>> fetchLatest({int limit = 3, List<NewsCategory>? categories}) async {
+    String query = defaultNewsQuery;
+    
+    if (categories != null && categories.isNotEmpty) {
+      // Build a query: (cat1 OR cat2 OR cat3) malaysia
+      final terms = categories.map((c) => '(${c.keywords})').join(' OR ');
+      query = '($terms) malaysia';
+    }
+
+    final encodedQuery = Uri.encodeComponent(query);
+    final rssUrl = 'https://news.google.com/rss/search?q=$encodedQuery&hl=en-MY&gl=MY&ceid=MY:en';
+    final uri = Uri.parse(rssUrl);
 
     final resp = await http.get(uri, headers: {
-      // polite UA; Google accepts normal clients
       'User-Agent':
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36',
       'Accept': 'application/rss+xml, application/xml, text/xml, */*',
@@ -47,9 +52,7 @@ class NewsService {
 
       if (title == null || link == null) continue;
 
-      // 1) try media:thumbnail (often provided by Google RSS)
       String? image;
-      // find any element named 'thumbnail' (namespace may vary)
       final thumbs = it.findAllElements('thumbnail');
       if (thumbs.isNotEmpty) {
         final t = thumbs.first;
@@ -57,14 +60,12 @@ class NewsService {
         if (urlAttr != null && urlAttr.isNotEmpty) image = urlAttr.trim();
       }
 
-      // 2) try enclosure element (<enclosure url="...">)
       if (image == null) {
         final en = it.getElement('enclosure');
         final urlAttr = en?.getAttribute('url');
         if (urlAttr != null && urlAttr.isNotEmpty) image = urlAttr.trim();
       }
 
-      // 3) try media:content
       if (image == null) {
         final mediaContents = it.findAllElements('content');
         if (mediaContents.isNotEmpty) {
@@ -73,7 +74,6 @@ class NewsService {
         }
       }
 
-      // 4) fallback: attempt to extract first <img src="..."> inside description HTML
       if (image == null && excerpt != null && excerpt.isNotEmpty) {
         final imgMatch = RegExp("url\\([\"']?(.*?)[\"']?\\)", caseSensitive: false)
             .firstMatch(excerpt);
@@ -83,7 +83,6 @@ class NewsService {
         }
       }
 
-      // normalize relative urls (Google should supply absolute URLs but be safe)
       if (image != null && image.isNotEmpty && image.startsWith('//')) {
         image = 'https:$image';
       }
@@ -91,8 +90,7 @@ class NewsService {
       results.add(model.NewsItem(
         title: title,
         url: link,
-        excerpt: // prefer a cleaned short excerpt (strip html tags if present)
-            _stripHtml(excerpt ?? ''),
+        excerpt: _stripHtml(excerpt ?? ''),
         image: image,
         published: null,
       ));
@@ -101,11 +99,9 @@ class NewsService {
     return results;
   }
 
-  // small helper to remove HTML tags from description excerpts
   static String _stripHtml(String input) {
     return input.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').trim();
   }
 
-  // optional helper to clear any cache if you add caching
   static void clearCache() {}
 }

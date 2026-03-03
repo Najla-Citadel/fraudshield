@@ -54,7 +54,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         title: Text(
           'GLOBAL LEADERBOARD',
           style: theme.textTheme.labelMedium?.copyWith(
+<<<<<<< HEAD
             color: AppColors.textLight.withOpacity(0.7),
+=======
+            color: AppColors.textLight.withValues(alpha: 0.7),
+>>>>>>> dev-ui2
             letterSpacing: 2.0,
             fontWeight: FontWeight.bold,
           ),
@@ -75,7 +79,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       child: Container(
                         margin: const EdgeInsets.only(top: 24),
                         decoration: BoxDecoration(
+<<<<<<< HEAD
                           color: Colors.white.withOpacity(0.03),
+=======
+                          color: Colors.white.withValues(alpha: 0.03),
+>>>>>>> dev-ui2
                           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                         ),
                         child: _leaderboard.length <= 3 
@@ -128,14 +136,24 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
+<<<<<<< HEAD
                 border: Border.all(color: color.withOpacity(0.5), width: 3),
                 boxShadow: [
                   BoxShadow(color: color.withOpacity(0.2), blurRadius: 15, spreadRadius: 2),
+=======
+                border: Border.all(color: color.withValues(alpha: 0.5), width: 3),
+                boxShadow: [
+                  BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 15, spreadRadius: 2),
+>>>>>>> dev-ui2
                 ],
               ),
               child: CircleAvatar(
                 radius: size / 2,
+<<<<<<< HEAD
                 backgroundColor: Colors.white.withOpacity(0.1),
+=======
+                backgroundColor: Colors.white.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
                 child: Text(
                   (user['name'] ?? '?').substring(0, 1).toUpperCase(),
                   style: TextStyle(color: AppColors.textLight, fontSize: size * 0.4, fontWeight: FontWeight.bold),
@@ -170,9 +188,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Colors.white.withOpacity(0.02),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
+=======
+        color: Colors.white.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+>>>>>>> dev-ui2
       ),
       child: Row(
         children: [
@@ -180,12 +204,20 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             width: 30,
             child: Text(
               rank.toString(),
+<<<<<<< HEAD
               style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontWeight: FontWeight.bold),
+=======
+              style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.5), fontWeight: FontWeight.bold),
+>>>>>>> dev-ui2
             ),
           ),
           CircleAvatar(
             radius: 20,
+<<<<<<< HEAD
             backgroundColor: Colors.white.withOpacity(0.05),
+=======
+            backgroundColor: Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
             child: Text(
               (user['name'] ?? '?').substring(0, 1).toUpperCase(),
               style: const TextStyle(color: AppColors.textLight, fontSize: 14),
@@ -202,7 +234,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
                 Text(
                   'Reputation: ${user['reputation']}',
+<<<<<<< HEAD
                   style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 12),
+=======
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.5), fontSize: 12),
+>>>>>>> dev-ui2
                 ),
               ],
             ),
@@ -239,16 +275,26 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           ),
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
+<<<<<<< HEAD
             BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
           ],
           border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+=======
+            BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10)),
+          ],
+          border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
+>>>>>>> dev-ui2
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
+<<<<<<< HEAD
                 color: AppColors.accentGreen.withOpacity(0.1),
+=======
+                color: AppColors.accentGreen.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -267,7 +313,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
                 Text(
                   'Keep reporting to rank up!',
+<<<<<<< HEAD
                   style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 10),
+=======
+                  style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.5), fontSize: 10),
+>>>>>>> dev-ui2
                 ),
               ],
             ),
@@ -282,11 +332,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+<<<<<<< HEAD
           Icon(Icons.military_tech_rounded, color: AppColors.textLight.withOpacity(0.05), size: 80),
           const SizedBox(height: 16),
           Text(
             'The race is on!',
             style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),
+=======
+          Icon(Icons.military_tech_rounded, color: AppColors.textLight.withValues(alpha: 0.05), size: 80),
+          const SizedBox(height: 16),
+          Text(
+            'The race is on!',
+            style: TextStyle(color: AppColors.textLight.withValues(alpha: 0.3), fontSize: 16, fontWeight: FontWeight.bold),
+>>>>>>> dev-ui2
           ),
         ],
       ),

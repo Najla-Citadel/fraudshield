@@ -1,15 +1,69 @@
 import { Request, Response, NextFunction } from 'express';
+<<<<<<< HEAD
 import passport from 'passport';
+=======
+import passport from '../config/passport';
+>>>>>>> dev-ui2
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
+<<<<<<< HEAD
 
 export class AuthController {
     static async signup(req: Request, res: Response, next: NextFunction) {
         try {
             const { email, password, fullName } = req.body;
             // Basic validation skipped (handled by middleware)
+=======
+import { AlertService } from '../services/alert.service';
+import { AlertCategory, AlertSeverity } from '@prisma/client';
+import { EncryptionUtils } from '../utils/encryption';
+
+/**
+ * @openapi
+ * tags:
+ *   name: Auth
+ *   description: User authentication and profile management
+ */
+export class AuthController {
+    /**
+     * @openapi
+     * /api/v1/auth/signup:
+     *   post:
+     *     summary: Register a new user
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [email, password]
+     *             properties:
+     *               email: { type: string, format: email }
+     *               password: { type: string, format: password }
+     *               fullName: { type: string }
+     *     responses:
+     *       201:
+     *         description: User created successfully
+     */
+    static async signup(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email, password, fullName, captchaToken } = req.body;
+
+            // 🛡️ CAPTCHA Verification
+            const isCaptchaValid = await AuthService.verifyCaptcha(captchaToken);
+            if (!isCaptchaValid) {
+                return res.status(400).json({ message: 'Invalid CAPTCHA. Please try again.' });
+            }
+
+            // 🛡️ Email Deliverability Check
+            const deliverability = await EmailService.validateDeliverability(email);
+            if (!deliverability.valid) {
+                return res.status(400).json({ message: deliverability.reason });
+            }
+>>>>>>> dev-ui2
 
             // Check if user exists
             const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -26,6 +80,11 @@ export class AuthController {
                     email,
                     passwordHash,
                     fullName,
+<<<<<<< HEAD
+=======
+                    acceptedTermsVersion: 'v1.0',
+                    acceptedTermsAt: new Date(),
+>>>>>>> dev-ui2
                     profile: {
                         create: {
                             avatar: 'Felix',
@@ -132,6 +191,29 @@ export class AuthController {
         }
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @openapi
+     * /api/v1/auth/login:
+     *   post:
+     *     summary: Authenticate user and get tokens
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [email, password]
+     *             properties:
+     *               email: { type: string, format: email }
+     *               password: { type: string, format: password }
+     *     responses:
+     *       200:
+     *         description: Login successful
+     */
+>>>>>>> dev-ui2
     static async login(req: Request, res: Response, next: NextFunction) {
         passport.authenticate('local', { session: false }, async (err: any, user: any, info: any) => {
             if (err) return next(err);
@@ -149,6 +231,26 @@ export class AuthController {
                 data: { refreshToken },
             });
 
+<<<<<<< HEAD
+=======
+            // FOR DEMO: Generate a "Welcome" alert and a "Security Scan" alert
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.COMMUNITY,
+                severity: AlertSeverity.LOW,
+                title: 'Welcome to FraudShield',
+                message: 'Your account is now protected. We are monitoring for threats in your area.',
+            });
+
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.SYSTEM_SCAN,
+                severity: AlertSeverity.LOW,
+                title: 'Initial System Scan Completed',
+                message: '0 threats found. Your device security is up to date.',
+            });
+
+>>>>>>> dev-ui2
             res.json({
                 user: AuthService.toSafeUser(fullUser),
                 token: accessToken,
@@ -157,6 +259,21 @@ export class AuthController {
         })(req, res, next);
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @openapi
+     * /api/v1/auth/profile:
+     *   get:
+     *     summary: Get current user profile
+     *     tags: [Auth]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved profile
+     */
+>>>>>>> dev-ui2
     static async getProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
@@ -170,7 +287,11 @@ export class AuthController {
     static async updateProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
+<<<<<<< HEAD
             const { bio, avatar, fullName, metadata } = req.body;
+=======
+            const { bio, avatar, fullName, metadata, mobile, mailingAddress } = req.body;
+>>>>>>> dev-ui2
 
             if (fullName) {
                 await prisma.user.update({
@@ -182,19 +303,42 @@ export class AuthController {
             const profile = await prisma.profile.upsert({
                 where: { userId },
                 update: {
+<<<<<<< HEAD
                     bio,
                     avatar,
+=======
+                    bio: bio ? EncryptionUtils.encrypt(bio) : undefined,
+                    avatar,
+                    mobile: mobile ? EncryptionUtils.encrypt(mobile) : undefined,
+                    mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : undefined,
+>>>>>>> dev-ui2
                     metadata: metadata || undefined,
                 },
                 create: {
                     userId,
+<<<<<<< HEAD
                     bio,
                     avatar,
+=======
+                    bio: bio ? EncryptionUtils.encrypt(bio) : '',
+                    avatar: avatar || 'Felix',
+                    mobile: mobile ? EncryptionUtils.encrypt(mobile) : '',
+                    mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : '',
+>>>>>>> dev-ui2
                     metadata: metadata || {},
                 },
             });
 
+<<<<<<< HEAD
             res.json(profile);
+=======
+            res.json({
+                ...profile,
+                bio: EncryptionUtils.decrypt(profile.bio || ''),
+                mobile: EncryptionUtils.decrypt(profile.mobile || ''),
+                mailingAddress: EncryptionUtils.decrypt(profile.mailingAddress || ''),
+            });
+>>>>>>> dev-ui2
         } catch (error) {
             next(error);
         }
@@ -338,6 +482,15 @@ export class AuthController {
 
     static async logout(req: Request, res: Response, next: NextFunction) {
         try {
+<<<<<<< HEAD
+=======
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.split(' ')[1];
+                await AuthService.revokeToken(token);
+            }
+
+>>>>>>> dev-ui2
             const userId = (req.user as any)?.id;
             if (userId) {
                 await prisma.user.update({
@@ -389,6 +542,11 @@ export class AuthController {
                                 bio: 'Joined via Google',
                             },
                         },
+<<<<<<< HEAD
+=======
+                        acceptedTermsVersion: 'v1.0',
+                        acceptedTermsAt: new Date(),
+>>>>>>> dev-ui2
                     },
                     include: { profile: true },
                 });
@@ -422,4 +580,34 @@ export class AuthController {
             next(error);
         }
     }
+<<<<<<< HEAD
+=======
+
+    static async acceptTerms(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any).id;
+            const { version } = req.body;
+
+            if (!version) {
+                return res.status(400).json({ error: 'Terms version is required' });
+            }
+
+            const user = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    acceptedTermsVersion: version,
+                    acceptedTermsAt: new Date(),
+                },
+                include: { profile: true },
+            });
+
+            res.json({
+                message: 'Terms and Privacy Policy accepted successfully',
+                user: AuthService.toSafeUser(user),
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+>>>>>>> dev-ui2
 }

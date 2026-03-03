@@ -167,9 +167,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
+<<<<<<< HEAD
                             color: Colors.orange.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.orange.withOpacity(0.3)),
+=======
+                            color: Colors.orange.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+>>>>>>> dev-ui2
                           ),
                           child: const Text(
                             'Verify Now',
@@ -223,7 +229,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           CircleAvatar(
             radius: 50,
+<<<<<<< HEAD
             backgroundColor: Colors.white.withOpacity(0.1),
+=======
+            backgroundColor: Colors.white.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
             backgroundImage: NetworkImage(
               'https://api.dicebear.com/7.x/avataaars/png?seed=${user?.profile?.avatar ?? "Felix"}',
             ),
@@ -265,6 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
+<<<<<<< HEAD
         color: Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
@@ -272,6 +283,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
           Icon(icon, color: AppColors.accentGreen.withOpacity(0.7), size: 20),
+=======
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.accentGreen.withValues(alpha: 0.7), size: 20),
+>>>>>>> dev-ui2
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -280,7 +300,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label,
                   style: TextStyle(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.4),
+=======
+                    color: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
                     fontSize: 12,
                   ),
                 ),

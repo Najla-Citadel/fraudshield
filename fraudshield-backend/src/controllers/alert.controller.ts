@@ -1,11 +1,35 @@
 import { Request, Response, NextFunction } from 'express';
 import { AlertEngineService } from '../services/alert-engine.service';
+<<<<<<< HEAD
 import { prisma } from '../config/database';
 
 export class AlertController {
     /**
      * GET /api/alerts/trending
      * Returns aggressive aggregations of recent scams
+=======
+import { AlertService } from '../services/alert.service';
+import { prisma } from '../config/database';
+
+/**
+ * @openapi
+ * tags:
+ *   name: Alerts
+ *   description: Proactive scam alerts and daily digest
+ */
+export class AlertController {
+    /**
+     * @openapi
+     * /api/v1/alerts/trending:
+     *   get:
+     *     summary: Get currently trending scams
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved trending alerts
+>>>>>>> dev-ui2
      */
     static async getTrendingAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -73,8 +97,63 @@ export class AlertController {
     }
 
     /**
+<<<<<<< HEAD
      * POST /api/alerts/subscribe
      * Manage user preferences for push alerts
+=======
+     * @openapi
+     * /api/v1/alerts/daily-digest:
+     *   get:
+     *     summary: Get consolidated daily scam summary
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved daily digest
+     */
+    static async getDailyDigest(req: Request, res: Response, next: NextFunction) {
+        try {
+            const digest = await AlertEngineService.getDailySummary();
+            res.json(digest);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/subscribe:
+     *   post:
+     *     summary: Manage user alert preferences
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               categories:
+     *                 type: array
+     *                 items:
+     *                   type: string
+     *               latitude:
+     *                 type: number
+     *               longitude:
+     *                 type: number
+     *               radiusKm:
+     *                 type: integer
+     *               emailDigestEnabled:
+     *                 type: boolean
+     *               isActive:
+     *                 type: boolean
+     *     responses:
+     *       200:
+     *         description: Preferences saved successfully
+>>>>>>> dev-ui2
      */
     static async subscribeToAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -90,6 +169,10 @@ export class AlertController {
                     ...(radiusKm && { radiusKm }),
                     ...(fcmToken && { fcmToken }),
                     ...(isActive !== undefined && { isActive }),
+<<<<<<< HEAD
+=======
+                    ...(req.body.emailDigestEnabled !== undefined && { emailDigestEnabled: req.body.emailDigestEnabled }),
+>>>>>>> dev-ui2
                 },
                 create: {
                     userId,
@@ -99,6 +182,10 @@ export class AlertController {
                     radiusKm: radiusKm || 15,
                     fcmToken,
                     isActive: isActive ?? true,
+<<<<<<< HEAD
+=======
+                    emailDigestEnabled: req.body.emailDigestEnabled ?? false,
+>>>>>>> dev-ui2
                 },
             });
 
@@ -112,6 +199,21 @@ export class AlertController {
      * GET /api/alerts/preferences
      * Retrieve current user subscription preferences
      */
+<<<<<<< HEAD
+=======
+    /**
+     * @openapi
+     * /api/v1/alerts/preferences:
+     *   get:
+     *     summary: Get user alert preferences
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved preferences
+     */
+>>>>>>> dev-ui2
     static async getPreferences(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user!.id;
@@ -125,6 +227,10 @@ export class AlertController {
                     categories: [],
                     isActive: false,
                     radiusKm: 15,
+<<<<<<< HEAD
+=======
+                    emailDigestEnabled: false,
+>>>>>>> dev-ui2
                 });
             }
 
@@ -133,4 +239,161 @@ export class AlertController {
             next(error);
         }
     }
+<<<<<<< HEAD
+=======
+    /**
+     * @openapi
+     * /api/v1/alerts:
+     *   get:
+     *     summary: Get all personal alerts for the logged-in user
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: List of personal alerts
+     */
+    static async getUserAlerts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const alerts = await AlertService.getUserAlerts(userId);
+            res.json(alerts);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/read-all:
+     *   patch:
+     *     summary: Mark all unread alerts for the user as read
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       204:
+     *         description: Successfully marked all alerts as read
+     */
+    static async markAllAsRead(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            await AlertService.markAllAsRead(userId);
+            res.status(204).send();
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    /**
+     * @openapi
+     * /api/v1/alerts/{id}/resolve:
+     *   post:
+     *     summary: Resolve an individual alert with a specific action
+     *     tags: [Alerts]
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               action:
+     *                 type: string
+     *                 enum: [BLOCK, WHITELIST, DISMISS]
+     *     responses:
+     *       200:
+     *         description: Alert resolved successfully
+     */
+    static async resolveAlert(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const { id } = req.params as { id: string };
+            const { action } = req.body as { action: string };
+            const alert = await AlertService.resolveAlert(id, userId, action);
+            res.json(alert);
+        } catch (error) {
+            next(error);
+        }
+    }
+    /**
+     * Diagnostic endpoint to seed demo alerts for the current user
+     */
+    static async seedDemoAlerts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const { AlertCategory, AlertSeverity } = require('@prisma/client');
+
+            // Clear existing for this user to avoid clutter
+            await prisma.alert.deleteMany({ where: { userId } });
+
+            const now = new Date();
+            const today = new Date(now);
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // 1. Suspicious Login Attempt (TODAY, 2m ago)
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.LOGIN,
+                severity: AlertSeverity.HIGH,
+                title: 'Suspicious Login Attempt',
+                message: 'A login attempt was detected from a new device in Berlin, Germany. Was this you?',
+                metadata: { device: 'Chrome on Linux', location: 'Berlin, DE' }
+            });
+
+            // 2. New Scam Trend: AI Voice (TODAY, 1h ago)
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.COMMUNITY,
+                severity: AlertSeverity.MEDIUM,
+                title: 'New Scam Trend: AI Voice',
+                message: 'Scammers are using AI to mimic family voices. Learn how to verify callers instantly.',
+            });
+
+            // 3. System Update Successful (TODAY, 3h ago)
+            await AlertService.createAlert({
+                userId,
+                category: AlertCategory.SYSTEM_SCAN,
+                severity: AlertSeverity.LOW,
+                title: 'System Update Successful',
+                message: 'FraudShield database v4.2.0 installed. Your protection is up to date.',
+            });
+
+            // 4. Weekly Security Report (YESTERDAY, 1d ago)
+            await prisma.alert.create({
+                data: {
+                    userId,
+                    category: AlertCategory.SYSTEM_SCAN,
+                    severity: AlertSeverity.LOW,
+                    title: 'Weekly Security Report',
+                    message: "You've blocked 12 suspicious links and 3 spam calls this week. Keep it up!",
+                    createdAt: yesterday,
+                }
+            });
+
+            // 5. Gold Tier Benefit (YESTERDAY, 1d ago)
+            await prisma.alert.create({
+                data: {
+                    userId,
+                    category: AlertCategory.COMMUNITY,
+                    severity: AlertSeverity.LOW,
+                    title: 'Gold Tier Benefit',
+                    message: 'New AI File Scanner is now available for your Gold account.',
+                    createdAt: yesterday,
+                }
+            });
+
+            res.json({ message: 'Demo alerts seeded successfully matching screenshot' });
+        } catch (error) {
+            next(error);
+        }
+    }
+>>>>>>> dev-ui2
 }

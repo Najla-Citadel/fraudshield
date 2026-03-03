@@ -13,6 +13,27 @@ enum CheckType {
   BANK
   DOC
   MANUAL
+<<<<<<< HEAD
+=======
+  MSG
+  QR
+  VOICE
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertCategory {
+  PHISHING
+  LOGIN
+  SYSTEM_SCAN
+  NETWORK
+  COMMUNITY
+>>>>>>> dev-ui2
 }
 
 model User {
@@ -37,6 +58,26 @@ model User {
   comments            Comment[]
   acceptedTermsVersion String?
   acceptedTermsAt      DateTime?
+<<<<<<< HEAD
+=======
+  auditLogs           AuditLog[]
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String
+  action     String
+  targetType String
+  targetId   String?
+  payload    Json     @default("{}")
+  createdAt  DateTime @default(now())
+  admin      User     @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+  @@index([createdAt])
+  @@index([action])
+  @@index([targetType])
+>>>>>>> dev-ui2
 }
 
 model Profile {
@@ -100,6 +141,11 @@ model ScamReport {
   @@index([createdAt])
   @@index([category])
   @@index([status])
+<<<<<<< HEAD
+=======
+  @@index([target])
+  @@index([targetType])
+>>>>>>> dev-ui2
 }
 
 model Comment {
@@ -143,6 +189,7 @@ model BehavioralEvent {
 }
 
 model Alert {
+<<<<<<< HEAD
   id        String   @id @default(uuid())
   type      String
   title     String
@@ -154,6 +201,25 @@ model Alert {
   riskScore Int?
   decision  String?
   user      User     @relation(fields: [userId], references: [id])
+=======
+  id          String        @id @default(uuid())
+  category    AlertCategory @default(COMMUNITY)
+  severity    AlertSeverity @default(LOW)
+  title       String
+  message     String
+  type        String        @default("ALERT") // Required for Admin Broadcasts
+  metadata    Json          @default("{}")
+  isRead      Boolean       @default(false)
+  actionTaken String?
+  userId      String
+  createdAt   DateTime      @default(now())
+  user        User          @relation(fields: [userId], references: [id])
+
+  // Kept for backward compatibility
+  txId      String?
+  riskScore Int?
+  decision  String?
+>>>>>>> dev-ui2
 }
 
 model Transaction {
@@ -243,8 +309,14 @@ model AlertSubscription {
   longitude   Float?
   radiusKm    Int      @default(15)
   fcmToken    String?
+<<<<<<< HEAD
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
+=======
+  isActive          Boolean  @default(true)
+  emailDigestEnabled Boolean  @default(false)
+  createdAt         DateTime @default(now())
+>>>>>>> dev-ui2
   updatedAt   DateTime @updatedAt
   user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
 }

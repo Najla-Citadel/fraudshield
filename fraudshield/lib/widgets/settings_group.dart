@@ -26,7 +26,11 @@ class SettingsGroup extends StatelessWidget {
               child: Text(
                 title!.toUpperCase(),
                 style: TextStyle(
+<<<<<<< HEAD
                   color: Colors.white.withOpacity(0.5),
+=======
+                  color: Colors.white.withValues(alpha: 0.5),
+>>>>>>> dev-ui2
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -37,7 +41,11 @@ class SettingsGroup extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(16),
+<<<<<<< HEAD
               border: Border.all(color: Colors.white.withOpacity(0.05)),
+=======
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+>>>>>>> dev-ui2
             ),
             child: Column(
               children: [
@@ -46,7 +54,11 @@ class SettingsGroup extends StatelessWidget {
                     Divider(
                       height: 1,
                       thickness: 1,
+<<<<<<< HEAD
                       color: Colors.white.withOpacity(0.05),
+=======
+                      color: Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
                       indent: 56, // Align with text start
                     ),
                   items[i],
@@ -87,8 +99,13 @@ class SettingsTile extends StatelessWidget {
     final theme = Theme.of(context);
     final color = isDestructive ? Colors.redAccent : (iconColor ?? Colors.blueAccent);
     final bgColor = isDestructive 
+<<<<<<< HEAD
         ? Colors.redAccent.withOpacity(0.1) 
         : (iconBgColor ?? color.withOpacity(0.1));
+=======
+        ? Colors.redAccent.withValues(alpha: 0.1) 
+        : (iconBgColor ?? color.withValues(alpha: 0.1));
+>>>>>>> dev-ui2
 
     return Material(
       color: Colors.transparent,
@@ -125,7 +142,11 @@ class SettingsTile extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: TextStyle(
+<<<<<<< HEAD
                           color: Colors.white.withOpacity(0.5),
+=======
+                          color: Colors.white.withValues(alpha: 0.5),
+>>>>>>> dev-ui2
                           fontSize: 13,
                         ),
                       ),
@@ -137,7 +158,11 @@ class SettingsTile extends StatelessWidget {
               else
                 Icon(
                   Icons.arrow_forward_ios_rounded,
+<<<<<<< HEAD
                   color: Colors.white.withOpacity(0.2),
+=======
+                  color: Colors.white.withValues(alpha: 0.2),
+>>>>>>> dev-ui2
                   size: 16,
                 ),
             ],

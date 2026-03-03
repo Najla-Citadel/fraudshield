@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+<<<<<<< HEAD
+=======
+import { EncryptionUtils } from '../utils/encryption';
+>>>>>>> dev-ui2
 
 export class TransactionController {
     /**
@@ -27,7 +31,11 @@ export class TransactionController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
+<<<<<<< HEAD
                 }),
+=======
+                }).then(txs => txs.map(tx => ({ ...tx, target: EncryptionUtils.decrypt(tx.target || '') }))),
+>>>>>>> dev-ui2
                 prisma.transactionJournal.count({ where: whereClause }),
             ]);
 
@@ -64,7 +72,14 @@ export class TransactionController {
                 return res.status(403).json({ message: 'Access denied' });
             }
 
+<<<<<<< HEAD
             res.json(transaction);
+=======
+            res.json({
+                ...transaction,
+                target: EncryptionUtils.decrypt(transaction.target || ''),
+            });
+>>>>>>> dev-ui2
         } catch (error) {
             next(error);
         }
@@ -94,8 +109,15 @@ export class TransactionController {
             let status = 'SAFE';
 
             if (target) {
+<<<<<<< HEAD
                 const reportsCount = await prisma.scamReport.count({
                     where: { target: { contains: target, mode: 'insensitive' } }
+=======
+                // Since we use deterministic encryption for target, we must search by the encrypted value
+                const encryptedTarget = EncryptionUtils.deterministicEncrypt(target);
+                const reportsCount = await prisma.scamReport.count({
+                    where: { target: encryptedTarget } // exact match only
+>>>>>>> dev-ui2
                 });
 
                 if (reportsCount > 0) {
@@ -113,7 +135,11 @@ export class TransactionController {
                 data: {
                     userId,
                     checkType: checkType || 'MANUAL',
+<<<<<<< HEAD
                     target: target || merchant,
+=======
+                    target: target ? EncryptionUtils.deterministicEncrypt(target) : merchant,
+>>>>>>> dev-ui2
                     amount: amount ? parseFloat(amount) : null,
                     merchant,
                     paymentMethod,
@@ -164,7 +190,11 @@ export class TransactionController {
                 data: {
                     userId,
                     type: tx.paymentMethod || 'manual',
+<<<<<<< HEAD
                     target: tx.target,
+=======
+                    target: tx.target, // already encrypted in journal
+>>>>>>> dev-ui2
                     targetType: tx.checkType.toLowerCase() === 'manual' ? 'merchant' : tx.checkType.toLowerCase(),
                     description: description || tx.notes || 'Converted from transaction journal',
                     category: category || tx.platform || 'General',

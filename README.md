@@ -101,6 +101,29 @@ git checkout dev-master
 For production deployment instructions using Docker, Nginx, and SSL, see the [DigitalOcean Deployment Guide](deployment_guide.md).
 
 ---
+ 
+## 📂 Database Backups
+ 
+FraudShield includes both automated and on-demand backup solutions.
+ 
+### 1. Automated Backups (Production)
+The production `docker-compose.prod.yml` includes a `db-backup` sidecar container that automatically dumps the database **every night at 3 AM**.
+- **Retention**: Last 7 days.
+- **Location**: `fraudshield-backend/backups/`
+ 
+### 2. Manual Backup (On-Demand)
+Run the script from the `fraudshield-backend` directory before major updates:
+```powershell
+./scripts/backup_db.ps1
+```
+ 
+### 3. Restoration
+To restore a backup to the production container:
+```bash
+gunzip < backups/db_backup_TIMESTAMP.sql.gz | docker exec -i fraudshield-postgres-prod psql -U fraudshield -d fraudshield
+```
+
+---
 
 ## 🔒 Security Note
 Never commit `.env` files to the repository. They are ignored by default in this consolidated structure.

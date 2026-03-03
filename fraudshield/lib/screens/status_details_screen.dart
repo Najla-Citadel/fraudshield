@@ -177,8 +177,13 @@ class StatusDetailsScreen extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
+<<<<<<< HEAD
                 tierColor.withOpacity(0.2),
                 tierColor.withOpacity(0.0),
+=======
+                tierColor.withValues(alpha: 0.2),
+                tierColor.withValues(alpha: 0.0),
+>>>>>>> dev-ui2
               ],
             ),
           ),
@@ -191,7 +196,11 @@ class StatusDetailsScreen extends StatelessWidget {
                 color: const Color(0xFF1E293B),
                 boxShadow: [
                   BoxShadow(
+<<<<<<< HEAD
                     color: Colors.black.withOpacity(0.3),
+=======
+                    color: Colors.black.withValues(alpha: 0.3),
+>>>>>>> dev-ui2
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -218,9 +227,15 @@ class StatusDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: AppColors.accentGreen.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+=======
+            color: AppColors.accentGreen.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
+>>>>>>> dev-ui2
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -266,7 +281,11 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   'Tier Progress',
                   style: TextStyle(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.4),
+=======
+                    color: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -299,7 +318,11 @@ class StatusDetailsScreen extends StatelessWidget {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 8,
+<<<<<<< HEAD
             backgroundColor: Colors.white.withOpacity(0.05),
+=======
+            backgroundColor: Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
             valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
           ),
         ),
@@ -321,7 +344,11 @@ class StatusDetailsScreen extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
+<<<<<<< HEAD
         color: isActive ? Colors.white : Colors.white.withOpacity(0.2),
+=======
+        color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.2),
+>>>>>>> dev-ui2
         fontSize: 10,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.0,
@@ -336,7 +363,11 @@ class StatusDetailsScreen extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
+<<<<<<< HEAD
             color: Colors.white.withOpacity(0.4),
+=======
+            color: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
             fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.0,
@@ -345,9 +376,15 @@ class StatusDetailsScreen extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
+<<<<<<< HEAD
             color: const Color(0xFF1E293B).withOpacity(0.5),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
+=======
+            color: const Color(0xFF1E293B).withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+>>>>>>> dev-ui2
           ),
           child: Column(
             children: benefits.asMap().entries.map((entry) {
@@ -359,7 +396,11 @@ class StatusDetailsScreen extends StatelessWidget {
                   if (index < benefits.length - 1)
                     Divider(
                       height: 1,
+<<<<<<< HEAD
                       color: Colors.white.withOpacity(0.05),
+=======
+                      color: Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
                       indent: 70,
                     ),
                 ],
@@ -380,15 +421,24 @@ class StatusDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: item.isLocked 
+<<<<<<< HEAD
                   ? Colors.white.withOpacity(0.05)
                   : AppColors.accentGreen.withOpacity(0.1),
+=======
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : AppColors.accentGreen.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
               shape: BoxShape.circle,
             ),
             child: Icon(
               item.icon,
               size: 20,
               color: item.isLocked 
+<<<<<<< HEAD
                   ? Colors.white.withOpacity(0.2)
+=======
+                  ? Colors.white.withValues(alpha: 0.2)
+>>>>>>> dev-ui2
                   : AppColors.accentGreen,
             ),
           ),
@@ -400,7 +450,11 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   item.title,
                   style: TextStyle(
+<<<<<<< HEAD
                     color: item.isLocked ? Colors.white.withOpacity(0.4) : Colors.white,
+=======
+                    color: item.isLocked ? Colors.white.withValues(alpha: 0.4) : Colors.white,
+>>>>>>> dev-ui2
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -409,7 +463,11 @@ class StatusDetailsScreen extends StatelessWidget {
                 Text(
                   item.subtitle,
                   style: TextStyle(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.3),
+=======
+                    color: Colors.white.withValues(alpha: 0.3),
+>>>>>>> dev-ui2
                     fontSize: 12,
                   ),
                 ),
@@ -419,7 +477,11 @@ class StatusDetailsScreen extends StatelessWidget {
           if (!item.isLocked)
             const Icon(Icons.check_circle_rounded, color: AppColors.accentGreen, size: 20)
           else
+<<<<<<< HEAD
             Icon(Icons.lock_rounded, color: Colors.white.withOpacity(0.2), size: 18),
+=======
+            Icon(Icons.lock_rounded, color: Colors.white.withValues(alpha: 0.2), size: 18),
+>>>>>>> dev-ui2
         ],
       ),
     );
@@ -434,7 +496,11 @@ class StatusDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
+<<<<<<< HEAD
             color: AppColors.accentGreen.withOpacity(0.3),
+=======
+            color: AppColors.accentGreen.withValues(alpha: 0.3),
+>>>>>>> dev-ui2
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

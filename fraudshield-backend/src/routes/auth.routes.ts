@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
+<<<<<<< HEAD
 import passport from 'passport';
+=======
+>>>>>>> dev-ui2
 import { authLimiter, loginLimiter } from '../middleware/rateLimiter';
 import { validateSignup, validateLogin, validateChangePassword } from '../middleware/validators';
 import { authenticate } from '../middleware/auth.middleware';
@@ -28,6 +31,10 @@ router.get('/profile', AuthController.getProfile);
 router.patch('/profile', AuthController.updateProfile);
 router.post('/request-verification', AuthController.requestEmailVerification);
 router.post('/change-password', authenticate, validateChangePassword, AuthController.changePassword);
+<<<<<<< HEAD
+=======
+router.post('/accept-terms', AuthController.acceptTerms);
+>>>>>>> dev-ui2
 router.post('/logout', AuthController.logout);
 
 export default router;

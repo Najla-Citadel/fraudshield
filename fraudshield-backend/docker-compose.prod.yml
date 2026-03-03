@@ -30,7 +30,16 @@ services:
     image: redis:7.4-alpine
     container_name: fraudshield-redis-prod
     restart: always
+<<<<<<< HEAD
     command: redis-server --requirepass ${REDIS_PASSWORD}
+=======
+    command: >
+      sh -c 'if [ -z "$REDIS_PASSWORD" ]; then
+               redis-server;
+             else
+               redis-server --requirepass "$REDIS_PASSWORD";
+             fi'
+>>>>>>> dev-ui2
     # No ports exposed to public
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -51,7 +60,13 @@ services:
     # Ports removed for security (only accessible via nginx)
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public&connection_limit=20&pool_timeout=20
+<<<<<<< HEAD
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+=======
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+>>>>>>> dev-ui2
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       PORT: 3000
@@ -62,6 +77,15 @@ services:
       SMTP_PASS: ${SMTP_PASS}
       SMTP_FROM: ${SMTP_FROM}
       SMTP_SECURE: ${SMTP_SECURE:-true}
+<<<<<<< HEAD
+=======
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DB_ENCRYPTION_KEY: ${DB_ENCRYPTION_KEY}
+      FIREBASE_SERVICE_ACCOUNT: ${FIREBASE_SERVICE_ACCOUNT}
+      TRENDING_ALERT_CRON: ${TRENDING_ALERT_CRON:-0 * * * *}
+      ADMIN_ALERT_EMAIL: ${ADMIN_ALERT_EMAIL}
+      CRITICAL_ALERT_WEBHOOK_URL: ${CRITICAL_ALERT_WEBHOOK_URL}
+>>>>>>> dev-ui2
     depends_on:
       postgres:
         condition: service_healthy
@@ -116,6 +140,36 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+<<<<<<< HEAD
+=======
+  # Daily Automated Backups (3 AM)
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16-alpine
+    container_name: fraudshield-db-backup
+    restart: always
+    user: root
+    volumes:
+      - ./backups:/backups
+    links:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-fraudshield}
+      - POSTGRES_USER=${POSTGRES_USER:-fraudshield}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_SUFFIX=.sql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+>>>>>>> dev-ui2
   # Admin Dashboard
   admin:
     build:

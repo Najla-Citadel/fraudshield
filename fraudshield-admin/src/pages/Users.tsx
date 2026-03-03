@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { adminService } from '../services/api';
+<<<<<<< HEAD
 import { User as UserIcon, Mail, X, Loader2, Save } from 'lucide-react';
+=======
+import { User as UserIcon, Mail, X, Loader2, Save, ShieldCheck, ShieldX } from 'lucide-react';
+>>>>>>> dev-ui2
 
 interface SubscriptionPlan {
     id: string;
@@ -158,6 +162,10 @@ const Users = () => {
                             <th className="px-6 py-4 font-semibold">User</th>
                             <th className="px-6 py-4 font-semibold">Role</th>
                             <th className="px-6 py-4 font-semibold">Tier</th>
+<<<<<<< HEAD
+=======
+                            <th className="px-6 py-4 font-semibold text-center">Verified</th>
+>>>>>>> dev-ui2
                             <th className="px-6 py-4 font-semibold">Joined</th>
                         </tr>
                     </thead>
@@ -199,6 +207,22 @@ const Users = () => {
                                             {activeSub ? activeSub.plan.name.toUpperCase() : 'FREE'}
                                         </span>
                                     </td>
+<<<<<<< HEAD
+=======
+                                    <td className="px-6 py-4">
+                                        <div className="flex justify-center">
+                                            {user.emailVerified ? (
+                                                <div className="flex items-center text-accent-green bg-accent-green/10 px-2 py-1 rounded-lg border border-accent-green/20 text-[10px] font-bold uppercase tracking-wider">
+                                                    <ShieldCheck size={12} className="mr-1" /> Verified
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center text-red-400 bg-red-400/10 px-2 py-1 rounded-lg border border-red-400/20 text-[10px] font-bold uppercase tracking-wider">
+                                                    <ShieldX size={12} className="mr-1" /> Unverified
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+>>>>>>> dev-ui2
                                     <td className="px-6 py-4 text-sm text-slate-400">
                                         {new Date(user.createdAt).toLocaleDateString()}
                                     </td>

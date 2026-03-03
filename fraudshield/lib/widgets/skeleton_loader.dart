@@ -41,8 +41,13 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
     final isDark = theme.brightness == Brightness.dark;
     
     // Adjusted colors for better contrast on glass backgrounds
+<<<<<<< HEAD
     final baseColor = isDark ? Colors.white10 : Colors.black.withOpacity(0.05);
     final highlightColor = isDark ? Colors.white24 : Colors.black.withOpacity(0.1);
+=======
+    final baseColor = isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05);
+    final highlightColor = isDark ? Colors.white24 : Colors.black.withValues(alpha: 0.1);
+>>>>>>> dev-ui2
 
     return AnimatedBuilder(
       animation: _controller,

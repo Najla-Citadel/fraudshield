@@ -4,9 +4,51 @@ import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
+<<<<<<< HEAD
 
 export class ReportController {
     private static readonly MAX_LIMIT = 100;
+=======
+import { EncryptionUtils } from '../utils/encryption';
+
+/**
+ * @openapi
+ * tags:
+ *   name: Reports
+ *   description: Scam report management and public feed
+ */
+export class ReportController {
+    private static readonly MAX_LIMIT = 100;
+
+    /**
+     * @openapi
+     * /api/v1/reports:
+     *   post:
+     *     summary: Submit a new scam report
+     *     tags: [Reports]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [type, category, description, target]
+     *             properties:
+     *               type: { type: string, enum: [phone, bank, doc, link] }
+     *               category: { type: string }
+     *               description: { type: string }
+     *               target: { type: string }
+     *               isPublic: { type: boolean }
+     *               latitude: { type: number }
+     *               longitude: { type: number }
+     *               evidence: { type: object }
+     *     responses:
+     *       201:
+     *         description: Report submitted successfully
+     */
+>>>>>>> dev-ui2
     static async submitReport(req: Request, res: Response, next: NextFunction) {
         try {
             const { type, category, description, evidence, target, isPublic, latitude, longitude } = req.body;
@@ -31,8 +73,13 @@ export class ReportController {
                     type,
                     category,
                     description,
+<<<<<<< HEAD
                     target,
                     isPublic: isPublic || false,
+=======
+                    target: EncryptionUtils.deterministicEncrypt(target),
+                    isPublic: false, // Force false for moderation
+>>>>>>> dev-ui2
                     latitude,
                     longitude,
                     evidence: evidence || {},
@@ -40,6 +87,7 @@ export class ReportController {
                 },
             });
 
+<<<<<<< HEAD
             // Award points for submitting a report
             let gamificationResult: any = { newBadges: [] };
             if (isPublic) {
@@ -60,6 +108,12 @@ export class ReportController {
                 newBadges: gamificationResult.newBadges,
                 pointsAwarded: 10,
                 currentTier: gamificationResult.currentTier
+=======
+            res.status(201).json({
+                ...report,
+                message: 'Report submitted for moderation. Points will be awarded upon approval.',
+                pointsAwarded: 0
+>>>>>>> dev-ui2
             });
         } catch (error) {
             next(error);
@@ -81,7 +135,11 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
+<<<<<<< HEAD
                 }),
+=======
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
+>>>>>>> dev-ui2
                 prisma.scamReport.count({ where: { userId, deletedAt: null } }),
             ]);
 
@@ -139,7 +197,11 @@ export class ReportController {
 
             const response = {
                 ...report,
+<<<<<<< HEAD
                 target: report.target,
+=======
+                target: EncryptionUtils.decrypt(report.target || ''),
+>>>>>>> dev-ui2
                 reporterTrust: {
                     score: profile?.reputation ?? 0,
                     badges: Array.isArray(badges) ? badges : [],
@@ -157,6 +219,19 @@ export class ReportController {
         }
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @openapi
+     * /api/v1/reports/public:
+     *   get:
+     *     summary: Get public scam report feed
+     *     tags: [Reports]
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved feed
+     */
+>>>>>>> dev-ui2
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
             const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;
@@ -222,7 +297,11 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
+<<<<<<< HEAD
                 }),
+=======
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
+>>>>>>> dev-ui2
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -237,7 +316,11 @@ export class ReportController {
 
                 return {
                     ...report,
+<<<<<<< HEAD
                     target: report.target,
+=======
+                    target: EncryptionUtils.decrypt(report.target || ''),
+>>>>>>> dev-ui2
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -281,10 +364,18 @@ export class ReportController {
 
             // Text search across multiple fields
             if (query && typeof query === 'string' && query.trim()) {
+<<<<<<< HEAD
                 whereClause.AND.push({
                     OR: [
                         { description: { contains: query, mode: 'insensitive' } },
                         { target: { contains: query, mode: 'insensitive' } },
+=======
+                const encryptedQuery = EncryptionUtils.deterministicEncrypt(query as string);
+                whereClause.AND.push({
+                    OR: [
+                        { description: { contains: query, mode: 'insensitive' } },
+                        { target: encryptedQuery },
+>>>>>>> dev-ui2
                         { category: { contains: query, mode: 'insensitive' } },
                     ],
                 });
@@ -356,7 +447,11 @@ export class ReportController {
                     orderBy: orderByClause,
                     take: limitNum,
                     skip: offsetNum,
+<<<<<<< HEAD
                 }),
+=======
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
+>>>>>>> dev-ui2
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -384,7 +479,11 @@ export class ReportController {
 
                 return {
                     ...report,
+<<<<<<< HEAD
                     target: report.target,
+=======
+                    target: EncryptionUtils.decrypt(report.target || ''),
+>>>>>>> dev-ui2
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -411,7 +510,45 @@ export class ReportController {
             const { reportId, isSame } = req.body;
             const userId = (req.user as any).id;
 
+<<<<<<< HEAD
             // 1. Create or update the verification (uses @@unique([reportId, userId]) compound key)
+=======
+            // 1. Fetch report and user profile for validation
+            const [report, userProfile] = await Promise.all([
+                (prisma as any).scamReport.findUnique({
+                    where: { id: reportId },
+                    select: { userId: true, status: true, isPublic: true },
+                }),
+                (prisma as any).profile.findUnique({
+                    where: { userId },
+                    select: { reputation: true },
+                }),
+            ]);
+
+            if (!report) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            // Security Check: Cannot verify own report
+            if (report.userId === userId) {
+                return res.status(403).json({ message: 'You cannot verify your own reports' });
+            }
+
+            // Security Check: Report must be VERIFIED/Public by admin first
+            if (report.status !== 'VERIFIED' || !report.isPublic) {
+                return res.status(403).json({ message: 'Only admin-verified public reports can be community-verified' });
+            }
+
+            // Security Check: Minimum reputation to verify others
+            const minReputation = 20;
+            if ((userProfile?.reputation ?? 0) < minReputation) {
+                return res.status(403).json({
+                    message: `Increasing trust required. You need at least ${minReputation} reputation to verify reports.`,
+                });
+            }
+
+            // 2. Create or update the verification
+>>>>>>> dev-ui2
             const verification = await prisma.verification.upsert({
                 where: {
                     reportId_userId: { reportId, userId },
@@ -420,13 +557,19 @@ export class ReportController {
                 create: { reportId, userId, isSame },
             });
 
+<<<<<<< HEAD
             // 2. Reward the verifier with Shield Points
             const gamificationResult = await GamificationService.awardPoints(
+=======
+            // 3. Reward the verifier with Shield Points
+            await GamificationService.awardPoints(
+>>>>>>> dev-ui2
                 userId,
                 10,
                 `Verified report ${reportId}`
             );
 
+<<<<<<< HEAD
             // 3. Reward the original reporter with Reputation if verified as 'Same'
             const report = await (prisma as any).scamReport.findUnique({
                 where: { id: reportId },
@@ -434,6 +577,10 @@ export class ReportController {
             });
 
             if (report && isSame && report.userId !== userId) {
+=======
+            // 4. Reward the original reporter with Reputation if verified as 'Same'
+            if (isSame) {
+>>>>>>> dev-ui2
                 await (prisma as any).profile.upsert({
                     where: { userId: report.userId },
                     update: {
@@ -450,7 +597,10 @@ export class ReportController {
                 await BadgeService.evaluateBadges(report.userId);
             }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev-ui2
             res.json(verification);
         } catch (error) {
             next(error);
@@ -467,19 +617,35 @@ export class ReportController {
 
             // Build query based on target match
             const whereClause: any = {
+<<<<<<< HEAD
                 target: { contains: value, mode: 'insensitive' },
+=======
+                target: EncryptionUtils.deterministicEncrypt(value),
+>>>>>>> dev-ui2
                 deletedAt: null,
             };
 
             const reports = await (prisma as any).scamReport.findMany({
+<<<<<<< HEAD
                 where: whereClause,
+=======
+                where: {
+                    ...whereClause,
+                    status: 'VERIFIED', // Only count verifications for verified reports
+                    isPublic: true,
+                },
+>>>>>>> dev-ui2
                 include: {
                     _count: {
                         select: { verifications: true },
                     },
                 },
                 orderBy: { createdAt: 'desc' },
+<<<<<<< HEAD
             });
+=======
+            }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') })));
+>>>>>>> dev-ui2
 
             const totalCount = reports.length;
 

@@ -30,13 +30,21 @@ class AdaptiveNavigation extends StatelessWidget {
             currentIndex: currentIndex,
             onTap: onTap,
             items: items,
+<<<<<<< HEAD
             backgroundColor: Theme.of(context).cardColor.withOpacity(0.8),
+=======
+            backgroundColor: Theme.of(context).cardColor.withValues(alpha: 0.8),
+>>>>>>> dev-ui2
             activeColor: Theme.of(context).primaryColor,
             inactiveColor: Colors.grey,
             iconSize: 28,
             border: Border(
               top: BorderSide(
+<<<<<<< HEAD
                 color: Colors.grey.withOpacity(0.2),
+=======
+                color: Colors.grey.withValues(alpha: 0.2),
+>>>>>>> dev-ui2
                 width: 0.5,
               ),
             ),
@@ -47,7 +55,11 @@ class AdaptiveNavigation extends StatelessWidget {
       // Android: Material 3 NavigationBar
       return NavigationBarTheme(
         data: NavigationBarThemeData(
+<<<<<<< HEAD
           indicatorColor: Theme.of(context).primaryColor.withOpacity(0.15),
+=======
+          indicatorColor: Theme.of(context).primaryColor.withValues(alpha: 0.15),
+>>>>>>> dev-ui2
           labelTextStyle: MaterialStateProperty.all(
             const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),

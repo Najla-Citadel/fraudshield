@@ -55,7 +55,11 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
             Text(
               'Recent Checks',
               style: TextStyle(
+<<<<<<< HEAD
                 color: Colors.white.withOpacity(0.5),
+=======
+                color: Colors.white.withValues(alpha: 0.5),
+>>>>>>> dev-ui2
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
@@ -64,7 +68,11 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
             TextButton(
               onPressed: _clearHistory,
               style: TextButton.styleFrom(
+<<<<<<< HEAD
                 foregroundColor: Colors.white.withOpacity(0.4),
+=======
+                foregroundColor: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(50, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -93,6 +101,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
     Color color;
 
     switch (item.type) {
+<<<<<<< HEAD
       case 'Phone No':
       case 'Phone':
         icon = Icons.phone_outlined;
@@ -105,6 +114,27 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
       case 'Bank Acc':
         icon = Icons.account_balance_outlined;
         color = Colors.orangeAccent;
+=======
+      case 'Phone / Bank':
+      case 'Payment':
+      case 'Phone No':
+      case 'Phone':
+      case 'Bank Acc':
+        icon = Icons.payment_rounded;
+        color = Colors.blueAccent;
+        break;
+      case 'URL':
+        icon = Icons.link_rounded;
+        color = Colors.purpleAccent;
+        break;
+      case 'Message':
+        icon = Icons.chat_bubble_outline_rounded;
+        color = Colors.greenAccent;
+        break;
+      case 'Document':
+        icon = Icons.description_outlined;
+        color = Colors.amber;
+>>>>>>> dev-ui2
         break;
       default:
         icon = Icons.search;
@@ -134,14 +164,22 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(12),
+<<<<<<< HEAD
             border: Border.all(color: Colors.white.withOpacity(0.05)),
+=======
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+>>>>>>> dev-ui2
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
+<<<<<<< HEAD
                   color: color.withOpacity(0.1),
+=======
+                  color: color.withValues(alpha: 0.1),
+>>>>>>> dev-ui2
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 16),
@@ -165,7 +203,11 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                     Text(
                       item.type,
                       style: TextStyle(
+<<<<<<< HEAD
                         color: Colors.white.withOpacity(0.4),
+=======
+                        color: Colors.white.withValues(alpha: 0.4),
+>>>>>>> dev-ui2
                         fontSize: 11,
                       ),
                     ),
@@ -175,14 +217,22 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
               Text(
                 timeAgo,
                 style: TextStyle(
+<<<<<<< HEAD
                   color: Colors.white.withOpacity(0.3),
+=======
+                  color: Colors.white.withValues(alpha: 0.3),
+>>>>>>> dev-ui2
                   fontSize: 11,
                 ),
               ),
               const SizedBox(width: 8),
               Icon(
                 Icons.restore, 
+<<<<<<< HEAD
                 color: Colors.white.withOpacity(0.2), 
+=======
+                color: Colors.white.withValues(alpha: 0.2), 
+>>>>>>> dev-ui2
                 size: 16
               ),
             ],

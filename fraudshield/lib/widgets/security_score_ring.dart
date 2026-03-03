@@ -6,6 +6,10 @@ class SecurityScoreRing extends StatefulWidget {
   final String status;
   final bool isScanning;
   final VoidCallback onTap;
+<<<<<<< HEAD
+=======
+  final VoidCallback onInfoTap;
+>>>>>>> dev-ui2
 
   const SecurityScoreRing({
     super.key,
@@ -13,6 +17,10 @@ class SecurityScoreRing extends StatefulWidget {
     required this.status,
     required this.isScanning,
     required this.onTap,
+<<<<<<< HEAD
+=======
+    required this.onInfoTap,
+>>>>>>> dev-ui2
   });
 
   @override
@@ -48,6 +56,15 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
     super.dispose();
   }
 
+<<<<<<< HEAD
+=======
+  Color _getStatusColor(int score) {
+    if (score >= 75) return const Color(0xFF10B981); // Emerald 500 (Green)
+    if (score >= 50) return const Color(0xFFF59E0B); // Amber 500
+    return const Color(0xFFEF4444); // Red 500
+  }
+
+>>>>>>> dev-ui2
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -62,13 +79,22 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               builder: (context, child) {
                 double pulse = widget.isScanning ? (0.1 + 0.1 * sin(_scanController.value * 2 * pi)) : 0.1;
                 return Container(
+<<<<<<< HEAD
                   width: 260,
                   height: 260,
+=======
+                  width: 200,
+                  height: 200,
+>>>>>>> dev-ui2
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
+<<<<<<< HEAD
                         color: const Color(0xFF10B981).withOpacity(pulse),
+=======
+                        color: _getStatusColor(widget.score).withValues(alpha: pulse),
+>>>>>>> dev-ui2
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
@@ -80,6 +106,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
             
             // 2. Background Circle (Track)
             SizedBox(
+<<<<<<< HEAD
               width: 220,
               height: 220,
               child: CircularProgressIndicator(
@@ -87,6 +114,15 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 strokeWidth: 20,
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Colors.white.withOpacity(0.05),
+=======
+              width: 160,
+              height: 160,
+              child: CircularProgressIndicator(
+                value: 1.0,
+                strokeWidth: 16,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.white.withValues(alpha: 0.05),
+>>>>>>> dev-ui2
                 ),
               ),
             ),
@@ -101,6 +137,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 );
               },
               child: SizedBox(
+<<<<<<< HEAD
                 width: 220,
                 height: 220,
                 child: CustomPaint(
@@ -111,6 +148,18 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                       colors: [
                         Color(0xFF10B981), // Emerald 500
                         Color(0xFF34D399), // Emerald 400
+=======
+                width: 160,
+                height: 160,
+                child: CustomPaint(
+                  painter: _GradientArcPainter(
+                    percent: widget.isScanning ? 0.75 : widget.score / 100.0, // Show partial arc during scan
+                    strokeWidth: 16,
+                    gradient: LinearGradient(
+                      colors: [
+                        _getStatusColor(widget.score),
+                        _getStatusColor(widget.score).withValues(alpha: 0.8),
+>>>>>>> dev-ui2
                       ],
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
@@ -125,10 +174,17 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.isScanning)
+<<<<<<< HEAD
                   const Text(
                     'SCANNING...',
                     style: TextStyle(
                       color: Color(0xFF10B981),
+=======
+                  Text(
+                    'SCANNING...',
+                    style: TextStyle(
+                      color: _getStatusColor(widget.score),
+>>>>>>> dev-ui2
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
@@ -137,6 +193,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 else
                   Row(
                     mainAxisSize: MainAxisSize.min,
+<<<<<<< HEAD
                     children: const [
                       Icon(Icons.shield, color: Color(0xFF10B981), size: 16),
                       SizedBox(width: 6),
@@ -144,6 +201,15 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                         'PROTECTED',
                         style: TextStyle(
                           color: Color(0xFF10B981),
+=======
+                    children: [
+                      Icon(Icons.shield, color: _getStatusColor(widget.score), size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        widget.status.toUpperCase(),
+                        style: TextStyle(
+                          color: _getStatusColor(widget.score),
+>>>>>>> dev-ui2
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
@@ -152,6 +218,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     ],
                   ),
                 const SizedBox(height: 8),
+<<<<<<< HEAD
                 Text(
                   widget.isScanning ? '${(DateTime.now().millisecond % 99)}' : '${widget.score}',
                   style: const TextStyle(
@@ -161,16 +228,67 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     height: 1.0,
                   ),
                 ),
+=======
+                widget.isScanning
+                    ? AnimatedBuilder(
+                        animation: _scanController,
+                        builder: (context, child) {
+                          // Simple pulsing opacity based on scan cycle
+                          double opacity = 0.3 + 0.7 * (0.5 * (1 + sin(_scanController.value * 4 * pi)));
+                          return Opacity(
+                            opacity: opacity,
+                            child: const Text(
+                              '...',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 56,
+                                fontWeight: FontWeight.bold,
+                                height: 1.0,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Text(
+                        '${widget.score}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 56,
+                          fontWeight: FontWeight.bold,
+                          height: 1.0,
+                        ),
+                      ),
+>>>>>>> dev-ui2
                 const SizedBox(height: 8),
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
                   style: TextStyle(
+<<<<<<< HEAD
                     color: Colors.white.withOpacity(0.7),
+=======
+                    color: Colors.white.withValues(alpha: 0.7),
+>>>>>>> dev-ui2
                     fontSize: 14,
                   ),
                 ),
               ],
             ),
+<<<<<<< HEAD
+=======
+            // 5. Info Icon
+            Positioned(
+              top: 20,
+              right: 20,
+              child: IconButton(
+                icon: Icon(
+                  Icons.info_outline,
+                  color: Colors.white.withValues(alpha: 0.5),
+                  size: 20,
+                ),
+                onPressed: widget.onInfoTap,
+              ),
+            ),
+>>>>>>> dev-ui2
           ],
         ),
       ),
