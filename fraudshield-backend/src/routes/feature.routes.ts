@@ -12,6 +12,7 @@ import { VoiceScanController } from '../controllers/voice-scan.controller';
 import multer from 'multer';
 
 import { authenticate } from '../middleware/auth.middleware';
+import { featureLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -25,26 +26,26 @@ const memoryUpload = multer({
 router.use(authenticate);
 
 // Safe Browsing (legacy single URL check)
-router.post('/check-url', SafeBrowsingController.checkUrl);
+router.post('/check-url', featureLimiter, SafeBrowsingController.checkUrl);
 
 // 2F: Advanced Link & QR (Quishing) — deep scan with redirect chain + Safe Browsing batch
-router.post('/check-link', QuishingController.checkLink);
-router.post('/check-qr', QuishingController.checkQr);
+router.post('/check-link', featureLimiter, QuishingController.checkLink);
+router.post('/check-qr', featureLimiter, QuishingController.checkQr);
 
 // 2H: NLP-based Message Analysis
-router.post('/analyze-message', NlpMessageController.analyzeMessage);
+router.post('/analyze-message', featureLimiter, NlpMessageController.analyzeMessage);
 
 // 2E: PDF Document Scanning
-router.post('/scan-pdf', memoryUpload.single('file'), PdfScanController.scanPdf);
+router.post('/scan-pdf', featureLimiter, memoryUpload.single('file'), PdfScanController.scanPdf);
 
 // 2G: APK & Malicious File Detection
-router.post('/scan-apk', memoryUpload.single('file'), ApkScanController.scanApk);
+router.post('/scan-apk', featureLimiter, memoryUpload.single('file'), ApkScanController.scanApk);
 
 // Voice Scam Detection (Premium only — enforced within controller)
-router.post('/analyze-voice', memoryUpload.single('file'), VoiceScanController.analyzeVoice);
+router.post('/analyze-voice', featureLimiter, memoryUpload.single('file'), VoiceScanController.analyzeVoice);
 
 // AI Risk Score V2 — Centralized Evaluator
-router.post('/evaluate-risk', RiskEvaluationController.evaluate);
+router.post('/evaluate-risk', featureLimiter, RiskEvaluationController.evaluate);
 
 // Subscriptions
 router.get('/plans', SubscriptionController.getPlans);

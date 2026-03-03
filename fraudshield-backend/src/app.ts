@@ -104,8 +104,10 @@ app.use(express.static('public'));
 
 // API Documentation (Swagger)
 const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(`${apiPrefix}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    app.use(`${apiPrefix}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+}
 
 // API Routes
 app.use(`${apiPrefix}/auth`, authRoutes);

@@ -4,6 +4,8 @@ class UserModel {
   final String? fullName;
   final String? phoneNumber;
   final bool isEmailVerified;
+  final String? acceptedTermsVersion;
+  final DateTime? acceptedTermsAt;
   final DateTime createdAt;
   final UserProfile? profile;
 
@@ -13,6 +15,8 @@ class UserModel {
     this.fullName,
     this.phoneNumber,
     required this.isEmailVerified,
+    this.acceptedTermsVersion,
+    this.acceptedTermsAt,
     required this.createdAt,
     this.profile,
   });
@@ -24,10 +28,16 @@ class UserModel {
       fullName: json['fullName'],
       phoneNumber: json['phoneNumber'],
       isEmailVerified: json['isEmailVerified'] ?? false,
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      acceptedTermsVersion: json['acceptedTermsVersion'],
+      acceptedTermsAt: json['acceptedTermsAt'] != null
+          ? DateTime.parse(json['acceptedTermsAt'])
+          : null,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      profile: json['profile'] != null ? UserProfile.fromJson(json['profile']) : null,
+      profile: json['profile'] != null
+          ? UserProfile.fromJson(json['profile'])
+          : null,
     );
   }
 
@@ -38,6 +48,8 @@ class UserModel {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'isEmailVerified': isEmailVerified,
+      'acceptedTermsVersion': acceptedTermsVersion,
+      'acceptedTermsAt': acceptedTermsAt?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'profile': profile?.toJson(),
     };
@@ -95,4 +107,3 @@ class UserProfile {
     };
   }
 }
-

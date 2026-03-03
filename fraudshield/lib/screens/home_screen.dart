@@ -33,6 +33,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../l10n/app_localizations.dart';
 import 'report_details_screen.dart';
 import 'report_history_screen.dart';
+import '../widgets/terms_acceptance_overlay.dart';
+import '../services/biometric_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -598,30 +600,39 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
       backgroundColor: AppColors.deepNavy,
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: Stack(
         children: [
-          _HomeTab(
-            userName: displayUserName,
-            loading: loading,
-            activeQuickActions: _activeQuickActions,
-            onCustomize: () => _showCustomizationSheet(),
-            isSubscribed: isSubscribed,
-            isScanning: _isScanning,
-            score: _calculateSecurityScore(isSubscribed),
-            status: _securityStatus,
-            onScan: () => _runQuickScan(isSubscribed),
-            onShowReport: () => _showSecurityReport(isSubscribed),
-            recentTransactions: _recentTransactions,
-            myReports: _myReports,
-            newsKey: _newsKey,
-            onRefresh: _handleRefresh,
-            healthData: _healthData,
+          IndexedStack(
+            index: _selectedIndex,
+            children: [
+              _HomeTab(
+                userName: displayUserName,
+                loading: loading,
+                activeQuickActions: _activeQuickActions,
+                onCustomize: () => _showCustomizationSheet(),
+                isSubscribed: isSubscribed,
+                isScanning: _isScanning,
+                score: _calculateSecurityScore(isSubscribed),
+                status: _securityStatus,
+                onScan: () => _runQuickScan(isSubscribed),
+                onShowReport: () => _showSecurityReport(isSubscribed),
+                recentTransactions: _recentTransactions,
+                myReports: _myReports,
+                newsKey: _newsKey,
+                onRefresh: _handleRefresh,
+                healthData: _healthData,
+              ),
+              TrendingScamsScreen(), // BOARD tab (index 1)
+              const CommunityFeedScreen(), // SOCIAL tab (index 2)
+              PointsScreen(key: _pointsKey), // REWARDS tab (index 3)
+              const AccountScreen(), // PROFILE tab (index 4)
+            ],
           ),
-          TrendingScamsScreen(), // BOARD tab (index 1)
-          const CommunityFeedScreen(), // SOCIAL tab (index 2)
-          PointsScreen(key: _pointsKey), // REWARDS tab (index 3)
-          const AccountScreen(), // PROFILE tab (index 4)
+
+          // 🛡️ Terms Acceptance Mandatory Barrier
+          if (authProvider.isAuthenticated &&
+              authProvider.user?.acceptedTermsVersion == null)
+            const Positioned.fill(child: TermsAcceptanceOverlay()),
         ],
       ),
       bottomNavigationBar: FloatingNavBar(
@@ -1060,20 +1071,32 @@ class _HomeTab extends StatelessWidget {
                 context,
                 'AI Voice Scanner',
                 LucideIcons.phoneCall,
-                () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const VoiceDetectionScreen())),
+                () async {
+                  if (await BiometricService.instance.guardAction(
+                      reason: 'Authenticate to access AI Voice Scanner')) {
+                    if (!context.mounted) return;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const VoiceDetectionScreen()));
+                  }
+                },
               ),
               const SizedBox(width: 16),
               _buildPremiumCard(
                 context,
                 'AI File Scanner',
                 LucideIcons.fileLock,
-                () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const AIFileScannerScreen())),
+                () async {
+                  if (await BiometricService.instance.guardAction(
+                      reason: 'Authenticate to access AI File Scanner')) {
+                    if (!context.mounted) return;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const AIFileScannerScreen()));
+                  }
+                },
               ),
             ],
           ),
@@ -1338,12 +1361,16 @@ class _HomeTab extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const TransactionJournalScreen()),
-                  );
+                onPressed: () async {
+                  if (await BiometricService.instance.guardAction(
+                      reason: 'Authenticate to access Payment Journal')) {
+                    if (!context.mounted) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const TransactionJournalScreen()),
+                    );
+                  }
                 },
                 icon: const Text('Log Now',
                     style: TextStyle(

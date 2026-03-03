@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database';
+import { getRedisClient } from '../config/redis';
 
 export class AuthService {
     private static get JWT_SECRET(): string {
@@ -105,6 +106,8 @@ export class AuthService {
             role: user.role,
             createdAt: user.createdAt.toISOString(),
             isEmailVerified: user.emailVerified, // Get actual status from database
+            acceptedTermsVersion: user.acceptedTermsVersion,
+            acceptedTermsAt: user.acceptedTermsAt?.toISOString(),
             profile: user.profile ? {
                 id: user.profile.id,
                 bio: user.profile.bio,
@@ -114,5 +117,33 @@ export class AuthService {
                 totalPoints: user.profile.totalPoints,
             } : null,
         };
+    }
+
+    static async revokeToken(token: string): Promise<void> {
+        try {
+            const decoded = jwt.decode(token) as any;
+            if (!decoded || !decoded.exp) return;
+
+            const now = Math.floor(Date.now() / 1000);
+            const ttl = decoded.exp - now;
+
+            if (ttl > 0) {
+                const redis = getRedisClient();
+                await redis.set(`revoked_token:${token}`, 'true', 'EX', ttl);
+            }
+        } catch (error) {
+            console.error('Error revoking token:', error);
+        }
+    }
+
+    static async isTokenRevoked(token: string): Promise<boolean> {
+        try {
+            const redis = getRedisClient();
+            const result = await redis.get(`revoked_token:${token}`);
+            return result === 'true';
+        } catch (error) {
+            console.error('Error checking token revocation:', error);
+            return false;
+        }
     }
 }

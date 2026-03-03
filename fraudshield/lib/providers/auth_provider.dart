@@ -18,11 +18,13 @@ class AuthProvider extends ChangeNotifier {
   UserModel? get user => _user;
   String? get userId => _user?.id;
   bool get isAuthenticated => api.isAuthenticated && _user != null;
-  bool get isSubscribed => _subscription != null && (_subscription!['isActive'] == true || _subscription!['status'] == 'ACTIVE');
+  bool get isSubscribed =>
+      _subscription != null &&
+      (_subscription!['isActive'] == true ||
+          _subscription!['status'] == 'ACTIVE');
 
   /// Compatibility getter for screens expecting 'userProfile'
   UserModel? get userProfile => _user;
-
 
   Future<void> _init() async {
     try {
@@ -35,14 +37,15 @@ class AuthProvider extends ChangeNotifier {
         ]).catchError((e) {
           log('AuthProvider session restoration partial failure: $e');
           // If it's a "Session expired" message from ApiService, we should log out.
-          // Otherwise, it might just be a network timeout, so we stay "authenticated" 
+          // Otherwise, it might just be a network timeout, so we stay "authenticated"
           // but with legacy/cached user data if available.
-          if (e.toString().contains('Session expired') || e.toString().contains('401')) {
+          if (e.toString().contains('Session expired') ||
+              e.toString().contains('401')) {
             api.signOut();
           }
           return [];
         });
-        
+
         if (_user != null) {
           NotificationService.instance.initialize(_user!.id);
         }
@@ -51,7 +54,7 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       log('AuthProvider init error: $e');
-      // We don't call api.signOut() here because a network error 
+      // We don't call api.signOut() here because a network error
       // shouldn't wipe the user's saved tokens.
     } finally {
       _loading = false;
@@ -150,5 +153,16 @@ class AuthProvider extends ChangeNotifier {
     _user = null;
     _subscription = null;
     notifyListeners();
+  }
+
+  Future<void> acceptTerms(String version) async {
+    try {
+      final userData = await api.acceptTerms(version);
+      _user = UserModel.fromJson(userData);
+      notifyListeners();
+    } catch (e) {
+      log('AuthProvider acceptTerms error: $e');
+      rethrow;
+    }
   }
 }

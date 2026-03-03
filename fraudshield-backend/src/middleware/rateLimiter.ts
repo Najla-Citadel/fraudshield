@@ -52,3 +52,23 @@ export const reportLimiter = rateLimit({
         message: 'You have reached the limit for submitting reports. Please try again after 10 minutes.',
     },
 });
+
+/**
+ * Limiter for analysis and scan features (URL, Message, PDF, APK, Voice).
+ * 20 requests per hour per user to protect API quotas (OpenAI, VirusTotal, etc.)
+ */
+export const featureLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20, // 20 scans per hour
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    keyGenerator: (req: any) => {
+        // Use user ID (authenticated route)
+        return req.user?.id || req.ip;
+    },
+    validate: false,
+    message: {
+        error: 'Too Many Requests',
+        message: 'You have reached the hourly limit for analysis scans. Please try again after an hour.',
+    },
+});

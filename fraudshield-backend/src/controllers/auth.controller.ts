@@ -55,6 +55,8 @@ export class AuthController {
                     email,
                     passwordHash,
                     fullName,
+                    acceptedTermsVersion: 'v1.0',
+                    acceptedTermsAt: new Date(),
                     profile: {
                         create: {
                             avatar: 'Felix',
@@ -416,6 +418,12 @@ export class AuthController {
 
     static async logout(req: Request, res: Response, next: NextFunction) {
         try {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.split(' ')[1];
+                await AuthService.revokeToken(token);
+            }
+
             const userId = (req.user as any)?.id;
             if (userId) {
                 await prisma.user.update({
@@ -467,6 +475,8 @@ export class AuthController {
                                 bio: 'Joined via Google',
                             },
                         },
+                        acceptedTermsVersion: 'v1.0',
+                        acceptedTermsAt: new Date(),
                     },
                     include: { profile: true },
                 });
@@ -495,6 +505,33 @@ export class AuthController {
                 user: AuthService.toSafeUser(user),
                 token: accessToken,
                 refreshToken,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async acceptTerms(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any).id;
+            const { version } = req.body;
+
+            if (!version) {
+                return res.status(400).json({ error: 'Terms version is required' });
+            }
+
+            const user = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    acceptedTermsVersion: version,
+                    acceptedTermsAt: new Date(),
+                },
+                include: { profile: true },
+            });
+
+            res.json({
+                message: 'Terms and Privacy Policy accepted successfully',
+                user: AuthService.toSafeUser(user),
             });
         } catch (error) {
             next(error);

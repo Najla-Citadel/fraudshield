@@ -18,6 +18,7 @@ import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'profile_screen.dart';
 import 'alert_preferences_screen.dart';
+import '../services/biometric_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -31,12 +32,26 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _loading = true;
   bool _hasError = false;
   String _avatarSeed = 'Felix';
+  bool _biometricEnabled = false;
+  bool _isBiometricAvailable = false;
 
   // ================= LIFECYCLE =================
   @override
   void initState() {
     super.initState();
     _loadProfile();
+    _checkBiometrics();
+  }
+
+  Future<void> _checkBiometrics() async {
+    final available = await BiometricService.instance.isAvailable();
+    final enabled = await BiometricService.instance.isEnabled();
+    if (mounted) {
+      setState(() {
+        _isBiometricAvailable = available;
+        _biometricEnabled = enabled;
+      });
+    }
   }
 
   @override
@@ -281,6 +296,23 @@ class _AccountScreenState extends State<AccountScreen> {
                                       .accountChangePassword,
                                   onTap: _openChangePassword,
                                 ),
+                                if (_isBiometricAvailable)
+                                  SettingsTile(
+                                    icon: Icons.fingerprint_rounded,
+                                    title: 'Biometric Authentication',
+                                    subtitle:
+                                        'Extra security for sensitive actions',
+                                    onTap: () {},
+                                    trailing: Switch(
+                                      value: _biometricEnabled,
+                                      onChanged: (val) async {
+                                        await BiometricService.instance
+                                            .setEnabled(val);
+                                        setState(() => _biometricEnabled = val);
+                                      },
+                                      activeColor: AppColors.accentGreen,
+                                    ),
+                                  ),
                               ],
                             ),
 

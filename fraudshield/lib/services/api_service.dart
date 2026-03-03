@@ -100,6 +100,13 @@ class ApiService {
     });
   }
 
+  Future<Map<String, dynamic>> acceptTerms(String version) async {
+    final data = await post('/auth/accept-terms', {
+      'version': version,
+    });
+    return data['user'];
+  }
+
   Future<Map<String, dynamic>> signIn({
     required String email,
     required String password,
