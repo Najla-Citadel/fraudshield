@@ -10,12 +10,17 @@ import passport from './config/passport';
 import { validateEnv } from './config/env';
 import logger from './utils/logger';
 import { MonitoringService } from './services/monitoring.service';
+import { MetricsService } from './services/metrics.service';
+import { metricsMiddleware } from './middleware/metrics.middleware';
 
 // Load environment variables
 dotenv.config();
 
 // Validate critical secrets
 validateEnv();
+
+// Initialize Metrics
+MetricsService.init();
 
 // Import database
 import { prisma } from './config/database';
@@ -33,11 +38,18 @@ import transactionRoutes from './routes/transaction.routes';
 import configRoutes from './routes/config.routes';
 import { requestTimeout } from './middleware/timeout.middleware';
 import { antiReplay } from './middleware/antiReplay.middleware';
+import { tracer } from './middleware/tracer.middleware';
 
 const app: Application = express();
 
 // Trust proxy for rate limiting accuracy behind reverse proxies/LB
 app.set('trust proxy', 1);
+
+// Request Tracing (Correlation ID) - MUST be first to trace everything
+app.use(tracer);
+
+// Performance Monitoring (APM)
+app.use(metricsMiddleware);
 
 // Global Request Timeout (30s)
 app.use(requestTimeout(30000));
@@ -102,6 +114,16 @@ app.get('/health', (req: Request, res: Response) => {
         status: 'ok',
         timestamp: new Date().toISOString(),
     });
+});
+
+// Prometheus Metrics Endpoint
+app.get('/metrics', async (req: Request, res: Response) => {
+    try {
+        res.set('Content-Type', MetricsService.registry.contentType);
+        res.end(await MetricsService.registry.metrics());
+    } catch (err) {
+        res.status(500).end(err);
+    }
 });
 
 // Serve static files from the 'uploads' directory

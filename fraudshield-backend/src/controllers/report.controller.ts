@@ -4,6 +4,7 @@ import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
+import { EncryptionUtils } from '../utils/encryption';
 
 /**
  * @openapi
@@ -66,7 +67,7 @@ export class ReportController {
                     type,
                     category,
                     description,
-                    target,
+                    target: EncryptionUtils.deterministicEncrypt(target),
                     isPublic: false, // Force false for moderation
                     latitude,
                     longitude,
@@ -100,7 +101,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-                }),
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
                 prisma.scamReport.count({ where: { userId, deletedAt: null } }),
             ]);
 
@@ -158,7 +159,7 @@ export class ReportController {
 
             const response = {
                 ...report,
-                target: report.target,
+                target: EncryptionUtils.decrypt(report.target || ''),
                 reporterTrust: {
                     score: profile?.reputation ?? 0,
                     badges: Array.isArray(badges) ? badges : [],
@@ -251,7 +252,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-                }),
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -266,7 +267,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target,
+                    target: EncryptionUtils.decrypt(report.target || ''),
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -310,10 +311,11 @@ export class ReportController {
 
             // Text search across multiple fields
             if (query && typeof query === 'string' && query.trim()) {
+                const encryptedQuery = EncryptionUtils.deterministicEncrypt(query as string);
                 whereClause.AND.push({
                     OR: [
                         { description: { contains: query, mode: 'insensitive' } },
-                        { target: { contains: query, mode: 'insensitive' } },
+                        { target: encryptedQuery },
                         { category: { contains: query, mode: 'insensitive' } },
                     ],
                 });
@@ -385,7 +387,7 @@ export class ReportController {
                     orderBy: orderByClause,
                     take: limitNum,
                     skip: offsetNum,
-                }),
+                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -413,7 +415,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: report.target,
+                    target: EncryptionUtils.decrypt(report.target || ''),
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -440,7 +442,41 @@ export class ReportController {
             const { reportId, isSame } = req.body;
             const userId = (req.user as any).id;
 
-            // 1. Create or update the verification (uses @@unique([reportId, userId]) compound key)
+            // 1. Fetch report and user profile for validation
+            const [report, userProfile] = await Promise.all([
+                (prisma as any).scamReport.findUnique({
+                    where: { id: reportId },
+                    select: { userId: true, status: true, isPublic: true },
+                }),
+                (prisma as any).profile.findUnique({
+                    where: { userId },
+                    select: { reputation: true },
+                }),
+            ]);
+
+            if (!report) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            // Security Check: Cannot verify own report
+            if (report.userId === userId) {
+                return res.status(403).json({ message: 'You cannot verify your own reports' });
+            }
+
+            // Security Check: Report must be VERIFIED/Public by admin first
+            if (report.status !== 'VERIFIED' || !report.isPublic) {
+                return res.status(403).json({ message: 'Only admin-verified public reports can be community-verified' });
+            }
+
+            // Security Check: Minimum reputation to verify others
+            const minReputation = 20;
+            if ((userProfile?.reputation ?? 0) < minReputation) {
+                return res.status(403).json({
+                    message: `Increasing trust required. You need at least ${minReputation} reputation to verify reports.`,
+                });
+            }
+
+            // 2. Create or update the verification
             const verification = await prisma.verification.upsert({
                 where: {
                     reportId_userId: { reportId, userId },
@@ -449,20 +485,15 @@ export class ReportController {
                 create: { reportId, userId, isSame },
             });
 
-            // 2. Reward the verifier with Shield Points
-            const gamificationResult = await GamificationService.awardPoints(
+            // 3. Reward the verifier with Shield Points
+            await GamificationService.awardPoints(
                 userId,
                 10,
                 `Verified report ${reportId}`
             );
 
-            // 3. Reward the original reporter with Reputation if verified as 'Same'
-            const report = await (prisma as any).scamReport.findUnique({
-                where: { id: reportId },
-                select: { userId: true },
-            });
-
-            if (report && isSame && report.userId !== userId) {
+            // 4. Reward the original reporter with Reputation if verified as 'Same'
+            if (isSame) {
                 await (prisma as any).profile.upsert({
                     where: { userId: report.userId },
                     update: {
@@ -478,7 +509,6 @@ export class ReportController {
                 // Evaluate badges for the reporter
                 await BadgeService.evaluateBadges(report.userId);
             }
-
 
             res.json(verification);
         } catch (error) {
@@ -496,19 +526,23 @@ export class ReportController {
 
             // Build query based on target match
             const whereClause: any = {
-                target: { contains: value, mode: 'insensitive' },
+                target: EncryptionUtils.deterministicEncrypt(value),
                 deletedAt: null,
             };
 
             const reports = await (prisma as any).scamReport.findMany({
-                where: whereClause,
+                where: {
+                    ...whereClause,
+                    status: 'VERIFIED', // Only count verifications for verified reports
+                    isPublic: true,
+                },
                 include: {
                     _count: {
                         select: { verifications: true },
                     },
                 },
                 orderBy: { createdAt: 'desc' },
-            });
+            }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') })));
 
             const totalCount = reports.length;
 

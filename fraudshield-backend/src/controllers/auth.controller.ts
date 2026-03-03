@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
 import { AlertService } from '../services/alert.service';
 import { AlertCategory, AlertSeverity } from '@prisma/client';
+import { EncryptionUtils } from '../utils/encryption';
 
 /**
  * @openapi
@@ -43,6 +44,12 @@ export class AuthController {
             const isCaptchaValid = await AuthService.verifyCaptcha(captchaToken);
             if (!isCaptchaValid) {
                 return res.status(400).json({ message: 'Invalid CAPTCHA. Please try again.' });
+            }
+
+            // 🛡️ Email Deliverability Check
+            const deliverability = await EmailService.validateDeliverability(email);
+            if (!deliverability.valid) {
+                return res.status(400).json({ message: deliverability.reason });
             }
 
             // Check if user exists
@@ -255,7 +262,7 @@ export class AuthController {
     static async updateProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
-            const { bio, avatar, fullName, metadata } = req.body;
+            const { bio, avatar, fullName, metadata, mobile, mailingAddress } = req.body;
 
             if (fullName) {
                 await prisma.user.update({
@@ -267,19 +274,28 @@ export class AuthController {
             const profile = await prisma.profile.upsert({
                 where: { userId },
                 update: {
-                    bio,
+                    bio: bio ? EncryptionUtils.encrypt(bio) : undefined,
                     avatar,
+                    mobile: mobile ? EncryptionUtils.encrypt(mobile) : undefined,
+                    mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : undefined,
                     metadata: metadata || undefined,
                 },
                 create: {
                     userId,
-                    bio,
-                    avatar,
+                    bio: bio ? EncryptionUtils.encrypt(bio) : '',
+                    avatar: avatar || 'Felix',
+                    mobile: mobile ? EncryptionUtils.encrypt(mobile) : '',
+                    mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : '',
                     metadata: metadata || {},
                 },
             });
 
-            res.json(profile);
+            res.json({
+                ...profile,
+                bio: EncryptionUtils.decrypt(profile.bio || ''),
+                mobile: EncryptionUtils.decrypt(profile.mobile || ''),
+                mailingAddress: EncryptionUtils.decrypt(profile.mailingAddress || ''),
+            });
         } catch (error) {
             next(error);
         }

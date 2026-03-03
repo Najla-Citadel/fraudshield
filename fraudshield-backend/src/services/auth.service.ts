@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database';
 import { getRedisClient } from '../config/redis';
+import { EncryptionUtils } from '../utils/encryption';
 
 export class AuthService {
     private static get JWT_SECRET(): string {
@@ -110,8 +111,10 @@ export class AuthService {
             acceptedTermsAt: user.acceptedTermsAt?.toISOString(),
             profile: user.profile ? {
                 id: user.profile.id,
-                bio: user.profile.bio,
+                bio: EncryptionUtils.decrypt(user.profile.bio || ''),
                 avatar: user.profile.avatar,
+                mobile: EncryptionUtils.decrypt(user.profile.mobile || ''),
+                mailingAddress: EncryptionUtils.decrypt(user.profile.mailingAddress || ''),
                 metadata: user.profile.metadata,
                 points: user.profile.points,
                 totalPoints: user.profile.totalPoints,

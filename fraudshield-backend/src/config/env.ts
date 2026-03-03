@@ -10,6 +10,7 @@ export const validateEnv = () => {
         'JWT_REFRESH_SECRET',
         'DATABASE_URL',
         'OPENAI_API_KEY',
+        'DB_ENCRYPTION_KEY',
     ];
 
     const optionalEnvVars = [

@@ -278,4 +278,68 @@ export class EmailService {
             console.error('Failed to send daily digest email:', error);
         }
     }
+    /**
+     * Verifies if an email address is likely deliverable by checking DNS MX records
+     * and filtering out common disposable email providers.
+     */
+    static async validateDeliverability(email: string): Promise<{ valid: boolean; reason?: string }> {
+        if (!email || !email.includes('@')) {
+            return { valid: false, reason: 'Invalid email format' };
+        }
+
+        const domain = email.split('@')[1].toLowerCase();
+
+        // 1. Filter out disposable email domains
+        const disposableDomains = [
+            'mailinator.com', 'yopmail.com', 'guerrillamail.com', 'tempmail.com',
+            '10minutemail.com', 'trashmail.com', 'getnada.com', 'dispostable.com',
+            'spam4.me', 'maildrop.cc', 'temp-mail.org'
+        ];
+
+        if (disposableDomains.includes(domain)) {
+            return {
+                valid: false,
+                reason: 'Disposable email addresses are not allowed. Please use a permanent email provider.'
+            };
+        }
+
+        // 2. DNS MX Record Check
+        // In some restricted environments, DNS lookups might be blocked or slow.
+        // We wrap this in a timeout/try-catch.
+        try {
+            const dns = require('dns').promises;
+            const records = await dns.resolveMx(domain);
+
+            if (!records || records.length === 0) {
+                return {
+                    valid: false,
+                    reason: `The domain '${domain}' does not appear to have a valid mail server (no MX records found).`
+                };
+            }
+
+            return { valid: true };
+        } catch (error: any) {
+            console.error(`DNS MX Lookup failed for ${domain}:`, error.message);
+
+            // If it's a "NOT FOUND" error, the domain is definitely undeliverable.
+            if (error.code === 'ENOTFOUND' || error.code === 'ENODATA') {
+                return {
+                    valid: false,
+                    reason: `The domain '${domain}' is invalid or does not support receiving email.`
+                };
+            }
+
+            // For other errors (timeout, system dns issues), we might want to fail open or closed.
+            // In a strict security context, we fail closed if we can't verify the domain.
+            if (process.env.NODE_ENV === 'production') {
+                return {
+                    valid: false,
+                    reason: 'DNS validation failed. Please try again or use a common email provider.'
+                };
+            }
+
+            // In development, we can fail open to avoid blocking testers with weird network setups.
+            return { valid: true };
+        }
+    }
 }

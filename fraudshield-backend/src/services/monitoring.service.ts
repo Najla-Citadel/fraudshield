@@ -3,6 +3,7 @@ import { prisma } from '../config/database';
 import { getRedisClient } from '../config/redis';
 import { EmailService } from './email.service';
 import logger from '../utils/logger';
+import { getCorrelationId } from '../middleware/tracer.middleware';
 
 export class MonitoringService {
     private static lastAlertTime: Map<string, number> = new Map();
@@ -13,6 +14,7 @@ export class MonitoringService {
      */
     static async notifyError(error: Error, context: any = {}) {
         try {
+            const correlationId = getCorrelationId();
             const errorKey = error.message || 'Unknown Error';
             const now = Date.now();
             const lastAlert = this.lastAlertTime.get(errorKey) || 0;
@@ -27,6 +29,7 @@ export class MonitoringService {
             const alertTitle = `🚨 [CRITICAL ALERT] ${process.env.NODE_ENV?.toUpperCase()} Error`;
             const alertMessage = `
                 <h3>Critical Error Detected</h3>
+                <p><strong>Trace ID:</strong> ${correlationId || 'N/A'}</p>
                 <p><strong>Message:</strong> ${error.message}</p>
                 <p><strong>Stack:</strong> ${error.stack}</p>
                 <p><strong>Context:</strong> ${JSON.stringify(context, null, 2)}</p>
@@ -52,7 +55,7 @@ export class MonitoringService {
             const webhookUrl = process.env.CRITICAL_ALERT_WEBHOOK_URL;
             if (webhookUrl) {
                 await axios.post(webhookUrl, {
-                    content: `**${alertTitle}**\n**Message:** ${error.message}\n**Environment:** ${process.env.NODE_ENV}\nCheck logs for details.`
+                    content: `**${alertTitle}**\n**Trace ID:** \`${correlationId || 'N/A'}\`\n**Message:** ${error.message}\n**Environment:** ${process.env.NODE_ENV}\nCheck logs for details.`
                 }).catch(err => logger.error('Failed to send webhook alert:', err.message));
             }
 

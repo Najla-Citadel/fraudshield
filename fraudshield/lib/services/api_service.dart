@@ -29,6 +29,10 @@ class ApiService {
   static const String _prodFingerprint =
       '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
 
+  // Backup fingerprint for certificate rotation (Primary replacement)
+  static const String _backupFingerprint =
+      '0000000000000000000000000000000000000000000000000000000000000000';
+
   Future<void> init() async {
     final String rawBaseUrl =
         dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
@@ -164,6 +168,7 @@ class ApiService {
 
   Future<bool> _performRefresh() async {
     try {
+      await _checkCertificatePinning();
       final response = await http.post(
         Uri.parse('$baseUrl/auth/refresh'),
         headers: {'Content-Type': 'application/json'},
@@ -885,28 +890,33 @@ class ApiService {
   /// Verifies the SSL certificate fingerprint for production API.
   /// Skips check if in development or not hitting the production domain.
   Future<void> _checkCertificatePinning() async {
-    // Only enforce on production domain
-    if (!baseUrl.contains('api.fraudshieldprotect.com')) {
+    // Only enforce on production domain OR if explicitly requested in config
+    final isProdDomain = baseUrl.contains('api.fraudshieldprotect.com');
+
+    if (!isProdDomain) {
+      if (kDebugMode) {
+        debugPrint('ApiService: SSL Pinning skipped (non-production domain)');
+      }
       return;
     }
 
     try {
-      // Use the SHA256 fingerprint retrieved from the server
       await HttpCertificatePinning.check(
         serverURL: baseUrl,
         headerHttp: {},
         sha: SHA.SHA256,
-        allowedSHAFingerprints: [_prodFingerprint],
+        allowedSHAFingerprints: [
+          _prodFingerprint,
+          _backupFingerprint, // Guard against rotation outage
+        ],
         timeout: 10,
       );
       if (kDebugMode) {
         debugPrint('ApiService: SSL Pinning Verified Successfully');
       }
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('ApiService: SSL Pinning FAILED: $e');
-      }
-      rethrow; // Prevent request if pinning fails
+      debugPrint('ApiService: SSL Pinning FAILED for $baseUrl: $e');
+      rethrow; // Hard stop for security
     }
   }
 }
