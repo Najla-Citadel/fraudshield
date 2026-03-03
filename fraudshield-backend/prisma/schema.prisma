@@ -185,6 +185,7 @@ model Alert {
   severity    AlertSeverity @default(LOW)
   title       String
   message     String
+  type        String        @default("ALERT") // Required for Admin Broadcasts
   metadata    Json          @default("{}")
   isRead      Boolean       @default(false)
   actionTaken String?

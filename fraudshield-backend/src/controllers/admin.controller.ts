@@ -635,8 +635,9 @@ export class AdminController {
                 _count: { userId: true },
                 orderBy: { createdAt: 'desc' }
             });
+
             // Format to a more UI friendly shape
-            const formatted = broadcasts.map((b: any) => ({
+            const formatted = broadcasts.map((b) => ({
                 id: Buffer.from(b.message + b.createdAt.getTime()).toString('base64'), // mock ID for UI
                 title: b.title,
                 message: b.message,
@@ -670,7 +671,7 @@ export class AdminController {
             }));
 
             const result = await prisma.alert.createMany({
-                data: alertData as any,
+                data: alertData,
                 skipDuplicates: true,
             });
 
