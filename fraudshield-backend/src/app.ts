@@ -7,10 +7,14 @@ import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import passport from './config/passport';
+import { validateEnv } from './config/env';
 import logger from './utils/logger';
 
 // Load environment variables
 dotenv.config();
+
+// Validate critical secrets
+validateEnv();
 
 // Import database
 import { prisma } from './config/database';
@@ -92,7 +96,6 @@ app.get('/health', (req: Request, res: Response) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV,
     });
 });
 

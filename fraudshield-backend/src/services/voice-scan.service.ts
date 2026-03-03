@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { createClient } from 'redis';
+import { getRedisClient } from '../config/redis';
 import { NlpMessageService } from './nlp-message.service';
 
 const CACHE_TTL_SECONDS = 60 * 60; // 1 hour — audio hashes are stable
@@ -317,18 +317,14 @@ export class VoiceScanService {
      * Check Redis for a cached result.
      */
     private static async _checkCache(sha256: string): Promise<VoiceAnalysisResult | null> {
-        let client: ReturnType<typeof createClient> | null = null;
         try {
-            client = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
-            await client.connect();
-            const cached = await client.get(`voice:${sha256}`);
-            if (typeof cached === 'string') {
+            const redis = getRedisClient();
+            const cached = await redis.get(`voice:${sha256}`);
+            if (cached) {
                 return { ...JSON.parse(cached), fromCache: true };
             }
-        } catch {
+        } catch (error) {
             // Cache miss or Redis unavailable — proceed normally
-        } finally {
-            try { await client?.disconnect(); } catch { /* ignore */ }
         }
         return null;
     }
@@ -337,15 +333,11 @@ export class VoiceScanService {
      * Store result in Redis cache.
      */
     private static async _saveToCache(sha256: string, result: VoiceAnalysisResult): Promise<void> {
-        let client: ReturnType<typeof createClient> | null = null;
         try {
-            client = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
-            await client.connect();
-            await client.set(`voice:${sha256}`, JSON.stringify(result), { EX: CACHE_TTL_SECONDS });
-        } catch {
+            const redis = getRedisClient();
+            await redis.set(`voice:${sha256}`, JSON.stringify(result), 'EX', CACHE_TTL_SECONDS);
+        } catch (error) {
             // Non-fatal: cache write failure
-        } finally {
-            try { await client?.disconnect(); } catch { /* ignore */ }
         }
     }
 

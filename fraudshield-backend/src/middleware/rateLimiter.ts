@@ -1,4 +1,8 @@
 import rateLimit from 'express-rate-limit';
+import { RedisStore } from 'rate-limit-redis';
+import { getRedisClient } from '../config/redis';
+
+const redisClient = getRedisClient();
 
 /**
  * General auth limiter: applies to all /auth/* routes.
@@ -7,6 +11,10 @@ import rateLimit from 'express-rate-limit';
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100,
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:auth:',
+    }),
     standardHeaders: 'draft-7', // Include RateLimit-* headers (RFC 9110)
     legacyHeaders: false,
     validate: false,
@@ -23,6 +31,10 @@ export const authLimiter = rateLimit({
 export const loginLimiter = rateLimit({
     windowMs: 2 * 60 * 1000, // 2 minutes
     max: 10, // 5 attempts per minute average
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:login:',
+    }),
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     message: {
@@ -40,6 +52,10 @@ export const loginLimiter = rateLimit({
 export const reportLimiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 5,
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:report:',
+    }),
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: (req: any) => {
@@ -60,6 +76,10 @@ export const reportLimiter = rateLimit({
 export const featureLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 20, // 20 scans per hour
+    store: new RedisStore({
+        sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
+        prefix: 'rl:feature:',
+    }),
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     keyGenerator: (req: any) => {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { VoiceScanService } from '../services/voice-scan.service';
 import { prisma } from '../config/database';
+import { getRedisClient } from '../config/redis';
 import { CheckType } from '@prisma/client';
 
 export class VoiceScanController {
@@ -37,6 +38,29 @@ export class VoiceScanController {
                         'Upgrade your plan to unlock this feature.',
                     upgradeUrl: '/subscription',
                 });
+            }
+
+            // ── 1.5 Daily Quota Check ────────────────────────────────────────
+            // Admins are exempt. Premium users get 10 scans per 24h.
+            if (user.role !== 'admin') {
+                const redis = getRedisClient();
+                const quotaKey = `quota:voice:${user.id}:${new Date().toISOString().split('T')[0]}`;
+                const currentUsage = await redis.get(quotaKey);
+                const limit = 10;
+
+                if (currentUsage && parseInt(currentUsage) >= limit) {
+                    return res.status(429).json({
+                        success: false,
+                        error: 'QuotaExceeded',
+                        message: `Daily limit reached (${limit} scans). Please try again tomorrow.`,
+                    });
+                }
+
+                // Increment usage (expire in 24h)
+                await redis.incr(quotaKey);
+                if (!currentUsage) {
+                    await redis.expire(quotaKey, 86400);
+                }
             }
 
             // ── 2. File validation ───────────────────────────────────────────

@@ -146,4 +146,36 @@ export class AuthService {
             return false;
         }
     }
+
+    /**
+     * Verifies the Cloudflare Turnstile CAPTCHA token.
+     * @param token The token received from the client.
+     * @returns boolean indicating if the token is valid.
+     */
+    static async verifyCaptcha(token: string): Promise<boolean> {
+        if (!token) return false;
+
+        const secretKey = process.env.TURNSTILE_SECRET_KEY;
+        if (!secretKey) {
+            console.warn('AuthService: TURNSTILE_SECRET_KEY is not set. CAPTCHA verification bypassed.');
+            return true; // Bypass if not configured (useful for dev/local)
+        }
+
+        try {
+            const axios = (await import('axios')).default;
+            const response = await axios.post(
+                'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+                {
+                    secret: secretKey,
+                    response: token,
+                }
+            );
+
+            const { success } = response.data as any;
+            return success === true;
+        } catch (error: any) {
+            console.error('AuthService: Turnstile verification error:', error?.message ?? error);
+            return false;
+        }
+    }
 }

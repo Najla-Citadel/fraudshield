@@ -12,6 +12,7 @@ import { VoiceScanController } from '../controllers/voice-scan.controller';
 import multer from 'multer';
 
 import { authenticate } from '../middleware/auth.middleware';
+import { isAdmin } from '../middleware/admin.middleware';
 import { featureLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -54,7 +55,7 @@ router.post('/subscription', SubscriptionController.createSubscription);
 
 // Points
 router.get('/points', PointsController.getMyPoints);
-router.post('/points', PointsController.addPoints);
+router.post('/points', isAdmin, PointsController.addPoints);
 
 // Leaderboards
 router.get('/leaderboard', LeaderboardController.getGlobalLeaderboard);
@@ -64,7 +65,7 @@ router.get('/leaderboard/me', LeaderboardController.getMyRank);
 router.get('/badges', BadgeController.getMyBadges);
 router.get('/badges/all', BadgeController.getAllBadges);
 
-router.post('/behavioral', BehavioralController.logEvent);
+router.post('/behavioral', featureLimiter, BehavioralController.logEvent);
 router.get('/behavioral', BehavioralController.getMyEvents);
 
 export default router;

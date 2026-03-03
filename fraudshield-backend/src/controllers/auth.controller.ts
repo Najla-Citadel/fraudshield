@@ -37,8 +37,13 @@ export class AuthController {
      */
     static async signup(req: Request, res: Response, next: NextFunction) {
         try {
-            const { email, password, fullName } = req.body;
-            // Basic validation skipped (handled by middleware)
+            const { email, password, fullName, captchaToken } = req.body;
+
+            // 🛡️ CAPTCHA Verification
+            const isCaptchaValid = await AuthService.verifyCaptcha(captchaToken);
+            if (!isCaptchaValid) {
+                return res.status(400).json({ message: 'Invalid CAPTCHA. Please try again.' });
+            }
 
             // Check if user exists
             const existingUser = await prisma.user.findUnique({ where: { email } });
