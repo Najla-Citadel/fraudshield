@@ -629,7 +629,7 @@ export class AdminController {
     static async getBroadcasts(req: Request, res: Response, next: NextFunction) {
         try {
             // Group by message to represent unique broadcasts
-            const broadcasts = await prisma.alert.groupBy({
+            const broadcasts = await (prisma.alert as any).groupBy({
                 by: ['message', 'title', 'type', 'createdAt'],
                 where: { type: 'BROADCAST' },
                 _count: { userId: true },
