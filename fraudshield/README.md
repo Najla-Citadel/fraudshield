@@ -69,3 +69,22 @@ FraudShield relies on the [`provider`](https://pub.dev/packages/provider) packag
    ```bash
    flutter run
    ```
+
+---
+
+## 🔒 Security & Production Builds
+
+To protect the app from reverse engineering, always use the secure build script for production releases:
+
+1. **Run Secure Build**:
+   ```powershell
+   ./scripts/build_secure.ps1
+   ```
+
+This script enables:
+- **Code Obfuscation**: Hides method and class names.
+- **Symbol Splitting**: Moves debug information out of the APK.
+- **R8 Minification**: Removes unused code and resources.
+
+> [!IMPORTANT]
+> The `build/app/outputs/symbols` directory contains the mapping files needed to read crash reports. Do not share these publicly, but keep them for debugging.

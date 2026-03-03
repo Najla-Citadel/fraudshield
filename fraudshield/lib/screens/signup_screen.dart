@@ -12,6 +12,7 @@ import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
+import '../widgets/turnstile_widget.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -28,6 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _loading = false;
   bool _agreedToTerms = false;
+  String? _captchaToken;
 
   @override
   void dispose() {
@@ -44,7 +46,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (fullName.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
       );
@@ -60,7 +65,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("You must agree to the Terms and Privacy Policy to continue.")),
+        const SnackBar(
+            content: Text(
+                "You must agree to the Terms and Privacy Policy to continue.")),
+      );
+      return;
+    }
+
+    if (_captchaToken == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please complete the security check.")),
       );
       return;
     }
@@ -69,16 +83,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       final success = await context.read<AuthProvider>().signUp(
-        email: email, 
-        password: password, 
-        fullName: fullName,
-      );
+            email: email,
+            password: password,
+            fullName: fullName,
+            captchaToken: _captchaToken,
+          );
 
       if (success) {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => EmailVerificationScreen(email: email)),
+          MaterialPageRoute(
+              builder: (_) => EmailVerificationScreen(email: email)),
         );
       } else {
         if (!mounted) return;
@@ -117,7 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.deepNavy,
-        extendBodyBehindAppBar: true, 
+        extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Background Elements (Matching Login Screen)
@@ -153,18 +169,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         'Create Account',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Join the community to stay protected',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.7),
-                        ),
+                              color: Colors.white.withValues(alpha: 0.7),
+                            ),
                       ),
                       const SizedBox(height: 32),
 
@@ -219,33 +238,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 24,
                                   child: Checkbox(
                                     value: _agreedToTerms,
-                                    onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
+                                    onChanged: (val) => setState(
+                                        () => _agreedToTerms = val ?? false),
                                     activeColor: AppColors.primaryBlue,
-                                    side: const BorderSide(color: Colors.white54, width: 2),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                    side: const BorderSide(
+                                        color: Colors.white54, width: 2),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4)),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: RichText(
                                     text: TextSpan(
-                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13, height: 1.4),
+                                      style: TextStyle(
+                                          color: Colors.white
+                                              .withValues(alpha: 0.8),
+                                          fontSize: 13,
+                                          height: 1.4),
                                       children: [
                                         const TextSpan(text: 'I agree to the '),
                                         TextSpan(
                                           text: 'Terms of Service',
-                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                              color: AppColors.primaryBlue,
+                                              fontWeight: FontWeight.bold),
                                           recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
+                                            ..onTap = () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        const TermsOfServiceScreen())),
                                         ),
                                         const TextSpan(text: ' and '),
                                         TextSpan(
                                           text: 'Privacy Policy',
-                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
+                                          style: const TextStyle(
+                                              color: AppColors.primaryBlue,
+                                              fontWeight: FontWeight.bold),
                                           recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                                            ..onTap = () => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        const PrivacyPolicyScreen())),
                                         ),
-                                        const TextSpan(text: ', and consent to data collection as per PDPA 2010.'),
+                                        const TextSpan(
+                                            text:
+                                                ', and consent to data collection as per PDPA 2010.'),
                                       ],
                                     ),
                                   ),
@@ -254,6 +294,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
 
                             const SizedBox(height: 24),
+
+                            // 🛡️ CAPTCHA Security Check
+                            TurnstileWidget(
+                              onTokenReceived: (token) {
+                                setState(() => _captchaToken = token);
+                              },
+                            ),
+
+                            const SizedBox(height: 16),
 
                             // 🟦 Sign Up Button
                             AdaptiveButton(
@@ -264,7 +313,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ],
                         ),
                       ),
-                      
+
                       const SizedBox(height: 24),
 
                       // 🔁 Already have account
@@ -273,13 +322,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           Text(
                             "Already have an account? ",
-                            style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                            style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.7)),
                           ),
                           GestureDetector(
                             onTap: () {
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                MaterialPageRoute(
+                                    builder: (_) => const LoginScreen()),
                               );
                             },
                             child: const Padding(

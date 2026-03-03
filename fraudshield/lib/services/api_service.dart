@@ -78,11 +78,13 @@ class ApiService {
     required String email,
     required String password,
     String? fullName,
+    String? captchaToken,
   }) async {
     final data = await post('/auth/signup', {
       'email': email,
       'password': password,
       if (fullName != null) 'fullName': fullName,
+      if (captchaToken != null) 'captchaToken': captchaToken,
     });
 
     await _setTokens(data['token'], data['refreshToken']);

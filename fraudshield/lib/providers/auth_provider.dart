@@ -126,6 +126,7 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     String? fullName,
+    String? captchaToken,
   }) async {
     _loading = true;
     notifyListeners();
@@ -134,6 +135,7 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
         fullName: fullName,
+        captchaToken: captchaToken,
       );
       _user = UserModel.fromJson(userData);
       NotificationService.instance.initialize(_user!.id);
