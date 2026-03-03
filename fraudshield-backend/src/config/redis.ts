@@ -5,13 +5,15 @@ let redisClient: Redis | null = null;
 export const getRedisClient = (): Redis => {
     if (!redisClient) {
         const redisOptions: any = {
-            // Retry up to 3 times on connection failure
+            // Retry with exponential backoff on connection failure
             retryStrategy: (times: number) => {
-                if (times > 3) {
-                    console.error('❌ Redis: max retries reached, giving up.');
+                const delay = Math.min(times * 100, 3000);
+                if (times > 20) {
+                    console.error('❌ Redis: Max connection retries (20) reached. Check your REDIS_URL and if the Redis container is healthy.');
                     return null;
                 }
-                return Math.min(times * 200, 1000);
+                console.log(`🔄 Redis: Connection failed, retrying in ${delay}ms... (Attempt ${times})`);
+                return delay;
             },
             lazyConnect: true,
         };
