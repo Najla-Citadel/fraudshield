@@ -12,6 +12,11 @@ export const validateEnv = () => {
         'OPENAI_API_KEY',
     ];
 
+    const optionalEnvVars = [
+        'ADMIN_ALERT_EMAIL',
+        'CRITICAL_ALERT_WEBHOOK_URL'
+    ];
+
     const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
     if (missingVars.length > 0) {

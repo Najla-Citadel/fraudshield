@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { AuditService } from '../services/audit.service';
+import { GamificationService } from '../services/gamification.service';
+import { AlertEngineService } from '../services/alert-engine.service';
 
 export class AdminController {
     static async getAlerts(req: Request, res: Response, next: NextFunction) {
@@ -275,12 +277,41 @@ export class AdminController {
     static async updateReportStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const { status } = req.body;
+            const { status } = req.body; // e.g., 'APPROVED', 'REJECTED', 'PENDING'
+
+            const oldReport = await prisma.scamReport.findUnique({
+                where: { id: id as string },
+            });
+
+            if (!oldReport) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            const isNowApproved = status === 'APPROVED';
+            const wasPreviouslyApproved = oldReport.status === 'APPROVED';
 
             const updatedReport = await prisma.scamReport.update({
                 where: { id: id as string },
-                data: { status },
+                data: {
+                    status,
+                    isPublic: isNowApproved, // Only approved reports are public
+                },
             });
+
+            // If transitioned to APPROVED, award points and dispatch alerts
+            if (isNowApproved && !wasPreviouslyApproved) {
+                try {
+                    await GamificationService.awardPoints(
+                        updatedReport.userId,
+                        10,
+                        `Scam report approved: ${updatedReport.target || 'General'}`
+                    );
+
+                    await AlertEngineService.dispatchLocalAlert(updatedReport);
+                } catch (err) {
+                    console.error('❌ Failed to process approval side-effects:', err);
+                }
+            }
 
             const adminId = (req.user as any).id;
             await AuditService.logAction({
@@ -288,7 +319,7 @@ export class AdminController {
                 action: 'UPDATE_REPORT_STATUS',
                 targetType: 'ScamReport',
                 targetId: id as string,
-                payload: { status }
+                payload: { status, prevStatus: oldReport.status }
             });
 
             res.json(updatedReport);

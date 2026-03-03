@@ -67,7 +67,7 @@ export class ReportController {
                     category,
                     description,
                     target,
-                    isPublic: isPublic || false,
+                    isPublic: false, // Force false for moderation
                     latitude,
                     longitude,
                     evidence: evidence || {},
@@ -75,26 +75,10 @@ export class ReportController {
                 },
             });
 
-            // Award points for submitting a report
-            let gamificationResult: any = { newBadges: [] };
-            if (isPublic) {
-                gamificationResult = await GamificationService.awardPoints(
-                    userId,
-                    10,
-                    `Submitted public scam report`
-                );
-
-                // Dispatch real-time local alerts to nearby subscribers
-                AlertEngineService.dispatchLocalAlert(report).catch(err => {
-                    console.error('❌ Failed to dispatch local alerts:', err);
-                });
-            }
-
             res.status(201).json({
                 ...report,
-                newBadges: gamificationResult.newBadges,
-                pointsAwarded: 10,
-                currentTier: gamificationResult.currentTier
+                message: 'Report submitted for moderation. Points will be awarded upon approval.',
+                pointsAwarded: 0
             });
         } catch (error) {
             next(error);

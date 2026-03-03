@@ -9,6 +9,7 @@ import { swaggerSpec } from './config/swagger';
 import passport from './config/passport';
 import { validateEnv } from './config/env';
 import logger from './utils/logger';
+import { MonitoringService } from './services/monitoring.service';
 
 // Load environment variables
 dotenv.config();
@@ -127,19 +128,19 @@ app.use(`${apiPrefix}/config`, configRoutes);
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
     try {
-        await prisma.$queryRaw`SELECT 1`;
-        res.json({
-            status: 'healthy',
+        const health = await MonitoringService.checkInfrastructure();
+        const isHealthy = health.database === 'healthy' && health.redis === 'healthy';
+
+        res.status(isHealthy ? 200 : 503).json({
+            status: isHealthy ? 'healthy' : 'degraded',
             version: process.env.API_VERSION || 'v1',
-            database: 'connected',
-            timestamp: new Date().toISOString(),
+            ...health
         });
     } catch (error) {
         res.status(500).json({
             status: 'unhealthy',
             version: process.env.API_VERSION || 'v1',
-            database: 'disconnected',
-            error: 'Database connection failed',
+            error: 'Monitoring check failed',
         });
     }
 });
@@ -161,6 +162,15 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         params: req.params,
         query: req.query
     });
+
+    // If it's a 500 error, notify admins via MonitoringService
+    if (!err.status || err.status === 500) {
+        MonitoringService.notifyError(err, {
+            path: req.path,
+            method: req.method,
+            userId: (req.user as any)?.id
+        });
+    }
 
     res.status(err.status || 500).json({
         error: 'Internal Server Error',

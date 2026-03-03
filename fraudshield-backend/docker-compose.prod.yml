@@ -116,6 +116,33 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  # Daily Automated Backups (3 AM)
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16-alpine
+    container_name: fraudshield-db-backup
+    restart: always
+    user: root
+    volumes:
+      - ./backups:/backups
+    links:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-fraudshield}
+      - POSTGRES_USER=${POSTGRES_USER:-fraudshield}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_SUFFIX=.sql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # Admin Dashboard
   admin:
     build:

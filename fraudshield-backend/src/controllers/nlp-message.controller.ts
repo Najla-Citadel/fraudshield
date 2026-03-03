@@ -51,7 +51,18 @@ export class NlpMessageController {
                 });
             }
 
-            return res.json(result);
+            // Obfuscate detailed patterns for non-admins to prevent evasion mapping (Audit #4)
+            const isAdminUser = (req.user as any)?.role === 'ADMIN';
+            const responseData = isAdminUser ? result : {
+                score: result.score,
+                level: result.level,
+                scamType: result.scamType,
+                language: result.language,
+                checkedAt: result.checkedAt,
+                // Note: matchedPatterns and highlightedPhrases are hidden from non-admins
+            };
+
+            return res.json(responseData);
         } catch (error) {
             next(error);
         }
