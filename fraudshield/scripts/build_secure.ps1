@@ -6,11 +6,25 @@ Write-Host "🚀 Starting secure production build..." -ForegroundColor Cyan
 # Ensure build directory exists for symbols
 New-Item -ItemType Directory -Force -Path "build/app/outputs/symbols" | Out-Null
 
-# Run Flutter build with obfuscation flags
+# Check for production configuration file
+$configPath = "build_config.json"
+$configParams = ""
+
+if (Test-Path $configPath) {
+    Write-Host "✅ Production config found: $configPath" -ForegroundColor Green
+    $configParams = "--dart-define-from-file=$configPath"
+}
+else {
+    Write-Warning "⚠️ $configPath not found. Build will use default development values."
+    Write-Warning "   To build for production, create $configPath based on build_config.json.example"
+}
+
+# Run Flutter build with obfuscation flags and production config
 # --obfuscate: hides function and class names
 # --split-debug-info: extracts symbol mapping so you can still read stack traces
 # --release: ensures production optimizations
-flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols
+# --dart-define-from-file: loads production secrets from an external JSON
+Invoke-Expression "flutter build appbundle --release --obfuscate --split-debug-info=build/app/outputs/symbols $configParams"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "`n✅ Build Complete!" -ForegroundColor Green

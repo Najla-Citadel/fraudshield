@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,7 +19,14 @@ class ApiService {
   static const _keyAuthToken = 'auth_token';
   static const _keyRefreshToken = 'refresh_token';
 
-  late final String baseUrl;
+  // Migrate API_BASE_URL to compile-time variables.
+  // Use --dart-define=API_BASE_URL=... at build time.
+  static const String _defaultBaseUrl = 'http://10.0.2.2:3000/api/v1';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: _defaultBaseUrl,
+  );
+
   String? _token;
   String? _refreshToken;
   Future<bool>? _refreshFuture;
@@ -34,13 +40,6 @@ class ApiService {
       '0000000000000000000000000000000000000000000000000000000000000000';
 
   Future<void> init() async {
-    final String rawBaseUrl =
-        dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
-
-    // Use the .env value directly now that firewall is unblocked.
-    // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
-    baseUrl = rawBaseUrl;
-
     if (kDebugMode) {
       debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
     }

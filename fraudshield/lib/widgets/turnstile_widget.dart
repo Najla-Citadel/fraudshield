@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TurnstileWidget extends StatefulWidget {
   final Function(String token) onTokenReceived;
@@ -19,8 +18,10 @@ class _TurnstileWidgetState extends State<TurnstileWidget> {
   @override
   void initState() {
     super.initState();
-    final siteKey =
-        dotenv.env['TURNSTILE_SITE_KEY'] ?? '0x4AAAAAAAx7Y8n7Y8n7Y8n7';
+    const siteKey = String.fromEnvironment(
+      'TURNSTILE_SITE_KEY',
+      defaultValue: '0x4AAAAAAClU2AcviRUdTjLE',
+    );
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)

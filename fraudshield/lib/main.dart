@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -15,7 +14,7 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/locale_provider.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
     debugPrint('--- FraudShield App Starting ---');
@@ -34,15 +33,7 @@ Future<void> main() async {
     return true;
   };
 
-  try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    debugPrint("Error loading .env file: $e");
-    // Continue running app even if .env fails, ApiService has defaults
-  }
-
   // Supabase initialization removed - using custom backend via ApiService
-
   runApp(const FraudShieldApp());
 }
 
@@ -58,7 +49,8 @@ class FraudShieldApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) {
           final service = NotificationService.instance;
           service.onNavigate = (route, args) {
-            AppRouter.navigatorKey.currentState?.pushNamed(route, arguments: args);
+            AppRouter.navigatorKey.currentState
+                ?.pushNamed(route, arguments: args);
           };
           return service;
         }),
@@ -71,7 +63,7 @@ class FraudShieldApp extends StatelessWidget {
             title: 'FraudShield',
             locale: localeProvider.locale,
 
-              // ✅ THEME CONNECTION
+            // ✅ THEME CONNECTION
             themeMode: theme.mode,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
