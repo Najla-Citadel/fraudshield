@@ -70,7 +70,14 @@ class ApiService {
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         if (_token != null) 'Authorization': 'Bearer $_token',
+        'X-FS-Timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+        'X-FS-Nonce': _generateNonce(),
       };
+
+  String _generateNonce() {
+    final random = DateTime.now().microsecondsSinceEpoch.toString();
+    return random.hashCode.toString(); // Simple unique string for now
+  }
 
   // ---------------- Auth ----------------
 

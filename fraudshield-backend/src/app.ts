@@ -32,6 +32,7 @@ import alertRoutes from './routes/alert.routes';
 import transactionRoutes from './routes/transaction.routes';
 import configRoutes from './routes/config.routes';
 import { requestTimeout } from './middleware/timeout.middleware';
+import { antiReplay } from './middleware/antiReplay.middleware';
 
 const app: Application = express();
 
@@ -40,6 +41,9 @@ app.set('trust proxy', 1);
 
 // Global Request Timeout (30s)
 app.use(requestTimeout(30000));
+
+// Anti-Replay Protection (Timestamp + Nonce validation)
+app.use(antiReplay);
 
 // Security middleware
 app.use(helmet());
