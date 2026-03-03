@@ -1,25 +1,13 @@
 import { Router } from 'express';
-import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
->>>>>>> dev-ui2
+import {
+    SubscriptionController,
+    PointsController,
+    BehavioralController
+} from '../controllers/feature.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
 import { RiskEvaluationController } from '../controllers/risk-evaluation.controller';
 import { LeaderboardController } from '../controllers/leaderboard.controller';
-<<<<<<< HEAD
-
-import passport from 'passport';
-
-const router = Router();
-
-// Protect all feature routes
-router.use(passport.authenticate('jwt', { session: false }));
-
-// Safe Browsing
-router.post('/check-url', SafeBrowsingController.checkUrl);
-
-// AI Risk Score V2 — Centralized Evaluator
-router.post('/evaluate-risk', RiskEvaluationController.evaluate);
-=======
 import { QuishingController } from '../controllers/quishing.controller';
 import { NlpMessageController } from '../controllers/nlp-message.controller';
 import { PdfScanController } from '../controllers/pdf-scan.controller';

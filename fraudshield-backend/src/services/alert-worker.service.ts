@@ -1,5 +1,14 @@
 import Queue from 'bull';
 import { AlertEngineService } from './alert-engine.service';
+import { prisma } from '../config/database';
+
+/**
+ * AlertWorkerService handles background job scheduling for trending alerts.
+ * It uses Bull (backed by Redis) to manage queues and ensure jobs are processed
+ * reliably without blocking the main event loop.
+ */
+export class AlertWorkerService {
+    private static trendingAlertQueue: Queue.Queue;
     private static dailyDigestQueue: Queue.Queue;
     private static isInitialized = false;
 
@@ -129,6 +138,38 @@ import { AlertEngineService } from './alert-engine.service';
             jobId: 'trending-analysis-recurring'
         });
 
+        // Daily Digest Email (Defauts to 9:00 AM)
+        const digestCron = process.env.DAILY_DIGEST_EMAIL_CRON || '0 9 * * *';
+        console.log(`⏰ Bull Queue: Scheduling daily digest email with cron: "${digestCron}"`);
+
+        try {
+            const repeatableDigestJobs = await this.dailyDigestQueue.getRepeatableJobs();
+            for (const job of repeatableDigestJobs) {
+                if (job.id === 'daily-digest-recurring') {
+                    await this.dailyDigestQueue.removeRepeatableByKey(job.key);
+                }
+            }
+        } catch (error) { }
+
+        await this.dailyDigestQueue.add({}, {
+            repeat: { cron: digestCron },
+            jobId: 'daily-digest-recurring'
+        });
+
+        this.trendingAlertQueue.on('error', (error) => {
+            console.error('🔴 Bull Queue Error:', error);
+        });
+
+        console.log('⚡ Alert Worker Service initialized and cron job scheduled');
+        this.isInitialized = true;
+    }
+
+    /**
+     * Graceful shutdown of the queue
+     */
+    static async shutdown() {
+        if (this.trendingAlertQueue) {
+            await this.trendingAlertQueue.close();
         }
         if (this.dailyDigestQueue) {
             await this.dailyDigestQueue.close();

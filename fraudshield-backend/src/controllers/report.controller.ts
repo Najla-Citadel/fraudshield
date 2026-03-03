@@ -84,7 +84,6 @@ export class ReportController {
         } catch (error) {
             next(error);
         }
-
     }
 
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
@@ -177,6 +176,81 @@ export class ReportController {
         }
     }
 
+    /**
+     * @openapi
+     * /api/v1/reports/public:
+     *   get:
+     *     summary: Get public scam report feed
+     *     tags: [Reports]
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved feed
+     */
+    static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;
+            const limitNum = Math.min(parseInt(limit as string, 10) || 20, ReportController.MAX_LIMIT);
+            const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
+
+            let whereClause: any = { isPublic: true, deletedAt: null };
+
+            if (category) {
+                whereClause.category = category as string;
+            }
+
+            if (search) {
+                whereClause.description = {
+                    contains: search as string,
+                    mode: 'insensitive',
+                };
+            }
+
+            // Optional localized filtering
+            if (lat && lng && radius) {
+                const latitude = parseFloat(lat as string);
+                const longitude = parseFloat(lng as string);
+                const radiusKm = parseFloat(radius as string);
+
+                if (!isNaN(latitude) && !isNaN(longitude) && !isNaN(radiusKm)) {
+                    // Rough bounding box for better performance before complex math
+                    const latDegreeSearch = radiusKm / 111.32; // 1 degree = ~111km
+                    const lngDegreeSearch = radiusKm / (111.32 * Math.cos(latitude * (Math.PI / 180)));
+
+                    whereClause = {
+                        ...whereClause,
+                        latitude: {
+                            gte: latitude - latDegreeSearch,
+                            lte: latitude + latDegreeSearch,
+                        },
+                        longitude: {
+                            gte: longitude - lngDegreeSearch,
+                            lte: longitude + lngDegreeSearch,
+                        },
+                    };
+                }
+            }
+
+            const [reports, total] = await Promise.all([
+                (prisma as any).scamReport.findMany({
+                    where: whereClause,
+                    include: {
+                        _count: {
+                            select: { verifications: true },
+                        },
+                        user: {
+                            select: {
+                                profile: {
+                                    select: {
+                                        reputation: true,
+                                        badges: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
                 }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
@@ -435,7 +509,6 @@ export class ReportController {
                 await BadgeService.evaluateBadges(report.userId);
             }
 
->>>>>>> dev-ui2
             res.json(verification);
         } catch (error) {
             next(error);
@@ -452,9 +525,6 @@ export class ReportController {
 
             // Build query based on target match
             const whereClause: any = {
-<<<<<<< HEAD
-                target: { contains: value, mode: 'insensitive' },
-=======
                 target: EncryptionUtils.deterministicEncrypt(value),
                 deletedAt: null,
             };
@@ -517,7 +587,7 @@ export class ReportController {
             // 2. Check Official Databases (CCID Semak Mule API mock)
             if (type === 'phone' || type === 'bank') {
                 try {
-                    const officialMuleCheck = await SemakMuleService.checkTarget(type, value);
+                    const officialMuleCheck = await SemakMuleService.checkTarget(type as any, value as string);
 
                     if (officialMuleCheck.found && officialMuleCheck.riskLevel === 'high') {
                         // Overwrite community risk to HIGH if official API flags it
@@ -567,7 +637,7 @@ export class ReportController {
                 await prisma.transactionJournal.create({
                     data: {
                         userId,
-                        checkType: dbCheckType,
+                        checkType: dbCheckType as any,
                         target: value,
                         riskScore: score,
                         status: status,

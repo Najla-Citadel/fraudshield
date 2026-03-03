@@ -13,6 +13,48 @@ enum CheckType {
   BANK
   DOC
   MANUAL
+  MSG
+  QR
+  VOICE
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertCategory {
+  PHISHING
+  LOGIN
+  SYSTEM_SCAN
+  NETWORK
+  COMMUNITY
+}
+
+model User {
+  id                  String              @id @default(uuid())
+  email               String              @unique
+  passwordHash        String
+  emailVerified       Boolean             @default(false)
+  fullName            String?
+  role                String              @default("user")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  alerts              Alert[]
+  transactions        PointsTransaction[]
+  profile             Profile?
+  reports             ScamReport[]
+  userTransactions    Transaction[]
+  subscriptions       UserSubscription[]
+  redemptions         Redemption[]
+  alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
+  transactionJournals TransactionJournal[]
+  refreshToken        String?             @unique
+  comments            Comment[]
+  acceptedTermsVersion String?
+  acceptedTermsAt      DateTime?
   auditLogs           AuditLog[]
 }
 
@@ -93,6 +135,51 @@ model ScamReport {
   @@index([createdAt])
   @@index([category])
   @@index([status])
+  @@index([target])
+  @@index([targetType])
+}
+
+model Comment {
+  id        String     @id @default(uuid())
+  text      String
+  userId    String
+  reportId  String
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+  report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@index([reportId])
+}
+
+model Verification {
+  id        String     @id @default(uuid())
+  reportId  String
+  userId    String
+  isSame    Boolean
+  createdAt DateTime   @default(now())
+  report    ScamReport @relation(fields: [reportId], references: [id])
+
+  @@unique([reportId, userId])
+}
+
+model PointsTransaction {
+  id          String   @id @default(uuid())
+  amount      Int
+  description String
+  userId      String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model BehavioralEvent {
+  id        String   @id @default(uuid())
+  type      String
+  metadata  Json
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Alert {
   id          String        @id @default(uuid())
   category    AlertCategory @default(COMMUNITY)
   severity    AlertSeverity @default(LOW)

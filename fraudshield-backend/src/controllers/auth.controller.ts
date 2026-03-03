@@ -67,6 +67,114 @@ export class AuthController {
                     email,
                     passwordHash,
                     fullName,
+                    acceptedTermsVersion: 'v1.0',
+                    acceptedTermsAt: new Date(),
+                    profile: {
+                        create: {
+                            avatar: 'Felix',
+                        },
+                    },
+                },
+                include: {
+                    profile: true,
+                },
+            });
+
+            // Generate tokens
+            const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
+
+            // Store refresh token
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { refreshToken },
+            });
+
+            // Generate OTP and store in Redis for email verification
+            const otp = await EmailService.generateEmailVerificationOtp(email);
+
+            // In local development, we return the OTP for easy testing. 
+            // In production, NEVER return the OTP in the HTTP response.
+            if (process.env.NODE_ENV === 'development') {
+                return res.status(201).json({
+                    user: AuthService.toSafeUser(user),
+                    token: accessToken,
+                    refreshToken,
+                    message: 'Account created. Please verify your email.',
+                    dev_otp: otp
+                });
+            }
+
+            res.status(201).json({
+                user: AuthService.toSafeUser(user),
+                token: accessToken,
+                refreshToken,
+                message: 'Account created. Please verify your email.'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { email, otp } = req.body;
+
+            if (!email || !otp) {
+                return res.status(400).json({ error: 'Email and OTP are required' });
+            }
+
+            // Verify OTP with Redis
+            const isValid = await EmailService.verifyEmailOtp(email, otp);
+
+            if (!isValid) {
+                return res.status(400).json({ error: 'Invalid or expired verification code' });
+            }
+
+            // Update User in DB
+            await prisma.user.update({
+                where: { email },
+                data: { emailVerified: true },
+            });
+
+            res.json({ message: 'Email successfully verified' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async requestEmailVerification(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any)?.id;
+            const user = await prisma.user.findUnique({ where: { id: userId } });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            if (user.emailVerified) {
+                return res.status(400).json({ message: 'Email already verified' });
+            }
+
+            // Generate OTP and store in Redis for email verification
+            const otp = await EmailService.generateEmailVerificationOtp(user.email);
+
+            // In local development, we return the OTP for easy testing. 
+            // In production, NEVER return the OTP in the HTTP response.
+            if (process.env.NODE_ENV === 'development') {
+                return res.status(200).json({
+                    message: 'Verification code sent to your email.',
+                    dev_otp: otp
+                });
+            }
+
+            res.status(200).json({
+                message: 'Verification code sent to your email.'
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     /**
      * @openapi
      * /api/v1/auth/login:
@@ -103,6 +211,31 @@ export class AuthController {
                 where: { id: user.id },
                 data: { refreshToken },
             });
+
+            // FOR DEMO: Generate a "Welcome" alert and a "Security Scan" alert
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.COMMUNITY,
+                severity: AlertSeverity.LOW,
+                title: 'Welcome to FraudShield',
+                message: 'Your account is now protected. We are monitoring for threats in your area.',
+            });
+
+            await AlertService.createAlert({
+                userId: user.id,
+                category: AlertCategory.SYSTEM_SCAN,
+                severity: AlertSeverity.LOW,
+                title: 'Initial System Scan Completed',
+                message: '0 threats found. Your device security is up to date.',
+            });
+
+            res.json({
+                user: AuthService.toSafeUser(fullUser),
+                token: accessToken,
+                refreshToken,
+            });
+        })(req, res, next);
+    }
 
     /**
      * @openapi
@@ -306,6 +439,63 @@ export class AuthController {
 
     static async logout(req: Request, res: Response, next: NextFunction) {
         try {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.split(' ')[1];
+                await AuthService.revokeToken(token);
+            }
+
+            const userId = (req.user as any)?.id;
+            if (userId) {
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { refreshToken: null },
+                });
+            }
+            res.json({ message: 'Logged out successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async googleLogin(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idToken } = req.body;
+            if (!idToken) {
+                return res.status(400).json({ message: 'Google ID Token is required' });
+            }
+
+            const payload = await AuthService.verifyGoogleToken(idToken);
+            if (!payload) {
+                return res.status(401).json({ message: 'Invalid Google token' });
+            }
+
+            const { email, name, picture, sub: googleId } = payload;
+            if (!email) {
+                return res.status(400).json({ message: 'Google account must have an email' });
+            }
+
+            // Find or create user
+            let user = await prisma.user.findUnique({
+                where: { email },
+                include: { profile: true },
+            });
+
+            if (!user) {
+                // Auto-register (random password since they'll use Google)
+                const passwordHash = await AuthService.hashPassword(Math.random().toString(36).substring(2, 12));
+                user = await prisma.user.create({
+                    data: {
+                        email,
+                        fullName: name || 'Google User',
+                        passwordHash,
+                        emailVerified: true,
+                        profile: {
+                            create: {
+                                avatar: 'Felix',
+                                bio: 'Joined via Google',
+                            },
+                        },
                         acceptedTermsVersion: 'v1.0',
                         acceptedTermsAt: new Date(),
                     },
@@ -341,8 +531,6 @@ export class AuthController {
             next(error);
         }
     }
-<<<<<<< HEAD
-=======
 
     static async acceptTerms(req: Request, res: Response, next: NextFunction) {
         try {
@@ -370,5 +558,4 @@ export class AuthController {
             next(error);
         }
     }
->>>>>>> dev-ui2
 }

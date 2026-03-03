@@ -16,6 +16,27 @@ import { metricsMiddleware } from './middleware/metrics.middleware';
 // Load environment variables
 dotenv.config();
 
+// Validate critical secrets
+validateEnv();
+
+// Initialize Metrics
+MetricsService.init();
+
+// Import database
+import { prisma } from './config/database';
+
+// Import Routes
+import authRoutes from './routes/auth.routes';
+import reportRoutes from './routes/report.routes';
+import featureRoutes from './routes/feature.routes';
+import rewardsRoutes from './routes/rewards.routes';
+import adminRoutes from './routes/admin.routes';
+import uploadRoutes from './routes/upload.routes';
+import userRoutes from './routes/user.routes';
+import alertRoutes from './routes/alert.routes';
+import transactionRoutes from './routes/transaction.routes';
+import configRoutes from './routes/config.routes';
+import { requestTimeout } from './middleware/timeout.middleware';
 import { antiReplay } from './middleware/antiReplay.middleware';
 import { tracer } from './middleware/tracer.middleware';
 
@@ -168,8 +189,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         query: req.query
     });
 
-<<<<<<< HEAD
-=======
     // If it's a 500 error, notify admins via MonitoringService
     if (!err.status || err.status === 500) {
         MonitoringService.notifyError(err, {
@@ -179,7 +198,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         });
     }
 
->>>>>>> dev-ui2
     res.status(err.status || 500).json({
         error: 'Internal Server Error',
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong. Please try again later.',

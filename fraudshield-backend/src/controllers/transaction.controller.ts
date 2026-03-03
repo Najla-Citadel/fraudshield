@@ -1,5 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { EncryptionUtils } from '../utils/encryption';
+
+export class TransactionController {
+    /**
+     * GET /api/v1/transactions
+     * Fetch the authenticated user's Transaction Journal history
+     */
+    static async getMyTransactions(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any).id;
+            const { type, limit = '20', offset = '0' } = req.query;
+
+            const whereClause: any = { userId };
+
+            // Optional filter by CheckType (PHONE, URL, BANK, DOC)
+            if (type && typeof type === 'string') {
+                whereClause.checkType = type.toUpperCase();
+            }
+
+            const limitNum = parseInt(limit as string, 10);
+            const offsetNum = parseInt(offset as string, 10);
+
+            const [transactions, total] = await Promise.all([
+                prisma.transactionJournal.findMany({
+                    where: whereClause,
+                    orderBy: { createdAt: 'desc' },
+                    take: limitNum,
+                    skip: offsetNum,
                 }).then(txs => txs.map(tx => ({ ...tx, target: EncryptionUtils.decrypt(tx.target || '') }))),
                 prisma.transactionJournal.count({ where: whereClause }),
             ]);

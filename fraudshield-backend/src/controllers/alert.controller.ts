@@ -155,6 +155,16 @@ export class AlertController {
                     ...(radiusKm && { radiusKm }),
                     ...(fcmToken && { fcmToken }),
                     ...(isActive !== undefined && { isActive }),
+                    ...(req.body.emailDigestEnabled !== undefined && { emailDigestEnabled: req.body.emailDigestEnabled }),
+                },
+                create: {
+                    userId,
+                    categories: categories || [],
+                    latitude,
+                    longitude,
+                    radiusKm: radiusKm || 15,
+                    fcmToken,
+                    isActive: isActive ?? true,
                     emailDigestEnabled: req.body.emailDigestEnabled ?? false,
                 },
             });
@@ -166,9 +176,30 @@ export class AlertController {
     }
 
     /**
-     * GET /api/alerts/preferences
-     * Retrieve current user subscription preferences
+     * @openapi
+     * /api/v1/alerts/preferences:
+     *   get:
+     *     summary: Get user alert preferences
+     *     tags: [Alerts]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Successfully retrieved preferences
      */
+    static async getPreferences(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const subscription = await (prisma as any).alertSubscription.findUnique({
+                where: { userId },
+            });
+
+            if (!subscription) {
+                // Return sensible defaults if they haven't set up yet
+                return res.json({
+                    categories: [],
+                    isActive: false,
+                    radiusKm: 15,
                     emailDigestEnabled: false,
                 });
             }
@@ -178,8 +209,7 @@ export class AlertController {
             next(error);
         }
     }
-<<<<<<< HEAD
-=======
+
     /**
      * @openapi
      * /api/v1/alerts:
@@ -261,6 +291,7 @@ export class AlertController {
             next(error);
         }
     }
+
     /**
      * Diagnostic endpoint to seed demo alerts for the current user
      */
@@ -334,5 +365,4 @@ export class AlertController {
             next(error);
         }
     }
->>>>>>> dev-ui2
 }

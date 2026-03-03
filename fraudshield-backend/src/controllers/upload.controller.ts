@@ -49,6 +49,16 @@ export const upload = multer({
 });
 
 export class UploadController {
+    /**
+     * POST /api/v1/upload/single
+     * Handles single file upload to DigitalOcean Spaces
+     */
+    static async uploadFile(req: Request, res: Response, next: NextFunction) {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ message: 'No file uploaded' });
+            }
+
             // multer-s3 adds 'location' to the file object
             const fileUrl = (req.file as any).location;
 
