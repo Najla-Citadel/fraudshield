@@ -107,29 +107,6 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void _openPlaceholder(String title) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(title,
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            const Text('This feature will be available soon.'),
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _logout() async {
     await context.read<AuthProvider>().signOut();
     if (!mounted) return;
@@ -349,8 +326,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                       color:
                                           Colors.white.withValues(alpha: 0.2),
                                       size: 14),
-                                  onTap: () =>
-                                      _openPlaceholder('Manage Consent'),
+                                  onTap: () => Navigator.pushNamed(
+                                      context, '/privacy-settings'),
                                 ),
                               ],
                             ),

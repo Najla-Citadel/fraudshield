@@ -751,6 +751,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'SERVICES'**
   String get homeServices;
+
+  /// No description provided for @accountPrivacySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Settings'**
+  String get accountPrivacySettings;
+
+  /// No description provided for @privacyManageConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Consent'**
+  String get privacyManageConsent;
+
+  /// No description provided for @privacyDataManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Management'**
+  String get privacyDataManagement;
+
+  /// No description provided for @privacyRequestDataExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Data Export'**
+  String get privacyRequestDataExport;
+
+  /// No description provided for @privacyUpdateInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Update/Correct Information'**
+  String get privacyUpdateInfo;
+
+  /// No description provided for @privacyWithdrawConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw Consent'**
+  String get privacyWithdrawConsent;
+
+  /// No description provided for @privacyConsentMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing & Newsletters'**
+  String get privacyConsentMarketing;
+
+  /// No description provided for @privacyDpoContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact DPO'**
+  String get privacyDpoContact;
+
+  /// No description provided for @privacyControlDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Take control of your personal data in compliance with PDPA 2010.'**
+  String get privacyControlDesc;
+
+  /// No description provided for @privacyWithdrawDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Retract consent for non-essential services.'**
+  String get privacyWithdrawDesc;
 }
 
 class _AppLocalizationsDelegate

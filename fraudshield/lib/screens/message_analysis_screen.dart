@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
-import '../widgets/adaptive_button.dart';
+import '../widgets/glass_surface.dart';
 import 'fraud_check_screen.dart';
 
 class MessageAnalysisScreen extends StatefulWidget {
@@ -60,19 +60,21 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBg,
+      backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
+          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'AI Message Scanner',
           style: TextStyle(
-            color: AppColors.textDark,
-            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 22,
+            letterSpacing: -0.5,
           ),
         ),
         centerTitle: true,
@@ -87,33 +89,25 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             const Text(
               'Paste Message Content',
               style: TextStyle(
-                color: AppColors.textDark,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+            GlassSurface(
+              borderRadius: 24,
+              padding: EdgeInsets.zero,
               child: TextField(
                 controller: _controller,
                 maxLines: 8,
                 minLines: 5,
-                style: const TextStyle(color: AppColors.textDark, fontSize: 15),
+                style: const TextStyle(color: Colors.white, fontSize: 15),
                 decoration: InputDecoration(
-                  hintText: 'Paste a suspicious SMS, WhatsApp message, or email here...',
+                  hintText:
+                      'Paste a suspicious SMS, WhatsApp message, or email here...',
                   hintStyle: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.3),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 14,
                   ),
                   contentPadding: const EdgeInsets.all(20),
@@ -224,16 +218,19 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
   }
 
   Widget _featureRow(String title, String desc, IconData icon, Color color) {
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.lightBg),
-      ),
+      borderRadius: 16,
       child: Row(
         children: [
-          Icon(icon, color: color, size: 24),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -242,15 +239,18 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                 Text(
                   title,
                   style: const TextStyle(
-                    color: AppColors.textDark,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   desc,
                   style: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.5),
-                    fontSize: 12,
+                    color: Colors.white.withValues(alpha: 0.6),
+                    fontSize: 13,
+                    height: 1.3,
                   ),
                 ),
               ],

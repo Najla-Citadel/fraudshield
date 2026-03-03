@@ -108,5 +108,15 @@
   "statusGood": "Good",
   "statusProtected": "Protected",
   "statusAtRisk": "At Risk",
-  "homeServices": "SERVICES"
+  "homeServices": "SERVICES",
+  "accountPrivacySettings": "Privacy Settings",
+  "privacyManageConsent": "Manage Consent",
+  "privacyDataManagement": "Data Management",
+  "privacyRequestDataExport": "Request Data Export",
+  "privacyUpdateInfo": "Update/Correct Information",
+  "privacyWithdrawConsent": "Withdraw Consent",
+  "privacyConsentMarketing": "Marketing & Newsletters",
+  "privacyDpoContact": "Contact DPO",
+  "privacyControlDesc": "Take control of your personal data in compliance with PDPA 2010.",
+  "privacyWithdrawDesc": "Retract consent for non-essential services."
 }

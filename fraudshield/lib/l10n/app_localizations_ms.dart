@@ -339,4 +339,36 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get homeServices => 'PERKHIDMATAN';
+
+  @override
+  String get accountPrivacySettings => 'Privacy Settings';
+
+  @override
+  String get privacyManageConsent => 'Manage Consent';
+
+  @override
+  String get privacyDataManagement => 'Data Management';
+
+  @override
+  String get privacyRequestDataExport => 'Request Data Export';
+
+  @override
+  String get privacyUpdateInfo => 'Update/Correct Information';
+
+  @override
+  String get privacyWithdrawConsent => 'Withdraw Consent';
+
+  @override
+  String get privacyConsentMarketing => 'Marketing & Newsletters';
+
+  @override
+  String get privacyDpoContact => 'Contact DPO';
+
+  @override
+  String get privacyControlDesc =>
+      'Take control of your personal data in compliance with PDPA 2010.';
+
+  @override
+  String get privacyWithdrawDesc =>
+      'Retract consent for non-essential services.';
 }
