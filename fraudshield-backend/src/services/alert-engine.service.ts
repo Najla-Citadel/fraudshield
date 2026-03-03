@@ -281,8 +281,6 @@ export class AlertEngineService {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Generates a consolidated daily summary including top trends and a safety tip
@@ -323,5 +321,4 @@ export class AlertEngineService {
             safetyTip
         };
     }
->>>>>>> dev-ui2
 }

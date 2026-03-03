@@ -4,11 +4,6 @@ import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
-<<<<<<< HEAD
-
-export class ReportController {
-    private static readonly MAX_LIMIT = 100;
-=======
 import { EncryptionUtils } from '../utils/encryption';
 
 /**
@@ -48,7 +43,6 @@ export class ReportController {
      *       201:
      *         description: Report submitted successfully
      */
->>>>>>> dev-ui2
     static async submitReport(req: Request, res: Response, next: NextFunction) {
         try {
             const { type, category, description, evidence, target, isPublic, latitude, longitude } = req.body;
@@ -73,13 +67,8 @@ export class ReportController {
                     type,
                     category,
                     description,
-<<<<<<< HEAD
-                    target,
-                    isPublic: isPublic || false,
-=======
                     target: EncryptionUtils.deterministicEncrypt(target),
                     isPublic: false, // Force false for moderation
->>>>>>> dev-ui2
                     latitude,
                     longitude,
                     evidence: evidence || {},
@@ -87,38 +76,14 @@ export class ReportController {
                 },
             });
 
-<<<<<<< HEAD
-            // Award points for submitting a report
-            let gamificationResult: any = { newBadges: [] };
-            if (isPublic) {
-                gamificationResult = await GamificationService.awardPoints(
-                    userId,
-                    10,
-                    `Submitted public scam report`
-                );
-
-                // Dispatch real-time local alerts to nearby subscribers
-                AlertEngineService.dispatchLocalAlert(report).catch(err => {
-                    console.error('❌ Failed to dispatch local alerts:', err);
-                });
-            }
-
-            res.status(201).json({
-                ...report,
-                newBadges: gamificationResult.newBadges,
-                pointsAwarded: 10,
-                currentTier: gamificationResult.currentTier
-=======
             res.status(201).json({
                 ...report,
                 message: 'Report submitted for moderation. Points will be awarded upon approval.',
                 pointsAwarded: 0
->>>>>>> dev-ui2
             });
         } catch (error) {
             next(error);
         }
-
     }
 
     static async getMyReports(req: Request, res: Response, next: NextFunction) {
@@ -135,11 +100,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-<<<<<<< HEAD
-                }),
-=======
                 }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
->>>>>>> dev-ui2
                 prisma.scamReport.count({ where: { userId, deletedAt: null } }),
             ]);
 
@@ -197,11 +158,7 @@ export class ReportController {
 
             const response = {
                 ...report,
-<<<<<<< HEAD
-                target: report.target,
-=======
                 target: EncryptionUtils.decrypt(report.target || ''),
->>>>>>> dev-ui2
                 reporterTrust: {
                     score: profile?.reputation ?? 0,
                     badges: Array.isArray(badges) ? badges : [],
@@ -219,8 +176,6 @@ export class ReportController {
         }
     }
 
-<<<<<<< HEAD
-=======
     /**
      * @openapi
      * /api/v1/reports/public:
@@ -231,7 +186,6 @@ export class ReportController {
      *       200:
      *         description: Successfully retrieved feed
      */
->>>>>>> dev-ui2
     static async getPublicFeed(req: Request, res: Response, next: NextFunction) {
         try {
             const { limit = '20', offset = '0', lat, lng, radius, category, search } = req.query;
@@ -297,11 +251,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-<<<<<<< HEAD
-                }),
-=======
                 }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
->>>>>>> dev-ui2
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -316,11 +266,7 @@ export class ReportController {
 
                 return {
                     ...report,
-<<<<<<< HEAD
-                    target: report.target,
-=======
                     target: EncryptionUtils.decrypt(report.target || ''),
->>>>>>> dev-ui2
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -364,18 +310,11 @@ export class ReportController {
 
             // Text search across multiple fields
             if (query && typeof query === 'string' && query.trim()) {
-<<<<<<< HEAD
-                whereClause.AND.push({
-                    OR: [
-                        { description: { contains: query, mode: 'insensitive' } },
-                        { target: { contains: query, mode: 'insensitive' } },
-=======
                 const encryptedQuery = EncryptionUtils.deterministicEncrypt(query as string);
                 whereClause.AND.push({
                     OR: [
                         { description: { contains: query, mode: 'insensitive' } },
                         { target: encryptedQuery },
->>>>>>> dev-ui2
                         { category: { contains: query, mode: 'insensitive' } },
                     ],
                 });
@@ -447,11 +386,7 @@ export class ReportController {
                     orderBy: orderByClause,
                     take: limitNum,
                     skip: offsetNum,
-<<<<<<< HEAD
-                }),
-=======
                 }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
->>>>>>> dev-ui2
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -479,11 +414,7 @@ export class ReportController {
 
                 return {
                     ...report,
-<<<<<<< HEAD
-                    target: report.target,
-=======
                     target: EncryptionUtils.decrypt(report.target || ''),
->>>>>>> dev-ui2
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -510,9 +441,6 @@ export class ReportController {
             const { reportId, isSame } = req.body;
             const userId = (req.user as any).id;
 
-<<<<<<< HEAD
-            // 1. Create or update the verification (uses @@unique([reportId, userId]) compound key)
-=======
             // 1. Fetch report and user profile for validation
             const [report, userProfile] = await Promise.all([
                 (prisma as any).scamReport.findUnique({
@@ -548,7 +476,6 @@ export class ReportController {
             }
 
             // 2. Create or update the verification
->>>>>>> dev-ui2
             const verification = await prisma.verification.upsert({
                 where: {
                     reportId_userId: { reportId, userId },
@@ -557,30 +484,15 @@ export class ReportController {
                 create: { reportId, userId, isSame },
             });
 
-<<<<<<< HEAD
-            // 2. Reward the verifier with Shield Points
-            const gamificationResult = await GamificationService.awardPoints(
-=======
             // 3. Reward the verifier with Shield Points
             await GamificationService.awardPoints(
->>>>>>> dev-ui2
                 userId,
                 10,
                 `Verified report ${reportId}`
             );
 
-<<<<<<< HEAD
-            // 3. Reward the original reporter with Reputation if verified as 'Same'
-            const report = await (prisma as any).scamReport.findUnique({
-                where: { id: reportId },
-                select: { userId: true },
-            });
-
-            if (report && isSame && report.userId !== userId) {
-=======
             // 4. Reward the original reporter with Reputation if verified as 'Same'
             if (isSame) {
->>>>>>> dev-ui2
                 await (prisma as any).profile.upsert({
                     where: { userId: report.userId },
                     update: {
@@ -597,10 +509,6 @@ export class ReportController {
                 await BadgeService.evaluateBadges(report.userId);
             }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> dev-ui2
             res.json(verification);
         } catch (error) {
             next(error);
@@ -617,35 +525,23 @@ export class ReportController {
 
             // Build query based on target match
             const whereClause: any = {
-<<<<<<< HEAD
-                target: { contains: value, mode: 'insensitive' },
-=======
                 target: EncryptionUtils.deterministicEncrypt(value),
->>>>>>> dev-ui2
                 deletedAt: null,
             };
 
             const reports = await (prisma as any).scamReport.findMany({
-<<<<<<< HEAD
-                where: whereClause,
-=======
                 where: {
                     ...whereClause,
                     status: 'VERIFIED', // Only count verifications for verified reports
                     isPublic: true,
                 },
->>>>>>> dev-ui2
                 include: {
                     _count: {
                         select: { verifications: true },
                     },
                 },
                 orderBy: { createdAt: 'desc' },
-<<<<<<< HEAD
-            });
-=======
             }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') })));
->>>>>>> dev-ui2
 
             const totalCount = reports.length;
 
@@ -691,7 +587,7 @@ export class ReportController {
             // 2. Check Official Databases (CCID Semak Mule API mock)
             if (type === 'phone' || type === 'bank') {
                 try {
-                    const officialMuleCheck = await SemakMuleService.checkTarget(type, value);
+                    const officialMuleCheck = await SemakMuleService.checkTarget(type as any, value as string);
 
                     if (officialMuleCheck.found && officialMuleCheck.riskLevel === 'high') {
                         // Overwrite community risk to HIGH if official API flags it
@@ -741,7 +637,7 @@ export class ReportController {
                 await prisma.transactionJournal.create({
                     data: {
                         userId,
-                        checkType: dbCheckType,
+                        checkType: dbCheckType as any,
                         target: value,
                         riskScore: score,
                         status: status,

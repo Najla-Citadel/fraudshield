@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-
 import { prisma } from '../config/database';
 
 const SAFE_BROWSING_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
@@ -52,21 +51,16 @@ export class SafeBrowsingController {
                 },
             };
 
-<<<<<<< HEAD
-=======
             console.log(`[SafeBrowsing] Checking URL: ${url}`);
->>>>>>> dev-ui2
+
             const response = await fetch(`${SAFE_BROWSING_URL}?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody),
             });
 
-<<<<<<< HEAD
-=======
             console.log(`[SafeBrowsing] Google API responded with status: ${response.status}`);
 
->>>>>>> dev-ui2
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error(`Safe Browsing API error (${response.status}):`, errorText);

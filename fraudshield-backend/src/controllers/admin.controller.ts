@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
-<<<<<<< HEAD
-=======
 import { AuditService } from '../services/audit.service';
 import { GamificationService } from '../services/gamification.service';
 import { AlertEngineService } from '../services/alert-engine.service';
->>>>>>> dev-ui2
 
 export class AdminController {
     static async getAlerts(req: Request, res: Response, next: NextFunction) {
@@ -40,8 +37,6 @@ export class AdminController {
                 });
             }
 
-<<<<<<< HEAD
-=======
             await AuditService.logAction({
                 adminId: userId,
                 action: 'LABEL_TRANSACTION',
@@ -50,7 +45,6 @@ export class AdminController {
                 payload: { label, alertId }
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Transaction labeled successfully' });
         } catch (error) {
             next(error);
@@ -110,8 +104,6 @@ export class AdminController {
                 select: { id: true, role: true },
             });
 
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -121,7 +113,6 @@ export class AdminController {
                 payload: { role }
             });
 
->>>>>>> dev-ui2
             res.json(updatedUser);
         } catch (error) {
             next(error);
@@ -230,8 +221,6 @@ export class AdminController {
                 }
             });
 
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -241,7 +230,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedUser);
         } catch (error) {
             next(error);
@@ -289,13 +277,6 @@ export class AdminController {
     static async updateReportStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-<<<<<<< HEAD
-            const { status } = req.body;
-
-            const updatedReport = await prisma.scamReport.update({
-                where: { id: id as string },
-                data: { status },
-=======
             const { status } = req.body; // e.g., 'VERIFIED', 'REJECTED', 'PENDING'
 
             const oldReport = await prisma.scamReport.findUnique({
@@ -339,7 +320,6 @@ export class AdminController {
                 targetType: 'ScamReport',
                 targetId: id as string,
                 payload: { status, prevStatus: oldReport.status }
->>>>>>> dev-ui2
             });
 
             res.json(updatedReport);
@@ -357,8 +337,6 @@ export class AdminController {
                 data: { deletedAt: new Date() },
             });
 
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -367,7 +345,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Report soft-deleted successfully' });
         } catch (error) {
             next(error);
@@ -389,8 +366,6 @@ export class AdminController {
             const plan = await prisma.subscriptionPlan.create({
                 data: { name, price, features, durationDays },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -400,7 +375,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.status(201).json(plan);
         } catch (error) {
             next(error);
@@ -415,8 +389,6 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, price, features, durationDays },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -426,7 +398,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedPlan);
         } catch (error) {
             next(error);
@@ -450,8 +421,6 @@ export class AdminController {
             await prisma.subscriptionPlan.delete({
                 where: { id: id as string },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -460,7 +429,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Plan deleted successfully' });
         } catch (error) {
             next(error);
@@ -482,8 +450,6 @@ export class AdminController {
             const badge = await prisma.badgeDefinition.create({
                 data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -493,7 +459,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.status(201).json(badge);
         } catch (error) {
             next(error);
@@ -508,8 +473,6 @@ export class AdminController {
                 where: { id: id as string },
                 data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -519,7 +482,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedBadge);
         } catch (error) {
             next(error);
@@ -532,8 +494,6 @@ export class AdminController {
             await prisma.badgeDefinition.delete({
                 where: { id: id as string },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -542,7 +502,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Badge deleted successfully' });
         } catch (error) {
             next(error);
@@ -566,8 +525,6 @@ export class AdminController {
             const reward = await prisma.reward.create({
                 data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -577,7 +534,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.status(201).json(reward);
         } catch (error) {
             next(error);
@@ -592,8 +548,6 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -603,7 +557,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedReward);
         } catch (error) {
             next(error);
@@ -616,8 +569,6 @@ export class AdminController {
             await prisma.reward.delete({
                 where: { id: id as string },
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -626,7 +577,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Reward deleted successfully' });
         } catch (error) {
             next(error);
@@ -661,8 +611,6 @@ export class AdminController {
                     reward: { select: { name: true, type: true } }
                 }
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -672,7 +620,6 @@ export class AdminController {
                 payload: { status }
             });
 
->>>>>>> dev-ui2
             res.json(updatedRedemption);
         } catch (error) {
             next(error);
@@ -682,24 +629,15 @@ export class AdminController {
     static async getBroadcasts(req: Request, res: Response, next: NextFunction) {
         try {
             // Group by message to represent unique broadcasts
-<<<<<<< HEAD
-            const broadcasts = await prisma.alert.groupBy({
-=======
             const broadcasts = await (prisma.alert as any).groupBy({
->>>>>>> dev-ui2
                 by: ['message', 'title', 'type', 'createdAt'],
                 where: { type: 'BROADCAST' },
                 _count: { userId: true },
                 orderBy: { createdAt: 'desc' }
             });
-<<<<<<< HEAD
-            // Format to a more UI friendly shape
-            const formatted = broadcasts.map((b: any) => ({
-=======
 
             // Format to a more UI friendly shape
-            const formatted = broadcasts.map((b) => ({
->>>>>>> dev-ui2
+            const formatted = broadcasts.map((b: any) => ({
                 id: Buffer.from(b.message + b.createdAt.getTime()).toString('base64'), // mock ID for UI
                 title: b.title,
                 message: b.message,
@@ -733,12 +671,6 @@ export class AdminController {
             }));
 
             const result = await prisma.alert.createMany({
-<<<<<<< HEAD
-                data: alertData as any,
-                skipDuplicates: true,
-            });
-
-=======
                 data: alertData,
                 skipDuplicates: true,
             });
@@ -751,7 +683,6 @@ export class AdminController {
                 payload: { title, message, recipients: result.count }
             });
 
->>>>>>> dev-ui2
             res.status(201).json({
                 message: 'Broadcast sent successfully',
                 recipients: result.count
@@ -829,8 +760,6 @@ export class AdminController {
                 });
             }
 
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -840,7 +769,6 @@ export class AdminController {
                 payload: { txId, label }
             });
 
->>>>>>> dev-ui2
             res.status(201).json(fraudLabel);
         } catch (error) {
             next(error);
@@ -853,8 +781,6 @@ export class AdminController {
             await prisma.fraudLabel.delete({
                 where: { id: id as string }
             });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -863,7 +789,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Fraud label deleted successfully' });
         } catch (error) {
             next(error);

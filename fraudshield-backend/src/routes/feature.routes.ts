@@ -1,28 +1,13 @@
 import { Router } from 'express';
-import { SubscriptionController, PointsController, BehavioralController } from '../controllers/feature.controller';
-<<<<<<< HEAD
-import { RewardsController } from '../controllers/rewards.controller';
-=======
->>>>>>> dev-ui2
+import {
+    SubscriptionController,
+    PointsController,
+    BehavioralController
+} from '../controllers/feature.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
 import { RiskEvaluationController } from '../controllers/risk-evaluation.controller';
 import { LeaderboardController } from '../controllers/leaderboard.controller';
-<<<<<<< HEAD
-
-import passport from 'passport';
-
-const router = Router();
-
-// Protect all feature routes
-router.use(passport.authenticate('jwt', { session: false }));
-
-// Safe Browsing
-router.post('/check-url', SafeBrowsingController.checkUrl);
-
-// AI Risk Score V2 — Centralized Evaluator
-router.post('/evaluate-risk', RiskEvaluationController.evaluate);
-=======
 import { QuishingController } from '../controllers/quishing.controller';
 import { NlpMessageController } from '../controllers/nlp-message.controller';
 import { PdfScanController } from '../controllers/pdf-scan.controller';
@@ -66,7 +51,6 @@ router.post('/analyze-voice', featureLimiter, memoryUpload.single('file'), Voice
 
 // AI Risk Score V2 — Centralized Evaluator
 router.post('/evaluate-risk', featureLimiter, RiskEvaluationController.evaluate);
->>>>>>> dev-ui2
 
 // Subscriptions
 router.get('/plans', SubscriptionController.getPlans);
@@ -75,15 +59,7 @@ router.post('/subscription', SubscriptionController.createSubscription);
 
 // Points
 router.get('/points', PointsController.getMyPoints);
-<<<<<<< HEAD
-router.post('/points', PointsController.addPoints);
-
-// Points
-router.get('/points', PointsController.getMyPoints);
-router.post('/points', PointsController.addPoints);
-=======
 router.post('/points', isAdmin, PointsController.addPoints);
->>>>>>> dev-ui2
 
 // Leaderboards
 router.get('/leaderboard', LeaderboardController.getGlobalLeaderboard);
@@ -93,12 +69,7 @@ router.get('/leaderboard/me', LeaderboardController.getMyRank);
 router.get('/badges', BadgeController.getMyBadges);
 router.get('/badges/all', BadgeController.getAllBadges);
 
-<<<<<<< HEAD
-
-router.post('/behavioral', BehavioralController.logEvent);
-=======
 router.post('/behavioral', featureLimiter, BehavioralController.logEvent);
->>>>>>> dev-ui2
 router.get('/behavioral', BehavioralController.getMyEvents);
 
 export default router;

@@ -1,12 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-<<<<<<< HEAD
-
-const prisma = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-    // Connection pool size is configured via DATABASE_URL query params:
-    // ?connection_limit=10&pool_timeout=20
-    // See .env.prod.example for the recommended production values.
-=======
 import { MetricsService } from '../services/metrics.service';
 
 const prismaClient = new PrismaClient({
@@ -29,7 +21,6 @@ const prisma = prismaClient.$extends({
             }
         },
     },
->>>>>>> dev-ui2
 });
 
 // Test connection on startup (skip in test mode)

@@ -208,8 +208,6 @@ export class EmailService {
 
         return true;
     }
-<<<<<<< HEAD
-=======
 
     /**
      * Sends a consolidated daily scam digest to the user.
@@ -344,5 +342,4 @@ export class EmailService {
             return { valid: true };
         }
     }
->>>>>>> dev-ui2
 }

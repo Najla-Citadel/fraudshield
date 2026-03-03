@@ -2,11 +2,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database';
-<<<<<<< HEAD
-=======
 import { getRedisClient } from '../config/redis';
 import { EncryptionUtils } from '../utils/encryption';
->>>>>>> dev-ui2
 
 export class AuthService {
     private static get JWT_SECRET(): string {
@@ -109,13 +106,6 @@ export class AuthService {
             fullName: user.fullName,
             role: user.role,
             createdAt: user.createdAt.toISOString(),
-<<<<<<< HEAD
-            isEmailVerified: true, // Mocked for now to match UserModel
-            profile: user.profile ? {
-                id: user.profile.id,
-                bio: user.profile.bio,
-                avatar: user.profile.avatar,
-=======
             isEmailVerified: user.emailVerified, // Get actual status from database
             acceptedTermsVersion: user.acceptedTermsVersion,
             acceptedTermsAt: user.acceptedTermsAt?.toISOString(),
@@ -125,15 +115,12 @@ export class AuthService {
                 avatar: user.profile.avatar,
                 mobile: EncryptionUtils.decrypt(user.profile.mobile || ''),
                 mailingAddress: EncryptionUtils.decrypt(user.profile.mailingAddress || ''),
->>>>>>> dev-ui2
                 metadata: user.profile.metadata,
                 points: user.profile.points,
                 totalPoints: user.profile.totalPoints,
             } : null,
         };
     }
-<<<<<<< HEAD
-=======
 
     static async revokeToken(token: string): Promise<void> {
         try {
@@ -194,5 +181,4 @@ export class AuthService {
             return false;
         }
     }
->>>>>>> dev-ui2
 }

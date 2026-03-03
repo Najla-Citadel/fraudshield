@@ -12,24 +12,7 @@ jest.mock('../src/config/database', () => ({
         user: {
             findUnique: (...args: any[]) => mockFindUnique(...args),
             create: (...args: any[]) => mockCreate(...args),
-<<<<<<< HEAD
-=======
-            update: jest.fn().mockResolvedValue({}),
->>>>>>> dev-ui2
-        },
-        $queryRaw: jest.fn().mockResolvedValue([]),
-    },
-}));
-
-// ─── Mock AuthService ─────────────────────────────────────────────────────────
-jest.mock('../src/services/auth.service', () => ({
-    AuthService: {
-        hashPassword: jest.fn(),
-        comparePasswords: jest.fn(),
-<<<<<<< HEAD
-=======
         generateTokens: jest.fn(),
->>>>>>> dev-ui2
         generateToken: jest.fn(),
         findUserById: jest.fn(),
         findUserByEmail: jest.fn(),
@@ -57,24 +40,7 @@ jest.mock('../src/config/passport', () => ({
     },
 }));
 
-<<<<<<< HEAD
-=======
-// ─── Mock Rate Limiters ───────────────────────────────────────────────────────
-jest.mock('../src/middleware/rateLimiter', () => ({
-    authLimiter: (_req: any, _res: any, next: any) => next(),
-    loginLimiter: (_req: any, _res: any, next: any) => next(),
-    reportLimiter: (_req: any, _res: any, next: any) => next(),
-}));
-
->>>>>>> dev-ui2
-// ─── Setup Mocks ──────────────────────────────────────────────────────────────
-const mockAuthService = AuthService as unknown as {
-    hashPassword: jest.Mock;
-    generateToken: jest.Mock;
-<<<<<<< HEAD
-=======
     generateTokens: jest.Mock;
->>>>>>> dev-ui2
     toSafeUser: jest.Mock;
 };
 
@@ -108,24 +74,7 @@ describe('POST /api/v1/auth/signup', () => {
 
         mockAuthService.hashPassword.mockResolvedValue('hashed_password');
         mockAuthService.generateToken.mockReturnValue('mock_jwt_token');
-<<<<<<< HEAD
-=======
-        mockAuthService.generateTokens.mockReturnValue({
-            accessToken: 'mock_jwt_token',
-            refreshToken: 'mock_refresh_token',
-        });
->>>>>>> dev-ui2
-        mockAuthService.toSafeUser.mockImplementation((user: any) => ({
-            id: user?.id ?? 'user-id-1',
-            email: user?.email ?? 'test@example.com',
-            fullName: user?.fullName ?? 'Test User',
-            role: user?.role ?? 'USER',
-            createdAt: '2026-01-01T00:00:00.000Z',
-<<<<<<< HEAD
-            isEmailVerified: true,
-=======
             isEmailVerified: user?.emailVerified ?? false,
->>>>>>> dev-ui2
             profile: null,
         }));
     });

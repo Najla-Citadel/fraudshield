@@ -13,8 +13,6 @@ enum CheckType {
   BANK
   DOC
   MANUAL
-<<<<<<< HEAD
-=======
   MSG
   QR
   VOICE
@@ -33,7 +31,6 @@ enum AlertCategory {
   SYSTEM_SCAN
   NETWORK
   COMMUNITY
->>>>>>> dev-ui2
 }
 
 model User {
@@ -58,8 +55,6 @@ model User {
   comments            Comment[]
   acceptedTermsVersion String?
   acceptedTermsAt      DateTime?
-<<<<<<< HEAD
-=======
   auditLogs           AuditLog[]
 }
 
@@ -77,7 +72,6 @@ model AuditLog {
   @@index([createdAt])
   @@index([action])
   @@index([targetType])
->>>>>>> dev-ui2
 }
 
 model Profile {
@@ -141,11 +135,8 @@ model ScamReport {
   @@index([createdAt])
   @@index([category])
   @@index([status])
-<<<<<<< HEAD
-=======
   @@index([target])
   @@index([targetType])
->>>>>>> dev-ui2
 }
 
 model Comment {
@@ -189,19 +180,6 @@ model BehavioralEvent {
 }
 
 model Alert {
-<<<<<<< HEAD
-  id        String   @id @default(uuid())
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  userId    String
-  createdAt DateTime @default(now())
-  txId      String?
-  riskScore Int?
-  decision  String?
-  user      User     @relation(fields: [userId], references: [id])
-=======
   id          String        @id @default(uuid())
   category    AlertCategory @default(COMMUNITY)
   severity    AlertSeverity @default(LOW)
@@ -219,7 +197,6 @@ model Alert {
   txId      String?
   riskScore Int?
   decision  String?
->>>>>>> dev-ui2
 }
 
 model Transaction {
@@ -309,14 +286,9 @@ model AlertSubscription {
   longitude   Float?
   radiusKm    Int      @default(15)
   fcmToken    String?
-<<<<<<< HEAD
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-=======
   isActive          Boolean  @default(true)
   emailDigestEnabled Boolean  @default(false)
   createdAt         DateTime @default(now())
->>>>>>> dev-ui2
   updatedAt   DateTime @updatedAt
   user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
 }
