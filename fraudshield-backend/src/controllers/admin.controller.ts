@@ -1,47 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
-<<<<<<< HEAD
-=======
-import { AuditService } from '../services/audit.service';
-import { GamificationService } from '../services/gamification.service';
-import { AlertEngineService } from '../services/alert-engine.service';
->>>>>>> dev-ui2
-
-export class AdminController {
-    static async getAlerts(req: Request, res: Response, next: NextFunction) {
-        try {
-            // For now, return the Alert model. In the real app, this might be filtered.
-            const alerts = await prisma.alert.findMany({
-                orderBy: { createdAt: 'desc' },
-            });
-            res.json(alerts);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async labelTransaction(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { txId, label, alertId } = req.body;
-            const userId = (req.user as any).id;
-
-            await prisma.fraudLabel.create({
-                data: {
-                    txId,
-                    label,
-                    labeledBy: userId,
-                },
-            });
-
-            if (alertId) {
-                await prisma.alert.update({
-                    where: { id: alertId },
-                    data: { isRead: true }, // or add a 'processed' field to Alert model
-                });
-            }
-
-<<<<<<< HEAD
-=======
             await AuditService.logAction({
                 adminId: userId,
                 action: 'LABEL_TRANSACTION',
@@ -50,7 +8,6 @@ export class AdminController {
                 payload: { label, alertId }
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Transaction labeled successfully' });
         } catch (error) {
             next(error);
@@ -110,128 +67,6 @@ export class AdminController {
                 select: { id: true, role: true },
             });
 
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'UPDATE_USER_ROLE',
-                targetType: 'User',
-                targetId: id as string,
-                payload: { role }
-            });
-
->>>>>>> dev-ui2
-            res.json(updatedUser);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async getUserById(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = req.params.id as string;
-            const user = await (prisma as any).user.findUnique({
-                where: { id },
-                select: {
-                    id: true,
-                    email: true,
-                    fullName: true,
-                    role: true,
-                    createdAt: true,
-                    emailVerified: true,
-                    profile: {
-                        select: {
-                            preferredName: true,
-                            mobile: true,
-                            mailingAddress: true,
-                            points: true,
-                            bio: true,
-                        }
-                    },
-                    subscriptions: {
-                        include: { plan: true },
-                        orderBy: { startDate: 'desc' },
-                        take: 1,
-                    }
-                }
-            });
-            if (!user) return res.status(404).json({ message: 'User not found' });
-            res.json(user);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async updateUser(req: Request, res: Response, next: NextFunction) {
-        try {
-            const id = req.params.id as string;
-            const { fullName, email, role, preferredName, mobile, mailingAddress, planId } = req.body;
-
-            // Update user fields
-            const updateData: any = {};
-            if (fullName !== undefined) updateData.fullName = fullName;
-            if (email !== undefined) updateData.email = email;
-            if (role !== undefined) updateData.role = role;
-
-            if (Object.keys(updateData).length > 0) {
-                await prisma.user.update({ where: { id }, data: updateData });
-            }
-
-            // Update profile fields (upsert in case profile doesn't exist)
-            const profileData: any = {};
-            if (preferredName !== undefined) profileData.preferredName = preferredName;
-            if (mobile !== undefined) profileData.mobile = mobile;
-            if (mailingAddress !== undefined) profileData.mailingAddress = mailingAddress;
-
-            if (Object.keys(profileData).length > 0) {
-                await (prisma as any).profile.upsert({
-                    where: { userId: id },
-                    update: profileData,
-                    create: { userId: id, ...profileData },
-                });
-            }
-
-            // Handle subscription tier change
-            // planId === "" means "set to free" (deactivate all), planId is a valid UUID means "set to paid"
-            if ('planId' in req.body) {
-                if (!planId) {
-                    // Downgrade to free: deactivate all active subscriptions, set endDate to past
-                    const yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    await (prisma as any).userSubscription.updateMany({
-                        where: { userId: id },
-                        data: { isActive: false, endDate: yesterday },
-                    });
-                } else {
-                    const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
-                    if (plan) {
-                        const endDate = new Date();
-                        endDate.setDate(endDate.getDate() + plan.durationDays);
-
-                        // Deactivate old subscriptions and create new one
-                        await (prisma as any).userSubscription.updateMany({
-                            where: { userId: id, isActive: true },
-                            data: { isActive: false },
-                        });
-                        await prisma.userSubscription.create({
-                            data: { userId: id, planId, endDate, isActive: true, startDate: new Date() }
-                        });
-                    }
-                }
-            }
-
-            const updatedUser = await (prisma as any).user.findUnique({
-                where: { id },
-                select: {
-                    id: true, email: true, fullName: true, role: true, createdAt: true,
-                    profile: { select: { preferredName: true, mobile: true, mailingAddress: true } },
-                    subscriptions: { include: { plan: true }, orderBy: { startDate: 'desc' }, take: 1 }
-                }
-            });
-
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -241,7 +76,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedUser);
         } catch (error) {
             next(error);
@@ -289,13 +123,6 @@ export class AdminController {
     static async updateReportStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-<<<<<<< HEAD
-            const { status } = req.body;
-
-            const updatedReport = await prisma.scamReport.update({
-                where: { id: id as string },
-                data: { status },
-=======
             const { status } = req.body; // e.g., 'VERIFIED', 'REJECTED', 'PENDING'
 
             const oldReport = await prisma.scamReport.findUnique({
@@ -339,7 +166,6 @@ export class AdminController {
                 targetType: 'ScamReport',
                 targetId: id as string,
                 payload: { status, prevStatus: oldReport.status }
->>>>>>> dev-ui2
             });
 
             res.json(updatedReport);
@@ -357,40 +183,6 @@ export class AdminController {
                 data: { deletedAt: new Date() },
             });
 
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'DELETE_REPORT',
-                targetType: 'ScamReport',
-                targetId: id as string
-            });
-
->>>>>>> dev-ui2
-            res.json({ message: 'Report soft-deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async getSubscriptionPlans(req: Request, res: Response, next: NextFunction) {
-        try {
-            const plans = await prisma.subscriptionPlan.findMany();
-            res.json(plans);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async createSubscriptionPlan(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { name, price, features, durationDays } = req.body;
-            const plan = await prisma.subscriptionPlan.create({
-                data: { name, price, features, durationDays },
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -400,7 +192,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.status(201).json(plan);
         } catch (error) {
             next(error);
@@ -415,43 +206,6 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, price, features, durationDays },
             });
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'UPDATE_SUBSCRIPTION_PLAN',
-                targetType: 'SubscriptionPlan',
-                targetId: id as string,
-                payload: req.body
-            });
-
->>>>>>> dev-ui2
-            res.json(updatedPlan);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async deleteSubscriptionPlan(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-
-            // Check if plan is being used by any subscriptions before deleting
-            const activeSubscriptions = await prisma.userSubscription.count({
-                where: { planId: id as string }
-            });
-
-            if (activeSubscriptions > 0) {
-                res.status(400).json({ message: 'Cannot delete plan with existing subscriptions' });
-                return;
-            }
-
-            await prisma.subscriptionPlan.delete({
-                where: { id: id as string },
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -460,7 +214,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Plan deleted successfully' });
         } catch (error) {
             next(error);
@@ -482,34 +235,6 @@ export class AdminController {
             const badge = await prisma.badgeDefinition.create({
                 data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
             });
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'CREATE_BADGE',
-                targetType: 'BadgeDefinition',
-                targetId: badge.id,
-                payload: req.body
-            });
-
->>>>>>> dev-ui2
-            res.status(201).json(badge);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async updateBadge(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            const { key, name, description, icon, tier, trigger, threshold } = req.body;
-            const updatedBadge = await prisma.badgeDefinition.update({
-                where: { id: id as string },
-                data: { key, name, description, icon, tier, trigger, threshold: threshold ? Number(threshold) : null },
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -519,7 +244,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.json(updatedBadge);
         } catch (error) {
             next(error);
@@ -532,42 +256,6 @@ export class AdminController {
             await prisma.badgeDefinition.delete({
                 where: { id: id as string },
             });
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'DELETE_BADGE',
-                targetType: 'BadgeDefinition',
-                targetId: id as string
-            });
-
->>>>>>> dev-ui2
-            res.json({ message: 'Badge deleted successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async getRewards(req: Request, res: Response, next: NextFunction) {
-        try {
-            const rewards = await prisma.reward.findMany({
-                orderBy: { createdAt: 'desc' }
-            });
-            res.json(rewards);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async createReward(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { name, description, pointsCost, type, metadata, active } = req.body;
-            const reward = await prisma.reward.create({
-                data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -577,7 +265,6 @@ export class AdminController {
                 payload: req.body
             });
 
->>>>>>> dev-ui2
             res.status(201).json(reward);
         } catch (error) {
             next(error);
@@ -592,32 +279,6 @@ export class AdminController {
                 where: { id: id as string },
                 data: { name, description, pointsCost: Number(pointsCost), type, metadata: metadata || {}, active },
             });
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'UPDATE_REWARD',
-                targetType: 'Reward',
-                targetId: id as string,
-                payload: req.body
-            });
-
->>>>>>> dev-ui2
-            res.json(updatedReward);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async deleteReward(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            await prisma.reward.delete({
-                where: { id: id as string },
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -626,7 +287,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Reward deleted successfully' });
         } catch (error) {
             next(error);
@@ -661,45 +321,15 @@ export class AdminController {
                     reward: { select: { name: true, type: true } }
                 }
             });
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'UPDATE_REDEMPTION_STATUS',
-                targetType: 'Redemption',
-                targetId: id as string,
-                payload: { status }
-            });
-
->>>>>>> dev-ui2
-            res.json(updatedRedemption);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async getBroadcasts(req: Request, res: Response, next: NextFunction) {
-        try {
-            // Group by message to represent unique broadcasts
-<<<<<<< HEAD
-            const broadcasts = await prisma.alert.groupBy({
-=======
             const broadcasts = await (prisma.alert as any).groupBy({
->>>>>>> dev-ui2
                 by: ['message', 'title', 'type', 'createdAt'],
                 where: { type: 'BROADCAST' },
                 _count: { userId: true },
                 orderBy: { createdAt: 'desc' }
             });
-<<<<<<< HEAD
-            // Format to a more UI friendly shape
-            const formatted = broadcasts.map((b: any) => ({
-=======
 
             // Format to a more UI friendly shape
             const formatted = broadcasts.map((b) => ({
->>>>>>> dev-ui2
                 id: Buffer.from(b.message + b.createdAt.getTime()).toString('base64'), // mock ID for UI
                 title: b.title,
                 message: b.message,
@@ -733,12 +363,6 @@ export class AdminController {
             }));
 
             const result = await prisma.alert.createMany({
-<<<<<<< HEAD
-                data: alertData as any,
-                skipDuplicates: true,
-            });
-
-=======
                 data: alertData,
                 skipDuplicates: true,
             });
@@ -751,7 +375,6 @@ export class AdminController {
                 payload: { title, message, recipients: result.count }
             });
 
->>>>>>> dev-ui2
             res.status(201).json({
                 message: 'Broadcast sent successfully',
                 recipients: result.count
@@ -829,32 +452,6 @@ export class AdminController {
                 });
             }
 
-<<<<<<< HEAD
-=======
-            const adminId = (req.user as any).id;
-            await AuditService.logAction({
-                adminId,
-                action: 'CREATE_FRAUD_LABEL',
-                targetType: 'FraudLabel',
-                targetId: fraudLabel.id,
-                payload: { txId, label }
-            });
-
->>>>>>> dev-ui2
-            res.status(201).json(fraudLabel);
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async deleteFraudLabel(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { id } = req.params;
-            await prisma.fraudLabel.delete({
-                where: { id: id as string }
-            });
-<<<<<<< HEAD
-=======
             const adminId = (req.user as any).id;
             await AuditService.logAction({
                 adminId,
@@ -863,7 +460,6 @@ export class AdminController {
                 targetId: id as string
             });
 
->>>>>>> dev-ui2
             res.json({ message: 'Fraud label deleted successfully' });
         } catch (error) {
             next(error);

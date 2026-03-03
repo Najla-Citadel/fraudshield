@@ -13,53 +13,6 @@ enum CheckType {
   BANK
   DOC
   MANUAL
-<<<<<<< HEAD
-=======
-  MSG
-  QR
-  VOICE
-}
-
-enum AlertSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum AlertCategory {
-  PHISHING
-  LOGIN
-  SYSTEM_SCAN
-  NETWORK
-  COMMUNITY
->>>>>>> dev-ui2
-}
-
-model User {
-  id                  String              @id @default(uuid())
-  email               String              @unique
-  passwordHash        String
-  emailVerified       Boolean             @default(false)
-  fullName            String?
-  role                String              @default("user")
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  alerts              Alert[]
-  transactions        PointsTransaction[]
-  profile             Profile?
-  reports             ScamReport[]
-  userTransactions    Transaction[]
-  subscriptions       UserSubscription[]
-  redemptions         Redemption[]
-  alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
-  transactionJournals TransactionJournal[]
-  refreshToken        String?             @unique
-  comments            Comment[]
-  acceptedTermsVersion String?
-  acceptedTermsAt      DateTime?
-<<<<<<< HEAD
-=======
   auditLogs           AuditLog[]
 }
 
@@ -77,7 +30,6 @@ model AuditLog {
   @@index([createdAt])
   @@index([action])
   @@index([targetType])
->>>>>>> dev-ui2
 }
 
 model Profile {
@@ -141,67 +93,6 @@ model ScamReport {
   @@index([createdAt])
   @@index([category])
   @@index([status])
-<<<<<<< HEAD
-=======
-  @@index([target])
-  @@index([targetType])
->>>>>>> dev-ui2
-}
-
-model Comment {
-  id        String     @id @default(uuid())
-  text      String
-  userId    String
-  reportId  String
-  createdAt DateTime   @default(now())
-  user      User       @relation(fields: [userId], references: [id])
-  report    ScamReport @relation(fields: [reportId], references: [id])
-
-  @@index([reportId])
-}
-
-model Verification {
-  id        String     @id @default(uuid())
-  reportId  String
-  userId    String
-  isSame    Boolean
-  createdAt DateTime   @default(now())
-  report    ScamReport @relation(fields: [reportId], references: [id])
-
-  @@unique([reportId, userId])
-}
-
-model PointsTransaction {
-  id          String   @id @default(uuid())
-  amount      Int
-  description String
-  userId      String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id])
-}
-
-model BehavioralEvent {
-  id        String   @id @default(uuid())
-  type      String
-  metadata  Json
-  userId    String
-  createdAt DateTime @default(now())
-}
-
-model Alert {
-<<<<<<< HEAD
-  id        String   @id @default(uuid())
-  type      String
-  title     String
-  message   String
-  isRead    Boolean  @default(false)
-  userId    String
-  createdAt DateTime @default(now())
-  txId      String?
-  riskScore Int?
-  decision  String?
-  user      User     @relation(fields: [userId], references: [id])
-=======
   id          String        @id @default(uuid())
   category    AlertCategory @default(COMMUNITY)
   severity    AlertSeverity @default(LOW)
@@ -219,7 +110,6 @@ model Alert {
   txId      String?
   riskScore Int?
   decision  String?
->>>>>>> dev-ui2
 }
 
 model Transaction {
@@ -309,14 +199,9 @@ model AlertSubscription {
   longitude   Float?
   radiusKm    Int      @default(15)
   fcmToken    String?
-<<<<<<< HEAD
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-=======
   isActive          Boolean  @default(true)
   emailDigestEnabled Boolean  @default(false)
   createdAt         DateTime @default(now())
->>>>>>> dev-ui2
   updatedAt   DateTime @updatedAt
   user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
 }

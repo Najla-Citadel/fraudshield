@@ -1,13 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { AlertEngineService } from '../services/alert-engine.service';
-<<<<<<< HEAD
-import { prisma } from '../config/database';
-
-export class AlertController {
-    /**
-     * GET /api/alerts/trending
-     * Returns aggressive aggregations of recent scams
-=======
 import { AlertService } from '../services/alert.service';
 import { prisma } from '../config/database';
 
@@ -29,7 +21,6 @@ export class AlertController {
      *     responses:
      *       200:
      *         description: Successfully retrieved trending alerts
->>>>>>> dev-ui2
      */
     static async getTrendingAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -97,10 +88,6 @@ export class AlertController {
     }
 
     /**
-<<<<<<< HEAD
-     * POST /api/alerts/subscribe
-     * Manage user preferences for push alerts
-=======
      * @openapi
      * /api/v1/alerts/daily-digest:
      *   get:
@@ -153,7 +140,6 @@ export class AlertController {
      *     responses:
      *       200:
      *         description: Preferences saved successfully
->>>>>>> dev-ui2
      */
     static async subscribeToAlerts(req: Request, res: Response, next: NextFunction) {
         try {
@@ -169,23 +155,7 @@ export class AlertController {
                     ...(radiusKm && { radiusKm }),
                     ...(fcmToken && { fcmToken }),
                     ...(isActive !== undefined && { isActive }),
-<<<<<<< HEAD
-=======
-                    ...(req.body.emailDigestEnabled !== undefined && { emailDigestEnabled: req.body.emailDigestEnabled }),
->>>>>>> dev-ui2
-                },
-                create: {
-                    userId,
-                    categories: categories || [],
-                    latitude,
-                    longitude,
-                    radiusKm: radiusKm || 15,
-                    fcmToken,
-                    isActive: isActive ?? true,
-<<<<<<< HEAD
-=======
                     emailDigestEnabled: req.body.emailDigestEnabled ?? false,
->>>>>>> dev-ui2
                 },
             });
 
@@ -199,38 +169,7 @@ export class AlertController {
      * GET /api/alerts/preferences
      * Retrieve current user subscription preferences
      */
-<<<<<<< HEAD
-=======
-    /**
-     * @openapi
-     * /api/v1/alerts/preferences:
-     *   get:
-     *     summary: Get user alert preferences
-     *     tags: [Alerts]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Successfully retrieved preferences
-     */
->>>>>>> dev-ui2
-    static async getPreferences(req: Request, res: Response, next: NextFunction) {
-        try {
-            const userId = req.user!.id;
-            const subscription = await (prisma as any).alertSubscription.findUnique({
-                where: { userId },
-            });
-
-            if (!subscription) {
-                // Return sensible defaults if they haven't set up yet
-                return res.json({
-                    categories: [],
-                    isActive: false,
-                    radiusKm: 15,
-<<<<<<< HEAD
-=======
                     emailDigestEnabled: false,
->>>>>>> dev-ui2
                 });
             }
 

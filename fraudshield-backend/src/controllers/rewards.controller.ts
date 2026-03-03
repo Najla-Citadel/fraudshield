@@ -361,9 +361,6 @@ export class RewardsController {
             ]);
 
             const newBadges = await BadgeService.evaluateBadges(userId);
-<<<<<<< HEAD
-            res.json({ claimed: true, points: pointsAwarded, streak, newBadges });
-=======
             res.json({
                 claimed: true,
                 points: pointsAwarded,
@@ -372,7 +369,6 @@ export class RewardsController {
                 nextReward: (streak + 1) * 10 + 10,
                 newBadges
             });
->>>>>>> dev-ui2
         } catch (error) {
             next(error);
         }

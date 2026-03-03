@@ -1,21 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-<<<<<<< HEAD
-import passport from 'passport';
-=======
 import passport from '../config/passport';
->>>>>>> dev-ui2
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/database';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/email.service';
-<<<<<<< HEAD
-
-export class AuthController {
-    static async signup(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { email, password, fullName } = req.body;
-            // Basic validation skipped (handled by middleware)
-=======
 import { AlertService } from '../services/alert.service';
 import { AlertCategory, AlertSeverity } from '@prisma/client';
 import { EncryptionUtils } from '../utils/encryption';
@@ -63,7 +51,6 @@ export class AuthController {
             if (!deliverability.valid) {
                 return res.status(400).json({ message: deliverability.reason });
             }
->>>>>>> dev-ui2
 
             // Check if user exists
             const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -80,119 +67,6 @@ export class AuthController {
                     email,
                     passwordHash,
                     fullName,
-<<<<<<< HEAD
-=======
-                    acceptedTermsVersion: 'v1.0',
-                    acceptedTermsAt: new Date(),
->>>>>>> dev-ui2
-                    profile: {
-                        create: {
-                            avatar: 'Felix',
-                        },
-                    },
-                },
-                include: {
-                    profile: true,
-                },
-            });
-
-            // Generate tokens
-            const { accessToken, refreshToken } = AuthService.generateTokens(user.id);
-
-            // Store refresh token
-            await prisma.user.update({
-                where: { id: user.id },
-                data: { refreshToken },
-            });
-
-            // Generate OTP and store in Redis for email verification
-            const otp = await EmailService.generateEmailVerificationOtp(email);
-
-            // In local development, we return the OTP for easy testing. 
-            // In production, NEVER return the OTP in the HTTP response.
-            if (process.env.NODE_ENV === 'development') {
-                return res.status(201).json({
-                    user: AuthService.toSafeUser(user),
-                    token: accessToken,
-                    refreshToken,
-                    message: 'Account created. Please verify your email.',
-                    dev_otp: otp
-                });
-            }
-
-            res.status(201).json({
-                user: AuthService.toSafeUser(user),
-                token: accessToken,
-                refreshToken,
-                message: 'Account created. Please verify your email.'
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async verifyEmail(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { email, otp } = req.body;
-
-            if (!email || !otp) {
-                return res.status(400).json({ error: 'Email and OTP are required' });
-            }
-
-            // Verify OTP with Redis
-            const isValid = await EmailService.verifyEmailOtp(email, otp);
-
-            if (!isValid) {
-                return res.status(400).json({ error: 'Invalid or expired verification code' });
-            }
-
-            // Update User in DB
-            await prisma.user.update({
-                where: { email },
-                data: { emailVerified: true },
-            });
-
-            res.json({ message: 'Email successfully verified' });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async requestEmailVerification(req: Request, res: Response, next: NextFunction) {
-        try {
-            const userId = (req.user as any)?.id;
-            const user = await prisma.user.findUnique({ where: { id: userId } });
-
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            if (user.emailVerified) {
-                return res.status(400).json({ message: 'Email already verified' });
-            }
-
-            // Generate OTP and store in Redis for email verification
-            const otp = await EmailService.generateEmailVerificationOtp(user.email);
-
-            // In local development, we return the OTP for easy testing. 
-            // In production, NEVER return the OTP in the HTTP response.
-            if (process.env.NODE_ENV === 'development') {
-                return res.status(200).json({
-                    message: 'Verification code sent to your email.',
-                    dev_otp: otp
-                });
-            }
-
-            res.status(200).json({
-                message: 'Verification code sent to your email.'
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-<<<<<<< HEAD
-=======
     /**
      * @openapi
      * /api/v1/auth/login:
@@ -213,7 +87,6 @@ export class AuthController {
      *       200:
      *         description: Login successful
      */
->>>>>>> dev-ui2
     static async login(req: Request, res: Response, next: NextFunction) {
         passport.authenticate('local', { session: false }, async (err: any, user: any, info: any) => {
             if (err) return next(err);
@@ -231,36 +104,6 @@ export class AuthController {
                 data: { refreshToken },
             });
 
-<<<<<<< HEAD
-=======
-            // FOR DEMO: Generate a "Welcome" alert and a "Security Scan" alert
-            await AlertService.createAlert({
-                userId: user.id,
-                category: AlertCategory.COMMUNITY,
-                severity: AlertSeverity.LOW,
-                title: 'Welcome to FraudShield',
-                message: 'Your account is now protected. We are monitoring for threats in your area.',
-            });
-
-            await AlertService.createAlert({
-                userId: user.id,
-                category: AlertCategory.SYSTEM_SCAN,
-                severity: AlertSeverity.LOW,
-                title: 'Initial System Scan Completed',
-                message: '0 threats found. Your device security is up to date.',
-            });
-
->>>>>>> dev-ui2
-            res.json({
-                user: AuthService.toSafeUser(fullUser),
-                token: accessToken,
-                refreshToken,
-            });
-        })(req, res, next);
-    }
-
-<<<<<<< HEAD
-=======
     /**
      * @openapi
      * /api/v1/auth/profile:
@@ -273,7 +116,6 @@ export class AuthController {
      *       200:
      *         description: Successfully retrieved profile
      */
->>>>>>> dev-ui2
     static async getProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
@@ -287,11 +129,7 @@ export class AuthController {
     static async updateProfile(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = (req.user as any).id;
-<<<<<<< HEAD
-            const { bio, avatar, fullName, metadata } = req.body;
-=======
             const { bio, avatar, fullName, metadata, mobile, mailingAddress } = req.body;
->>>>>>> dev-ui2
 
             if (fullName) {
                 await prisma.user.update({
@@ -303,42 +141,28 @@ export class AuthController {
             const profile = await prisma.profile.upsert({
                 where: { userId },
                 update: {
-<<<<<<< HEAD
-                    bio,
-                    avatar,
-=======
                     bio: bio ? EncryptionUtils.encrypt(bio) : undefined,
                     avatar,
                     mobile: mobile ? EncryptionUtils.encrypt(mobile) : undefined,
                     mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : undefined,
->>>>>>> dev-ui2
                     metadata: metadata || undefined,
                 },
                 create: {
                     userId,
-<<<<<<< HEAD
-                    bio,
-                    avatar,
-=======
                     bio: bio ? EncryptionUtils.encrypt(bio) : '',
                     avatar: avatar || 'Felix',
                     mobile: mobile ? EncryptionUtils.encrypt(mobile) : '',
                     mailingAddress: mailingAddress ? EncryptionUtils.encrypt(mailingAddress) : '',
->>>>>>> dev-ui2
                     metadata: metadata || {},
                 },
             });
 
-<<<<<<< HEAD
-            res.json(profile);
-=======
             res.json({
                 ...profile,
                 bio: EncryptionUtils.decrypt(profile.bio || ''),
                 mobile: EncryptionUtils.decrypt(profile.mobile || ''),
                 mailingAddress: EncryptionUtils.decrypt(profile.mailingAddress || ''),
             });
->>>>>>> dev-ui2
         } catch (error) {
             next(error);
         }
@@ -482,71 +306,8 @@ export class AuthController {
 
     static async logout(req: Request, res: Response, next: NextFunction) {
         try {
-<<<<<<< HEAD
-=======
-            const authHeader = req.headers.authorization;
-            if (authHeader && authHeader.startsWith('Bearer ')) {
-                const token = authHeader.split(' ')[1];
-                await AuthService.revokeToken(token);
-            }
-
->>>>>>> dev-ui2
-            const userId = (req.user as any)?.id;
-            if (userId) {
-                await prisma.user.update({
-                    where: { id: userId },
-                    data: { refreshToken: null },
-                });
-            }
-            res.json({ message: 'Logged out successfully' });
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async googleLogin(req: Request, res: Response, next: NextFunction) {
-        try {
-            const { idToken } = req.body;
-            if (!idToken) {
-                return res.status(400).json({ message: 'Google ID Token is required' });
-            }
-
-            const payload = await AuthService.verifyGoogleToken(idToken);
-            if (!payload) {
-                return res.status(401).json({ message: 'Invalid Google token' });
-            }
-
-            const { email, name, picture, sub: googleId } = payload;
-            if (!email) {
-                return res.status(400).json({ message: 'Google account must have an email' });
-            }
-
-            // Find or create user
-            let user = await prisma.user.findUnique({
-                where: { email },
-                include: { profile: true },
-            });
-
-            if (!user) {
-                // Auto-register (random password since they'll use Google)
-                const passwordHash = await AuthService.hashPassword(Math.random().toString(36).substring(2, 12));
-                user = await prisma.user.create({
-                    data: {
-                        email,
-                        fullName: name || 'Google User',
-                        passwordHash,
-                        emailVerified: true,
-                        profile: {
-                            create: {
-                                avatar: 'Felix',
-                                bio: 'Joined via Google',
-                            },
-                        },
-<<<<<<< HEAD
-=======
                         acceptedTermsVersion: 'v1.0',
                         acceptedTermsAt: new Date(),
->>>>>>> dev-ui2
                     },
                     include: { profile: true },
                 });

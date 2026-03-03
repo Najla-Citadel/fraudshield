@@ -1,9 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
-<<<<<<< HEAD
-
-export class UserController {
-=======
 import { HealthScoreService } from '../services/health-score.service';
 
 export class UserController {
@@ -23,7 +19,6 @@ export class UserController {
         }
     }
 
->>>>>>> dev-ui2
     static async deleteAccount(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user?.id;

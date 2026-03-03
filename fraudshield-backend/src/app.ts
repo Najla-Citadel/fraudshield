@@ -4,10 +4,6 @@ import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-<<<<<<< HEAD
-import passport from './config/passport';
-import logger from './utils/logger';
-=======
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import passport from './config/passport';
@@ -16,51 +12,18 @@ import logger from './utils/logger';
 import { MonitoringService } from './services/monitoring.service';
 import { MetricsService } from './services/metrics.service';
 import { metricsMiddleware } from './middleware/metrics.middleware';
->>>>>>> dev-ui2
 
 // Load environment variables
 dotenv.config();
 
-<<<<<<< HEAD
-=======
-// Validate critical secrets
-validateEnv();
-
-// Initialize Metrics
-MetricsService.init();
-
->>>>>>> dev-ui2
-// Import database
-import { prisma } from './config/database';
-
-// Import Routes
-import authRoutes from './routes/auth.routes';
-import reportRoutes from './routes/report.routes';
-import featureRoutes from './routes/feature.routes';
-import rewardsRoutes from './routes/rewards.routes';
-import adminRoutes from './routes/admin.routes';
-import uploadRoutes from './routes/upload.routes';
-import userRoutes from './routes/user.routes';
-import alertRoutes from './routes/alert.routes';
-import transactionRoutes from './routes/transaction.routes';
-import configRoutes from './routes/config.routes';
-import { requestTimeout } from './middleware/timeout.middleware';
-<<<<<<< HEAD
-=======
 import { antiReplay } from './middleware/antiReplay.middleware';
 import { tracer } from './middleware/tracer.middleware';
->>>>>>> dev-ui2
 
 const app: Application = express();
 
 // Trust proxy for rate limiting accuracy behind reverse proxies/LB
 app.set('trust proxy', 1);
 
-<<<<<<< HEAD
-// Global Request Timeout (30s)
-app.use(requestTimeout(30000));
-
-=======
 // Request Tracing (Correlation ID) - MUST be first to trace everything
 app.use(tracer);
 
@@ -73,7 +36,6 @@ app.use(requestTimeout(30000));
 // Anti-Replay Protection (Timestamp + Nonce validation)
 app.use(antiReplay);
 
->>>>>>> dev-ui2
 // Security middleware
 app.use(helmet());
 
@@ -130,12 +92,6 @@ app.get('/health', (req: Request, res: Response) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-<<<<<<< HEAD
-        environment: process.env.NODE_ENV,
-    });
-});
-
-=======
     });
 });
 
@@ -149,17 +105,12 @@ app.get('/metrics', async (req: Request, res: Response) => {
     }
 });
 
->>>>>>> dev-ui2
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
 
-<<<<<<< HEAD
-// API Routes
-const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
-=======
 // API Documentation (Swagger)
 const apiPrefix = `/api/${process.env.API_VERSION || 'v1'}`;
 if (process.env.NODE_ENV !== 'production') {
@@ -168,7 +119,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // API Routes
->>>>>>> dev-ui2
 app.use(`${apiPrefix}/auth`, authRoutes);
 app.use(`${apiPrefix}/reports`, reportRoutes);
 app.use(`${apiPrefix}/features`, featureRoutes);
@@ -183,14 +133,6 @@ app.use(`${apiPrefix}/config`, configRoutes);
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
     try {
-<<<<<<< HEAD
-        await prisma.$queryRaw`SELECT 1`;
-        res.json({
-            status: 'healthy',
-            version: process.env.API_VERSION || 'v1',
-            database: 'connected',
-            timestamp: new Date().toISOString(),
-=======
         const health = await MonitoringService.checkInfrastructure();
         const isHealthy = health.database === 'healthy' && health.redis === 'healthy';
 
@@ -198,18 +140,12 @@ app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
             status: isHealthy ? 'healthy' : 'degraded',
             version: process.env.API_VERSION || 'v1',
             ...health
->>>>>>> dev-ui2
         });
     } catch (error) {
         res.status(500).json({
             status: 'unhealthy',
             version: process.env.API_VERSION || 'v1',
-<<<<<<< HEAD
-            database: 'disconnected',
-            error: 'Database connection failed',
-=======
             error: 'Monitoring check failed',
->>>>>>> dev-ui2
         });
     }
 });

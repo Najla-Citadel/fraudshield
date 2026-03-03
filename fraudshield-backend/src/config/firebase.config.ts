@@ -1,8 +1,4 @@
 import * as admin from 'firebase-admin';
-<<<<<<< HEAD
-import path from 'path';
-import fs from 'fs';
-=======
 >>>>>>> dev-ui2
 
 let isInitialized = false;
@@ -43,7 +39,6 @@ export const initializeFirebase = () => {
             }
             console.warn('⚠️ FIREBASE_SERVICE_ACCOUNT environment variable not found. Push notifications will be disabled.');
             return;
->>>>>>> dev-ui2
         }
 
         admin.initializeApp({
