@@ -1,0 +1,15 @@
+.env
+.env.*
+node_modules
+dist
+.git
+.gitignore
+.dockerignore
+Dockerfile
+README.md
+tests
+*.test.ts
+*.spec.ts
+tsconfig.json
+.prettierrc
+.eslintrc.json

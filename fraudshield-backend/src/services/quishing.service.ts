@@ -1,4 +1,5 @@
 import { createClient } from 'redis';
+import { validateSafeUrl } from '../utils/ssrf';
 
 const SAFE_BROWSING_URL = 'https://safebrowsing.googleapis.com/v4/threatMatches:find';
 const VIRUSTOTAL_URL = 'https://www.virustotal.com/api/v3/urls';
@@ -193,6 +194,18 @@ export class QuishingService {
         let currentUrl = startUrl;
 
         for (let hop = 0; hop < MAX_REDIRECT_HOPS; hop++) {
+            // Validate URL for SSRF before each request
+            try {
+                await validateSafeUrl(currentUrl);
+            } catch (err: any) {
+                // Blocked or invalid URL — stop chain
+                if (hop === 0) {
+                    // If the first URL is dangerous, we should still return it so it can be analyzed
+                    // but we won't follow it. (Wait, if we don't follow it, we shouldn't fetch it either).
+                }
+                break;
+            }
+
             let response: Response;
             try {
                 const controller = new AbortController();
