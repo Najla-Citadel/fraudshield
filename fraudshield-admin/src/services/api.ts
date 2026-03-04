@@ -16,8 +16,6 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-<<<<<<< HEAD
-=======
 // Add a response interceptor to handle token expiry
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -91,7 +89,6 @@ api.interceptors.response.use(
     }
 );
 
->>>>>>> dev-ui2
 export default api;
 
 export const adminService = {
