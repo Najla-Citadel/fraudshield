@@ -17,11 +17,12 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
   final _amountController = TextEditingController();
   final _merchantController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   String _selectedMethod = 'Bank Transfer';
   String _selectedPlatform = 'WhatsApp';
   String _selectedCategory = 'BANK';
   bool _isSubmitting = false;
+  bool _isIncome = false; // Default to Money Out (Expense)
 
   Timer? _debounce;
   bool _isChecking = false;
@@ -38,7 +39,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
 
   void _onTargetChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    
+
     if (value.trim().isEmpty) {
       setState(() {
         _riskCheckResult = null;
@@ -54,7 +55,8 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
 
     _debounce = Timer(const Duration(milliseconds: 800), () async {
       try {
-        final Map<String, dynamic> result = await ApiService.instance.lookupPaymentRisk(
+        final Map<String, dynamic> result =
+            await ApiService.instance.lookupPaymentRisk(
           type: _selectedCategory.toLowerCase(),
           value: value.trim(),
         );
@@ -86,11 +88,13 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         child: Row(
           children: const [
             SizedBox(
-              width: 16, height: 16, 
-              child: CircularProgressIndicator(color: Colors.blueAccent, strokeWidth: 2)
-            ),
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                    color: Colors.blueAccent, strokeWidth: 2)),
             SizedBox(width: 12),
-            Text('Checking community database...', style: TextStyle(color: Colors.blueAccent, fontSize: 12)),
+            Text('Checking community database...',
+                style: TextStyle(color: Colors.blueAccent, fontSize: 12)),
           ],
         ),
       );
@@ -100,19 +104,24 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
 
     final bool found = _riskCheckResult!['found'] ?? false;
     if (!found) {
-       return Container(
+      return Container(
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.accentGreen.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
+          border:
+              Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: const [
-            Icon(LucideIcons.checkCircle2, color: AppColors.accentGreen, size: 20),
+            Icon(LucideIcons.checkCircle2,
+                color: AppColors.accentGreen, size: 20),
             SizedBox(width: 12),
-            Expanded(child: Text('No community reports found. Safe to proceed.', style: TextStyle(color: AppColors.accentGreen, fontSize: 13))),
+            Expanded(
+                child: Text('No community reports found. Safe to proceed.',
+                    style:
+                        TextStyle(color: AppColors.accentGreen, fontSize: 13))),
           ],
         ),
       );
@@ -146,14 +155,18 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Caution: $count Report(s)', 
-                  style: TextStyle(color: badgeColor, fontWeight: FontWeight.bold, fontSize: 14)
-                ),
+                Text('Caution: $count Report(s)',
+                    style: TextStyle(
+                        color: badgeColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14)),
                 const SizedBox(height: 4),
                 Text(
                   rec,
-                  style: TextStyle(color: badgeColor.withValues(alpha: 0.8), fontSize: 12, height: 1.3),
+                  style: TextStyle(
+                      color: badgeColor.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      height: 1.3),
                 ),
               ],
             ),
@@ -174,8 +187,15 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
     setState(() => _isSubmitting = true);
 
     try {
+      double amount = double.parse(_amountController.text);
+      if (!_isIncome) {
+        amount = -amount.abs(); // Force negative for Money Out
+      } else {
+        amount = amount.abs(); // Force positive for Money In
+      }
+
       await ApiService.instance.logTransaction(
-        amount: double.parse(_amountController.text),
+        amount: amount,
         merchant: _merchantController.text,
         paymentMethod: _selectedMethod,
         platform: _selectedPlatform,
@@ -220,7 +240,10 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               children: [
                 const Text(
                   'Log Transaction',
-                  style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold),
                 ),
                 IconButton(
                   icon: const Icon(LucideIcons.x, color: Colors.white),
@@ -239,7 +262,9 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 prefixIcon: const Icon(LucideIcons.tag, color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
               items: ['BANK', 'PHONE', 'URL', 'DOC', 'MANUAL'].map((method) {
                 return DropdownMenuItem(value: method, child: Text(method));
@@ -260,25 +285,111 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 prefixIcon: const Icon(LucideIcons.user, color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
             ),
-            
+
             // Risk Badge injected here
             _buildRiskBadge(),
-            if (_riskCheckResult == null && !_isChecking) const SizedBox(height: 16),
+            if (_riskCheckResult == null && !_isChecking)
+              const SizedBox(height: 16),
+
+            // In/Out Toggle
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _isIncome = true),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: _isIncome
+                            ? AppColors.accentGreen.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: _isIncome
+                                ? AppColors.accentGreen
+                                : Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.arrowDownLeft,
+                              color: _isIncome
+                                  ? AppColors.accentGreen
+                                  : Colors.grey,
+                              size: 18),
+                          const SizedBox(width: 8),
+                          Text('MONEY IN',
+                              style: TextStyle(
+                                  color: _isIncome
+                                      ? AppColors.accentGreen
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _isIncome = false),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      decoration: BoxDecoration(
+                        color: !_isIncome
+                            ? Colors.redAccent.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: !_isIncome
+                                ? Colors.redAccent
+                                : Colors.white.withValues(alpha: 0.1)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.arrowUpRight,
+                              color:
+                                  !_isIncome ? Colors.redAccent : Colors.grey,
+                              size: 18),
+                          const SizedBox(width: 8),
+                          Text('MONEY OUT',
+                              style: TextStyle(
+                                  color: !_isIncome
+                                      ? Colors.redAccent
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
 
             TextField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Amount (RM)',
                 labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.banknote, color: Colors.grey),
+                prefixIcon:
+                    const Icon(LucideIcons.banknote, color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
             ),
             const SizedBox(height: 16),
@@ -289,12 +400,16 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               decoration: InputDecoration(
                 labelText: 'Payment Method',
                 labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.creditCard, color: Colors.grey),
+                prefixIcon:
+                    const Icon(LucideIcons.creditCard, color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
-              items: ['Bank Transfer', 'DuitNow', 'E-Wallet', 'COD'].map((method) {
+              items:
+                  ['Bank Transfer', 'DuitNow', 'E-Wallet', 'COD'].map((method) {
                 return DropdownMenuItem(value: method, child: Text(method));
               }).toList(),
               onChanged: (val) => setState(() => _selectedMethod = val!),
@@ -310,9 +425,18 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 prefixIcon: const Icon(LucideIcons.layout, color: Colors.grey),
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
-              items: ['WhatsApp', 'Shopee', 'Facebook', 'Carousell', 'Telegram', 'Other'].map((p) {
+              items: [
+                'WhatsApp',
+                'Shopee',
+                'Facebook',
+                'Carousell',
+                'Telegram',
+                'Other'
+              ].map((p) {
                 return DropdownMenuItem(value: p, child: Text(p));
               }).toList(),
               onChanged: (val) => setState(() => _selectedPlatform = val!),
@@ -323,12 +447,15 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               maxLines: 3,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                  labelText: 'Notes (Optional)',
-                  labelStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(LucideIcons.fileText, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1E293B),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                labelText: 'Notes (Optional)',
+                labelStyle: const TextStyle(color: Colors.grey),
+                prefixIcon:
+                    const Icon(LucideIcons.fileText, color: Colors.grey),
+                filled: true,
+                fillColor: const Color(0xFF1E293B),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none),
               ),
             ),
             const SizedBox(height: 32),
@@ -339,13 +466,17 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 onPressed: _isSubmitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accentGreen,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
                 child: _isSubmitting
                     ? const CircularProgressIndicator(color: AppColors.deepNavy)
                     : const Text(
                         'SAVE TO JOURNAL',
-                        style: TextStyle(color: AppColors.deepNavy, fontWeight: FontWeight.bold, fontSize: 16),
+                        style: TextStyle(
+                            color: AppColors.deepNavy,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
                       ),
               ),
             ),

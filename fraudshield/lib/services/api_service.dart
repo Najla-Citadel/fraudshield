@@ -19,17 +19,20 @@ class ApiService {
   static const _keyAuthToken = 'auth_token';
   static const _keyRefreshToken = 'refresh_token';
 
-  // Migrate API_BASE_URL to compile-time variables.
-  // Use --dart-define=API_BASE_URL=... at build time.
-  static const String _defaultBaseUrl = 'http://10.0.2.2:3000/api/v1';
+  // No longer using a hardcoded default for production safety.
+  // In Debug mode, we fall back to the Android emulator loopback.
+  // In Release mode, this MUST be provided via --dart-define=API_BASE_URL=...
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: _defaultBaseUrl,
+    defaultValue: kReleaseMode ? '' : 'http://10.0.2.2:3000/api/v1',
   );
 
   String? _token;
   String? _refreshToken;
   Future<bool>? _refreshFuture;
+
+  /// Callback to notify when a session is invalidated (e.g., 401 on refresh)
+  VoidCallback? onTokenExpired;
 
   // SHA-256 Fingerprint for api.fraudshieldprotect.com
   static const String _prodFingerprint =
@@ -40,8 +43,20 @@ class ApiService {
       '0000000000000000000000000000000000000000000000000000000000000000';
 
   Future<void> init() async {
+    if (kReleaseMode && baseUrl.isEmpty) {
+      // Prevent the app from running in production without a valid API URL.
+      // This forces the build process to include the correct backend endpoint.
+      throw UnsupportedError(
+        'CRITICAL: API_BASE_URL is not defined for this production build. '
+        'Ensure you build with --dart-define=API_BASE_URL=https://your-api.com/api/v1',
+      );
+    }
+
     if (kDebugMode) {
       debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
+      if (baseUrl.contains('10.0.2.2') || baseUrl.contains('localhost')) {
+        debugPrint('⚠️ WARNING: Running with a LOCAL development backend.');
+      }
     }
     _token = await _secureStorage.read(key: _keyAuthToken);
     _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
@@ -187,6 +202,7 @@ class ApiService {
               'ApiService: Token refresh failed (${response.statusCode})');
         }
         await signOut();
+        onTokenExpired?.call();
         return false;
       }
     } catch (e) {
@@ -438,7 +454,7 @@ class ApiService {
     String? notes,
     String checkType = 'MANUAL',
   }) async {
-    final response = await post('/transactions/log', {
+    final response = await post('/transactions', {
       'amount': amount,
       'merchant': merchant,
       'target': target,
@@ -790,6 +806,7 @@ class ApiService {
         }
         return _sendRequest(method, path, body: body);
       }
+      // If refresh failed, refreshToken() already called signOut() and onTokenExpired()
       throw Exception('Session expired');
     } else {
       final message = isJson && data is Map

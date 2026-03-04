@@ -73,4 +73,25 @@ class NotificationService extends ChangeNotifier {
       payload: 'voice_scan',
     );
   }
+
+  Future<void> showNotification(
+      {required String title, required String body}) async {
+    const fln.AndroidNotificationDetails androidPlatformChannelSpecifics =
+        fln.AndroidNotificationDetails(
+      'generic_alerts',
+      'Generic Alerts',
+      importance: fln.Importance.max,
+      priority: fln.Priority.high,
+    );
+
+    const fln.NotificationDetails platformChannelSpecifics =
+        fln.NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _notificationsPlugin.show(
+      DateTime.now().millisecond,
+      title,
+      body,
+      platformChannelSpecifics,
+    );
+  }
 }

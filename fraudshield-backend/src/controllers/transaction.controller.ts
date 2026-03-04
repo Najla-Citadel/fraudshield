@@ -3,6 +3,7 @@ import { prisma } from '../config/database';
 import { EncryptionUtils } from '../utils/encryption';
 import { MacauScamService } from '../services/macau-scam.service';
 import { AlertService } from '../services/alert.service';
+import { MuleDetectionService } from '../services/mule-detection.service';
 
 export class TransactionController {
     /**
@@ -121,7 +122,7 @@ export class TransactionController {
                 data: {
                     userId,
                     checkType: checkType || 'MANUAL',
-                    target: target ? EncryptionUtils.deterministicEncrypt(target) : merchant,
+                    target: (target || merchant) ? EncryptionUtils.deterministicEncrypt(target || merchant) : null,
                     amount: amount ? parseFloat(amount) : null,
                     merchant,
                     paymentMethod,
@@ -164,10 +165,42 @@ export class TransactionController {
                 });
             }
 
+            // 3. Perform Mule Account Velocity Analysis
+            const muleEvaluation = await MuleDetectionService.evaluate(userId, amount ? parseFloat(amount) : null, target || merchant);
+            if (muleEvaluation.isMule) {
+                // Auto-create alert with MULE_ACCOUNT category
+                const primaryRule = muleEvaluation.triggeredRules[0] || 'Activity';
+                await prisma.alert.create({
+                    data: {
+                        userId,
+                        title: `🔴 Mule Alert: ${primaryRule}`,
+                        message: muleEvaluation.recommendation,
+                        severity: muleEvaluation.confidence === 'critical' ? 'CRITICAL' : 'HIGH',
+                        category: 'MULE_ACCOUNT',
+                        txId: transaction.id,
+                        riskScore: muleEvaluation.riskScore,
+                        decision: 'SUSPICIOUS',
+                        metadata: {
+                            triggeredRules: muleEvaluation.triggeredRules
+                        }
+                    }
+                });
+
+                // Update transaction status
+                await prisma.transactionJournal.update({
+                    where: { id: transaction.id },
+                    data: { status: 'SUSPICIOUS', riskScore: Math.max(transaction.riskScore, muleEvaluation.riskScore) }
+                });
+            }
+
             res.status(201).json({
-                transaction,
+                transaction: {
+                    ...transaction,
+                    target: EncryptionUtils.decrypt(transaction.target || '')
+                },
                 preCheck,
-                macauEvaluation
+                macauEvaluation,
+                muleEvaluation
             });
         } catch (error) {
             next(error);

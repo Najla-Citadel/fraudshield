@@ -5,6 +5,7 @@ import 'dart:developer';
 import '../services/api_service.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
+import '../services/notification_service.dart';
 import '../l10n/app_localizations.dart';
 import '../constants/colors.dart';
 import '../constants/app_theme.dart';
@@ -16,9 +17,14 @@ import 'subscription_screen.dart' as crate;
 import 'status_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
+import 'transaction_journal_screen.dart';
 import 'profile_screen.dart';
 import 'alert_preferences_screen.dart';
 import '../services/biometric_service.dart';
+import '../services/smart_capture_service.dart';
+import 'package:notification_listener_service/notification_listener_service.dart';
+import 'log_payment_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -34,6 +40,7 @@ class _AccountScreenState extends State<AccountScreen> {
   String _avatarSeed = 'Felix';
   bool _biometricEnabled = false;
   bool _isBiometricAvailable = false;
+  bool _smartCaptureEnabled = false;
 
   // ================= LIFECYCLE =================
   @override
@@ -41,6 +48,39 @@ class _AccountScreenState extends State<AccountScreen> {
     super.initState();
     _loadProfile();
     _checkBiometrics();
+    _loadSmartCaptureState();
+  }
+
+  Future<void> _loadSmartCaptureState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool('smart_capture_enabled') ?? false;
+    if (enabled) {
+      await SmartCaptureService().start();
+    }
+    if (mounted) {
+      setState(() => _smartCaptureEnabled = enabled);
+    }
+  }
+
+  Future<void> _toggleSmartCapture(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('smart_capture_enabled', enabled);
+
+    if (enabled) {
+      bool hasPermission =
+          await NotificationListenerService.isPermissionGranted();
+      if (!hasPermission) {
+        await NotificationListenerService.requestPermission();
+        // Permission is requested, we assume they might say yes
+      }
+      await SmartCaptureService().start();
+    } else {
+      await SmartCaptureService().stop();
+    }
+
+    if (mounted) {
+      setState(() => _smartCaptureEnabled = enabled);
+    }
   }
 
   Future<void> _checkBiometrics() async {
@@ -256,6 +296,96 @@ class _AccountScreenState extends State<AccountScreen> {
                                         builder: (_) =>
                                             const AlertPreferencesScreen()),
                                   ),
+                                ),
+                                SettingsTile(
+                                  icon: Icons.auto_awesome_rounded,
+                                  title: 'Smart Capture (Beta)',
+                                  subtitle: 'Auto-log banking transactions',
+                                  onTap: () {},
+                                  trailing: Switch(
+                                    value: _smartCaptureEnabled,
+                                    onChanged: _toggleSmartCapture,
+                                    activeColor: AppColors.accentGreen,
+                                  ),
+                                ),
+                                if (_smartCaptureEnabled)
+                                  SettingsTile(
+                                    icon: Icons.bug_report_rounded,
+                                    title: 'Simulate Banking Alert',
+                                    subtitle: 'Test auto-capture logic',
+                                    onTap: () async {
+                                      const testText =
+                                          'RM 1250.00 transferred to MULE_ACC_123';
+                                      debugPrint(
+                                          'AccountScreen: Tapping Simulation Button');
+                                      try {
+                                        // 1. Show the visual notification (status bar feedback)
+                                        await NotificationService.instance
+                                            .showNotification(
+                                          title: 'MAE Alert',
+                                          body: testText,
+                                        );
+                                      } catch (e) {
+                                        debugPrint(
+                                            'AccountScreen: Visual notification failed: $e');
+                                      }
+
+                                      // 2. Directly invoke Smart Capture parsing
+                                      //    (NotificationListenerService does not reliably
+                                      //    receive same-app notifications on emulators)
+                                      try {
+                                        await SmartCaptureService()
+                                            .simulateCapture(testText);
+                                        if (mounted) {
+                                          _toast(
+                                              'Simulation complete! Check Transaction Journal.');
+                                        }
+                                      } catch (e) {
+                                        debugPrint(
+                                            'AccountScreen: simulateCapture failed: $e');
+                                        if (mounted) {
+                                          _toast('Capture failed. Check logs.');
+                                        }
+                                      }
+                                    },
+                                  ),
+                                SettingsTile(
+                                  icon: Icons.add_card_rounded,
+                                  title: 'Log Test Transaction',
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (_) => LogPaymentSheet(
+                                        onLogSuccess: () {
+                                          _toast(
+                                              'Transaction logged successfully! Check your notifications.');
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                                SettingsTile(
+                                  icon: Icons.receipt_long_rounded,
+                                  title: 'Transaction Journal',
+                                  trailing: Icon(Icons.arrow_forward_ios,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.2),
+                                      size: 14),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) =>
+                                            const TransactionJournalScreen(),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
