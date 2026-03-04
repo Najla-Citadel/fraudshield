@@ -82,6 +82,38 @@ describe('NlpMessageService', () => {
         });
     });
 
+    describe('Macau Scam detection', () => {
+        it('detects authority + money demand + safe account narrative', () => {
+            const msg = 'This is Bank Negara. Your account is linked to a criminal investigation. Transfer your funds to this safe account immediately.';
+            const result = NlpMessageService.analyze(msg);
+            expect(result.score).toBeGreaterThanOrEqual(80);
+            expect(result.level).toBe('critical');
+            expect(result.scamType).toBe('macau_scam');
+            expect(result.matchedPatterns).toContain('Macau Scam Indicators: Authority Impersonation + Money Demand');
+        });
+
+        it('detects BM Macau Scam (Legal threat + money demand)', () => {
+            const msg = 'Ini pegawai PDRM. Anda ada waran tangkap. Sila pindahkan RM5000 ke akaun mahkamah sekarang untuk ikat jamin.';
+            const result = NlpMessageService.analyze(msg);
+            expect(result.score).toBeGreaterThanOrEqual(75);
+            expect(result.scamType).toBe('macau_scam');
+        });
+
+        it('detects ZH Macau Scam', () => {
+            const msg = '这是马来西亚警方。您的银行账户涉及犯罪案件，请立即将资金转入安全账户以进行验证。';
+            const result = NlpMessageService.analyze(msg);
+            expect(result.score).toBeGreaterThanOrEqual(75);
+            expect(result.scamType).toBe('macau_scam');
+        });
+
+        it('detects investigation pressure narrative', () => {
+            const msg = 'Pihak LHDN sedang menjalankan siasatan kes jenayah terhadap anda. Pindahkan wang anda ke akaun selamat sekarang.';
+            const result = NlpMessageService.analyze(msg);
+            expect(result.score).toBeGreaterThanOrEqual(70);
+            expect(result.scamType).toBe('macau_scam');
+        });
+    });
+
     describe('Investment scam detection', () => {
         it('detects guaranteed return investment scam', () => {
             const msg = 'Join our crypto investment group! 50% guaranteed return within 30 days. Limited slots!';

@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
+import 'package:flutter/services.dart';
 
 // ─── Data model ───────────────────────────────────────────────────────────────
 
@@ -104,6 +105,35 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
+    _initForegroundTask();
+  }
+
+  void _initForegroundTask() {
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'fraudshield_background',
+        channelName: 'FraudShield Protection',
+        channelDescription: 'Maintains recording protection during calls',
+        channelImportance: NotificationChannelImportance.LOW,
+        priority: NotificationPriority.LOW,
+        iconData: const NotificationIconData(
+          resType: ResourceType.mipmap,
+          resPrefix: ResourcePrefix.ic,
+          name: 'launcher',
+        ),
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: true,
+        playSound: false,
+      ),
+      foregroundTaskOptions: const ForegroundTaskOptions(
+        interval: 5000,
+        isOnceEvent: false,
+        autoRunOnBoot: false,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
   }
 
   @override
@@ -128,11 +158,15 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: const Row(
           children: [
-            Icon(LucideIcons.shieldAlert, color: AppColors.primaryBlue, size: 22),
+            Icon(LucideIcons.alertTriangle,
+                color: AppColors.primaryBlue, size: 22),
             SizedBox(width: 12),
             Text(
               'Before You Start',
-              style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                  color: AppColors.textDark,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
           ],
         ),
@@ -149,6 +183,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             _disclaimerItem(LucideIcons.gavel,
                 'Malaysia: recording requires consent of at least one party (you).'),
             const SizedBox(height: 16),
+            _disclaimerItem(LucideIcons.volume2,
+                'Important: Please put your call on Speaker so the microphone can hear the scammer.'),
+            const SizedBox(height: 16),
             _disclaimerItem(LucideIcons.phoneCall,
                 'If you suspect fraud, contact your bank or PDRM: 03-2610 1559.'),
           ],
@@ -156,17 +193,21 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5))),
+            child: Text('Cancel',
+                style: TextStyle(
+                    color: AppColors.textDark.withValues(alpha: 0.5))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryBlue,
               foregroundColor: Colors.white,
               elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('I Understand', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text('I Understand',
+                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -181,12 +222,15 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   Widget _disclaimerItem(IconData icon, String text) => Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.primaryBlue.withValues(alpha: 0.6), size: 18),
+          Icon(icon,
+              color: AppColors.primaryBlue.withValues(alpha: 0.6), size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.7), fontSize: 13, height: 1.4)),
+                    color: AppColors.textDark.withValues(alpha: 0.7),
+                    fontSize: 13,
+                    height: 1.4)),
           ),
         ],
       );
@@ -211,7 +255,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Microphone permission is required for voice analysis.'),
+            content:
+                Text('Microphone permission is required for voice analysis.'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -227,6 +272,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       const RecordConfig(encoder: AudioEncoder.aacLc, bitRate: 128000),
       path: _recordingPath!,
     );
+
+    // Start Foreground Task
+    if (await FlutterForegroundTask.canDrawOverlays) {
+      await FlutterForegroundTask.startService(
+        notificationTitle: 'FraudShield Active',
+        notificationText: 'Analyzing call for threats...',
+      );
+    }
 
     _amplitudeSubscription = _recorder
         .onAmplitudeChanged(const Duration(milliseconds: 100))
@@ -265,6 +318,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     final path = await _recorder.stop();
     await _amplitudeSubscription?.cancel();
 
+    // Stop Foreground Task
+    await FlutterForegroundTask.stopService();
+
     if (mounted) {
       setState(() {
         _isRecording = false;
@@ -285,7 +341,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           _analysisStatus = 'Running Behavioral Heuristics...';
         });
         await Future.delayed(const Duration(milliseconds: 1200));
-        if (mounted) setState(() => _analysisStatus = 'Comparing with Scam Patterns...');
+        if (mounted)
+          setState(() => _analysisStatus = 'Comparing with Scam Patterns...');
         await Future.delayed(const Duration(milliseconds: 800));
       }
 
@@ -293,8 +350,10 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       final analysisResult = VoiceAnalysisResult.fromJson(data);
 
       final now = DateTime.now();
-      final dateStr = '${now.day.toString().padLeft(2, '0')} ${_monthAbbr(now.month)} ${now.year}';
-      final nameStr = 'Voice_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+      final dateStr =
+          '${now.day.toString().padLeft(2, '0')} ${_monthAbbr(now.month)} ${now.year}';
+      final nameStr =
+          'Voice_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
 
       if (mounted) {
         setState(() {
@@ -325,27 +384,49 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     }
   }
 
-  String _monthAbbr(int m) => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1];
+  String _monthAbbr(int m) => [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ][m - 1];
 
-  String _formatDuration(int s) => '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
+  String _formatDuration(int s) =>
+      '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
 
   // ─── UI helpers ──────────────────────────────────────────────────────────────
 
   Color get _levelColor {
     switch (_result?.level) {
-      case 'critical': return Colors.purple;
-      case 'high':     return const Color(0xFFEF4444);
-      case 'medium':   return const Color(0xFFF59E0B);
-      default:         return const Color(0xFF22C55E);
+      case 'critical':
+        return Colors.purple;
+      case 'high':
+        return const Color(0xFFEF4444);
+      case 'medium':
+        return const Color(0xFFF59E0B);
+      default:
+        return const Color(0xFF22C55E);
     }
   }
 
   String get _levelLabel {
     switch (_result?.level) {
-      case 'critical': return 'Critical Risk';
-      case 'high':     return 'High Risk';
-      case 'medium':   return 'Suspicious';
-      default:         return 'Looks Safe';
+      case 'critical':
+        return 'Critical Risk';
+      case 'high':
+        return 'High Risk';
+      case 'medium':
+        return 'Suspicious';
+      default:
+        return 'Looks Safe';
     }
   }
 
@@ -364,7 +445,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         ),
         title: const Text(
           'Call Screen',
-          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
+          style:
+              TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -376,11 +458,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             const SizedBox(height: 48),
             _buildMicSection(),
             const SizedBox(height: 48),
-            
             if (_errorMessage != null) _buildErrorCard(),
-
             if (_result != null && !_isAnalyzing) _buildResultCard(),
-
             const SizedBox(height: 32),
             _buildRecentSection(),
           ],
@@ -411,7 +490,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               color: AppColors.primaryBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(LucideIcons.phoneIncoming, color: AppColors.primaryBlue, size: 24),
+            child: const Icon(LucideIcons.phoneIncoming,
+                color: AppColors.primaryBlue, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -420,11 +500,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               children: [
                 const Text(
                   'Voice Analysis',
-                  style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(
+                      color: AppColors.textDark,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
                 ),
                 Text(
                   'Instantly scan calls for scam patterns and deepfake markers.',
-                  style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 12),
+                  style: TextStyle(
+                      color: AppColors.textDark.withValues(alpha: 0.5),
+                      fontSize: 12),
                 ),
               ],
             ),
@@ -452,12 +537,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                         ? [Colors.grey.shade300, Colors.grey.shade400]
                         : _isRecording
                             ? [const Color(0xFFEF4444), const Color(0xFFB91C1C)]
-                            : [AppColors.primaryBlue, AppColors.primaryBlue.withValues(alpha: 0.8)],
+                            : [
+                                AppColors.primaryBlue,
+                                AppColors.primaryBlue.withValues(alpha: 0.8)
+                              ],
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: (_isRecording ? Colors.red : AppColors.primaryBlue).withValues(alpha: 0.3),
+                      color: (_isRecording ? Colors.red : AppColors.primaryBlue)
+                          .withValues(alpha: 0.3),
                       blurRadius: _isRecording ? 30 : 20,
                       spreadRadius: _isRecording ? 10 : 2,
                     ),
@@ -465,7 +554,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 ),
                 child: Center(
                   child: _isAnalyzing
-                      ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 3)
+                      ? const CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 3)
                       : Icon(
                           _isRecording ? LucideIcons.square : LucideIcons.mic,
                           color: Colors.white,
@@ -480,9 +570,15 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         if (_isAnalyzing)
           Column(
             children: [
-              Text(_analysisStatus, style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold)),
+              Text(_analysisStatus,
+                  style: const TextStyle(
+                      color: AppColors.primaryBlue,
+                      fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const SizedBox(width: 100, child: LinearProgressIndicator(minHeight: 2, backgroundColor: AppColors.lightBg)),
+              const SizedBox(
+                  width: 100,
+                  child: LinearProgressIndicator(
+                      minHeight: 2, backgroundColor: AppColors.lightBg)),
             ],
           )
         else if (_isRecording)
@@ -499,14 +595,25 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               ),
               const SizedBox(height: 8),
               Text(
+                'Please put call on Speaker for best results',
+                style: TextStyle(
+                    color: AppColors.primaryBlue,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
                 'Listening for scam patterns...',
-                style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 13),
+                style: TextStyle(
+                    color: AppColors.textDark.withValues(alpha: 0.4),
+                    fontSize: 13),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 height: 40,
                 child: CustomPaint(
-                  painter: WaveformPainter(amplitudes: _amplitudes, color: const Color(0xFFEF4444)),
+                  painter: WaveformPainter(
+                      amplitudes: _amplitudes, color: const Color(0xFFEF4444)),
                   size: const Size(double.infinity, 40),
                 ),
               ),
@@ -515,7 +622,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         else
           Text(
             'Tap to start voice analysis',
-            style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontWeight: FontWeight.w500),
+            style: TextStyle(
+                color: AppColors.textDark.withValues(alpha: 0.4),
+                fontWeight: FontWeight.w500),
           ),
       ],
     );
@@ -535,7 +644,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           const Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(_errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+            child: Text(_errorMessage!,
+                style: const TextStyle(color: Colors.red, fontSize: 13)),
           ),
         ],
       ),
@@ -570,12 +680,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck, color: color, size: 40),
+            child: Icon(
+                isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck,
+                color: color,
+                size: 40),
           ),
           const SizedBox(height: 16),
           Text(
             _levelLabel,
-            style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.w900),
+            style: TextStyle(
+                color: color, fontSize: 24, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 24),
           _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
@@ -593,12 +707,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             const Divider(height: 48),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text('Transcript Analysis', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              child: Text('Transcript Analysis',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             ),
             const SizedBox(height: 12),
             Text(
               r.transcript,
-              style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.6), height: 1.5, fontSize: 13),
+              style: TextStyle(
+                  color: AppColors.textDark.withValues(alpha: 0.6),
+                  height: 1.5,
+                  fontSize: 13),
             ),
           ],
           if (r.contentAnalysis.matchedPatterns.isNotEmpty) ...[
@@ -606,14 +724,19 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: r.contentAnalysis.matchedPatterns.map((p) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.lightBg,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(p, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-              )).toList(),
+              children: r.contentAnalysis.matchedPatterns
+                  .map((p) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightBg,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(p,
+                            style: const TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.bold)),
+                      ))
+                  .toList(),
             ),
           ],
         ],
@@ -621,12 +744,20 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     );
   }
 
-  Widget _resultRow(String label, String value, Color color, {bool isBold = false}) {
+  Widget _resultRow(String label, String value, Color color,
+      {bool isBold = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 14)),
-        Text(value, style: TextStyle(color: color, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 14)),
+        Text(label,
+            style: TextStyle(
+                color: AppColors.textDark.withValues(alpha: 0.5),
+                fontSize: 14)),
+        Text(value,
+            style: TextStyle(
+                color: color,
+                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                fontSize: 14)),
       ],
     );
   }
@@ -639,47 +770,61 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       children: [
         const Align(
           alignment: Alignment.centerLeft,
-          child: Text('Recent Analysis', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          child: Text('Recent Analysis',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         ),
         const SizedBox(height: 16),
         ..._recentAnalysis.map((item) => Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            children: [
-              const Icon(LucideIcons.fileAudio, color: AppColors.textDark, size: 20),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    Text(item['date'], style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 12)),
-                  ],
-                ),
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: (item['score'] >= 55 ? const Color(0xFFEF4444) : const Color(0xFF22C55E)).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  item['result'],
-                  style: TextStyle(
-                    color: item['score'] >= 55 ? const Color(0xFFEF4444) : const Color(0xFF22C55E),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.fileAudio,
+                      color: AppColors.textDark, size: 20),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item['name'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                        Text(item['date'],
+                            style: TextStyle(
+                                color:
+                                    AppColors.textDark.withValues(alpha: 0.4),
+                                fontSize: 12)),
+                      ],
+                    ),
                   ),
-                ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (item['score'] >= 55
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF22C55E))
+                          .withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      item['result'],
+                      style: TextStyle(
+                        color: item['score'] >= 55
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFF22C55E),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        )),
+            )),
       ],
     );
   }
@@ -700,13 +845,13 @@ class WaveformPainter extends CustomPainter {
 
     final spacing = size.width / (amplitudes.length - 1);
     for (int i = 0; i < amplitudes.length; i++) {
-       final x = i * spacing;
-       final h = amplitudes[i] * size.height;
-       canvas.drawLine(
-         Offset(x, size.height / 2 - h / 2),
-         Offset(x, size.height / 2 + h / 2),
-         paint,
-       );
+      final x = i * spacing;
+      final h = amplitudes[i] * size.height;
+      canvas.drawLine(
+        Offset(x, size.height / 2 - h / 2),
+        Offset(x, size.height / 2 + h / 2),
+        paint,
+      );
     }
   }
 

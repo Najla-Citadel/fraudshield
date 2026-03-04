@@ -87,6 +87,7 @@ export class VoiceScanController {
 
             // ── 3. Analyse ───────────────────────────────────────────────────
             const result = await VoiceScanService.analyze(
+                user.id,
                 req.file.buffer,
                 req.file.originalname,
                 req.file.mimetype,

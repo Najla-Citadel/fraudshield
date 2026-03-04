@@ -60,6 +60,12 @@ dependencies:
   # Security
   flutter_jailbreak_detection: ^1.1.0
 
+  # Phase 2 Features
+  phone_state: ^3.0.1
+  flutter_local_notifications: ^17.0.0
+  flutter_foreground_task: ^6.1.0
+  flutter_overlay_window: ^0.4.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

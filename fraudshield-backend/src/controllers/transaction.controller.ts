@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import { EncryptionUtils } from '../utils/encryption';
+import { MacauScamService } from '../services/macau-scam.service';
+import { AlertService } from '../services/alert.service';
 
 export class TransactionController {
     /**
@@ -134,9 +136,38 @@ export class TransactionController {
                 }
             });
 
+            // 2. Perform Macau Scam Pattern Analysis
+            const macauEvaluation = await MacauScamService.evaluate(userId, notes, transaction.id);
+            if (macauEvaluation.isMacauScam && macauEvaluation.confidence === 'critical') {
+                // Auto-create alert with MACAU_SCAM category
+                await prisma.alert.create({
+                    data: {
+                        userId,
+                        title: '🔴 Critical Macau Scam Alert',
+                        message: macauEvaluation.recommendation,
+                        severity: 'CRITICAL',
+                        category: 'MACAU_SCAM',
+                        txId: transaction.id,
+                        riskScore: macauEvaluation.riskScore,
+                        decision: 'BLOCKED',
+                        metadata: {
+                            signals: macauEvaluation.signals,
+                            emergencyContacts: macauEvaluation.emergencyContacts
+                        }
+                    }
+                });
+
+                // Update transaction status
+                await prisma.transactionJournal.update({
+                    where: { id: transaction.id },
+                    data: { status: 'BLOCKED', riskScore: macauEvaluation.riskScore }
+                });
+            }
+
             res.status(201).json({
                 transaction,
-                preCheck
+                preCheck,
+                macauEvaluation
             });
         } catch (error) {
             next(error);

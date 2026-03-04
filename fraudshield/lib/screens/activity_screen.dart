@@ -76,73 +76,90 @@ class ActivityScreen extends StatelessWidget {
     );
   }
 
-  List<Map<String, dynamic>> _getAllActivities(List<Map<String, dynamic>> realAlerts) {
+  List<Map<String, dynamic>> _getAllActivities(List<dynamic> realAlerts) {
     // Mock data based on design
     final mockData = [
       {
         'title': 'SMS Phishing Blocked',
-        'message': 'A suspicious message containing a fraudulent banking link was automatically intercepted.',
-        'timestamp': DateTime.now().subtract(const Duration(hours: 2)).toString(),
+        'message':
+            'A suspicious message containing a fraudulent banking link was automatically intercepted.',
+        'timestamp':
+            DateTime.now().subtract(const Duration(hours: 2)).toString(),
         'type': 'danger',
         'icon': Icons.block,
       },
       {
         'title': 'System Scan Completed',
-        'message': 'Full device security audit finished. No vulnerabilities or malware found.',
-        'timestamp': DateTime.now().subtract(const Duration(hours: 5)).toString(),
+        'message':
+            'Full device security audit finished. No vulnerabilities or malware found.',
+        'timestamp':
+            DateTime.now().subtract(const Duration(hours: 5)).toString(),
         'type': 'success',
         'icon': Icons.check_circle,
       },
       {
         'title': 'Safe Link Verified',
-        'message': 'The link "secure-portal.bank.com" was analyzed and confirmed as authentic.',
-        'timestamp': DateTime.now().subtract(const Duration(hours: 7)).toString(),
+        'message':
+            'The link "secure-portal.bank.com" was analyzed and confirmed as authentic.',
+        'timestamp':
+            DateTime.now().subtract(const Duration(hours: 7)).toString(),
         'type': 'safe',
         'icon': Icons.verified_user,
       },
       {
         'title': 'Identity Guard Active',
-        'message': 'Deep web scan completed. Your personal information remains secure.',
-        'timestamp': DateTime.now().subtract(const Duration(days: 1, hours: 3)).toString(),
+        'message':
+            'Deep web scan completed. Your personal information remains secure.',
+        'timestamp': DateTime.now()
+            .subtract(const Duration(days: 1, hours: 3))
+            .toString(),
         'type': 'info',
         'icon': Icons.fingerprint,
       },
-       {
+      {
         'title': 'Payment Monitor',
         'message': 'Secure payment channel verified for recent transaction.',
-        'timestamp': DateTime.now().subtract(const Duration(days: 1, hours: 5)).toString(),
-         'type': 'success',
-         'icon': Icons.payment,
-       },
+        'timestamp': DateTime.now()
+            .subtract(const Duration(days: 1, hours: 5))
+            .toString(),
+        'type': 'success',
+        'icon': Icons.payment,
+      },
     ];
 
     return [...realAlerts, ...mockData];
   }
 
-  Map<String, List<Map<String, dynamic>>> _groupActivities(List<Map<String, dynamic>> activities) {
+  Map<String, List<Map<String, dynamic>>> _groupActivities(
+      List<Map<String, dynamic>> activities) {
     final Map<String, List<Map<String, dynamic>>> grouped = {};
 
     for (var activity in activities) {
       final timestampStr = activity['timestamp']?.toString();
-      if (timestampStr == null || timestampStr.isEmpty) continue; // Skip invalid dates
-      
+      if (timestampStr == null || timestampStr.isEmpty)
+        continue; // Skip invalid dates
+
       try {
         final date = DateTime.parse(timestampStr);
         final now = DateTime.now();
         String key;
 
-      if (date.year == now.year && date.month == now.month && date.day == now.day) {
-        key = 'Today';
-      } else if (date.year == now.year && date.month == now.month && date.day == now.day - 1) {
-        key = 'Yesterday';
-      } else {
-        key = DateFormat('MMMM d').format(date);
-      }
+        if (date.year == now.year &&
+            date.month == now.month &&
+            date.day == now.day) {
+          key = 'Today';
+        } else if (date.year == now.year &&
+            date.month == now.month &&
+            date.day == now.day - 1) {
+          key = 'Yesterday';
+        } else {
+          key = DateFormat('MMMM d').format(date);
+        }
 
-      if (!grouped.containsKey(key)) {
-        grouped[key] = [];
-      }
-      grouped[key]!.add(activity);
+        if (!grouped.containsKey(key)) {
+          grouped[key] = [];
+        }
+        grouped[key]!.add(activity);
       } catch (e) {
         debugPrint('Error parsing date: $e');
       }
@@ -199,7 +216,8 @@ class _ActivityCard extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(12), // Slightly rounded square like design
+              borderRadius: BorderRadius.circular(
+                  12), // Slightly rounded square like design
             ),
             child: Icon(icon, color: iconColor, size: 24),
           ),
