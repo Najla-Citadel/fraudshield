@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'dart:async';
-=======
 import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
->>>>>>> dev-ui2
 import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/scam_card.dart';
@@ -35,19 +31,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   String? _selectedCategory;
   bool _isNearMe = false;
   bool _isSearchVisible = false;
-<<<<<<< HEAD
-  final TextEditingController _searchController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-
-  final List<String> _categories = [
-    'Job',
-    'Investment',
-    'Phishing',
-    'E-commerce',
-    'Impersonation',
-    'Loan',
-    'Others'
-=======
   bool _isFabExtended = true;
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -60,7 +43,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     {'name': 'Impersonation', 'icon': LucideIcons.users},
     {'name': 'Loan', 'icon': LucideIcons.banknote},
     {'name': 'Others', 'icon': LucideIcons.moreHorizontal}
->>>>>>> dev-ui2
   ];
 
   @override
@@ -79,9 +61,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   }
 
   void _onScroll() {
-<<<<<<< HEAD
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-=======
     if (_scrollController.position.userScrollDirection ==
         ScrollDirection.reverse) {
       if (_isFabExtended && mounted) setState(() => _isFabExtended = false);
@@ -92,7 +71,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
->>>>>>> dev-ui2
       if (!_isFetchingMore && _hasMore && !_isLoading) {
         _fetchFeed();
       }
@@ -127,12 +105,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
       final response = await ApiService.instance.getPublicFeed(
         category: _selectedCategory,
-<<<<<<< HEAD
-        search: _searchController.text.isNotEmpty ? _searchController.text : null,
-=======
         search:
             _searchController.text.isNotEmpty ? _searchController.text : null,
->>>>>>> dev-ui2
         lat: lat,
         lng: lng,
         radius: radius,
@@ -141,11 +115,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       );
 
       final List<dynamic> newReports = response['results'] ?? [];
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> dev-ui2
       if (mounted) {
         setState(() {
           _reports.addAll(newReports);
@@ -171,27 +141,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-      body: RefreshIndicator(
-        onRefresh: () => _fetchFeed(reset: true),
-        color: AppColors.accentGreen,
-        backgroundColor: const Color(0xFF1E293B),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            _buildAppBar(),
-            SliverToBoxAdapter(child: _buildFilters()),
-            _buildFeedList(),
-            if (_isFetchingMore)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                ),
-              ),
-          ],
-        ),
-=======
       body: Stack(
         children: [
           // Background Gradient
@@ -234,7 +183,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             ),
           ),
         ],
->>>>>>> dev-ui2
       ),
       floatingActionButton: _buildFAB(),
     );
@@ -242,12 +190,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildAppBar() {
     return SliverAppBar(
-<<<<<<< HEAD
-      backgroundColor: AppColors.deepNavy,
-=======
       backgroundColor:
           Colors.transparent, // Update to transparent over gradient
->>>>>>> dev-ui2
       floating: true,
       snap: true,
       elevation: 0,
@@ -265,13 +209,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 children: [
                   Text(
                     'Community Feed',
-<<<<<<< HEAD
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  Text(
-                    'Live scam reports near you',
-                    style: TextStyle(color: Colors.white60, fontSize: 13),
-=======
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
@@ -281,23 +218,17 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   Text(
                     'Live scam reports near you',
                     style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
->>>>>>> dev-ui2
                   ),
                 ],
               ),
               Row(
                 children: [
                   IconButton(
-<<<<<<< HEAD
-                    onPressed: () => setState(() => _isSearchVisible = !_isSearchVisible),
-                    icon: Icon(_isSearchVisible ? LucideIcons.x : LucideIcons.search, color: Colors.white70),
-=======
                     onPressed: () =>
                         setState(() => _isSearchVisible = !_isSearchVisible),
                     icon: Icon(
                         _isSearchVisible ? LucideIcons.x : LucideIcons.search,
                         color: Colors.white),
->>>>>>> dev-ui2
                   ),
                   _buildNearMeToggle(),
                 ],
@@ -323,12 +254,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: _isNearMe ? AppColors.accentGreen.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: _isNearMe ? AppColors.accentGreen : Colors.white12,
-=======
           color: _isNearMe
               ? AppColors.accentGreen.withValues(alpha: 0.15)
               : Colors.white.withValues(alpha: 0.05),
@@ -337,7 +262,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             color: _isNearMe
                 ? AppColors.accentGreen
                 : Colors.white.withValues(alpha: 0.1),
->>>>>>> dev-ui2
           ),
         ),
         child: Row(
@@ -345,21 +269,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             Icon(
               LucideIcons.mapPin,
               size: 16,
-<<<<<<< HEAD
-              color: _isNearMe ? AppColors.accentGreen : Colors.white70,
-=======
               color: _isNearMe ? AppColors.accentGreen : Colors.white,
->>>>>>> dev-ui2
             ),
             const SizedBox(width: 4),
             Text(
               'Near Me',
               style: TextStyle(
-<<<<<<< HEAD
-                color: _isNearMe ? AppColors.accentGreen : Colors.white70,
-=======
                 color: _isNearMe ? AppColors.accentGreen : Colors.white,
->>>>>>> dev-ui2
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -374,33 +290,15 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     return Container(
       height: 45,
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(12),
-=======
         color: const Color(0xFF1E293B), // Slate 800
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
->>>>>>> dev-ui2
       ),
       child: TextField(
         controller: _searchController,
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           hintText: 'Search scams...',
-<<<<<<< HEAD
-          hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
-          prefixIcon: const Icon(LucideIcons.search, size: 18, color: Colors.white38),
-          suffixIcon: _searchController.text.isNotEmpty 
-            ? IconButton(
-                icon: const Icon(LucideIcons.x, size: 16, color: Colors.white38),
-                onPressed: () {
-                  _searchController.clear();
-                  _fetchFeed(reset: true);
-                },
-              )
-            : null,
-=======
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
           prefixIcon: const Icon(LucideIcons.search,
               size: 18, color: Color(0xFF94A3B8)),
@@ -414,7 +312,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   },
                 )
               : null,
->>>>>>> dev-ui2
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
@@ -435,31 +332,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         itemCount: _categories.length + 1,
         itemBuilder: (context, index) {
           final isAll = index == 0;
-<<<<<<< HEAD
-          final category = isAll ? 'All' : _categories[index - 1];
-          final isSelected = isAll ? _selectedCategory == null : _selectedCategory == category;
-
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(category),
-              selected: isSelected,
-              onSelected: (selected) {
-                setState(() {
-                  _selectedCategory = isAll ? null : category;
-                });
-                _fetchFeed(reset: true);
-              },
-              backgroundColor: const Color(0xFF1E293B),
-              selectedColor: AppColors.accentGreen,
-              checkmarkColor: Colors.black,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.black : Colors.white70,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-=======
           final categoryName =
               isAll ? 'All' : _categories[index - 1]['name'] as String;
           final categoryIcon = isAll
@@ -514,7 +386,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   ],
                 ),
               ),
->>>>>>> dev-ui2
             ),
           );
         },
@@ -524,12 +395,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildFeedList() {
     if (_hasError && _reports.isEmpty) {
-<<<<<<< HEAD
-      return SliverFillRemaining(child: ErrorState(onRetry: () => _fetchFeed(reset: true)));
-=======
       return SliverFillRemaining(
           child: ErrorState(onRetry: () => _fetchFeed(reset: true)));
->>>>>>> dev-ui2
     }
 
     if (_isLoading && _reports.isEmpty) {
@@ -547,18 +414,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-<<<<<<< HEAD
-              const Icon(LucideIcons.shieldAlert, size: 64, color: Colors.white10),
-              const SizedBox(height: 16),
-              const Text('No reports found', style: TextStyle(color: Colors.white38)),
-=======
               const Icon(LucideIcons.shieldAlert,
                   size: 64, color: Color(0xFFCBD5E1)),
               const SizedBox(height: 16),
               const Text('No reports found',
                   style: TextStyle(
                       color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
->>>>>>> dev-ui2
             ],
           ),
         ),
@@ -570,21 +431,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
-<<<<<<< HEAD
-            if (index == 0) {
-              return CommunityMapCard(threatCount: _reports.length);
-            }
-            final report = _reports[index - 1];
-            return ScamCard(
-              report: report,
-              onVerify: () => _fetchFeed(reset: true),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ReportDetailsScreen(report: report)),
-                );
-              },
-=======
             Widget childWidget;
             if (index == 0) {
               childWidget = CommunityMapCard(threatCount: _reports.length);
@@ -611,7 +457,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   child: childWidget,
                 ),
               ),
->>>>>>> dev-ui2
             );
           },
           childCount: _reports.length + 1,
@@ -630,13 +475,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
           );
         },
-<<<<<<< HEAD
-        backgroundColor: const Color(0xFF2563EB),
-        icon: const Icon(LucideIcons.plusCircle, color: Colors.white),
-        label: const Text(
-          'Report a Scam',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-=======
         backgroundColor: AppColors.accentGreen,
         isExtended: _isFabExtended,
         icon: const Icon(LucideIcons.plusCircle, color: Colors.black87),
@@ -646,7 +484,6 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               fontWeight: FontWeight.bold,
               color: Colors.black87,
               letterSpacing: 0.5),
->>>>>>> dev-ui2
         ),
       ),
     );

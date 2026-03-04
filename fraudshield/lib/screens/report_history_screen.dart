@@ -4,11 +4,8 @@ import '../constants/colors.dart';
 import '../services/api_service.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
->>>>>>> dev-ui2
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -88,27 +85,15 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-<<<<<<< HEAD
-      backgroundColor: AppColors.lightBlue,
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-=======
       backgroundColor: AppColors.deepNavy,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
->>>>>>> dev-ui2
         title: const Text(
           'Report History',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-<<<<<<< HEAD
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-=======
         leading: IconButton(
           icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -117,71 +102,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           IconButton(
             icon: const Icon(LucideIcons.refreshCw,
                 color: Colors.white, size: 20),
->>>>>>> dev-ui2
             onPressed: _fetchReports,
             tooltip: 'Refresh',
           ),
         ],
       ),
-<<<<<<< HEAD
-      body: _isLoading
-          ? ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: 5,
-              itemBuilder: (context, index) => const SkeletonCard(height: 120, margin: EdgeInsets.only(bottom: 12)),
-            )
-          : _errorMessage != null
-              ? ErrorState(
-                  onRetry: _fetchReports,
-                  message: _errorMessage!,
-                )
-              : _reports.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.inbox_outlined,
-                                size: 64, color: Colors.grey[400]),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No Reports Yet',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Your submitted scam reports will appear here',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _fetchReports,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _reports.length,
-                        itemBuilder: (context, index) {
-                          final report = _reports[index];
-                          return _historyCard(
-                            title: '${report['type']} - ${report['category']}',
-                            description: report['description'] ?? '',
-                            date: _formatDate(report['createdAt']),
-                            status: report['status'] ?? 'PENDING',
-                            statusColor: _getStatusColor(report['status'] ?? 'PENDING'),
-                            isPublic: report['isPublic'] ?? false,
-                          );
-                        },
-                      ),
-                    ),
-=======
       body: Stack(
         children: [
           // Background Gradient
@@ -295,7 +220,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           },
         ),
       ),
->>>>>>> dev-ui2
     );
   }
 
@@ -308,18 +232,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     required bool isPublic,
   }) {
     return Container(
-<<<<<<< HEAD
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-=======
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -331,7 +243,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
->>>>>>> dev-ui2
           ),
         ],
       ),
@@ -340,11 +251,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         children: [
           Row(
             children: [
-<<<<<<< HEAD
-              Icon(Icons.report_outlined,
-                  color: AppColors.primaryBlue, size: 24),
-              const SizedBox(width: 12),
-=======
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -355,7 +261,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     color: AppColors.primaryBlue, size: 20),
               ),
               const SizedBox(width: 16),
->>>>>>> dev-ui2
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,26 +268,17 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     Text(
                       title,
                       style: const TextStyle(
-<<<<<<< HEAD
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-=======
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
->>>>>>> dev-ui2
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       date,
-<<<<<<< HEAD
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-=======
                       style: TextStyle(
                           fontSize: 12,
                           color: Colors.white.withValues(alpha: 0.4)),
->>>>>>> dev-ui2
                     ),
                   ],
                 ),
@@ -391,17 +287,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: statusColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  status,
-                  style: TextStyle(
-                    color: statusColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-=======
                   color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: statusColor.withValues(alpha: 0.2)),
@@ -413,20 +298,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
->>>>>>> dev-ui2
                   ),
                 ),
               ),
             ],
           ),
           if (description.isNotEmpty) ...[
-<<<<<<< HEAD
-            const SizedBox(height: 12),
-            Text(
-              description,
-              style: const TextStyle(fontSize: 13, color: Colors.black87),
-              maxLines: 2,
-=======
             const SizedBox(height: 16),
             Text(
               description,
@@ -435,21 +312,10 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                   color: Colors.white.withValues(alpha: 0.7),
                   height: 1.5),
               maxLines: 3,
->>>>>>> dev-ui2
               overflow: TextOverflow.ellipsis,
             ),
           ],
           if (isPublic) ...[
-<<<<<<< HEAD
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.public, size: 14, color: Colors.grey[600]),
-                const SizedBox(width: 4),
-                Text(
-                  'Shared with community',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-=======
             const SizedBox(height: 16),
             Row(
               children: [
@@ -463,7 +329,6 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       fontSize: 11,
                       color: AppColors.accentGreen.withValues(alpha: 0.5),
                       fontWeight: FontWeight.w500),
->>>>>>> dev-ui2
                 ),
               ],
             ),

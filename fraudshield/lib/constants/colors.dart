@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-<<<<<<< HEAD
-  static const Color primaryBlue = Color(0xFF4A90E2);
-=======
   static const Color primaryBlue = Color(0xFF1565C0);
->>>>>>> dev-ui2
   static const Color lightBlue = Color(0xFFE9F3FF);
   static const Color darkText = Color(0xFF1C1C1E);
   static const Color greyText = Color(0xFF8E8E93);
   static const Color background = Colors.white;
   // Blue gradient (trust + security)
   static const Color blueLight = Color(0xFF3B82F6); // sky blue
-<<<<<<< HEAD
-  static const Color blueDark = Color(0xFF1E40AF);  // deep blue
-=======
   static const Color blueDark = Color(0xFF1E40AF); // deep blue
->>>>>>> dev-ui2
 
   // Text
   static const Color textDark = Color(0xFF111827); // near black
@@ -25,8 +17,6 @@ class AppColors {
   // New UI Colors
   static const Color deepNavy = Color(0xFF0B1121);
   static const Color accentGreen = Color(0xFF10B981);
-<<<<<<< HEAD
-=======
 
   // Redesign Colors (Light Theme)
   static const Color lightBg = Color(0xFFF8FAFC);
@@ -37,5 +27,4 @@ class AppColors {
   static const Color healthGradientStart = Color(0xFF60A5FA);
   static const Color healthGradientEnd = Color(0xFF2563EB);
   static const Color iconBlue = Color(0xFF3B82F6);
->>>>>>> dev-ui2
 }

@@ -1,11 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
->>>>>>> dev-ui2
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -19,38 +16,6 @@ class FloatingNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-        child: Container(
-          height: 70,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withOpacity(0.95), // Slightly more opaque for solid feel
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _NavItem(
-                    icon: Icons.home_rounded,
-=======
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
@@ -90,44 +55,23 @@ class FloatingNavBar extends StatelessWidget {
                 children: [
                    _NavItem(
                     icon: LucideIcons.home,
->>>>>>> dev-ui2
                     label: 'Home',
                     isSelected: currentIndex == 0,
                     onTap: () => onTap(0),
                   ),
                   _NavItem(
-<<<<<<< HEAD
-                    icon: Icons.people_rounded,
-                    label: 'Community',
-=======
                     icon: LucideIcons.layoutGrid,
                     label: 'Board',
->>>>>>> dev-ui2
                     isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),
                   _NavItem(
-<<<<<<< HEAD
-                    icon: Icons.card_giftcard,
-                    label: 'Rewards',
-                    isSelected: currentIndex == 3, // PointsScreen is index 3
-                    onTap: () => onTap(3),
-                  ),
-                  _NavItem(
-                    icon: Icons.receipt_long_rounded,
-                    label: 'Journal',
-=======
                     icon: LucideIcons.users,
                     label: 'Social',
->>>>>>> dev-ui2
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
-<<<<<<< HEAD
-                    icon: Icons.person_rounded,
-                    label: 'Account',
-=======
                     icon: LucideIcons.gift,
                     label: 'Rewards',
                     isSelected: currentIndex == 3,
@@ -136,7 +80,6 @@ class FloatingNavBar extends StatelessWidget {
                   _NavItem(
                     icon: LucideIcons.user,
                     label: 'Profile',
->>>>>>> dev-ui2
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
@@ -165,30 +108,6 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFF3B82F6) : Colors.grey,
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF3B82F6) : Colors.grey,
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-=======
     return Semantics(
       label: '$label tab',
       selected: isSelected,
@@ -238,7 +157,6 @@ class _NavItem extends StatelessWidget {
             ],
           ),
         ),
->>>>>>> dev-ui2
       ),
     );
   }

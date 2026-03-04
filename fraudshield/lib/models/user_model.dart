@@ -4,11 +4,8 @@ class UserModel {
   final String? fullName;
   final String? phoneNumber;
   final bool isEmailVerified;
-<<<<<<< HEAD
-=======
   final String? acceptedTermsVersion;
   final DateTime? acceptedTermsAt;
->>>>>>> dev-ui2
   final DateTime createdAt;
   final UserProfile? profile;
 
@@ -18,11 +15,8 @@ class UserModel {
     this.fullName,
     this.phoneNumber,
     required this.isEmailVerified,
-<<<<<<< HEAD
-=======
     this.acceptedTermsVersion,
     this.acceptedTermsAt,
->>>>>>> dev-ui2
     required this.createdAt,
     this.profile,
   });
@@ -34,12 +28,6 @@ class UserModel {
       fullName: json['fullName'],
       phoneNumber: json['phoneNumber'],
       isEmailVerified: json['isEmailVerified'] ?? false,
-<<<<<<< HEAD
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
-          : DateTime.now(),
-      profile: json['profile'] != null ? UserProfile.fromJson(json['profile']) : null,
-=======
       acceptedTermsVersion: json['acceptedTermsVersion'],
       acceptedTermsAt: json['acceptedTermsAt'] != null
           ? DateTime.parse(json['acceptedTermsAt'])
@@ -50,7 +38,6 @@ class UserModel {
       profile: json['profile'] != null
           ? UserProfile.fromJson(json['profile'])
           : null,
->>>>>>> dev-ui2
     );
   }
 
@@ -61,11 +48,8 @@ class UserModel {
       'fullName': fullName,
       'phoneNumber': phoneNumber,
       'isEmailVerified': isEmailVerified,
-<<<<<<< HEAD
-=======
       'acceptedTermsVersion': acceptedTermsVersion,
       'acceptedTermsAt': acceptedTermsAt?.toIso8601String(),
->>>>>>> dev-ui2
       'createdAt': createdAt.toIso8601String(),
       'profile': profile?.toJson(),
     };
@@ -123,7 +107,3 @@ class UserProfile {
     };
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> dev-ui2

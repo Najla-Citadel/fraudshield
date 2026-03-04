@@ -36,11 +36,7 @@ class AppLogo extends StatelessWidget {
             color: Colors.white, // Required for ShaderMask
             shadows: [
               BoxShadow(
-<<<<<<< HEAD
-                color: AppColors.primaryBlue.withOpacity(0.5),
-=======
                 color: AppColors.primaryBlue.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),

@@ -18,27 +18,16 @@ class TermsOfServiceScreen extends StatelessWidget {
             Text(
               'Terms of Service',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-<<<<<<< HEAD
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-=======
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
->>>>>>> dev-ui2
             ),
             const SizedBox(height: 16),
             Text(
               'Effective Date: February 20, 2026',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-<<<<<<< HEAD
-                color: Colors.white.withOpacity(0.6),
-              ),
-=======
                     color: Colors.white.withValues(alpha: 0.6),
                   ),
->>>>>>> dev-ui2
             ),
             const SizedBox(height: 32),
             _buildSection(
@@ -49,22 +38,14 @@ class TermsOfServiceScreen extends StatelessWidget {
             _buildSection(
               context,
               '2. Compliance with PDPA 2010',
-<<<<<<< HEAD
-              'We process your personal data in accordance with the Personal Data Protection Act 2010 (PDPA) of Malaysia. By using our services, you consent to the processing of your personal data as described in our Privacy Policy. We are committed to protecting your privacy and ensuring the security of your personal information.',
-=======
               'We process your personal data in accordance with the Personal Data Protection Act 2010 (PDPA) of Malaysia. By using our services, you provide explicit consent to the processing of your personal data for fraud prevention, security monitoring, and service improvement as detailed in our Privacy Policy.',
->>>>>>> dev-ui2
             ),
             _buildSection(
               context,
               '3. User Responsibilities',
               'You are responsible for your use of the application and for any content you post. You agree not to:\n• Submit false or misleading scam reports.\n• Harass, abuse, or harm another person.\n• Violate any applicable laws or regulations.\n• Attempt to interfere with the proper functioning of the application.',
             ),
-<<<<<<< HEAD
-             _buildSection(
-=======
             _buildSection(
->>>>>>> dev-ui2
               context,
               '4. Intellectual Property',
               'All content, features, and functionality of the application, including but not limited to text, graphics, logos, and software, are the exclusive property of FraudShield and are protected by international copyright, trademark, and other intellectual property laws.',
@@ -74,20 +55,12 @@ class TermsOfServiceScreen extends StatelessWidget {
               '5. Limitation of Liability',
               'To the fullest extent permitted by law, FraudShield shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the service.',
             ),
-<<<<<<< HEAD
-             _buildSection(
-=======
             _buildSection(
->>>>>>> dev-ui2
               context,
               '6. Governing Law',
               'These Terms shall be governed and construed in accordance with the laws of Malaysia, without regard to its conflict of law provisions.',
             ),
-<<<<<<< HEAD
-             _buildSection(
-=======
             _buildSection(
->>>>>>> dev-ui2
               context,
               '7. Changes to Terms',
               'We reserve the right to modify or replace these Terms at any time. We will provide notice of any significant changes. Your continued use of the service following the posting of any changes constitutes acceptance of those changes.',
@@ -113,29 +86,17 @@ class TermsOfServiceScreen extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-<<<<<<< HEAD
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-=======
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
->>>>>>> dev-ui2
           ),
           const SizedBox(height: 12),
           Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-<<<<<<< HEAD
-              color: Colors.white.withOpacity(0.8),
-              height: 1.5,
-            ),
-=======
                   color: Colors.white.withValues(alpha: 0.8),
                   height: 1.5,
                 ),
->>>>>>> dev-ui2
           ),
         ],
       ),

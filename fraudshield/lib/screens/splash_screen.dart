@@ -95,11 +95,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-<<<<<<< HEAD
-                      AppColors.primaryBlue.withOpacity(0.15),
-=======
                       AppColors.primaryBlue.withValues(alpha: 0.15),
->>>>>>> dev-ui2
                       Colors.transparent,
                     ],
                     radius: 0.7,
@@ -130,15 +126,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                                 colors: [
-<<<<<<< HEAD
-                                  Colors.white.withOpacity(0.0),
-                                  Colors.white.withOpacity(0.4), // The shine
-                                  Colors.white.withOpacity(0.0),
-=======
                                   Colors.white.withValues(alpha: 0.0),
                                   Colors.white.withValues(alpha: 0.4), // The shine
                                   Colors.white.withValues(alpha: 0.0),
->>>>>>> dev-ui2
                                 ],
                                 stops: [
                                   _shimmerController.value - 0.3,
@@ -175,11 +165,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                       Text(
                         'Protecting You From Digital Fraud',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-<<<<<<< HEAD
-                          color: Colors.white.withOpacity(0.6),
-=======
                           color: Colors.white.withValues(alpha: 0.6),
->>>>>>> dev-ui2
                           letterSpacing: 0.5,
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
@@ -203,11 +189,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 child: Text(
                   'NEXT-GEN FRAUD DETECTION',
                   style: TextStyle(
-<<<<<<< HEAD
-                    color: Colors.white.withOpacity(0.3),
-=======
                     color: Colors.white.withValues(alpha: 0.3),
->>>>>>> dev-ui2
                     fontSize: 10,
                     letterSpacing: 1.0,
                   ),
