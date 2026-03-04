@@ -17,6 +17,7 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/locale_provider.dart';
 
+@pragma('vm:entry-point')
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
