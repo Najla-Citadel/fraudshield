@@ -13,8 +13,10 @@ import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
 import 'services/call_state_service.dart';
 import 'services/clipboard_monitor_service.dart';
+import 'services/smart_capture_service.dart';
 import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/locale_provider.dart';
 
 @pragma('vm:entry-point')
@@ -44,6 +46,11 @@ void main() async {
   await NotificationService.instance.init();
   CallStateService.instance.init();
   ClipboardMonitorService.instance.init();
+
+  final prefs = await SharedPreferences.getInstance();
+  if (prefs.getBool('smart_capture_enabled') ?? false) {
+    await SmartCaptureService().start();
+  }
 
   runApp(const FraudShieldApp());
 }

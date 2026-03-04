@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/error_state.dart';
+import 'dart:math' as math;
 
 class TransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -11,28 +12,45 @@ class TransactionDetailScreen extends StatefulWidget {
   const TransactionDetailScreen({super.key, required this.transactionId});
 
   @override
-  State<TransactionDetailScreen> createState() => _TransactionDetailScreenState();
+  State<TransactionDetailScreen> createState() =>
+      _TransactionDetailScreenState();
 }
 
-class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
+class _TransactionDetailScreenState extends State<TransactionDetailScreen>
+    with SingleTickerProviderStateMixin {
   bool _isLoading = true;
   Map<String, dynamic>? _transaction;
   String? _error;
+  bool _notesExpanded = false;
+  late AnimationController _animController;
+  late Animation<double> _scoreAnim;
 
   @override
   void initState() {
     super.initState();
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200));
+    _scoreAnim =
+        CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic);
     _fetchDetails();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchDetails() async {
     try {
-      final data = await ApiService.instance.getJournalDetails(widget.transactionId);
+      final data =
+          await ApiService.instance.getJournalDetails(widget.transactionId);
       if (mounted) {
         setState(() {
           _transaction = data;
           _isLoading = false;
         });
+        _animController.forward();
       }
     } catch (e) {
       if (mounted) {
@@ -44,371 +62,830 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     }
   }
 
-  Color _getColorForStatus(String status) {
+  // ─── Helpers ───────────────────────────────────────────────────────────────
+
+  Color _statusColor(String status) {
     switch (status.toUpperCase()) {
-      case 'SAFE': return AppColors.accentGreen;
-      case 'SUSPICIOUS': return Colors.orangeAccent;
-      case 'BLOCKED': return Colors.redAccent;
-      case 'SCAMMED': return Colors.red;
-      default: return Colors.grey;
+      case 'SAFE':
+        return const Color(0xFF22D483);
+      case 'SUSPICIOUS':
+        return const Color(0xFFF59E0B);
+      case 'BLOCKED':
+        return const Color(0xFFEF4444);
+      case 'SCAMMED':
+        return const Color(0xFFDC2626);
+      default:
+        return Colors.grey;
     }
   }
 
-  Color _getColorForScore(int score) {
-    if (score >= 80) return Colors.redAccent;
-    if (score >= 40) return Colors.orangeAccent;
-    return AppColors.accentGreen;
+  IconData _statusIcon(String status) {
+    switch (status.toUpperCase()) {
+      case 'SAFE':
+        return LucideIcons.shieldCheck;
+      case 'SUSPICIOUS':
+        return LucideIcons.alertTriangle;
+      case 'BLOCKED':
+        return LucideIcons.shieldOff;
+      case 'SCAMMED':
+        return LucideIcons.xCircle;
+      default:
+        return LucideIcons.shield;
+    }
   }
 
-  IconData _getIconForType(String type) {
+  Color _scoreColor(int score) {
+    if (score >= 75) return const Color(0xFFEF4444);
+    if (score >= 40) return const Color(0xFFF59E0B);
+    return const Color(0xFF22D483);
+  }
+
+  String _scoreLabel(int score) {
+    if (score >= 75) return 'High Risk';
+    if (score >= 40) return 'Medium Risk';
+    return 'Low Risk';
+  }
+
+  IconData _typeIcon(String type) {
     switch (type.toUpperCase()) {
-      case 'URL': return LucideIcons.link;
-      case 'PHONE': return LucideIcons.phone;
-      case 'BANK': return LucideIcons.building;
-      case 'DOC': return LucideIcons.fileText;
-      case 'MANUAL': return LucideIcons.plusCircle;
-      default: return LucideIcons.shieldCheck;
+      case 'URL':
+        return LucideIcons.link;
+      case 'PHONE':
+        return LucideIcons.phone;
+      case 'BANK':
+        return LucideIcons.building;
+      case 'DOC':
+        return LucideIcons.fileText;
+      case 'AUTO_CAPTURE':
+        return LucideIcons.cpu;
+      default:
+        return LucideIcons.creditCard;
     }
   }
 
-  String _formatDate(String? isoDate) {
-    if (isoDate == null) return 'Unknown Date';
+  String _formatDate(String? iso) {
+    if (iso == null) return '—';
     try {
-      final date = DateTime.parse(isoDate).toLocal();
-      return '${date.month}/${date.day}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-    } catch (e) {
-      return isoDate;
+      final d = DateTime.parse(iso).toLocal();
+      final months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+      return '${months[d.month - 1]} ${d.day}, ${d.year}  •  '
+          '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return iso;
     }
   }
+
+  String _formatAmount(dynamic raw) {
+    if (raw == null) return '—';
+    final amt = raw is num ? raw.toDouble() : double.tryParse(raw.toString());
+    if (amt == null) return '—';
+    final prefix = amt < 0 ? '– RM ' : '+ RM ';
+    return '$prefix${amt.abs().toStringAsFixed(2)}';
+  }
+
+  bool get _isOutgoing {
+    final amt = _transaction!['amount'];
+    if (amt == null) return false;
+    final v = amt is num ? amt.toDouble() : double.tryParse(amt.toString());
+    return (v ?? 0) < 0;
+  }
+
+  // ─── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        title: const Text('Scan Details', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.deepNavy,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      backgroundColor: const Color(0xFF0B1121),
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.accentGreen));
-    }
-
-    if (_error != null || _transaction == null) {
-      return ErrorState(
-        onRetry: _fetchDetails,
-        message: _error ?? 'Transaction not found',
+      return const Scaffold(
+        backgroundColor: Color(0xFF0B1121),
+        body: Center(
+            child: CircularProgressIndicator(color: AppColors.accentGreen)),
       );
     }
 
-    final status = _transaction!['status'] ?? 'UNKNOWN';
-    final statusColor = _getColorForStatus(status);
-    final type = _transaction!['checkType'] ?? 'UNKNOWN';
-    final metadata = _transaction!['metadata'] as Map<String, dynamic>? ?? {};
+    if (_error != null || _transaction == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B1121),
+        body: ErrorState(
+            onRetry: _fetchDetails, message: _error ?? 'Transaction not found'),
+      );
+    }
 
-    return ListView(
-      padding: const EdgeInsets.all(16.0),
-      children: [
-        // Top Overview Card
-        Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: statusColor.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+    final status = (_transaction!['status'] ?? 'UNKNOWN') as String;
+    final type = (_transaction!['checkType'] ?? 'MANUAL') as String;
+    final score = (_transaction!['riskScore'] ?? 0) as int;
+    final sColor = _statusColor(status);
+    final metadata = _transaction!['metadata'] as Map<String, dynamic>? ?? {};
+    final notes = _transaction!['notes']?.toString() ?? '';
+    final recipient =
+        _transaction!['merchant'] ?? _transaction!['target'] ?? '—';
+    final checkId =
+        _transaction!['id'].toString().split('-').last.toUpperCase();
+
+    return CustomScrollView(
+      slivers: [
+        // ── Collapsing hero appbar ──────────────────────────────────────────
+        SliverAppBar(
+          expandedHeight: 280,
+          pinned: true,
+          backgroundColor: const Color(0xFF0B1121),
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
               ),
-            ],
+              child: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white, size: 18),
+            ),
           ),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(_getIconForType(type), color: statusColor, size: 48),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                status.toUpperCase(),
-                style: TextStyle(
-                  color: statusColor,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _transaction!['target'] ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColors.deepNavy,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+          actions: [
+            IconButton(
+              icon: const Icon(LucideIcons.copy, color: Colors.white, size: 20),
+              tooltip: 'Copy ID',
+              onPressed: () {
+                Clipboard.setData(
+                    ClipboardData(text: _transaction!['id'].toString()));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Transaction ID copied'),
+                    duration: Duration(seconds: 2),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+            ),
+          ],
+          flexibleSpace: FlexibleSpaceBar(
+            background: _buildHero(status, type, score, sColor),
+          ),
+        ),
+
+        // ── Content ────────────────────────────────────────────────────────
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate([
+              // ── Amount + recipient card ─────────────────────────────────
+              _buildSectionCard(
+                child: Column(
                   children: [
-                    const Icon(LucideIcons.calendar, size: 14, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    Text(
-                      _formatDate(_transaction!['createdAt']),
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    _buildAmountRow(score, recipient),
+                    const Divider(color: Color(0xFF1E2D45), height: 1),
+                    _buildInfoRow(
+                      icon: LucideIcons.calendar,
+                      label: 'Date',
+                      value: _formatDate(_transaction!['createdAt']),
+                    ),
+                    if (_transaction!['paymentMethod'] != null) ...[
+                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      _buildInfoRow(
+                        icon: LucideIcons.creditCard,
+                        label: 'Method',
+                        value: _transaction!['paymentMethod'].toString(),
+                      ),
+                    ],
+                    if (_transaction!['platform'] != null) ...[
+                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      _buildInfoRow(
+                        icon: _typeIcon(type),
+                        label: 'Source',
+                        value: _transaction!['platform'].toString(),
+                      ),
+                    ],
+                    const Divider(color: Color(0xFF1E2D45), height: 1),
+                    _buildInfoRow(
+                      icon: LucideIcons.hash,
+                      label: 'Check ID',
+                      value: checkId,
+                      valueStyle: const TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontSize: 13,
+                        fontFamily: 'monospace',
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
 
-        const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-        // AI Breakdown Section
-        const Padding(
-          padding: EdgeInsets.only(left: 8.0, bottom: 12.0),
-          child: Text(
-            'RISK ASSESSMENT',
-            style: TextStyle(
-              color: Colors.white,
-               fontSize: 14,
-               fontWeight: FontWeight.bold,
-               letterSpacing: 1.5,
-            ),
-          ),
-        ),
+              // ── Risk Assessment ─────────────────────────────────────────
+              _buildSectionLabel('Risk Assessment'),
+              const SizedBox(height: 8),
+              _buildSectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          // Gauge
+                          AnimatedBuilder(
+                            animation: _scoreAnim,
+                            builder: (_, __) => SizedBox(
+                              width: 72,
+                              height: 72,
+                              child: CustomPaint(
+                                painter: _RiskGaugePainter(
+                                  score / 100.0 * _scoreAnim.value,
+                                  _scoreColor(score),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    '$score',
+                                    style: TextStyle(
+                                      color: _scoreColor(score),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _scoreLabel(score),
+                                  style: TextStyle(
+                                    color: _scoreColor(score),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  score == 0
+                                      ? 'No threats detected for this transaction.'
+                                      : 'This transaction has elevated risk signals. Review carefully before proceeding.',
+                                  style: const TextStyle(
+                                      color: Color(0xFF94A3B8), fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-               _buildRiskRow(
-                 'Risk Score',
-                 '${_transaction!['riskScore'] ?? 0}/100',
-                 _getColorForScore(_transaction!['riskScore'] ?? 0),
-                  isFirst: true,
-               ),
-               if (metadata.containsKey('threats') && (metadata['threats'] as List).isNotEmpty)
-                 _buildRiskRow(
-                   'Identified Threats',
-                   (metadata['threats'] as List).join(', '),
-                   Colors.redAccent,
-                 ),
-               if (metadata.containsKey('riskLevel'))
-                 _buildRiskRow(
-                   'Comm. Risk Level',
-                   (metadata['riskLevel'] as String).toUpperCase(),
-                   metadata['riskLevel'] == 'high' ? Colors.redAccent : Colors.orangeAccent,
-                 ),
-               if (metadata.containsKey('communityReports'))
-                 _buildRiskRow(
-                   'Community Reports',
-                   '${metadata['communityReports']}',
-                   Colors.grey,
-                 ),
-               if (metadata.containsKey('safe') && metadata['safe'] == true)
-                 _buildRiskRow(
-                   'Google Safe Browsing',
-                   'Verified Clean',
-                   AppColors.accentGreen,
-                 ),
-               _buildRiskRow(
-                 'Check ID',
-                 _transaction!['id'].toString().split('-').last,
-                 Colors.grey,
-                 isLast: true,
-               ),
-            ],
-          ),
-        ),
+                    // Optional threat tags
+                    if (metadata.containsKey('threats') &&
+                        (metadata['threats'] as List).isNotEmpty) ...[
+                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Threats Detected',
+                                style: TextStyle(
+                                    color: Color(0xFF94A3B8), fontSize: 12)),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: (metadata['threats'] as List)
+                                  .map((t) => _threatChip(t.toString()))
+                                  .toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
 
-        if (type == 'MANUAL' || _transaction!['amount'] != null) ...[
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0, bottom: 12.0),
-            child: Text(
-              'PAYMENT DETAILS',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
+                    if (metadata.containsKey('communityReports') &&
+                        (metadata['communityReports'] as int? ?? 0) > 0) ...[
+                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      _buildInfoRow(
+                        icon: LucideIcons.users,
+                        label: 'Community Reports',
+                        value: '${metadata['communityReports']} report(s)',
+                        valueColor: const Color(0xFFF59E0B),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                if (_transaction!['merchant'] != null)
-                  _buildRiskRow('Recipient', _transaction!['merchant'], Colors.white, isFirst: true),
-                if (_transaction!['amount'] != null)
-                  _buildRiskRow('Amount', 'RM ${_transaction!['amount']}', AppColors.accentGreen),
-                if (_transaction!['paymentMethod'] != null)
-                  _buildRiskRow('Method', _transaction!['paymentMethod'], Colors.grey),
-                if (_transaction!['platform'] != null)
-                  _buildRiskRow('Platform', _transaction!['platform'], Colors.grey),
-                if (_transaction!['notes'] != null && _transaction!['notes'].toString().isNotEmpty)
-                  _buildRiskRow('Notes', _transaction!['notes'], Colors.grey, isLast: true),
-              ],
-            ),
-          ),
-        ],
 
-        const SizedBox(height: 32),
-
-        if (status.toUpperCase() != 'SCAMMED')
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _showReportDialog,
-              icon: const Icon(LucideIcons.megaphone),
-              label: const Text('REPORT THIS TRANSACTION'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-            ),
-          ),
-        
-        if (status.toUpperCase() == 'SCAMMED' && _transaction!['reportId'] != null)
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              children: [
-                const Icon(LucideIcons.checkCircle, color: Colors.red, size: 24),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Text(
-                    'This transaction has been reported. Our team is investigating.',
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+              // ── Notes ──────────────────────────────────────────────────
+              if (notes.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                _buildSectionLabel('Notes'),
+                const SizedBox(height: 8),
+                _buildSectionCard(
+                  child: GestureDetector(
+                    onTap: () =>
+                        setState(() => _notesExpanded = !_notesExpanded),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnimatedCrossFade(
+                            firstChild: Text(
+                              notes,
+                              style: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 14,
+                                  height: 1.6),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            secondChild: Text(
+                              notes,
+                              style: const TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 14,
+                                  height: 1.6),
+                            ),
+                            crossFadeState: _notesExpanded
+                                ? CrossFadeState.showSecond
+                                : CrossFadeState.showFirst,
+                            duration: const Duration(milliseconds: 250),
+                          ),
+                          if (notes.length > 120) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              _notesExpanded ? 'Show less' : 'Show more',
+                              style: const TextStyle(
+                                  color: AppColors.accentGreen,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],
-            ),
+
+              const SizedBox(height: 16),
+
+              // ── Safety tips for suspicious ──────────────────────────────
+              if (status.toUpperCase() == 'SUSPICIOUS' ||
+                  status.toUpperCase() == 'BLOCKED') ...[
+                _buildWarningBanner(score),
+                const SizedBox(height: 16),
+              ],
+
+              // ── Report CTA ─────────────────────────────────────────────
+              if (status.toUpperCase() != 'SCAMMED')
+                _buildReportButton()
+              else
+                _buildReportedBanner(),
+            ]),
           ),
-        
-        const SizedBox(height: 48),
+        ),
       ],
     );
   }
 
+  // ─── Hero ──────────────────────────────────────────────────────────────────
+  Widget _buildHero(String status, String type, int score, Color sColor) {
+    final isOut = _isOutgoing;
+    final amtStr = _formatAmount(_transaction!['amount']);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            sColor.withValues(alpha: 0.15),
+            const Color(0xFF0B1121),
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 48),
+            // Status badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: sColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: sColor.withValues(alpha: 0.5)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(_statusIcon(status), color: sColor, size: 14),
+                  const SizedBox(width: 6),
+                  Text(
+                    status.toUpperCase(),
+                    style: TextStyle(
+                      color: sColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Amount
+            if (_transaction!['amount'] != null)
+              Text(
+                amtStr,
+                style: TextStyle(
+                  color:
+                      isOut ? const Color(0xFFF87171) : const Color(0xFF22D483),
+                  fontSize: 38,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            const SizedBox(height: 4),
+            // Recipient
+            Text(
+              _transaction!['merchant'] ?? _transaction!['target'] ?? '—',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Widgets ───────────────────────────────────────────────────────────────
+
+  Widget _buildSectionLabel(String label) => Padding(
+        padding: const EdgeInsets.only(left: 4, bottom: 0),
+        child: Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            color: Color(0xFF64748B),
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.4,
+          ),
+        ),
+      );
+
+  Widget _buildSectionCard({required Widget child}) => Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF111827),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFF1E2D45)),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: child,
+        ),
+      );
+
+  Widget _buildAmountRow(int score, String recipient) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: _scoreColor(score).withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:
+                  Icon(LucideIcons.user, color: _scoreColor(score), size: 22),
+            ),
+            const SizedBox(width: 14),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Recipient',
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+                const SizedBox(height: 2),
+                Text(
+                  recipient,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+    TextStyle? valueStyle,
+  }) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: const Color(0xFF475569)),
+            const SizedBox(width: 12),
+            Text(label,
+                style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+            const Spacer(),
+            Flexible(
+              child: Text(
+                value,
+                textAlign: TextAlign.end,
+                style: valueStyle ??
+                    TextStyle(
+                      color: valueColor ?? Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _threatChip(String label) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(20),
+          border:
+              Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+              color: Color(0xFFF87171),
+              fontSize: 12,
+              fontWeight: FontWeight.w600),
+        ),
+      );
+
+  Widget _buildWarningBanner(int score) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF59E0B).withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border:
+              Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(LucideIcons.alertTriangle,
+                color: Color(0xFFF59E0B), size: 20),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Proceed with Caution',
+                      style: TextStyle(
+                          color: Color(0xFFF59E0B),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14)),
+                  SizedBox(height: 4),
+                  Text(
+                    "Do not transfer money to unknown recipients. Verify the account holder's identity before proceeding.",
+                    style: TextStyle(
+                        color: Color(0xFF94A3B8), fontSize: 13, height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildReportButton() => SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton.icon(
+          onPressed: _showReportDialog,
+          icon: const Icon(LucideIcons.megaphone, size: 18),
+          label: const Text(
+            'Report This Transaction',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.3),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFEF4444),
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+        ),
+      );
+
+  Widget _buildReportedBanner() => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+        ),
+        child: const Row(
+          children: [
+            Icon(LucideIcons.checkCircle, color: Color(0xFF22D483), size: 22),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Reported & Under Review\nOur team is investigating this transaction.',
+                style:
+                    TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  // ─── Report Sheet ──────────────────────────────────────────────────────────
   void _showReportDialog() {
-    final descriptionController = TextEditingController(text: _transaction!['notes'] ?? '');
-    String selectedCategory = _transaction!['platform'] ?? 'Others';
+    final descCtrl =
+        TextEditingController(text: _transaction!['notes']?.toString() ?? '');
+    String selectedCategory = 'Other';
+    final categories = [
+      'Shopee',
+      'Facebook',
+      'WhatsApp',
+      'Investment',
+      'E-Commerce',
+      'Banking',
+      'Other'
+    ];
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          top: 24,
-          left: 20,
-          right: 20,
-        ),
-        decoration: const BoxDecoration(
-          color: AppColors.deepNavy,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Report Fraud',
-              style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tell us what happened. This will help protect others.',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: descriptionController,
-              maxLines: 4,
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Incident Description',
-                labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.fileText, color: Colors.grey),
-                filled: true,
-                fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-              ),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: ['Shopee', 'Facebook', 'WhatsApp', 'Investment', 'Other'].contains(selectedCategory) 
-                  ? selectedCategory : 'Other',
-              dropdownColor: const Color(0xFF0B1121),
-              style: const TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                labelText: 'Scam Category',
-                labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.tag, color: Colors.grey),
-                filled: true,
-                fillColor: const Color(0xFF1E293B),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-              ),
-              items: ['Shopee', 'Facebook', 'WhatsApp', 'Investment', 'Other'].map((c) {
-                return DropdownMenuItem(value: c, child: Text(c));
-              }).toList(),
-              onChanged: (val) => selectedCategory = val!,
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => _convertToReport(descriptionController.text, selectedCategory),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                child: const Text(
-                  'SUBMIT SCAM REPORT',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSS) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            top: 24,
+            left: 20,
+            right: 20,
+          ),
+          decoration: const BoxDecoration(
+            color: Color(0xFF111827),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 32),
-          ],
+              const Row(
+                children: [
+                  Icon(LucideIcons.megaphone,
+                      color: Color(0xFFF87171), size: 22),
+                  SizedBox(width: 10),
+                  Text('Report Fraud',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold)),
+                ],
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Help protect the community by reporting this suspicious transaction.',
+                style: TextStyle(
+                    color: Color(0xFF94A3B8), fontSize: 13, height: 1.5),
+              ),
+              const SizedBox(height: 20),
+
+              // Description
+              TextField(
+                controller: descCtrl,
+                maxLines: 4,
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+                decoration: InputDecoration(
+                  hintText: 'Describe what happened...',
+                  hintStyle: const TextStyle(color: Color(0xFF475569)),
+                  filled: true,
+                  fillColor: const Color(0xFF1A2332),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Category chips
+              const Text('Category',
+                  style: TextStyle(
+                      color: Color(0xFF64748B),
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: categories
+                    .map((c) => GestureDetector(
+                          onTap: () => setSS(() => selectedCategory = c),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 150),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: selectedCategory == c
+                                  ? const Color(0xFFEF4444)
+                                      .withValues(alpha: 0.15)
+                                  : const Color(0xFF1A2332),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: selectedCategory == c
+                                    ? const Color(0xFFEF4444)
+                                        .withValues(alpha: 0.6)
+                                    : const Color(0xFF1E2D45),
+                              ),
+                            ),
+                            child: Text(
+                              c,
+                              style: TextStyle(
+                                color: selectedCategory == c
+                                    ? const Color(0xFFF87171)
+                                    : const Color(0xFF94A3B8),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              ),
+
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () =>
+                      _convertToReport(descCtrl.text, selectedCategory),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: const Text(
+                    'Submit Scam Report',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -426,12 +903,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       );
 
       _fetchDetails();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Scam report submitted successfully!'),
-            backgroundColor: AppColors.accentGreen,
+            content: Text('✅ Scam report submitted. Thank you!'),
+            backgroundColor: Color(0xFF22D483),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12))),
           ),
         );
       }
@@ -439,37 +919,49 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit report: $e')),
+          SnackBar(content: Text('Failed: $e')),
         );
       }
     }
   }
+}
 
-  Widget _buildRiskRow(String label, String value, Color valueColor, {bool isFirst = false, bool isLast = false}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: isLast ? null : Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(color: Colors.grey, fontSize: 16),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              color: valueColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-    );
+// ─── Risk Gauge Painter ───────────────────────────────────────────────────────
+
+class _RiskGaugePainter extends CustomPainter {
+  final double progress; // 0.0 – 1.0
+  final Color color;
+
+  _RiskGaugePainter(this.progress, this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2;
+    final r = math.min(cx, cy) - 4;
+    const startAngle = math.pi * 0.75;
+    const sweep = math.pi * 1.5;
+
+    final trackPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.07)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round;
+
+    final progressPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        startAngle, sweep, false, trackPaint);
+
+    canvas.drawArc(Rect.fromCircle(center: Offset(cx, cy), radius: r),
+        startAngle, sweep * progress, false, progressPaint);
   }
+
+  @override
+  bool shouldRepaint(_RiskGaugePainter old) =>
+      old.progress != progress || old.color != color;
 }

@@ -175,7 +175,9 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       return _buildLoginAlertCard(alert);
     }
 
-    if (category == 'PHISHING' &&
+    if ((category == 'PHISHING' ||
+            category == 'MULE_ACCOUNT' ||
+            category == 'MACAU_SCAM') &&
         (severity == 'HIGH' || severity == 'CRITICAL')) {
       return _buildHighRiskAlertCard(alert);
     }

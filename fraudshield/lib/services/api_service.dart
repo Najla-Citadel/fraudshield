@@ -31,6 +31,9 @@ class ApiService {
   String? _refreshToken;
   Future<bool>? _refreshFuture;
 
+  /// Callback to notify when a session is invalidated (e.g., 401 on refresh)
+  VoidCallback? onTokenExpired;
+
   // SHA-256 Fingerprint for api.fraudshieldprotect.com
   static const String _prodFingerprint =
       '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
@@ -199,6 +202,7 @@ class ApiService {
               'ApiService: Token refresh failed (${response.statusCode})');
         }
         await signOut();
+        onTokenExpired?.call();
         return false;
       }
     } catch (e) {
@@ -450,7 +454,7 @@ class ApiService {
     String? notes,
     String checkType = 'MANUAL',
   }) async {
-    final response = await post('/transactions/log', {
+    final response = await post('/transactions', {
       'amount': amount,
       'merchant': merchant,
       'target': target,
@@ -802,6 +806,7 @@ class ApiService {
         }
         return _sendRequest(method, path, body: body);
       }
+      // If refresh failed, refreshToken() already called signOut() and onTokenExpired()
       throw Exception('Session expired');
     } else {
       final message = isJson && data is Map

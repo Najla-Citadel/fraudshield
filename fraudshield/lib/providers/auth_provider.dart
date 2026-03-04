@@ -29,6 +29,8 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _init() async {
     try {
       await api.init();
+      api.onTokenExpired = signOut;
+
       if (api.isAuthenticated) {
         log('AuthProvider: Token found, restoring session...');
         await Future.wait([
