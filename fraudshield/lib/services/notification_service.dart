@@ -1,10 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-<<<<<<< HEAD
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-=======
->>>>>>> dev-ui2
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'api_service.dart';
 
@@ -16,28 +12,12 @@ class NotificationService extends ChangeNotifier {
   final List<Map<String, dynamic>> _alerts = [];
 
   List<Map<String, dynamic>> get alerts => List.unmodifiable(_alerts);
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> dev-ui2
   // Callback to handle navigation when a notification is tapped
   Function(String route, dynamic arguments)? onNavigate;
 
   Future<void> initialize(String userId) async {
     _setupFirebaseMessaging();
-<<<<<<< HEAD
-    
-    if (_socket != null) return;
-
-    final baseUrl = dotenv.env['API_BASE_URL'] ?? 'http://localhost:3000';
-    final socketUrl = baseUrl.replaceAll('/api/v1', ''); // Get root URL
-
-    _socket = IO.io(socketUrl, IO.OptionBuilder()
-      .setTransports(['websocket'])
-      .enableAutoConnect()
-      .build());
-=======
 
     if (_socket != null) return;
 
@@ -53,7 +33,6 @@ class NotificationService extends ChangeNotifier {
             .setTransports(['websocket'])
             .enableAutoConnect()
             .build());
->>>>>>> dev-ui2
 
     _socket!.onConnect((_) {
       log('🔌 Socket connected: ${_socket!.id}');
@@ -64,11 +43,7 @@ class NotificationService extends ChangeNotifier {
       log('🚨 New alert received: $data');
       _alerts.insert(0, Map<String, dynamic>.from(data));
       notifyListeners();
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> dev-ui2
       // We could trigger a local notification here if needed
     });
 

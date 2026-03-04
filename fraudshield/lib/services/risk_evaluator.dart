@@ -13,8 +13,6 @@ class RiskResult {
   final List<String> categories;
   final List<String> sources; // e.g. ['community', 'ccid']
 
-<<<<<<< HEAD
-=======
   // Quishing specific fields
   final List<String> redirectChain;
   final String? finalUrl;
@@ -33,7 +31,6 @@ class RiskResult {
   final int? pageCount;              // PDF page count
   final String? sha256;              // File fingerprint
 
->>>>>>> dev-ui2
   RiskResult({
     required this.score,
     required this.level,
@@ -43,8 +40,6 @@ class RiskResult {
     this.verifiedReports = 0,
     this.categories = const [],
     this.sources = const [],
-<<<<<<< HEAD
-=======
     this.redirectChain = const [],
     this.finalUrl,
     this.detectedBy = const [],
@@ -57,7 +52,6 @@ class RiskResult {
     this.dangerousPermissions = const [],
     this.pageCount,
     this.sha256,
->>>>>>> dev-ui2
   });
 }
 
@@ -134,8 +128,6 @@ class RiskEvaluator {
     );
   }
 
-<<<<<<< HEAD
-=======
   // ── New: Evaluate QR / Quishing (async, calls backend deep scan) ──
   static Future<RiskResult> evaluateQr(String payload) async {
     // 1. Run local heuristic for instant feedback
@@ -262,7 +254,6 @@ class RiskEvaluator {
     }
   }
 
->>>>>>> dev-ui2
   static Future<RiskResult> evaluatePayment({
     required String type, // "bank_account", "phone", "url"
     required String value,

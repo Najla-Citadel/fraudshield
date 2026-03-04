@@ -43,11 +43,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: Colors.white.withOpacity(0.2),
-=======
                 color: Colors.white.withValues(alpha: 0.2),
->>>>>>> dev-ui2
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -67,11 +63,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: _getScoreColor(widget.score).withOpacity(0.2),
-=======
                   color: _getScoreColor(widget.score).withValues(alpha: 0.2),
->>>>>>> dev-ui2
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: _getScoreColor(widget.score)),
                 ),
@@ -166,13 +158,8 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isSafe 
-<<<<<<< HEAD
-                ? AppColors.accentGreen.withOpacity(0.1) 
-                : Colors.redAccent.withOpacity(0.1),
-=======
                 ? AppColors.accentGreen.withValues(alpha: 0.1) 
                 : Colors.redAccent.withValues(alpha: 0.1),
->>>>>>> dev-ui2
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -197,11 +184,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 Text(
                   subtitle,
                   style: TextStyle(
-<<<<<<< HEAD
-                    color: Colors.white.withOpacity(0.5),
-=======
                     color: Colors.white.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                     fontSize: 12,
                   ),
                 ),

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../constants/colors.dart';
-<<<<<<< HEAD
-import '../widgets/adaptive_button.dart';
-=======
->>>>>>> dev-ui2
 import '../services/api_service.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
@@ -30,12 +26,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
   Future<void> _fetchComments() async {
     try {
-<<<<<<< HEAD
-      final comments = await ApiService.instance.getComments(widget.report['id']);
-=======
       final comments =
           await ApiService.instance.getComments(widget.report['id']);
->>>>>>> dev-ui2
       if (mounted) {
         setState(() {
           _comments = comments;
@@ -83,32 +75,20 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         title: Text(
           'REPORT DETAILS',
           style: theme.textTheme.labelMedium?.copyWith(
-<<<<<<< HEAD
-            color: AppColors.textLight.withOpacity(0.7),
-=======
             color: AppColors.textLight.withValues(alpha: 0.7),
->>>>>>> dev-ui2
             letterSpacing: 1.5,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-<<<<<<< HEAD
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textLight, size: 20),
-=======
           icon: const Icon(Icons.arrow_back_ios_new_rounded,
               color: AppColors.textLight, size: 20),
->>>>>>> dev-ui2
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-<<<<<<< HEAD
-            icon: const Icon(Icons.more_horiz_rounded, color: AppColors.textLight),
-=======
             icon: const Icon(Icons.more_horiz_rounded,
                 color: AppColors.textLight),
->>>>>>> dev-ui2
             onPressed: () {},
           ),
         ],
@@ -135,13 +115,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 if (isVerified)
                   Container(
                     margin: const EdgeInsets.only(left: 12, top: 4),
-<<<<<<< HEAD
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.accentGreen.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-=======
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
@@ -149,17 +122,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                           color: AppColors.accentGreen.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-<<<<<<< HEAD
-                        Icon(Icons.verified_user_rounded, color: AppColors.accentGreen, size: 14),
-=======
                         Icon(Icons.verified_user_rounded,
                             color: AppColors.accentGreen, size: 14),
->>>>>>> dev-ui2
                         SizedBox(width: 6),
                         Text(
                           'VERIFIED',
@@ -178,16 +146,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-<<<<<<< HEAD
-                Icon(Icons.access_time_rounded, size: 16, color: AppColors.textLight.withOpacity(0.5)),
-                const SizedBox(width: 6),
-                Text(
-                  'Reported ${_getTimeAgo(widget.report['createdAt'])}',
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
-                ),
-                const SizedBox(width: 12),
-                Container(width: 4, height: 4, decoration: BoxDecoration(color: AppColors.textLight.withOpacity(0.3), shape: BoxShape.circle)),
-=======
                 Icon(Icons.access_time_rounded,
                     size: 16,
                     color: AppColors.textLight.withValues(alpha: 0.5)),
@@ -205,18 +163,13 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     decoration: BoxDecoration(
                         color: AppColors.textLight.withValues(alpha: 0.3),
                         shape: BoxShape.circle)),
->>>>>>> dev-ui2
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     widget.report['location'] ?? 'Petaling Jaya',
-<<<<<<< HEAD
-                    style: TextStyle(color: AppColors.textLight.withOpacity(0.7), fontSize: 13),
-=======
                     style: TextStyle(
                         color: AppColors.textLight.withValues(alpha: 0.7),
                         fontSize: 13),
->>>>>>> dev-ui2
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -226,32 +179,24 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             const SizedBox(height: 32),
 
             // 2. Scam Source Card
-<<<<<<< HEAD
-            const Text('SCAM SOURCE', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-=======
             const Text('SCAM SOURCE',
                 style: TextStyle(
                     color: Color(0xFF64748B),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2)),
->>>>>>> dev-ui2
             const SizedBox(height: 12),
             _buildSourceCard(widget.report),
 
             const SizedBox(height: 24),
 
             // 3. Message Content
-<<<<<<< HEAD
-            const Text('MESSAGE CONTENT', style: TextStyle(color: Color(0xFF64748B), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-=======
             const Text('MESSAGE CONTENT',
                 style: TextStyle(
                     color: Color(0xFF64748B),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2)),
->>>>>>> dev-ui2
             const SizedBox(height: 12),
             Container(
               width: double.infinity,
@@ -259,11 +204,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF162032),
                 borderRadius: BorderRadius.circular(20),
-<<<<<<< HEAD
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
                 border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
               ),
               child: Text(
                 '"${widget.report['description'] ?? 'No content available.'}"',
@@ -278,40 +219,23 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
             const SizedBox(height: 24),
 
-<<<<<<< HEAD
-             // 4. AI Risk Analysis
-=======
             // 4. AI Risk Analysis
->>>>>>> dev-ui2
             Row(
               children: const [
                 Icon(Icons.psychology, color: AppColors.accentGreen, size: 20),
                 SizedBox(width: 8),
-<<<<<<< HEAD
-                Text('AI RISK ANALYSIS', style: TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-=======
                 Text('AI RISK ANALYSIS',
                     style: TextStyle(
                         color: AppColors.accentGreen,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2)),
->>>>>>> dev-ui2
               ],
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: AppColors.accentGreen.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.accentGreen.withOpacity(0.1)),
-              ),
-              child: Column(
-                children: [
-                  ..._buildRiskPoints(widget.report).asMap().entries.map((entry) {
-=======
                 color: AppColors.accentGreen.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
@@ -323,7 +247,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       .asMap()
                       .entries
                       .map((entry) {
->>>>>>> dev-ui2
                     return Column(
                       children: [
                         if (entry.key > 0) const SizedBox(height: 16),
@@ -338,23 +261,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             const SizedBox(height: 32),
 
             // 5. Actions
-<<<<<<< HEAD
-            AdaptiveButton(
-              text: 'Stay Safe: Block This Number',
-              onPressed: () {},
-              icon: const Icon(Icons.block_rounded, color: Colors.white, size: 20),
-            ),
-            const SizedBox(height: 32),
-            
-            // 6. Comments Section (New for Phase 3)
-            Row(
-              children: [
-                const Icon(Icons.forum_rounded, color: AppColors.accentGreen, size: 20),
-                const SizedBox(width: 8),
-                Text('COMMUNITY DISCUSSION', style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                const Spacer(),
-                Text('${_comments.length} comments', style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 11)),
-=======
             InkWell(
               onTap: () {},
               borderRadius: BorderRadius.circular(16),
@@ -405,18 +311,13 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     style: TextStyle(
                         color: AppColors.textLight.withValues(alpha: 0.5),
                         fontSize: 11)),
->>>>>>> dev-ui2
               ],
             ),
             const SizedBox(height: 16),
             _buildCommentSection(),
 
             const SizedBox(height: 32),
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> dev-ui2
             // 7. Screenshots (Blurred)
             Row(
               children: [
@@ -432,14 +333,10 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 padding: const EdgeInsets.only(top: 12),
                 child: Text(
                   'Screenshots are anonymized to protect user privacy.',
-<<<<<<< HEAD
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.4), fontSize: 11, fontStyle: FontStyle.italic),
-=======
                   style: TextStyle(
                       color: AppColors.textLight.withValues(alpha: 0.4),
                       fontSize: 11,
                       fontStyle: FontStyle.italic),
->>>>>>> dev-ui2
                 ),
               ),
             ),
@@ -458,11 +355,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF162032),
             borderRadius: BorderRadius.circular(16),
-<<<<<<< HEAD
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
           ),
           child: Row(
             children: [
@@ -475,14 +368,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               Expanded(
                 child: TextField(
                   controller: _commentController,
-<<<<<<< HEAD
-                  style: const TextStyle(color: AppColors.textLight, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: 'Add a comment...',
-                    hintStyle: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 14),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-=======
                   style:
                       const TextStyle(color: AppColors.textLight, fontSize: 14),
                   decoration: InputDecoration(
@@ -493,16 +378,10 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
->>>>>>> dev-ui2
                   ),
                 ),
               ),
               IconButton(
-<<<<<<< HEAD
-                icon: _isSubmitting 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accentGreen))
-                  : const Icon(Icons.send_rounded, color: AppColors.accentGreen, size: 20),
-=======
                 icon: _isSubmitting
                     ? const SizedBox(
                         width: 20,
@@ -511,19 +390,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                             strokeWidth: 2, color: AppColors.accentGreen))
                     : const Icon(Icons.send_rounded,
                         color: AppColors.accentGreen, size: 20),
->>>>>>> dev-ui2
                 onPressed: _isSubmitting ? null : _submitComment,
               ),
             ],
           ),
         ),
         const SizedBox(height: 20),
-<<<<<<< HEAD
-        
-        // Comments List
-        if (_isLoadingComments)
-          const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: AppColors.accentGreen)))
-=======
 
         // Comments List
         if (_isLoadingComments)
@@ -532,17 +404,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   padding: EdgeInsets.all(20),
                   child:
                       CircularProgressIndicator(color: AppColors.accentGreen)))
->>>>>>> dev-ui2
         else if (_comments.isEmpty)
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-<<<<<<< HEAD
-                Icon(Icons.chat_bubble_outline_rounded, color: AppColors.textLight.withOpacity(0.1), size: 48),
-                const SizedBox(height: 12),
-                Text('No comments yet. Be the first to discuss!', style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 13)),
-=======
                 Icon(Icons.chat_bubble_outline_rounded,
                     color: AppColors.textLight.withValues(alpha: 0.1),
                     size: 48),
@@ -551,7 +417,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     style: TextStyle(
                         color: AppColors.textLight.withValues(alpha: 0.3),
                         fontSize: 13)),
->>>>>>> dev-ui2
               ],
             ),
           )
@@ -565,18 +430,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               final comment = _comments[index];
               final userData = comment['user'] ?? {};
               final profile = userData['profile'] ?? {};
-<<<<<<< HEAD
-              
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                   CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Colors.white.withOpacity(0.05),
-                    child: Text(
-                      (userData['fullName'] ?? '?').substring(0, 1),
-                      style: const TextStyle(color: AppColors.textLight, fontSize: 12),
-=======
 
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -588,7 +441,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       (userData['fullName'] ?? '?').substring(0, 1),
                       style: const TextStyle(
                           color: AppColors.textLight, fontSize: 12),
->>>>>>> dev-ui2
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -600,26 +452,18 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                           children: [
                             Text(
                               userData['fullName'] ?? 'Anonymous User',
-<<<<<<< HEAD
-                              style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 13),
-=======
                               style: const TextStyle(
                                   color: AppColors.textLight,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13),
->>>>>>> dev-ui2
                             ),
                             const SizedBox(width: 8),
                             Text(
                               _getTimeAgo(comment['createdAt']),
-<<<<<<< HEAD
-                              style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 11),
-=======
                               style: TextStyle(
                                   color: AppColors.textLight
                                       .withValues(alpha: 0.3),
                                   fontSize: 11),
->>>>>>> dev-ui2
                             ),
                           ],
                         ),
@@ -627,24 +471,16 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-<<<<<<< HEAD
-                            color: Colors.white.withOpacity(0.03),
-=======
                             color: Colors.white.withValues(alpha: 0.03),
->>>>>>> dev-ui2
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             comment['text'] ?? '',
-<<<<<<< HEAD
-                            style: TextStyle(color: AppColors.textLight.withOpacity(0.8), fontSize: 14, height: 1.4),
-=======
                             style: TextStyle(
                                 color:
                                     AppColors.textLight.withValues(alpha: 0.8),
                                 fontSize: 14,
                                 height: 1.4),
->>>>>>> dev-ui2
                           ),
                         ),
                       ],
@@ -695,22 +531,14 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF162032),
         borderRadius: BorderRadius.circular(20),
-<<<<<<< HEAD
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-<<<<<<< HEAD
-              color: const Color(0xFF1E3A8A).withOpacity(0.4),
-=======
               color: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
->>>>>>> dev-ui2
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
@@ -722,25 +550,17 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               children: [
                 Text(
                   label,
-<<<<<<< HEAD
-                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 16),
-=======
                   style: const TextStyle(
                       color: AppColors.textLight,
                       fontWeight: FontWeight.bold,
                       fontSize: 16),
->>>>>>> dev-ui2
                 ),
                 const SizedBox(height: 4),
                 Text(
                   sublabel,
-<<<<<<< HEAD
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 13),
-=======
                   style: TextStyle(
                       color: AppColors.textLight.withValues(alpha: 0.5),
                       fontSize: 13),
->>>>>>> dev-ui2
                 ),
               ],
             ),
@@ -762,14 +582,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     if (category.contains('phishing') || category.contains('wallet')) {
       points.add({
         'title': 'Sense of Urgency',
-<<<<<<< HEAD
-        'desc': 'Phishing messages often claim accounts are suspended to pressure victims into acting fast.',
-      });
-      if (description.contains('link') || description.contains('url') || description.contains('bit.ly')) {
-        points.add({
-          'title': 'Suspicious Link',
-          'desc': 'URL shortener or unofficial domain used to mask a phishing site.',
-=======
         'desc':
             'Phishing messages often claim accounts are suspended to pressure victims into acting fast.',
       });
@@ -780,20 +592,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           'title': 'Suspicious Link',
           'desc':
               'URL shortener or unofficial domain used to mask a phishing site.',
->>>>>>> dev-ui2
         });
       }
     } else if (category.contains('investment')) {
       points.add({
         'title': 'Unrealistic Returns',
-<<<<<<< HEAD
-        'desc': '"Guaranteed" high-return schemes are always red flags. Check BNM Alert List before investing.',
-      });
-      if (description.contains('telegram') || description.contains('whatsapp') || description.contains('group')) {
-        points.add({
-          'title': 'Social Media Pressure',
-          'desc': 'Scammers often use closed group chats to fabricate testimonials and urgency.',
-=======
         'desc':
             '"Guaranteed" high-return schemes are always red flags. Check BNM Alert List before investing.',
       });
@@ -804,19 +607,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
           'title': 'Social Media Pressure',
           'desc':
               'Scammers often use closed group chats to fabricate testimonials and urgency.',
->>>>>>> dev-ui2
         });
       }
     } else if (category.contains('courier') || category.contains('delivery')) {
       points.add({
         'title': 'Impersonation Tactic',
-<<<<<<< HEAD
-        'desc': 'Official couriers never request bank details or fees via phone call.',
-      });
-      points.add({
-        'title': 'Illegal Parcel Threat',
-        'desc': 'Threatening legal action over a parcel is a known social engineering tactic.',
-=======
         'desc':
             'Official couriers never request bank details or fees via phone call.',
       });
@@ -824,27 +619,18 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         'title': 'Illegal Parcel Threat',
         'desc':
             'Threatening legal action over a parcel is a known social engineering tactic.',
->>>>>>> dev-ui2
       });
     } else if (category.contains('love') || category.contains('romance')) {
       points.add({
         'title': 'Emotional Manipulation',
-<<<<<<< HEAD
-        'desc': 'Romance scammers build trust over time before making financial requests.',
-=======
         'desc':
             'Romance scammers build trust over time before making financial requests.',
->>>>>>> dev-ui2
       });
     } else if (category.contains('job')) {
       points.add({
         'title': 'Advance Fee',
-<<<<<<< HEAD
-        'desc': 'Legitimate employers never ask you to pay upfront to secure a job offer.',
-=======
         'desc':
             'Legitimate employers never ask you to pay upfront to secure a job offer.',
->>>>>>> dev-ui2
       });
     }
 
@@ -852,12 +638,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     if (type == 'Phone') {
       points.add({
         'title': 'Sender ID',
-<<<<<<< HEAD
-        'desc': 'Unknown mobile number used instead of an official registered shortcode.',
-=======
         'desc':
             'Unknown mobile number used instead of an official registered shortcode.',
->>>>>>> dev-ui2
       });
     }
 
@@ -865,12 +647,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     if (count > 3) {
       points.add({
         'title': 'Community Flagged',
-<<<<<<< HEAD
-        'desc': '$count users have independently reported this as a scam — treat with high caution.',
-=======
         'desc':
             '$count users have independently reported this as a scam — treat with high caution.',
->>>>>>> dev-ui2
       });
     }
 
@@ -878,12 +656,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     if (points.isEmpty) {
       points.add({
         'title': 'Unverified Source',
-<<<<<<< HEAD
-        'desc': 'Always verify the source before taking any action on unsolicited messages.',
-=======
         'desc':
             'Always verify the source before taking any action on unsolicited messages.',
->>>>>>> dev-ui2
       });
     }
 
@@ -913,13 +687,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               children: [
                 TextSpan(
                   text: '$title: ',
-<<<<<<< HEAD
-                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold),
-                ),
-                TextSpan(
-                  text: desc,
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.8)),
-=======
                   style: const TextStyle(
                       color: AppColors.textLight, fontWeight: FontWeight.bold),
                 ),
@@ -927,7 +694,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   text: desc,
                   style: TextStyle(
                       color: AppColors.textLight.withValues(alpha: 0.8)),
->>>>>>> dev-ui2
                 ),
               ],
             ),
@@ -939,36 +705,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
   Widget _screenshotPlaceholder() {
     return AspectRatio(
-<<<<<<< HEAD
-      aspectRatio: 3/4,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ClipRRect(
-           borderRadius: BorderRadius.circular(12),
-           child: Stack(
-             fit: StackFit.expand,
-             children: [
-               // Mock Content
-               Column(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: [
-                   Icon(Icons.image, color: Colors.white.withOpacity(0.2), size: 32),
-                 ],
-               ),
-               // Blur it
-               BackdropFilter(
-                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                 child: Container(color: Colors.black.withOpacity(0.1)),
-               ),
-               Center(
-                 child: Icon(Icons.visibility_off, color: Colors.white.withOpacity(0.5), size: 24),
-               ),
-             ],
-           ),
-=======
       aspectRatio: 3 / 4,
       child: Container(
         decoration: BoxDecoration(
@@ -999,7 +735,6 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               ),
             ],
           ),
->>>>>>> dev-ui2
         ),
       ),
     );
@@ -1018,7 +753,3 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     }
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> dev-ui2

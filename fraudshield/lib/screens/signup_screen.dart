@@ -12,10 +12,7 @@ import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
-<<<<<<< HEAD
-=======
 import '../widgets/turnstile_widget.dart';
->>>>>>> dev-ui2
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -32,10 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _loading = false;
   bool _agreedToTerms = false;
-<<<<<<< HEAD
-=======
   String? _captchaToken;
->>>>>>> dev-ui2
 
   @override
   void dispose() {
@@ -52,14 +46,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-<<<<<<< HEAD
-    if (fullName.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-=======
     if (fullName.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
->>>>>>> dev-ui2
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields.")),
       );
@@ -75,9 +65,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-<<<<<<< HEAD
-        const SnackBar(content: Text("You must agree to the Terms and Privacy Policy to continue.")),
-=======
         const SnackBar(
             content: Text(
                 "You must agree to the Terms and Privacy Policy to continue.")),
@@ -88,7 +75,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_captchaToken == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please complete the security check.")),
->>>>>>> dev-ui2
       );
       return;
     }
@@ -97,29 +83,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       final success = await context.read<AuthProvider>().signUp(
-<<<<<<< HEAD
-        email: email, 
-        password: password, 
-        fullName: fullName,
-      );
-=======
             email: email,
             password: password,
             fullName: fullName,
             captchaToken: _captchaToken,
           );
->>>>>>> dev-ui2
 
       if (success) {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-<<<<<<< HEAD
-          MaterialPageRoute(builder: (_) => EmailVerificationScreen(email: email)),
-=======
           MaterialPageRoute(
               builder: (_) => EmailVerificationScreen(email: email)),
->>>>>>> dev-ui2
         );
       } else {
         if (!mounted) return;
@@ -158,11 +133,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
       child: Scaffold(
         backgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-        extendBodyBehindAppBar: true, 
-=======
         extendBodyBehindAppBar: true,
->>>>>>> dev-ui2
         body: Stack(
           children: [
             // Background Elements (Matching Login Screen)
@@ -198,12 +169,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Text(
                         'Create Account',
                         textAlign: TextAlign.center,
-<<<<<<< HEAD
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-=======
                         style: Theme.of(context)
                             .textTheme
                             .headlineMedium
@@ -211,20 +176,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
->>>>>>> dev-ui2
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Join the community to stay protected',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-<<<<<<< HEAD
-                          color: Colors.white.withOpacity(0.7),
-                        ),
-=======
                               color: Colors.white.withValues(alpha: 0.7),
                             ),
->>>>>>> dev-ui2
                       ),
                       const SizedBox(height: 32),
 
@@ -279,12 +238,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 24,
                                   child: Checkbox(
                                     value: _agreedToTerms,
-<<<<<<< HEAD
-                                    onChanged: (val) => setState(() => _agreedToTerms = val ?? false),
-                                    activeColor: AppColors.primaryBlue,
-                                    side: const BorderSide(color: Colors.white54, width: 2),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-=======
                                     onChanged: (val) => setState(
                                         () => _agreedToTerms = val ?? false),
                                     activeColor: AppColors.primaryBlue,
@@ -292,31 +245,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         color: Colors.white54, width: 2),
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(4)),
->>>>>>> dev-ui2
                                   ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: RichText(
                                     text: TextSpan(
-<<<<<<< HEAD
-                                      style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.4),
-=======
                                       style: TextStyle(
                                           color: Colors.white
                                               .withValues(alpha: 0.8),
                                           fontSize: 13,
                                           height: 1.4),
->>>>>>> dev-ui2
                                       children: [
                                         const TextSpan(text: 'I agree to the '),
                                         TextSpan(
                                           text: 'Terms of Service',
-<<<<<<< HEAD
-                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
-=======
                                           style: const TextStyle(
                                               color: AppColors.primaryBlue,
                                               fontWeight: FontWeight.bold),
@@ -326,18 +269,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                                 MaterialPageRoute(
                                                     builder: (_) =>
                                                         const TermsOfServiceScreen())),
->>>>>>> dev-ui2
                                         ),
                                         const TextSpan(text: ' and '),
                                         TextSpan(
                                           text: 'Privacy Policy',
-<<<<<<< HEAD
-                                          style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
-                                        ),
-                                        const TextSpan(text: ', and consent to data collection as per PDPA 2010.'),
-=======
                                           style: const TextStyle(
                                               color: AppColors.primaryBlue,
                                               fontWeight: FontWeight.bold),
@@ -351,7 +286,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         const TextSpan(
                                             text:
                                                 ', and consent to data collection as per PDPA 2010.'),
->>>>>>> dev-ui2
                                       ],
                                     ),
                                   ),
@@ -361,8 +295,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             const SizedBox(height: 24),
 
-<<<<<<< HEAD
-=======
                             // 🛡️ CAPTCHA Security Check
                             TurnstileWidget(
                               onTokenReceived: (token) {
@@ -372,7 +304,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                             const SizedBox(height: 16),
 
->>>>>>> dev-ui2
                             // 🟦 Sign Up Button
                             AdaptiveButton(
                               text: 'Sign Up',
@@ -382,11 +313,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ],
                         ),
                       ),
-<<<<<<< HEAD
-                      
-=======
 
->>>>>>> dev-ui2
                       const SizedBox(height: 24),
 
                       // 🔁 Already have account
@@ -395,23 +322,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         children: [
                           Text(
                             "Already have an account? ",
-<<<<<<< HEAD
-                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
-=======
                             style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.7)),
->>>>>>> dev-ui2
                           ),
                           GestureDetector(
                             onTap: () {
                               Navigator.pushReplacement(
                                 context,
-<<<<<<< HEAD
-                                MaterialPageRoute(builder: (_) => const LoginScreen()),
-=======
                                 MaterialPageRoute(
                                     builder: (_) => const LoginScreen()),
->>>>>>> dev-ui2
                               );
                             },
                             child: const Padding(

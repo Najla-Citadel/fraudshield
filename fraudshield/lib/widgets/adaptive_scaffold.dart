@@ -34,11 +34,7 @@ class AdaptiveScaffold extends StatelessWidget {
           slivers: [
             CupertinoSliverNavigationBar(
               largeTitle: Text(title, style: TextStyle(color: (backgroundColor != null && backgroundColor!.computeLuminance() < 0.5) ? Colors.white : theme.textTheme.titleLarge?.color)),
-<<<<<<< HEAD
-              backgroundColor: (backgroundColor ?? theme.scaffoldBackgroundColor).withOpacity(0.85),
-=======
               backgroundColor: (backgroundColor ?? theme.scaffoldBackgroundColor).withValues(alpha: 0.85),
->>>>>>> dev-ui2
               border: null,
               trailing: actions != null && actions!.isNotEmpty
                   ? Row(

@@ -1,9 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
->>>>>>> dev-ui2
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../constants/colors.dart';
@@ -35,11 +32,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       final res = await ApiService.instance.getMyPoints();
       // Sync auth provider to get latest spendable/total points
       await context.read<AuthProvider>().refreshProfile();
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> dev-ui2
       if (mounted) {
         setState(() {
           _transactions = res['transactions'] ?? [];
@@ -54,12 +47,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         if (mounted) {
           setState(() {
             _loading = false;
-<<<<<<< HEAD
-            _hasError = false; // We can still show cached points from ApiService query
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Note: Please verify your email to sync latest status.'), duration: Duration(seconds: 2)),
-=======
             _hasError =
                 false; // We can still show cached points from ApiService query
           });
@@ -68,7 +55,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 content: Text(
                     'Note: Please verify your email to sync latest status.'),
                 duration: Duration(seconds: 2)),
->>>>>>> dev-ui2
           );
         }
       } else if (mounted) {
@@ -84,30 +70,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-      appBar: AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: const Text(
-        'Points Details',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-      ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.info_outline, color: Colors.white),
-          onPressed: () {
-            // Future: Show points info/rules
-          },
-        ),
-      ],
-      ),
-      body: _buildBody(),
-=======
       body: Stack(
         children: [
           // Background Gradient
@@ -162,7 +124,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
           ),
         ],
       ),
->>>>>>> dev-ui2
     );
   }
 
@@ -193,23 +154,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       );
     }
 
-<<<<<<< HEAD
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          _buildSummaryHeader(),
-          const SizedBox(height: 24),
-          _buildLeaderboardCard(),
-          const SizedBox(height: 32),
-          _buildHistoryHeader(),
-          const SizedBox(height: 16),
-          _buildTransactionHistory(),
-          const SizedBox(height: 40),
-        ],
-=======
     return AnimationLimiter(
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -234,32 +178,22 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             ],
           ),
         ),
->>>>>>> dev-ui2
       ),
     );
   }
 
   Widget _buildSummaryHeader() {
     final points = context.watch<AuthProvider>().user?.profile?.points ?? 0;
-<<<<<<< HEAD
-    final totalPoints = context.watch<AuthProvider>().user?.profile?.totalPoints ?? 0;
-    
-=======
     final totalPoints =
         context.watch<AuthProvider>().user?.profile?.totalPoints ?? 0;
 
->>>>>>> dev-ui2
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Match regular cards
         borderRadius: BorderRadius.circular(24),
-<<<<<<< HEAD
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
       ),
       child: Column(
         children: [
@@ -273,11 +207,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     Text(
                       'SPENDABLE POINTS',
                       style: TextStyle(
-<<<<<<< HEAD
-                        color: Colors.white.withOpacity(0.5),
-=======
                         color: Colors.white.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -311,11 +241,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               Container(
                 width: 1,
                 padding: const EdgeInsets.symmetric(vertical: 4),
-<<<<<<< HEAD
-                color: Colors.white.withOpacity(0.1),
-=======
                 color: Colors.white.withValues(alpha: 0.1),
->>>>>>> dev-ui2
                 child: const SizedBox(height: 36), // Minimum height for divider
               ),
               Flexible(
@@ -325,11 +251,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     Text(
                       'LIFETIME EARNINGS',
                       style: TextStyle(
-<<<<<<< HEAD
-                        color: Colors.white.withOpacity(0.5),
-=======
                         color: Colors.white.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -359,13 +281,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 children: [
                   Text(
                     _calculateTier(totalPoints),
-<<<<<<< HEAD
-                    style: const TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Next level at ${_getNextTierTarget(totalPoints)}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 10),
-=======
                     style: const TextStyle(
                         color: AppColors.accentGreen,
                         fontSize: 11,
@@ -376,7 +291,6 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 10),
->>>>>>> dev-ui2
                   ),
                 ],
               ),
@@ -385,14 +299,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: _getTierProgress(totalPoints),
-<<<<<<< HEAD
-                  backgroundColor: Colors.white.withOpacity(0.05),
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
-=======
                   backgroundColor: Colors.white.withValues(alpha: 0.05),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                       AppColors.accentGreen),
->>>>>>> dev-ui2
                   minHeight: 4,
                 ),
               ),
@@ -420,16 +329,10 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   double _getTierProgress(int totalPoints) {
     int target = _getNextTierTarget(totalPoints);
     int start = 0;
-<<<<<<< HEAD
-    if (totalPoints >= 5000) start = 5000;
-    else if (totalPoints >= 1000) start = 1000;
-    
-=======
     if (totalPoints >= 5000)
       start = 5000;
     else if (totalPoints >= 1000) start = 1000;
 
->>>>>>> dev-ui2
     double progress = (totalPoints - start) / (target - start);
     return progress.clamp(0.0, 1.0);
   }
@@ -441,33 +344,20 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: Colors.white.withOpacity(0.03),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
           color: Colors.white.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: AppColors.accentGreen.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.emoji_events_rounded, color: AppColors.accentGreen, size: 24),
-=======
                 color: AppColors.accentGreen.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.emoji_events_rounded,
                   color: AppColors.accentGreen, size: 24),
->>>>>>> dev-ui2
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -476,35 +366,23 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 children: [
                   const Text(
                     'Global Leaderboard',
-<<<<<<< HEAD
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-=======
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
->>>>>>> dev-ui2
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'See how you rank against other protectors.',
-<<<<<<< HEAD
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
-=======
                     style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 13),
->>>>>>> dev-ui2
                   ),
                 ],
               ),
             ),
-<<<<<<< HEAD
-            Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.2), size: 14),
-=======
             Icon(Icons.arrow_forward_ios,
                 color: Colors.white.withValues(alpha: 0.2), size: 14),
->>>>>>> dev-ui2
           ],
         ),
       ),
@@ -527,11 +405,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         Text(
           'Filter',
           style: TextStyle(
-<<<<<<< HEAD
-            color: AppColors.accentGreen.withOpacity(0.8),
-=======
             color: AppColors.accentGreen.withValues(alpha: 0.8),
->>>>>>> dev-ui2
             fontSize: 13,
             fontWeight: FontWeight.bold,
           ),
@@ -547,11 +421,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
           padding: const EdgeInsets.all(40.0),
           child: Text(
             'No transaction history yet.',
-<<<<<<< HEAD
-            style: TextStyle(color: Colors.white.withOpacity(0.3)),
-=======
             style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
           ),
         ),
       );
@@ -565,13 +435,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
     for (var tx in _transactions) {
       final date = DateTime.parse(tx['createdAt']);
-<<<<<<< HEAD
-      if (date.year == now.year && date.month == now.month && date.day == now.day) {
-=======
       if (date.year == now.year &&
           date.month == now.month &&
           date.day == now.day) {
->>>>>>> dev-ui2
         todayTransactions.add(tx);
       } else if (date.year == now.year && date.month == now.month) {
         thisMonthTransactions.add(tx);
@@ -608,11 +474,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         child: Text(
           title,
           style: TextStyle(
-<<<<<<< HEAD
-            color: Colors.white.withOpacity(0.4),
-=======
             color: Colors.white.withValues(alpha: 0.4),
->>>>>>> dev-ui2
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.8,
@@ -627,11 +489,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     final isPositive = amount > 0;
     final date = DateTime.parse(tx['createdAt']);
     final formattedDate = DateFormat('MMM dd, yyyy').format(date);
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> dev-ui2
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       child: Row(
@@ -665,11 +523,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 Text(
                   formattedDate,
                   style: TextStyle(
-<<<<<<< HEAD
-                    color: Colors.white.withOpacity(0.4),
-=======
                     color: Colors.white.withValues(alpha: 0.4),
->>>>>>> dev-ui2
                     fontSize: 12,
                   ),
                 ),

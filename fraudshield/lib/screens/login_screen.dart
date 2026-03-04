@@ -8,18 +8,10 @@ import '../widgets/adaptive_text_field.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
-<<<<<<< HEAD
-import '../services/api_service.dart';
-import 'forgot_password_screen.dart';
-import 'package:flutter/foundation.dart'; // For kDebugMode
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-=======
 import 'forgot_password_screen.dart';
 import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
->>>>>>> dev-ui2
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -47,13 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _initGoogleSignIn() async {
     try {
       debugPrint('Google Sign-In: Initializing...');
-<<<<<<< HEAD
-      final serverClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
-      debugPrint('Google Sign-In: Using serverClientId: $serverClientId');
-      await _googleSignIn.initialize(
-        serverClientId: serverClientId,
-      ).timeout(const Duration(seconds: 10));
-=======
       const serverClientId = String.fromEnvironment('GOOGLE_WEB_CLIENT_ID');
       debugPrint('Google Sign-In: Using serverClientId: $serverClientId');
       await _googleSignIn
@@ -61,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
             serverClientId: serverClientId,
           )
           .timeout(const Duration(seconds: 10));
->>>>>>> dev-ui2
       debugPrint('Google Sign-In: Initialization complete.');
       _initSuccess = true;
     } catch (e) {
@@ -92,17 +76,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final success = await context.read<AuthProvider>().signIn(
-<<<<<<< HEAD
-        email: email, 
-        password: password,
-      );
-      
-=======
             email: email,
             password: password,
           );
 
->>>>>>> dev-ui2
       if (success) {
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -112,12 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-<<<<<<< HEAD
-          const SnackBar(content: Text('Invalid credentials. Please try again.')),
-=======
           const SnackBar(
               content: Text('Invalid credentials. Please try again.')),
->>>>>>> dev-ui2
         );
       }
     } catch (e) {
@@ -147,38 +120,23 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       if (!_initSuccess) {
-<<<<<<< HEAD
-        throw Exception('Google Sign-In failed to initialize. Check your configuration.');
-=======
         throw Exception(
             'Google Sign-In failed to initialize. Check your configuration.');
->>>>>>> dev-ui2
       }
 
       // 1. Trigger Google account picker
       debugPrint('Google Sign-In: Calling authenticate()...');
-<<<<<<< HEAD
-      final GoogleSignInAccount? account = await _googleSignIn.authenticate()
-          .timeout(const Duration(seconds: 45));
-      
-=======
       final GoogleSignInAccount? account = await _googleSignIn
           .authenticate()
           .timeout(const Duration(seconds: 45));
 
->>>>>>> dev-ui2
       if (account == null) {
         debugPrint('Google Sign-In: User canceled or picker returned null.');
         return;
       }
-<<<<<<< HEAD
-      debugPrint('Google Sign-In: Authentication successful for ${account.email}');
-      
-=======
       debugPrint(
           'Google Sign-In: Authentication successful for ${account.email}');
 
->>>>>>> dev-ui2
       // 2. Get the auth tokens (must be awaited — async in google_sign_in v6+)
       final GoogleSignInAuthentication auth = await account.authentication;
       final String? idToken = auth.idToken;
@@ -191,16 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
       // 3. Authenticate with backend
       if (!mounted) return;
       debugPrint('Google Sign-In: Calling backend /auth/google...');
-<<<<<<< HEAD
-      final success = await context.read<AuthProvider>().signInWithGoogle(idToken);
-      debugPrint('Google Sign-In: Backend response success: $success');
-      
-=======
       final success =
           await context.read<AuthProvider>().signInWithGoogle(idToken);
       debugPrint('Google Sign-In: Backend response success: $success');
 
->>>>>>> dev-ui2
       if (success) {
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -229,32 +181,19 @@ class _LoginScreenState extends State<LoginScreen> {
     return Theme(
       data: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-        primaryColor: AppColors.primaryBlue,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primaryBlue,
-=======
         primaryColor: AppColors.accentGreen,
         colorScheme: const ColorScheme.dark(
           primary: AppColors.accentGreen,
->>>>>>> dev-ui2
           surface: AppColors.deepNavy,
           onSurface: Colors.white,
         ),
       ),
       child: Scaffold(
         backgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-        extendBodyBehindAppBar: true, 
-        body: Stack(
-          children: [
-            // Background Elements (Optional: subtle gradient or orbs if desired, 
-=======
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Background Elements (Optional: subtle gradient or orbs if desired,
->>>>>>> dev-ui2
             // but Home Screen is mostly solid. We'll use a subtle gradient to give it depth)
             Positioned.fill(
               child: Container(
@@ -283,143 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       // 🛡️ Logo / Icon
                       const AppLogo(size: 80),
                       const SizedBox(height: 32),
-<<<<<<< HEAD
-                    
-                      // 🌫️ Glass Login Card
-                      GlassSurface(
-                        padding: const EdgeInsets.all(32),
-                        borderRadius: 24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // 🧭 Title
-                            Text(
-                              'Welcome Back',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Sign in to continue to FraudShield',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.7),
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-
-                            // 📧 Email Field
-                            AdaptiveTextField(
-                              controller: _emailController,
-                              label: 'Email',
-                              prefixIcon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // 🔒 Password Field
-                            AdaptiveTextField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              prefixIcon: Icons.lock_outline,
-                              obscureText: true,
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            // 🔗 Forgot Password
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const ForgotPasswordScreen(),
-                                    ),
-                                  );
-                                },
-                                child: const Text(
-                                  'Forgot password?',
-                                  style: TextStyle(
-                                    color: AppColors.primaryBlue, 
-                                    fontWeight: FontWeight.w600
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // 🟦 Log In Button
-                            AdaptiveButton(
-                              text: 'Log In',
-                              isLoading: _loading,
-                              onPressed: _trySignIn,
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // 🔘 OR Divider
-                            Row(
-                              children: [
-                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  child: Text(
-                                    'OR',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.4),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Expanded(child: Divider(color: Colors.white.withOpacity(0.2))),
-                              ],
-                            ),
-
-                            const SizedBox(height: 24),
-
-                            // ⚪ Google Sign In Button
-                            InkWell(
-                              onTap: _loading ? null : _tryGoogleSignIn,
-                              borderRadius: BorderRadius.circular(16),
-                              child: GlassSurface(
-                                opacity: 0.1,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                borderRadius: 16,
-                                borderColor: Colors.white.withOpacity(0.2),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      'https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png',
-                                      height: 20,
-                                      errorBuilder: (context, error, stackTrace) => const Icon(
-                                        Icons.login, 
-                                        size: 20, 
-                                        color: Colors.white
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      'Sign in with Google',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-=======
 
                       // 🌫️ Glass Login Card
                       AnimationConfiguration.synchronized(
@@ -582,7 +384,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
->>>>>>> dev-ui2
                         ),
                       ),
 
@@ -590,19 +391,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // 👆 Biometric Placeholder
                       IconButton(
-<<<<<<< HEAD
-                        icon: const Icon(Icons.fingerprint, size: 48, color: AppColors.primaryBlue),
-                        onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Biometric Login coming soon!')),
-=======
                         icon: const Icon(Icons.fingerprint,
                             size: 48, color: AppColors.accentGreen),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 content: Text('Biometric Login coming soon!')),
->>>>>>> dev-ui2
                           );
                         },
                       ),
@@ -614,23 +408,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don’t have an account? ",
-<<<<<<< HEAD
-                            style: TextStyle(color: Colors.white.withOpacity(0.7)),
-=======
                             style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.7)),
->>>>>>> dev-ui2
                           ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
-<<<<<<< HEAD
-                                MaterialPageRoute(builder: (_) => const SignUpScreen()),
-=======
                                 MaterialPageRoute(
                                     builder: (_) => const SignUpScreen()),
->>>>>>> dev-ui2
                               );
                             },
                             child: const Padding(
@@ -654,11 +440,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Privacy Policy',
                           style: TextStyle(
-<<<<<<< HEAD
-                            color: Colors.white.withOpacity(0.5),
-=======
                             color: Colors.white.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                             fontSize: 12,
                             decoration: TextDecoration.underline,
                           ),

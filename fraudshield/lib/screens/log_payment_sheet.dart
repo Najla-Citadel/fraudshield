@@ -80,11 +80,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: Colors.blueAccent.withOpacity(0.1),
-=======
           color: Colors.blueAccent.withValues(alpha: 0.1),
->>>>>>> dev-ui2
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -108,15 +104,9 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: AppColors.accentGreen.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-=======
           color: AppColors.accentGreen.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
         ),
         child: Row(
           children: const [
@@ -143,15 +133,9 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
       margin: const EdgeInsets.only(top: 8, bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: badgeColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withOpacity(0.3)),
-=======
         color: badgeColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,11 +153,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 const SizedBox(height: 4),
                 Text(
                   rec,
-<<<<<<< HEAD
-                  style: TextStyle(color: badgeColor.withOpacity(0.8), fontSize: 12, height: 1.3),
-=======
                   style: TextStyle(color: badgeColor.withValues(alpha: 0.8), fontSize: 12, height: 1.3),
->>>>>>> dev-ui2
                 ),
               ],
             ),

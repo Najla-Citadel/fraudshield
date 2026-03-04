@@ -16,12 +16,8 @@ class CommunityMapCard extends StatefulWidget {
   State<CommunityMapCard> createState() => _CommunityMapCardState();
 }
 
-<<<<<<< HEAD
-class _CommunityMapCardState extends State<CommunityMapCard> with SingleTickerProviderStateMixin {
-=======
 class _CommunityMapCardState extends State<CommunityMapCard>
     with SingleTickerProviderStateMixin {
->>>>>>> dev-ui2
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -48,17 +44,6 @@ class _CommunityMapCardState extends State<CommunityMapCard>
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/scam-map'),
       child: Container(
-<<<<<<< HEAD
-        height: 200,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.08)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.4),
-=======
         height: 180,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
@@ -68,7 +53,6 @@ class _CommunityMapCardState extends State<CommunityMapCard>
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.2),
->>>>>>> dev-ui2
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -81,11 +65,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
               // 1. Radar Pulse Background
               _buildRadarBackground(),
 
-<<<<<<< HEAD
-              // 2. Gradient Overlay for Typography
-=======
               // 2. Gradient Overlay for Typography (Soft Dark Fade)
->>>>>>> dev-ui2
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
@@ -93,13 +73,8 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-<<<<<<< HEAD
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.8),
-=======
                         const Color(0xFF1E293B).withValues(alpha: 0.2),
                         const Color(0xFF1E293B).withValues(alpha: 0.9),
->>>>>>> dev-ui2
                       ],
                     ),
                   ),
@@ -108,11 +83,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
 
               // 3. Content
               Padding(
-<<<<<<< HEAD
-                padding: const EdgeInsets.all(24),
-=======
                 padding: const EdgeInsets.all(20),
->>>>>>> dev-ui2
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -122,14 +93,6 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       children: [
                         _buildLiveBadge(),
                         Container(
-<<<<<<< HEAD
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(LucideIcons.maximize, color: Colors.white70, size: 14),
-=======
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
@@ -138,26 +101,16 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                           ),
                           child: const Icon(LucideIcons.maximize,
                               color: Colors.white, size: 14),
->>>>>>> dev-ui2
                         ),
                       ],
                     ),
                     const Spacer(),
-<<<<<<< HEAD
-                    
-                    // Stat Section
-                    const Text(
-                      'Live Threat Scanner',
-                      style: TextStyle(
-                        color: Colors.white70,
-=======
 
                     // Stat Section
                     Text(
                       'Live Threat Scanner',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.7),
->>>>>>> dev-ui2
                         fontSize: 12,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.bold,
@@ -169,20 +122,6 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
-<<<<<<< HEAD
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(LucideIcons.navigation, color: AppColors.accentGreen, size: 14),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Tap to view interactive heat map',
-                          style: TextStyle(
-                            color: AppColors.accentGreen.withOpacity(0.8),
-=======
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -196,7 +135,6 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                           'Tap to view interactive heat map',
                           style: TextStyle(
                             color: AppColors.accentGreen,
->>>>>>> dev-ui2
                             fontSize: 13,
                           ),
                         ),
@@ -221,11 +159,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
           children: [
             // Static grid lines
             _buildGrid(),
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> dev-ui2
             // Pulse 1
             Container(
               width: 300 * _pulseAnimation.value,
@@ -233,21 +167,13 @@ class _CommunityMapCardState extends State<CommunityMapCard>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-<<<<<<< HEAD
-                  color: const Color(0xFF3B82F6).withOpacity(1.0 - _pulseAnimation.value),
-=======
                   color: AppColors.accentGreen
                       .withValues(alpha: 0.5 * (1.0 - _pulseAnimation.value)),
->>>>>>> dev-ui2
                   width: 2,
                 ),
               ),
             ),
-<<<<<<< HEAD
-            
-=======
 
->>>>>>> dev-ui2
             // Pulse 2 (delayed offset)
             if (_pulseAnimation.value > 0.5)
               Container(
@@ -256,12 +182,8 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-<<<<<<< HEAD
-                    color: const Color(0xFF3B82F6).withOpacity(1.0 - (_pulseAnimation.value - 0.5) * 2),
-=======
                     color: AppColors.accentGreen.withValues(
                         alpha: 0.5 * (1.0 - (_pulseAnimation.value - 0.5) * 2)),
->>>>>>> dev-ui2
                     width: 1,
                   ),
                 ),
@@ -271,20 +193,12 @@ class _CommunityMapCardState extends State<CommunityMapCard>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: const Color(0xFF1E3A8A).withOpacity(0.3),
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.5)),
-              ),
-              child: const Icon(LucideIcons.radar, color: Color(0xFF60A5FA), size: 40),
-=======
                 color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: const Icon(LucideIcons.radar,
                   color: AppColors.accentGreen, size: 40),
->>>>>>> dev-ui2
             ),
           ],
         );
@@ -306,16 +220,10 @@ class _CommunityMapCardState extends State<CommunityMapCard>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-<<<<<<< HEAD
-        color: const Color(0xFFEF4444).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.5)),
-=======
         color: const Color(0xFFEF4444).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
         border:
             Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
->>>>>>> dev-ui2
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -342,12 +250,8 @@ class _BlinkingDot extends StatefulWidget {
   State<_BlinkingDot> createState() => _BlinkingDotState();
 }
 
-<<<<<<< HEAD
-class _BlinkingDotState extends State<_BlinkingDot> with SingleTickerProviderStateMixin {
-=======
 class _BlinkingDotState extends State<_BlinkingDot>
     with SingleTickerProviderStateMixin {
->>>>>>> dev-ui2
   late AnimationController _controller;
 
   @override
@@ -385,47 +289,22 @@ class RadarGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-<<<<<<< HEAD
-      ..color = Colors.white
-      ..strokeWidth = 1.0;
-
-    final center = Offset(size.width / 2, size.height / 2);
-    
-=======
       ..color = Colors.white.withValues(alpha: 0.1) // Subtle white lines
       ..strokeWidth = 1.0;
 
     final center = Offset(size.width / 2, size.height / 2);
 
->>>>>>> dev-ui2
     // Draw circles
     for (var i = 1; i <= 4; i++) {
       canvas.drawCircle(center, i * 40.0, paint..style = PaintingStyle.stroke);
     }
 
-<<<<<<< HEAD
-    // Draw lines
-    for (var i = 0; i < 8; i++) {
-      final angle = (i * 45) * (3.14159 / 180);
-      final p2 = Offset(
-        center.dx + 200 * (angle == 0 ? 1 : angle == 3.14159 ? -1 : 0), // simplified for brevity
-        center.dy + 200 * (angle == 1.5708 ? 1 : angle == 4.7124 ? -1 : 0),
-      );
-      // More accurate trig for grid
-      final dx = 200 * (center.dx + 200 * 0); // placeholder for simple lines
-      // Actually let's just draw 4 main lines
-    }
-    
-    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
-    canvas.drawLine(Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
-=======
     // Actually let's just draw 4 main lines
 
     canvas.drawLine(
         Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
     canvas.drawLine(
         Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
->>>>>>> dev-ui2
   }
 
   @override

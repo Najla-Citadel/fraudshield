@@ -1,28 +1,15 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import '../services/api_service.dart';
-import 'points_history_screen.dart';
-import 'badges_screen.dart';
-import 'points_details_screen.dart';
-import '../models/badge_model.dart';
-=======
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_details_screen.dart';
->>>>>>> dev-ui2
 import 'package:fraudshield/constants/colors.dart';
 import '../widgets/glass_card.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
-<<<<<<< HEAD
-=======
 import 'package:lucide_icons/lucide_icons.dart';
->>>>>>> dev-ui2
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
@@ -66,12 +53,8 @@ class PointsScreenState extends State<PointsScreen> {
       final rewardsRes = await _api.getRewards();
       if (mounted) {
         setState(() {
-<<<<<<< HEAD
-          _rewards = List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
-=======
           _rewards =
               List<Map<String, dynamic>>.from(rewardsRes['results'] as List);
->>>>>>> dev-ui2
           _userTier = rewardsRes['userTier'] ?? 'BRONZE';
           _userDiscount = (rewardsRes['userDiscount'] ?? 0).toDouble();
         });
@@ -83,11 +66,7 @@ class PointsScreenState extends State<PointsScreen> {
       if (e.toString().contains('403')) {
         // likely email not verified, profiles sync failed but we let it pass
         if (mounted) {
-<<<<<<< HEAD
-           setState(() => _hasError = false);
-=======
           setState(() => _hasError = false);
->>>>>>> dev-ui2
         }
       } else if (mounted) {
         setState(() => _hasError = true);
@@ -99,30 +78,20 @@ class PointsScreenState extends State<PointsScreen> {
     final points = context.read<AuthProvider>().user?.profile?.points ?? 0;
     final pointsCost = reward['pointsCost'] as int;
     if (points < pointsCost) {
-<<<<<<< HEAD
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Insufficient points!'), backgroundColor: Colors.red));
-=======
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Insufficient points!'), backgroundColor: Colors.red));
->>>>>>> dev-ui2
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Redeem ${reward['name']}?'),
-<<<<<<< HEAD
-        content: Text('Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-=======
         content: Text(
             'Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
               child: const Text('Cancel')),
->>>>>>> dev-ui2
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -135,25 +104,17 @@ class PointsScreenState extends State<PointsScreen> {
     try {
       await _api.redeemReward(reward['id']);
       if (mounted) {
-<<<<<<< HEAD
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('✅ Redeemed ${reward['name']}!'), backgroundColor: Colors.green));
-=======
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('✅ Redeemed ${reward['name']}!'),
             backgroundColor: Colors.green));
->>>>>>> dev-ui2
         // Refresh local rewards AND global balance
         await context.read<AuthProvider>().refreshProfile();
         refreshData();
       }
     } catch (e) {
-<<<<<<< HEAD
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
-=======
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
->>>>>>> dev-ui2
     }
   }
 
@@ -161,30 +122,6 @@ class PointsScreenState extends State<PointsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.deepNavy,
-<<<<<<< HEAD
-      appBar: AppBar(
-        title: const Text('Rewards', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 24)),
-        centerTitle: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.history_rounded, size: 20, color: Colors.white),
-              onPressed: () {
-                 Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PointsHistoryScreen()),
-                );
-              },
-              tooltip: 'History',
-=======
       body: Stack(
         children: [
           // Background Gradient
@@ -243,15 +180,10 @@ class PointsScreenState extends State<PointsScreen> {
                 );
               },
               tooltip: 'Points History',
->>>>>>> dev-ui2
             ),
           ),
         ],
       ),
-<<<<<<< HEAD
-      body: _buildBody(),
-=======
->>>>>>> dev-ui2
     );
   }
 
@@ -275,64 +207,6 @@ class PointsScreenState extends State<PointsScreen> {
       );
     }
 
-<<<<<<< HEAD
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. Balance Card
-          _buildBalanceCard(),
-          const SizedBox(height: 16),
-
-          // 2. Category Selector
-          _buildCategorySelector(),
-          const SizedBox(height: 16),
-
-          // 3. Sections
-          if (_selectedCategory == 'All' || _selectedCategory == 'Security') ...[
-            _buildSectionHeader('Security Upgrades'),
-            const SizedBox(height: 12),
-            ..._rewards
-                .where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
-                .map((r) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _buildFeaturedReward(r),
-                    ))
-                .toList(),
-            if (_rewards.where((r) => r['type'].toString().toUpperCase() == 'SUBSCRIPTION').isEmpty)
-              const Text('No security upgrades available', style: TextStyle(color: Colors.white54)),
-            const SizedBox(height: 32),
-          ],
-          
-          if (_selectedCategory == 'All' || _selectedCategory == 'Vouchers') ...[
-            _buildSectionHeader('Store Items & Vouchers'),
-            const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                mainAxisExtent: 260, // Fixed height for consistency
-              ),
-              itemCount: _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').length,
-              itemBuilder: (context, index) {
-                final r = _rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').toList()[index];
-                return _buildRewardCard(r, false);
-              },
-            ),
-            if (_rewards.where((r) => r['type'].toString().toUpperCase() != 'SUBSCRIPTION').isEmpty)
-              const Text('No store items available', style: TextStyle(color: Colors.white54)),
-            const SizedBox(height: 32),
-          ],
-
-          _buildDonationCard(),
-          
-          const SizedBox(height: 100), // Bottom padding for FAB
-        ],
-=======
     return AnimationLimiter(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -415,7 +289,6 @@ class PointsScreenState extends State<PointsScreen> {
             ],
           ),
         ),
->>>>>>> dev-ui2
       ),
     );
   }
@@ -434,13 +307,6 @@ class PointsScreenState extends State<PointsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-<<<<<<< HEAD
-          color: const Color(0xFF0F2633), // Dark Teal/Navy
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF0F2633), Color(0xFF0A1A24)],
-=======
           color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
@@ -457,7 +323,6 @@ class PointsScreenState extends State<PointsScreen> {
               const Color(0xFF1E293B).withValues(alpha: 0.8),
               const Color(0xFF0F172A).withValues(alpha: 0.8)
             ],
->>>>>>> dev-ui2
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -470,11 +335,7 @@ class PointsScreenState extends State<PointsScreen> {
                 Text(
                   'AVAILABLE BALANCE',
                   style: TextStyle(
-<<<<<<< HEAD
-                    color: Colors.white.withOpacity(0.6),
-=======
                     color: Colors.white.withValues(alpha: 0.6),
->>>>>>> dev-ui2
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -509,11 +370,7 @@ class PointsScreenState extends State<PointsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-<<<<<<< HEAD
-                      color: AppColors.accentGreen.withOpacity(0.8),
-=======
                       color: AppColors.accentGreen.withValues(alpha: 0.8),
->>>>>>> dev-ui2
                     ),
                   ),
                 ],
@@ -522,13 +379,6 @@ class PointsScreenState extends State<PointsScreen> {
             if (_userDiscount > 0) ...[
               const SizedBox(height: 8),
               Container(
-<<<<<<< HEAD
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
-=======
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -536,17 +386,12 @@ class PointsScreenState extends State<PointsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                       color: AppColors.accentGreen.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-<<<<<<< HEAD
-                    const Icon(Icons.local_offer_rounded, size: 14, color: AppColors.accentGreen),
-=======
                     const Icon(Icons.local_offer_rounded,
                         size: 14, color: AppColors.accentGreen),
->>>>>>> dev-ui2
                     const SizedBox(width: 6),
                     Text(
                       '${(_userDiscount * 100).toInt()}% $_userTier Discount Active',
@@ -564,11 +409,7 @@ class PointsScreenState extends State<PointsScreen> {
             Text(
               'You\'ve reached ${_calculateTierName(context.read<AuthProvider>().user?.profile?.totalPoints ?? 0)} status. Keep it up!',
               style: TextStyle(
-<<<<<<< HEAD
-                color: Colors.white.withOpacity(0.7),
-=======
                 color: Colors.white.withValues(alpha: 0.7),
->>>>>>> dev-ui2
                 fontSize: 14,
                 height: 1.4,
               ),
@@ -587,13 +428,6 @@ class PointsScreenState extends State<PointsScreen> {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         children: [
-<<<<<<< HEAD
-          _categoryChip('All', isActive: _selectedCategory == 'All'),
-          const SizedBox(width: 12),
-          _categoryChip('Vouchers', isActive: _selectedCategory == 'Vouchers'),
-          const SizedBox(width: 12),
-          _categoryChip('Security', isActive: _selectedCategory == 'Security'),
-=======
           _categoryChip('All', LucideIcons.layers,
               isActive: _selectedCategory == 'All'),
           const SizedBox(width: 12),
@@ -602,32 +436,11 @@ class PointsScreenState extends State<PointsScreen> {
           const SizedBox(width: 12),
           _categoryChip('Security', LucideIcons.shieldCheck,
               isActive: _selectedCategory == 'Security'),
->>>>>>> dev-ui2
         ],
       ),
     );
   }
 
-<<<<<<< HEAD
-  Widget _categoryChip(String label, {bool isActive = false}) {
-    return GestureDetector(
-      onTap: () => setState(() => _selectedCategory = label),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(22),
-          border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isActive ? Colors.black87 : Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-=======
   Widget _categoryChip(String label, IconData icon, {bool isActive = false}) {
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
@@ -661,7 +474,6 @@ class PointsScreenState extends State<PointsScreen> {
               ),
             ),
           ],
->>>>>>> dev-ui2
         ),
       ),
     );
@@ -711,11 +523,7 @@ class PointsScreenState extends State<PointsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(isFeatured ? 24 : 20),
-<<<<<<< HEAD
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-=======
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -726,15 +534,6 @@ class PointsScreenState extends State<PointsScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-<<<<<<< HEAD
-                colors: isFeatured 
-                  ? [Colors.blue.withOpacity(0.2), Colors.blue.withOpacity(0.05)]
-                  : [AppColors.accentGreen.withOpacity(0.1), AppColors.accentGreen.withOpacity(0.02)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(isFeatured ? 24 : 20)),
-=======
                 colors: isFeatured
                     ? [
                         Colors.blue.withValues(alpha: 0.2),
@@ -749,17 +548,11 @@ class PointsScreenState extends State<PointsScreen> {
               ),
               borderRadius: BorderRadius.vertical(
                   top: Radius.circular(isFeatured ? 24 : 20)),
->>>>>>> dev-ui2
             ),
             child: Stack(
               children: [
                 Center(
                   child: Icon(
-<<<<<<< HEAD
-                    isLocked ? Icons.lock_outline_rounded : (isFeatured ? Icons.security : Icons.card_giftcard), 
-                    size: isFeatured ? 64 : 40, 
-                    color: isLocked ? Colors.white24 : (isFeatured ? Colors.blue.withOpacity(0.5) : AppColors.accentGreen.withOpacity(0.5)),
-=======
                     isLocked
                         ? Icons.lock_outline_rounded
                         : (isFeatured ? Icons.security : Icons.card_giftcard),
@@ -769,19 +562,14 @@ class PointsScreenState extends State<PointsScreen> {
                         : (isFeatured
                             ? Colors.blue.withValues(alpha: 0.5)
                             : AppColors.accentGreen.withValues(alpha: 0.5)),
->>>>>>> dev-ui2
                   ),
                 ),
                 Positioned(
                   top: 12,
                   right: 12,
                   child: Container(
-<<<<<<< HEAD
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-=======
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
->>>>>>> dev-ui2
                     decoration: BoxDecoration(
                       color: isLocked ? Colors.black54 : AppColors.accentGreen,
                       borderRadius: BorderRadius.circular(8),
@@ -799,17 +587,10 @@ class PointsScreenState extends State<PointsScreen> {
               ],
             ),
           ),
-<<<<<<< HEAD
-          
-          // Content Area
-          Padding(
-            padding: EdgeInsets.all(isFeatured ? 20 : 16),
-=======
 
           // Content Area
           Padding(
             padding: EdgeInsets.all(isFeatured ? 16 : 12),
->>>>>>> dev-ui2
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -831,43 +612,13 @@ class PointsScreenState extends State<PointsScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: isFeatured ? 14 : 12,
-<<<<<<< HEAD
-                    color: Colors.white.withOpacity(0.5),
-=======
                     color: Colors.white.withValues(alpha: 0.5),
->>>>>>> dev-ui2
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-<<<<<<< HEAD
-                  child: OutlinedButton(
-                    onPressed: (canAfford && !isLocked) ? () => _redeemReward(reward) : null,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isFeatured ? AppColors.accentGreen : Colors.white,
-                      side: BorderSide(
-                        color: (canAfford && !isLocked) 
-                          ? (isFeatured ? AppColors.accentGreen : Colors.white.withOpacity(0.3))
-                          : Colors.white.withOpacity(0.05)
-                      ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      padding: EdgeInsets.symmetric(vertical: isFeatured ? 14 : 10),
-                    ),
-                    child: Text(
-                      isLocked 
-                        ? 'Unlock at $requiredTier' 
-                        : (canAfford ? (isFeatured ? 'Redeem Now' : 'Redeem') : 'Not Enough'), 
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: (canAfford && !isLocked) 
-                          ? (isFeatured ? AppColors.accentGreen : Colors.white) 
-                          : Colors.white.withOpacity(0.3)
-                      )
-                    ),
-=======
                   child: ElevatedButton(
                     onPressed: (canAfford && !isLocked)
                         ? () => _redeemReward(reward)
@@ -898,7 +649,6 @@ class PointsScreenState extends State<PointsScreen> {
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         )),
->>>>>>> dev-ui2
                   ),
                 ),
               ],
@@ -911,64 +661,6 @@ class PointsScreenState extends State<PointsScreen> {
 
   Widget _buildDonationCard() {
     return GlassCard(
-<<<<<<< HEAD
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.2), // Darker teal
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.volunteer_activism, color: AppColors.accentGreen),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Support Cyber Victims',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Donate 200 pts to provide legal aid to victims.',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  GestureDetector(
-                    onTap: (){},
-                    child: Row(
-                      children: const [
-                         Text(
-                          'Donate Now',
-                          style: TextStyle(
-                            color: AppColors.accentGreen,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                        Icon(Icons.arrow_forward, size: 12, color: AppColors.accentGreen),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-=======
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
@@ -1028,7 +720,6 @@ class PointsScreenState extends State<PointsScreen> {
         ],
       ),
     );
->>>>>>> dev-ui2
   }
 
   String _calculateTierName(int totalPoints) {
@@ -1037,10 +728,6 @@ class PointsScreenState extends State<PointsScreen> {
     if (totalPoints >= 1000) return 'Silver Protector';
     return 'Bronze Protector';
   }
-<<<<<<< HEAD
-}
-
-=======
 
   Widget _buildEmptyState(IconData icon, String message) {
     return Container(
@@ -1066,4 +753,3 @@ class PointsScreenState extends State<PointsScreen> {
     );
   }
 }
->>>>>>> dev-ui2

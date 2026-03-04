@@ -38,16 +38,15 @@ android {
     }
 
     defaultConfig {
-    applicationId = "com.citadel.fraudshield.v2"
-    minSdk = flutter.minSdkVersion
-    targetSdk = 35
+        applicationId = "com.citadel.fraudshield.v2"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 35
 
-    // 🔥 FIX: hardcode version
-    versionCode = flutter.versionCode.toInt()
-    versionName = flutter.versionName
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
 
-    manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
-}
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
+    }
 
 
     signingConfigs {
@@ -62,17 +61,12 @@ android {
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("release")
-<<<<<<< HEAD
-            isMinifyEnabled = false
-            isShrinkResources = false
-=======
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
->>>>>>> dev-ui2
         }
     }
 

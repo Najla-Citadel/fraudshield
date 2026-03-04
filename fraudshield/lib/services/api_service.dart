@@ -1,8 +1,4 @@
 import 'dart:convert';
-<<<<<<< HEAD
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-=======
->>>>>>> dev-ui2
 import 'package:http/http.dart' as http;
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -23,9 +19,6 @@ class ApiService {
   static const _keyAuthToken = 'auth_token';
   static const _keyRefreshToken = 'refresh_token';
 
-<<<<<<< HEAD
-  late final String baseUrl;
-=======
   // Migrate API_BASE_URL to compile-time variables.
   // Use --dart-define=API_BASE_URL=... at build time.
   static const String _defaultBaseUrl = 'http://10.0.2.2:3000/api/v1';
@@ -34,23 +27,11 @@ class ApiService {
     defaultValue: _defaultBaseUrl,
   );
 
->>>>>>> dev-ui2
   String? _token;
   String? _refreshToken;
   Future<bool>? _refreshFuture;
 
   // SHA-256 Fingerprint for api.fraudshieldprotect.com
-<<<<<<< HEAD
-  static const String _prodFingerprint = '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
-
-  Future<void> init() async {
-    final String rawBaseUrl = dotenv.env['API_BASE_URL'] ?? 'http://10.0.2.2:3000/api/v1';
-    
-    // Use the .env value directly now that firewall is unblocked.
-    // Sync-LocalIP.ps1 keeps this IP up to date with the machine's LAN IP.
-    baseUrl = rawBaseUrl;
-
-=======
   static const String _prodFingerprint =
       '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
 
@@ -59,7 +40,6 @@ class ApiService {
       '0000000000000000000000000000000000000000000000000000000000000000';
 
   Future<void> init() async {
->>>>>>> dev-ui2
     if (kDebugMode) {
       debugPrint('ApiService: Initialized with baseUrl: $baseUrl');
     }
@@ -93,10 +73,6 @@ class ApiService {
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         if (_token != null) 'Authorization': 'Bearer $_token',
-<<<<<<< HEAD
-      };
-
-=======
         'X-FS-Timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
         'X-FS-Nonce': _generateNonce(),
       };
@@ -106,30 +82,21 @@ class ApiService {
     return random.hashCode.toString(); // Simple unique string for now
   }
 
->>>>>>> dev-ui2
   // ---------------- Auth ----------------
 
   Future<Map<String, dynamic>> signUp({
     required String email,
     required String password,
     String? fullName,
-<<<<<<< HEAD
-=======
     String? captchaToken,
->>>>>>> dev-ui2
   }) async {
     final data = await post('/auth/signup', {
       'email': email,
       'password': password,
       if (fullName != null) 'fullName': fullName,
-<<<<<<< HEAD
-    });
-    
-=======
       if (captchaToken != null) 'captchaToken': captchaToken,
     });
 
->>>>>>> dev-ui2
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
   }
@@ -145,8 +112,6 @@ class ApiService {
     });
   }
 
-<<<<<<< HEAD
-=======
   Future<Map<String, dynamic>> acceptTerms(String version) async {
     final data = await post('/auth/accept-terms', {
       'version': version,
@@ -154,7 +119,6 @@ class ApiService {
     return data['user'];
   }
 
->>>>>>> dev-ui2
   Future<Map<String, dynamic>> signIn({
     required String email,
     required String password,
@@ -163,11 +127,7 @@ class ApiService {
       'email': email,
       'password': password,
     });
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> dev-ui2
     await _setTokens(data['token'], data['refreshToken']);
     return data['user'];
   }
@@ -207,10 +167,7 @@ class ApiService {
 
   Future<bool> _performRefresh() async {
     try {
-<<<<<<< HEAD
-=======
       await _checkCertificatePinning();
->>>>>>> dev-ui2
       final response = await http.post(
         Uri.parse('$baseUrl/auth/refresh'),
         headers: {'Content-Type': 'application/json'},
@@ -226,12 +183,8 @@ class ApiService {
         return true;
       } else {
         if (kDebugMode) {
-<<<<<<< HEAD
-          debugPrint('ApiService: Token refresh failed (${response.statusCode})');
-=======
           debugPrint(
               'ApiService: Token refresh failed (${response.statusCode})');
->>>>>>> dev-ui2
         }
         await signOut();
         return false;
@@ -263,12 +216,8 @@ class ApiService {
     });
   }
 
-<<<<<<< HEAD
-  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
-=======
   Future<Map<String, dynamic>> changePassword(
       String currentPassword, String newPassword) async {
->>>>>>> dev-ui2
     return post('/auth/change-password', {
       'currentPassword': currentPassword,
       'newPassword': newPassword,
@@ -279,14 +228,11 @@ class ApiService {
     await delete('/users/me');
   }
 
-<<<<<<< HEAD
-=======
   Future<Map<String, dynamic>> getSecurityHealth() async {
     final response = await get('/users/security-health');
     return response as Map<String, dynamic>;
   }
 
->>>>>>> dev-ui2
   // ---------------- Admin ----------------
 
   Future<List<Map<String, dynamic>>> getAdminAlerts() async {
@@ -342,13 +288,8 @@ class ApiService {
       'description': description,
       'target': target,
       'isPublic': isPublic,
-<<<<<<< HEAD
-      'latitude': latitude,
-      'longitude': longitude,
-=======
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
->>>>>>> dev-ui2
       'evidence': evidence ?? {},
     });
   }
@@ -380,15 +321,6 @@ class ApiService {
     if (search != null && search.isNotEmpty) {
       query += '&search=${Uri.encodeComponent(search)}';
     }
-<<<<<<< HEAD
-    
-    final response = await get('/reports/public$query');
-    
-    if (response is Map<String, dynamic>) {
-      return response;
-    }
-    
-=======
 
     final response = await get('/reports/public$query');
 
@@ -396,7 +328,6 @@ class ApiService {
       return response;
     }
 
->>>>>>> dev-ui2
     // Fallback for unexpected formats
     return {
       'results': response is List ? response : [],
@@ -452,11 +383,7 @@ class ApiService {
       if (category != null) 'category': category,
       if (dateFrom != null) 'dateFrom': dateFrom.toIso8601String(),
       if (dateTo != null) 'dateTo': dateTo.toIso8601String(),
-<<<<<<< HEAD
-      if (minVerifications != null && minVerifications > 0) 
-=======
       if (minVerifications != null && minVerifications > 0)
->>>>>>> dev-ui2
         'minVerifications': minVerifications.toString(),
       'sortBy': sortBy,
       'limit': limit.toString(),
@@ -466,11 +393,7 @@ class ApiService {
     final queryString = params.entries
         .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
         .join('&');
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> dev-ui2
     final response = await get('/reports/search?$queryString');
     return response as Map<String, dynamic>;
   }
@@ -496,11 +419,7 @@ class ApiService {
     if (type != null) {
       query += '&type=$type';
     }
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> dev-ui2
     final response = await get('/transactions$query');
     return response as Map<String, dynamic>;
   }
@@ -587,11 +506,7 @@ class ApiService {
   }
 
   // ---------------- Behavioral Events ----------------
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> dev-ui2
   Future<Map<String, dynamic>> logBehavioralEvent({
     required String type,
     Map<String, dynamic>? metadata,
@@ -601,18 +516,12 @@ class ApiService {
       'metadata': metadata ?? {},
     });
   }
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> dev-ui2
   Future<List<dynamic>> getRecentEvents({int limit = 50}) async {
     final response = await get('/features/behavioral?limit=$limit');
     return response as List;
   }
 
-<<<<<<< HEAD
-=======
   // ---------------- Alerts ----------------
 
   Future<List<dynamic>> getUserAlerts() async {
@@ -632,7 +541,6 @@ class ApiService {
     return await post('/alerts/$alertId/resolve', {'action': action});
   }
 
->>>>>>> dev-ui2
   // ---------------- Rewards ----------------
 
   Future<Map<String, dynamic>> getRewards() async {
@@ -666,10 +574,6 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> claimDailyReward() async {
-<<<<<<< HEAD
-
-=======
->>>>>>> dev-ui2
     return post('/rewards/daily', {});
   }
 
@@ -679,8 +583,6 @@ class ApiService {
     return await post('/features/check-url', {'url': url});
   }
 
-<<<<<<< HEAD
-=======
   // 2F: Advanced Link & QR (Quishing)
   Future<Map<String, dynamic>> checkLink(String url) async {
     return await post('/features/check-link', {'url': url});
@@ -780,7 +682,6 @@ class ApiService {
     }
   }
 
->>>>>>> dev-ui2
   Future<Map<String, dynamic>> lookupPaymentRisk({
     required String type,
     required String value,
@@ -802,17 +703,10 @@ class ApiService {
     });
   }
 
-<<<<<<< HEAD
-
-  // ---------------- Alerts ----------------
-
-  Future<Map<String, dynamic>> getTrendingAlerts({int hours = 72, double? lat, double? lng}) async {
-=======
   // ---------------- Alerts ----------------
 
   Future<Map<String, dynamic>> getTrendingAlerts(
       {int hours = 72, double? lat, double? lng}) async {
->>>>>>> dev-ui2
     String query = '?hours=$hours';
     if (lat != null && lng != null) {
       query += '&lat=$lat&lng=$lng';
@@ -821,14 +715,11 @@ class ApiService {
     return response as Map<String, dynamic>;
   }
 
-<<<<<<< HEAD
-=======
   Future<Map<String, dynamic>> getDailyDigest() async {
     final response = await get('/alerts/daily-digest');
     return response as Map<String, dynamic>;
   }
 
->>>>>>> dev-ui2
   Future<Map<String, dynamic>> getAlertPreferences() async {
     final response = await get('/alerts/preferences');
     return response as Map<String, dynamic>;
@@ -841,10 +732,7 @@ class ApiService {
     int? radiusKm,
     String? fcmToken,
     bool? isActive,
-<<<<<<< HEAD
-=======
     bool? emailDigestEnabled,
->>>>>>> dev-ui2
   }) async {
     return await post('/alerts/subscribe', {
       if (categories != null) 'categories': categories,
@@ -853,10 +741,7 @@ class ApiService {
       if (radiusKm != null) 'radiusKm': radiusKm,
       if (fcmToken != null) 'fcmToken': fcmToken,
       if (isActive != null) 'isActive': isActive,
-<<<<<<< HEAD
-=======
       if (emailDigestEnabled != null) 'emailDigestEnabled': emailDigestEnabled,
->>>>>>> dev-ui2
     });
   }
 
@@ -867,13 +752,8 @@ class ApiService {
   }
 
   dynamic _processResponse(
-<<<<<<< HEAD
-    http.Response response, 
-    String method, 
-=======
     http.Response response,
     String method,
->>>>>>> dev-ui2
     String path, {
     Map<String, dynamic>? body,
   }) async {
@@ -885,23 +765,6 @@ class ApiService {
       try {
         data = jsonDecode(response.body);
       } catch (e) {
-<<<<<<< HEAD
-        debugPrint('ApiService: Failed to decode JSON response: ${response.body}');
-      }
-    }
-
-    if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
-      return data ?? (response.body.isNotEmpty ? response.body : null);
-    } else if (response.statusCode == 401 && _refreshToken != null && !path.contains('/auth/refresh')) {
-      if (kDebugMode) {
-        debugPrint('ApiService: 401 Unauthorized for $path. Attempting refresh...');
-      }
-      
-      final success = await refreshToken();
-      if (success) {
-        if (kDebugMode) {
-          debugPrint('ApiService: Retrying $method $path after successful refresh');
-=======
         debugPrint(
             'ApiService: Failed to decode JSON response: ${response.body}');
       }
@@ -924,22 +787,11 @@ class ApiService {
         if (kDebugMode) {
           debugPrint(
               'ApiService: Retrying $method $path after successful refresh');
->>>>>>> dev-ui2
         }
         return _sendRequest(method, path, body: body);
       }
       throw Exception('Session expired');
     } else {
-<<<<<<< HEAD
-      final message = isJson && data is Map 
-          ? (data['message'] ?? (data['errors'] != null ? (data['errors'] as List).map((e) => e['message']).join(', ') : null))
-          : response.body;
-      throw Exception(message ?? '$method $path failed: ${response.statusCode}');
-    }
-  }
-
-  Future<dynamic> _sendRequest(String method, String path, {Map<String, dynamic>? body}) async {
-=======
       final message = isJson && data is Map
           ? (data['message'] ??
               (data['errors'] != null
@@ -953,7 +805,6 @@ class ApiService {
 
   Future<dynamic> _sendRequest(String method, String path,
       {Map<String, dynamic>? body}) async {
->>>>>>> dev-ui2
     try {
       await _checkCertificatePinning();
 
@@ -962,18 +813,6 @@ class ApiService {
 
       switch (method) {
         case 'GET':
-<<<<<<< HEAD
-          response = await http.get(uri, headers: _headers).timeout(const Duration(seconds: 10));
-          break;
-        case 'POST':
-          response = await http.post(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
-          break;
-        case 'PATCH':
-          response = await http.patch(uri, headers: _headers, body: jsonEncode(body)).timeout(const Duration(seconds: 10));
-          break;
-        case 'DELETE':
-          response = await http.delete(uri, headers: _headers).timeout(const Duration(seconds: 10));
-=======
           response = await http
               .get(uri, headers: _headers)
               .timeout(const Duration(seconds: 10));
@@ -992,7 +831,6 @@ class ApiService {
           response = await http
               .delete(uri, headers: _headers)
               .timeout(const Duration(seconds: 10));
->>>>>>> dev-ui2
           break;
         default:
           throw Exception('Unsupported method: $method');
@@ -1007,22 +845,14 @@ class ApiService {
     }
   }
 
-<<<<<<< HEAD
-  Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body) async {
-=======
   Future<Map<String, dynamic>> post(
       String path, Map<String, dynamic> body) async {
->>>>>>> dev-ui2
     final result = await _sendRequest('POST', path, body: body);
     return result is Map<String, dynamic> ? result : {'results': result};
   }
 
-<<<<<<< HEAD
-  Future<Map<String, dynamic>> patch(String path, Map<String, dynamic> body) async {
-=======
   Future<Map<String, dynamic>> patch(
       String path, Map<String, dynamic> body) async {
->>>>>>> dev-ui2
     final result = await _sendRequest('PATCH', path, body: body);
     return result is Map<String, dynamic> ? result : {'results': result};
   }
@@ -1036,11 +866,7 @@ class ApiService {
       await _checkCertificatePinning();
       final url = Uri.parse('$baseUrl/upload/single');
       final request = http.MultipartRequest('POST', url);
-<<<<<<< HEAD
-      
-=======
 
->>>>>>> dev-ui2
       request.headers.addAll(_headers);
       request.files.add(await http.MultipartFile.fromPath('file', filePath));
 
@@ -1063,10 +889,6 @@ class ApiService {
   /// Verifies the SSL certificate fingerprint for production API.
   /// Skips check if in development or not hitting the production domain.
   Future<void> _checkCertificatePinning() async {
-<<<<<<< HEAD
-    // Only enforce on production domain
-    if (!baseUrl.contains('api.fraudshieldprotect.com')) {
-=======
     // Only enforce on production domain OR if explicitly requested in config
     final isProdDomain = baseUrl.contains('api.fraudshieldprotect.com');
 
@@ -1074,42 +896,26 @@ class ApiService {
       if (kDebugMode) {
         debugPrint('ApiService: SSL Pinning skipped (non-production domain)');
       }
->>>>>>> dev-ui2
       return;
     }
 
     try {
-<<<<<<< HEAD
-      // Use the SHA256 fingerprint retrieved from the server
-=======
->>>>>>> dev-ui2
       await HttpCertificatePinning.check(
         serverURL: baseUrl,
         headerHttp: {},
         sha: SHA.SHA256,
-<<<<<<< HEAD
-        allowedSHAFingerprints: [_prodFingerprint],
-=======
         allowedSHAFingerprints: [
           _prodFingerprint,
           _backupFingerprint, // Guard against rotation outage
         ],
->>>>>>> dev-ui2
         timeout: 10,
       );
       if (kDebugMode) {
         debugPrint('ApiService: SSL Pinning Verified Successfully');
       }
     } catch (e) {
-<<<<<<< HEAD
-      if (kDebugMode) {
-        debugPrint('ApiService: SSL Pinning FAILED: $e');
-      }
-      rethrow; // Prevent request if pinning fails
-=======
       debugPrint('ApiService: SSL Pinning FAILED for $baseUrl: $e');
       rethrow; // Hard stop for security
->>>>>>> dev-ui2
     }
   }
 }

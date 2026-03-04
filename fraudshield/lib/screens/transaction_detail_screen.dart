@@ -120,17 +120,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(24),
-<<<<<<< HEAD
-            border: Border.all(color: statusColor.withOpacity(0.3), width: 1.5),
-            boxShadow: [
-              BoxShadow(
-                color: statusColor.withOpacity(0.1),
-=======
             border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: statusColor.withValues(alpha: 0.1),
->>>>>>> dev-ui2
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -141,11 +134,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-<<<<<<< HEAD
-                  color: statusColor.withOpacity(0.1),
-=======
                   color: statusColor.withValues(alpha: 0.1),
->>>>>>> dev-ui2
                   shape: BoxShape.circle,
                 ),
                 child: Icon(_getIconForType(type), color: statusColor, size: 48),
@@ -314,15 +303,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-<<<<<<< HEAD
-              color: Colors.red.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
-=======
               color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
->>>>>>> dev-ui2
             ),
             child: Row(
               children: [
@@ -467,11 +450,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: isLast ? null : Border(
-<<<<<<< HEAD
-          bottom: BorderSide(color: Colors.white.withOpacity(0.05)),
-=======
           bottom: BorderSide(color: Colors.white.withValues(alpha: 0.05)),
->>>>>>> dev-ui2
         ),
       ),
       child: Row(

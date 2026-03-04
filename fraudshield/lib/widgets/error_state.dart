@@ -24,11 +24,7 @@ class ErrorState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-<<<<<<< HEAD
-                color: Colors.redAccent.withOpacity(0.1),
-=======
                 color: Colors.redAccent.withValues(alpha: 0.1),
->>>>>>> dev-ui2
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -51,11 +47,7 @@ class ErrorState extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-<<<<<<< HEAD
-                color: Colors.white.withOpacity(0.6),
-=======
                 color: Colors.white.withValues(alpha: 0.6),
->>>>>>> dev-ui2
                 fontSize: 14,
                 height: 1.5,
               ),

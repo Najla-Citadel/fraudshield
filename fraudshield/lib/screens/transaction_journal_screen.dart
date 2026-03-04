@@ -243,15 +243,9 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E293B),
                   shape: BoxShape.circle,
-<<<<<<< HEAD
-                  border: Border.all(color: const Color(0xFF1E293B).withOpacity(0.5)),
-                ),
-                child: Icon(LucideIcons.shield, color: Colors.grey.withOpacity(0.5), size: 64),
-=======
                   border: Border.all(color: const Color(0xFF1E293B).withValues(alpha: 0.5)),
                 ),
                 child: Icon(LucideIcons.shield, color: Colors.grey.withValues(alpha: 0.5), size: 64),
->>>>>>> dev-ui2
               ),
               const SizedBox(height: 24),
               const Text(
@@ -299,11 +293,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
           elevation: 0,
           shape: RoundedRectangleBorder(
              borderRadius: BorderRadius.circular(16),
-<<<<<<< HEAD
-             side: BorderSide(color: statusColor.withOpacity(0.3), width: 1),
-=======
              side: BorderSide(color: statusColor.withValues(alpha: 0.3), width: 1),
->>>>>>> dev-ui2
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
@@ -322,11 +312,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-<<<<<<< HEAD
-                      color: statusColor.withOpacity(0.1),
-=======
                       color: statusColor.withValues(alpha: 0.1),
->>>>>>> dev-ui2
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(icon, color: statusColor, size: 24),
