@@ -35,6 +35,7 @@ const VOICE_SCAM_OPENERS = [
     /\b(lembaga hasil dalam negeri)\b/i,
     /\b(kementerian|jabatan)\b/i,
     /\b(maybank|cimb|public bank|hongleong|rhb|ambank)\b.*\b(fraud|security|scam)\b/i,
+    /\b(pegawai|officer|inspektor|tuan)\b/i,
 ];
 
 /** Phrases that signal the caller is asking for sensitive info */
@@ -45,6 +46,7 @@ const SENSITIVE_REQUEST_PATTERNS = [
     /\b(credit card|debit card|card number)\b/i,
     /\b(password|kata laluan)\b/i,
     /\b(transfer|hantar|send).{0,30}(money|wang|rm|fund)/i,
+    /\b(safe account|akaun selamat|kes jenayah|criminal investigation)\b/i,
 ];
 
 // ── Result Types ─────────────────────────────────────────────────────────────
@@ -92,6 +94,7 @@ export class VoiceScanService {
      * 5. Combine into a weighted risk score
      */
     static async analyze(
+        userId: string,
         buffer: Buffer,
         originalFilename: string,
         mimeType: string,
@@ -211,6 +214,14 @@ export class VoiceScanService {
             sha256,
             checkedAt: new Date().toISOString(),
         };
+
+        // 🛡️ Macau Scam Correlation: Store authority detection in Redis for 30 mins
+        if (voiceFlags.some(f => f.includes('Authority impersonation'))) {
+            try {
+                const redis = getRedisClient();
+                await redis.set(`macau_signal:voice:${userId}`, 'HIGH', 'EX', 1800);
+            } catch (e) { /* ignore redis error */ }
+        }
 
         await VoiceScanService._saveToCache(sha256, result);
         return result;

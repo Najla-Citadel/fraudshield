@@ -13,6 +13,8 @@ import { NlpMessageController } from '../controllers/nlp-message.controller';
 import { PdfScanController } from '../controllers/pdf-scan.controller';
 import { ApkScanController } from '../controllers/apk-scan.controller';
 import { VoiceScanController } from '../controllers/voice-scan.controller';
+import { UploadController } from '../controllers/upload.controller';
+import { MacauScamController } from '../controllers/macau-scam.controller';
 import multer from 'multer';
 
 import { authenticate } from '../middleware/auth.middleware';
@@ -71,5 +73,8 @@ router.get('/badges/all', BadgeController.getAllBadges);
 
 router.post('/behavioral', featureLimiter, BehavioralController.logEvent);
 router.get('/behavioral', BehavioralController.getMyEvents);
+
+// Macau Scam Check
+router.post('/check/macau-scam', authenticate, MacauScamController.evaluate);
 
 export default router;

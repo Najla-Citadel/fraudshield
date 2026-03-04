@@ -6,6 +6,7 @@ export type ScamType =
     | 'romance'
     | 'delivery'
     | 'tech_support'
+    | 'macau_scam'
     | null;
 
 export type Language = 'en' | 'ms' | 'zh' | 'mixed';
@@ -48,11 +49,11 @@ const SCAM_PHRASES: Array<{ pattern: RegExp; label: string; score: number; type:
     // ── IMPERSONATION — Malaysian Authorities ──
     { pattern: /(lhdn|hasil|irb|lembaga hasil dalam negeri)/i, label: 'LHDN/Tax authority impersonation', score: 40, type: 'impersonation' },
     { pattern: /(kwsp|epf|kumpulan wang simpanan pekerja)/i, label: 'KWSP/EPF impersonation', score: 40, type: 'impersonation' },
-    { pattern: /(pdrm|polis diraja malaysia|balai polis|ibu pejabat polis)/i, label: 'PDRM impersonation', score: 45, type: 'impersonation' },
-    { pattern: /(bank negara|bnm|central bank of malaysia)/i, label: 'Bank Negara impersonation', score: 45, type: 'impersonation' },
-    { pattern: /(sprm|badan pencegah rasuah|macc)/i, label: 'SPRM/MACC impersonation', score: 45, type: 'impersonation' },
-    { pattern: /(jabatan imigresen|immigration department)/i, label: 'Immigration Dept impersonation', score: 40, type: 'impersonation' },
-    { pattern: /(mahkamah|court order|saman|waran tangkap)/i, label: 'Court/legal threat', score: 50, type: 'impersonation' },
+    { pattern: /(pdrm|polis diraja malaysia|balai polis|ibu pejabat polis|马(来西亚)?警(方|察)|警察局)/i, label: 'PDRM impersonation', score: 45, type: 'impersonation' },
+    { pattern: /(bank negara|bnm|central bank of malaysia|国(家)?银行|央行)/i, label: 'Bank Negara impersonation', score: 45, type: 'impersonation' },
+    { pattern: /(sprm|badan pencegah rasuah|macc|反贪会)/i, label: 'SPRM/MACC impersonation', score: 45, type: 'impersonation' },
+    { pattern: /(jabatan imigresen|immigration department|移民局)/i, label: 'Immigration Dept impersonation', score: 40, type: 'impersonation' },
+    { pattern: /(mahkamah|court order|saman|waran tangkap|法院|法庭|传票|逮捕令)/i, label: 'Court/legal threat', score: 50, type: 'impersonation' },
     { pattern: /(celcom|maxis|digi|umobile|telekom malaysia|unifi)\s+(account|akaun)/i, label: 'Telco impersonation', score: 35, type: 'impersonation' },
 
     // ── INVESTMENT SCAM ──
@@ -80,6 +81,12 @@ const SCAM_PHRASES: Array<{ pattern: RegExp; label: string; score: number; type:
     // ── TECH SUPPORT SCAM ──
     { pattern: /(your (computer|device|phone)|peranti anda).{0,30}(virus|hacked|infected|compromised)/i, label: 'Tech support virus scare', score: 55, type: 'tech_support' },
     { pattern: /(microsoft|apple|google).{0,20}(technical (support|team)|virus alert|security alert)/i, label: 'Big tech impersonation', score: 60, type: 'tech_support' },
+
+    // ── MACAU SCAM (Composite Indicators) ──
+    { pattern: /(safe account|akaun selamat|akaun bank negara|安全账户|安全帐户)/i, label: 'Macau Scam "safe account" narrative', score: 60, type: 'macau_scam' },
+    { pattern: /(siasatan|investigation|crime case|kes jenayah|犯罪案件|调查).{0,50}(transfer|pindahkan|deposit|bayar|转账|支付|存入)/i, label: 'Macau Scam investigation pressure', score: 55, type: 'macau_scam' },
+    { pattern: /(waran tangkap|saman mahkamah|arrest warrant|court order|逮捕令|法院传票|法庭传票)/i, label: 'Legal/arrest threat', score: 50, type: 'macau_scam' },
+    { pattern: /(cukai tertunggak|tax evasion|outstanding tax|lhdn.{0,20}bayar|欠税|偷税漏税)/i, label: 'Tax threat narrative', score: 50, type: 'macau_scam' },
 ];
 
 /** Urgency amplifiers — boost score when present with other signals */
@@ -92,11 +99,12 @@ const URGENCY_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
 ];
 
 /** Suspicious financial keywords */
-const FINANCIAL_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
-    { pattern: /\bRM\s*\d{3,}/i, label: 'Large RM amount mentioned' },
-    { pattern: /\btransfer (wang|money|fund|rm)/i, label: 'Money transfer request' },
-    { pattern: /\b(bank account|nombor akaun|account number)\b/i, label: 'Bank account solicitation' },
-    { pattern: /\b(western union|wire transfer|bitcoin|crypto wallet|e-wallet)\b/i, label: 'Suspicious payment method' },
+const FINANCIAL_PATTERNS: Array<{ pattern: RegExp; label: string; score: number }> = [
+    { pattern: /\b(transfer|pindahkan|hantar|bayar|pay|deposit|send|转账|支付|存入).{0,20}(wang|money|fund|rm|credit|amount|金|钱|款)/i, label: 'Financial transaction mention', score: 15 },
+    { pattern: /\b(bank account|akaun bank|bank card|credit card|debit card|银行卡|银行账户|信用卡)/i, label: 'Banking instrument mention', score: 10 },
+    { pattern: /\b(safe account|akaun selamat|akaun bank negara|安全账户|安全帐户)/i, label: 'Safe account narrative', score: 20 },
+    { pattern: /\b(western union|wire transfer|bitcoin|crypto wallet|e-wallet)\b/i, label: 'Suspicious payment method', score: 15 },
+    { pattern: /\bRM\s*\d{3,}/i, label: 'Large RM amount mentioned', score: 10 },
 ];
 
 // ── Language Detection ──────────────────────────────────────────────────────
@@ -159,8 +167,30 @@ export class NlpMessageService {
         }
         if (score > 0) score += Math.min(financialBoost, 25);
 
-        // 4. Determine dominant scam type
-        if (Object.keys(scamTypeCounts).length > 0) {
+        // 4. Determine dominant scam type & apply Macau Scam composite boost
+        let isAuthority = false;
+        let isMoneyDemand = false;
+
+        for (const pattern of SCAM_PHRASES) {
+            const isMatch = pattern.pattern.test(text);
+            if (isMatch) {
+                if (pattern.type === 'impersonation') isAuthority = true;
+                if (pattern.type === 'macau_scam') {
+                    // Macau Scam patterns usually contain BOTH authority and money demand signals
+                    isAuthority = true;
+                    isMoneyDemand = true;
+                }
+            }
+        }
+        if (FINANCIAL_PATTERNS.some(p => p.pattern.test(text))) isMoneyDemand = true;
+
+        if (isAuthority && isMoneyDemand) {
+            score += 25; // Composite boost
+            if (!matchedPatterns.includes('Macau Scam Indicators: Authority Impersonation + Money Demand')) {
+                matchedPatterns.push('Macau Scam Indicators: Authority Impersonation + Money Demand');
+            }
+            dominantScamType = 'macau_scam';
+        } else if (Object.keys(scamTypeCounts).length > 0) {
             dominantScamType = Object.entries(scamTypeCounts).sort((a, b) => b[1] - a[1])[0][0] as ScamType;
         }
 

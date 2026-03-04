@@ -11,10 +11,13 @@ import 'services/security_service.dart';
 import 'app_router.dart';
 import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
+import 'services/call_state_service.dart';
+import 'services/clipboard_monitor_service.dart';
 import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/locale_provider.dart';
 
+@pragma('vm:entry-point')
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
@@ -36,6 +39,11 @@ void main() async {
 
   // 🛡️ Initialize Security Checks
   await SecurityService.instance.init();
+
+  // 🔔 Initialize Phase 2 Services
+  await NotificationService.instance.init();
+  CallStateService.instance.init();
+  ClipboardMonitorService.instance.init();
 
   runApp(const FraudShieldApp());
 }

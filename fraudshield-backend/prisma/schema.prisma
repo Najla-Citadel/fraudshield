@@ -272,6 +272,7 @@ enum CheckType {
   MSG
   QR
   VOICE
+  MACAU_SCAM
 }
 
 enum AlertSeverity {
@@ -287,4 +288,5 @@ enum AlertCategory {
   SYSTEM_SCAN
   NETWORK
   COMMUNITY
+  MACAU_SCAM
 }
