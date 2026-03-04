@@ -18,6 +18,7 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/locale_provider.dart';
+import 'widgets/macau_intervention_overlay.dart';
 
 @pragma('vm:entry-point')
 void main() async {
@@ -44,7 +45,7 @@ void main() async {
 
   // 🔔 Initialize Phase 2 Services
   await NotificationService.instance.init();
-  CallStateService.instance.init();
+  await CallStateService.instance.init();
   ClipboardMonitorService.instance.init();
 
   final prefs = await SharedPreferences.getInstance();
@@ -96,6 +97,21 @@ class FraudShieldApp extends StatelessWidget {
             navigatorKey: AppRouter.navigatorKey,
             onGenerateRoute: AppRouter.generate,
             home: const RootScreen(),
+            builder: (context, child) {
+              return Consumer<NotificationService>(
+                builder: (context, notification, _) {
+                  return Stack(
+                    children: [
+                      if (child != null) child,
+                      if (notification.activeIntervention != null)
+                        MacauInterventionOverlay(
+                          evaluation: notification.activeIntervention!,
+                        ),
+                    ],
+                  );
+                },
+              );
+            },
           );
         },
       ),

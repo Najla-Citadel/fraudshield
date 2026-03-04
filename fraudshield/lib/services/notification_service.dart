@@ -11,8 +11,21 @@ class NotificationService extends ChangeNotifier {
   final List<dynamic> _alerts = [];
   List<dynamic> get alerts => _alerts;
 
+  Map<String, dynamic>? _activeIntervention;
+  Map<String, dynamic>? get activeIntervention => _activeIntervention;
+
   void addAlert(Map<String, dynamic> alert) {
     _alerts.insert(0, alert);
+    notifyListeners();
+  }
+
+  void showMacauIntervention(Map<String, dynamic> evaluation) {
+    _activeIntervention = evaluation;
+    notifyListeners();
+  }
+
+  void dismissIntervention() {
+    _activeIntervention = null;
     notifyListeners();
   }
 
@@ -42,8 +55,14 @@ class NotificationService extends ChangeNotifier {
     await _notificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (fln.NotificationResponse details) {
-        if (details.payload == 'voice_scan') {
-          onNavigate?.call('/voice-scan', null);
+        if (details.payload == 'voice_scan' ||
+            details.payload == 'voice_scan_auto_start') {
+          onNavigate?.call(
+            '/voice-scan',
+            details.payload == 'voice_scan_auto_start'
+                ? {'autoStart': true}
+                : null,
+          );
         }
       },
     );
@@ -58,6 +77,14 @@ class NotificationService extends ChangeNotifier {
       importance: fln.Importance.max,
       priority: fln.Priority.high,
       ticker: 'ticker',
+      actions: <fln.AndroidNotificationAction>[
+        fln.AndroidNotificationAction(
+          'action_record',
+          'Record & Analyze',
+          showsUserInterface: true,
+          cancelNotification: true,
+        ),
+      ],
     );
 
     const fln.NotificationDetails platformChannelSpecifics =
@@ -70,8 +97,9 @@ class NotificationService extends ChangeNotifier {
       'Incoming Call Detected',
       'Suspect a scam? Tap to start Safety Scan.',
       platformChannelSpecifics,
-      payload: 'voice_scan',
+      payload: 'voice_scan_auto_start',
     );
+    debugPrint('NotificationService: Call alert shown successfully.');
   }
 
   Future<void> showNotification(

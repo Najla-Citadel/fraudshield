@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 import 'package:notification_listener_service/notification_event.dart';
 import 'api_service.dart';
+import 'notification_service.dart';
 
 class SmartCaptureService {
   static final SmartCaptureService _instance = SmartCaptureService._internal();
@@ -111,6 +112,22 @@ class SmartCaptureService {
       amount = -amount;
     }
 
+    // Macau Scam Keyword Check (Local)
+    final authoritarianKeywords = [
+      'pdrm',
+      'polis',
+      'lhdn',
+      'hasil',
+      'court',
+      'mahkamah',
+      'bnm',
+      'negara',
+      'government',
+      'kerajaan'
+    ];
+    final bool hasAuthoritarianContext =
+        authoritarianKeywords.any((keyword) => lowText.contains(keyword));
+
     // Try to extract Recipient/Merchant (Very heuristic)
     String merchant = "Bank Transfer";
     if (text.contains('to ')) {
@@ -135,9 +152,20 @@ class SmartCaptureService {
         platform: 'AUTO_CAPTURE',
         checkType: 'AUTO_CAPTURE',
         notes: 'Captured from notification: $text',
+        isPriority: hasAuthoritarianContext,
       );
       debugPrint(
           'SmartCaptureService: logTransaction SUCCESS! Response: $response');
+
+      // Check for Macau Scam Intervention
+      if (response['macauEvaluation'] != null) {
+        final macau = response['macauEvaluation'];
+        if (macau['isMacauScam'] == true &&
+            (macau['confidence'] == 'high' ||
+                macau['confidence'] == 'critical')) {
+          NotificationService.instance.showMacauIntervention(macau);
+        }
+      }
     } catch (e) {
       debugPrint('SmartCaptureService: logTransaction FAILED: $e');
     }

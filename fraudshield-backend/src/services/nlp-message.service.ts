@@ -87,6 +87,8 @@ const SCAM_PHRASES: Array<{ pattern: RegExp; label: string; score: number; type:
     { pattern: /(siasatan|investigation|crime case|kes jenayah|犯罪案件|调查).{0,50}(transfer|pindahkan|deposit|bayar|转账|支付|存入)/i, label: 'Macau Scam investigation pressure', score: 55, type: 'macau_scam' },
     { pattern: /(waran tangkap|saman mahkamah|arrest warrant|court order|逮捕令|法院传票|法庭传票)/i, label: 'Legal/arrest threat', score: 50, type: 'macau_scam' },
     { pattern: /(cukai tertunggak|tax evasion|outstanding tax|lhdn.{0,20}bayar|欠税|偷税漏税)/i, label: 'Tax threat narrative', score: 50, type: 'macau_scam' },
+    { pattern: /(ibu pejabat polis|bukit aman|bnm taskforce|pegawai penyiasat|investigation officer)/i, label: 'Authoritarian identity pressure', score: 45, type: 'macau_scam' },
+    { pattern: /(pindahkan.{0,20}akaun bnm|transfer.{0,20}safe account|audit fund|money audit)/i, label: 'Audit narrative', score: 60, type: 'macau_scam' },
 ];
 
 /** Urgency amplifiers — boost score when present with other signals */
@@ -105,6 +107,7 @@ const FINANCIAL_PATTERNS: Array<{ pattern: RegExp; label: string; score: number 
     { pattern: /\b(safe account|akaun selamat|akaun bank negara|安全账户|安全帐户)/i, label: 'Safe account narrative', score: 20 },
     { pattern: /\b(western union|wire transfer|bitcoin|crypto wallet|e-wallet)\b/i, label: 'Suspicious payment method', score: 15 },
     { pattern: /\bRM\s*\d{3,}/i, label: 'Large RM amount mentioned', score: 10 },
+    { pattern: /\b(pindahkan maklumat|audit keselamatan|pegawai audit)\b/i, label: 'Review/Audit pressure', score: 15 },
 ];
 
 // ── Language Detection ──────────────────────────────────────────────────────

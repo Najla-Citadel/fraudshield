@@ -13,6 +13,7 @@ import 'screens/alert_center_screen.dart';
 import 'screens/scam_insight_screen.dart';
 import 'screens/privacy_settings_screen.dart';
 import 'screens/security_alert_screen.dart';
+import 'screens/voice_detection_screen.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -45,6 +46,13 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const PrivacySettingsScreen());
       case '/security-alert':
         return MaterialPageRoute(builder: (_) => const SecurityAlertScreen());
+      case '/voice-scan':
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => VoiceDetectionScreen(
+            autoStart: args?['autoStart'] ?? false,
+          ),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }

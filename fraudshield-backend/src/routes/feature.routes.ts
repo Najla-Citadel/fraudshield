@@ -15,6 +15,7 @@ import { ApkScanController } from '../controllers/apk-scan.controller';
 import { VoiceScanController } from '../controllers/voice-scan.controller';
 import { UploadController } from '../controllers/upload.controller';
 import { MacauScamController } from '../controllers/macau-scam.controller';
+import { VoiceSignalController } from '../controllers/voice-signal.controller';
 import multer from 'multer';
 
 import { authenticate } from '../middleware/auth.middleware';
@@ -72,6 +73,7 @@ router.get('/badges', BadgeController.getMyBadges);
 router.get('/badges/all', BadgeController.getAllBadges);
 
 router.post('/behavioral', featureLimiter, BehavioralController.logEvent);
+router.post('/behavioral/call-signal', featureLimiter, VoiceSignalController.reportCallSignal);
 router.get('/behavioral', BehavioralController.getMyEvents);
 
 // Macau Scam Check
