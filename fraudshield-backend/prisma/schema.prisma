@@ -7,55 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum CheckType {
-  PHONE
-  URL
-  BANK
-  DOC
-  MANUAL
-  MSG
-  QR
-  VOICE
-}
-
-enum AlertSeverity {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum AlertCategory {
-  PHISHING
-  LOGIN
-  SYSTEM_SCAN
-  NETWORK
-  COMMUNITY
-}
-
 model User {
-  id                  String              @id @default(uuid())
-  email               String              @unique
-  passwordHash        String
-  emailVerified       Boolean             @default(false)
-  fullName            String?
-  role                String              @default("user")
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  alerts              Alert[]
-  transactions        PointsTransaction[]
-  profile             Profile?
-  reports             ScamReport[]
-  userTransactions    Transaction[]
-  subscriptions       UserSubscription[]
-  redemptions         Redemption[]
-  alertSubscription   AlertSubscription?  @relation("UserAlertSubscription")
-  transactionJournals TransactionJournal[]
-  refreshToken        String?             @unique
-  comments            Comment[]
-  acceptedTermsVersion String?
+  id                   String               @id @default(uuid())
+  email                String               @unique
+  passwordHash         String
+  fullName             String?
+  role                 String               @default("user")
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  refreshToken         String?              @unique
   acceptedTermsAt      DateTime?
-  auditLogs           AuditLog[]
+  acceptedTermsVersion String?
+  emailVerified        Boolean              @default(false)
+  alerts               Alert[]
+  alertSubscription    AlertSubscription?   @relation("UserAlertSubscription")
+  auditLogs            AuditLog[]
+  comments             Comment[]
+  transactions         PointsTransaction[]
+  profile              Profile?
+  redemptions          Redemption[]
+  reports              ScamReport[]
+  userTransactions     Transaction[]
+  transactionJournals  TransactionJournal[]
+  subscriptions        UserSubscription[]
 }
 
 model AuditLog {
@@ -75,21 +49,21 @@ model AuditLog {
 }
 
 model Profile {
-  id       String  @id @default(uuid())
-  bio      String?
-  avatar   String?
-  points     Int     @default(0)
-  totalPoints Int     @default(0)
-  reputation Int     @default(0)
-  badges     Json    @default("[]")
-  userId     String  @unique
-  metadata   Json    @default("{}")
-  lastLoginDate DateTime?
-  loginStreak Int     @default(0)
-  preferredName  String?
-  mobile         String?
+  id             String    @id @default(uuid())
+  bio            String?
+  avatar         String?
+  points         Int       @default(0)
+  userId         String    @unique
+  metadata       Json      @default("{}")
+  badges         Json      @default("[]")
+  reputation     Int       @default(0)
+  lastLoginDate  DateTime?
+  loginStreak    Int       @default(0)
   mailingAddress String?
-  user     User    @relation(fields: [userId], references: [id])
+  mobile         String?
+  preferredName  String?
+  totalPoints    Int       @default(0)
+  user           User      @relation(fields: [userId], references: [id])
 }
 
 model SubscriptionPlan {
@@ -113,23 +87,23 @@ model UserSubscription {
 }
 
 model ScamReport {
-  id          String         @id @default(uuid())
-  type        String
-  target      String?
-  targetType  String?        // e.g. "phone", "bank_account", "url"
-  description String
-  userId      String
-  status      String         @default("pending")
-  createdAt   DateTime       @default(now())
-  category    String
-  evidence    Json           @default("{}")
-  isPublic    Boolean        @default(false)
-  latitude    Float?
-  longitude   Float?
-  user        User           @relation(fields: [userId], references: [id])
+  id            String         @id @default(uuid())
+  type          String
+  target        String?
+  description   String
+  userId        String
+  status        String         @default("pending")
+  createdAt     DateTime       @default(now())
+  category      String
+  evidence      Json           @default("{}")
+  isPublic      Boolean        @default(false)
+  latitude      Float?
+  longitude     Float?
+  targetType    String?
+  deletedAt     DateTime?
+  comments      Comment[]
+  user          User           @relation(fields: [userId], references: [id])
   verifications Verification[]
-  comments    Comment[]
-  deletedAt   DateTime?
 
   @@index([isPublic])
   @@index([createdAt])
@@ -145,8 +119,8 @@ model Comment {
   userId    String
   reportId  String
   createdAt DateTime   @default(now())
-  user      User       @relation(fields: [userId], references: [id])
   report    ScamReport @relation(fields: [reportId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
 
   @@index([reportId])
 }
@@ -181,22 +155,20 @@ model BehavioralEvent {
 
 model Alert {
   id          String        @id @default(uuid())
-  category    AlertCategory @default(COMMUNITY)
-  severity    AlertSeverity @default(LOW)
   title       String
   message     String
   type        String        @default("ALERT") // Required for Admin Broadcasts
-  metadata    Json          @default("{}")
   isRead      Boolean       @default(false)
-  actionTaken String?
   userId      String
   createdAt   DateTime      @default(now())
+  txId        String?
+  riskScore   Int?
+  decision    String?
+  actionTaken String?
+  category    AlertCategory @default(COMMUNITY)
+  metadata    Json          @default("{}")
+  severity    AlertSeverity @default(LOW)
   user        User          @relation(fields: [userId], references: [id])
-
-  // Kept for backward compatibility
-  txId      String?
-  riskScore Int?
-  decision  String?
 }
 
 model Transaction {
@@ -223,12 +195,12 @@ model Reward {
   name        String
   description String
   pointsCost  Int
-  type        String       // 'subscription', 'badge', 'cosmetic'
+  type        String
   metadata    Json         @default("{}")
   active      Boolean      @default(true)
-  minTier     String       @default("BRONZE") // BRONZE, SILVER, GOLD, DIAMOND
-  isFeatured  Boolean      @default(false)
   createdAt   DateTime     @default(now())
+  isFeatured  Boolean      @default(false)
+  minTier     String       @default("BRONZE")
   redemptions Redemption[]
 }
 
@@ -237,58 +209,82 @@ model Redemption {
   userId     String
   rewardId   String
   pointsCost Int
-  status     String   @default("completed") // 'pending', 'completed', 'failed'
+  status     String   @default("completed")
   createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
   reward     Reward   @relation(fields: [rewardId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
+
 model BadgeDefinition {
   id          String   @id @default(uuid())
-  key         String   @unique   // e.g. "elite_sentinel"
-  name        String             // Display name: "Elite Sentinel"
+  key         String   @unique
+  name        String
   description String
-  icon        String             // Emoji or icon name
-  tier        String             // "bronze" | "silver" | "gold" | "platinum"
-  trigger     String             // "reputation" | "reports" | "streak" | "purchase"
-  threshold   Int?               // e.g. reputation >= 50
+  icon        String
+  tier        String
+  trigger     String
+  threshold   Int?
   createdAt   DateTime @default(now())
 }
 
 model TransactionJournal {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id])
   checkType     CheckType
-  target        String?   // the mapped URL/Phone/Num or Recipient
-  riskScore     Int      // 0-100 indicating fraud risk
-  status        String   // SAFE, SUSPICIOUS, BLOCKED, SCAMMED
-  metadata      Json?    // Stores the raw deep-dive data from APIs
-  
-  // Fields for manual transaction logging
+  target        String?
+  riskScore     Int
+  status        String
+  metadata      Json?
+  createdAt     DateTime  @default(now())
   amount        Float?
   merchant      String?
-  paymentMethod String?   // "duitnow", "bank_transfer", etc.
-  platform      String?   // "Shopee", "WhatsApp", etc.
   notes         String?
-  reportId      String?   // Linked if converted to ScamReport
-  
-  createdAt     DateTime @default(now())
+  paymentMethod String?
+  platform      String?
+  reportId      String?
+  user          User      @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([createdAt])
 }
 
 model AlertSubscription {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  categories  String[]
-  latitude    Float?
-  longitude   Float?
-  radiusKm    Int      @default(15)
-  fcmToken    String?
-  isActive          Boolean  @default(true)
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  categories         String[]
+  latitude           Float?
+  longitude          Float?
+  radiusKm           Int      @default(15)
+  fcmToken           String?
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
   emailDigestEnabled Boolean  @default(false)
-  createdAt         DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation("UserAlertSubscription", fields: [userId], references: [id])
+  user               User     @relation("UserAlertSubscription", fields: [userId], references: [id])
+}
+
+enum CheckType {
+  PHONE
+  URL
+  BANK
+  DOC
+  MANUAL
+  MSG
+  QR
+  VOICE
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertCategory {
+  PHISHING
+  LOGIN
+  SYSTEM_SCAN
+  NETWORK
+  COMMUNITY
 }
