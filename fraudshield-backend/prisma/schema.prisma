@@ -273,6 +273,8 @@ enum CheckType {
   QR
   VOICE
   MACAU_SCAM
+  MULE
+  AUTO_CAPTURE
 }
 
 enum AlertSeverity {
@@ -289,4 +291,5 @@ enum AlertCategory {
   NETWORK
   COMMUNITY
   MACAU_SCAM
+  MULE_ACCOUNT
 }
