@@ -52,55 +52,72 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
-            letterSpacing: -0.5,
+    return Theme(
+      data: Theme.of(context).copyWith(brightness: Brightness.dark),
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0F172A), // Slate 900
+              AppColors.deepNavy, // Base
+              Color(0xFF1E3A8A), // Blue 900
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: _markAllAsRead,
-            child: const Text(
-              'Mark all as read',
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new,
+                  color: Colors.white, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: const Text(
+              'Notifications',
               style: TextStyle(
-                color: AppColors.accentGreen,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 22,
+                letterSpacing: -0.5,
               ),
             ),
-          ),
-          const SizedBox(width: 20),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryBlue))
-          : _alerts.isEmpty
-              ? _buildEmptyState()
-              : RefreshIndicator(
-                  onRefresh: _fetchAlerts,
-                  color: AppColors.primaryBlue,
-                  child: ListView(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    children: _buildGroupedAlertList(),
+            actions: [
+              TextButton(
+                onPressed: _markAllAsRead,
+                child: const Text(
+                  'Mark all as read',
+                  style: TextStyle(
+                    color: AppColors.accentGreen,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
+              ),
+              const SizedBox(width: 20),
+            ],
+          ),
+          body: _isLoading
+              ? const Center(
+                  child:
+                      CircularProgressIndicator(color: AppColors.primaryBlue))
+              : _alerts.isEmpty
+                  ? _buildEmptyState()
+                  : RefreshIndicator(
+                      onRefresh: _fetchAlerts,
+                      color: AppColors.primaryBlue,
+                      child: ListView(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 8),
+                        children: _buildGroupedAlertList(),
+                      ),
+                    ),
+        ),
+      ),
     );
   }
 
@@ -143,7 +160,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         title,
         style: TextStyle(
           color: Colors.white.withValues(alpha: 0.5),
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w700,
           fontSize: 12,
           letterSpacing: 0.5,
         ),
@@ -219,7 +236,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -311,40 +328,9 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
           ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: 200,
-            child: ElevatedButton(
-              onPressed: _seedDemoAlerts,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accentGreen,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: const Text('Fetch Demo Alerts',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ),
         ],
       ),
     );
-  }
-
-  Future<void> _seedDemoAlerts() async {
-    setState(() => _isLoading = true);
-    try {
-      await ApiService.instance.get('/alerts/seed');
-      await _fetchAlerts();
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to seed alerts: $e')),
-        );
-      }
-    }
   }
 
   Widget _buildHighRiskAlertCard(dynamic alert) {
@@ -353,26 +339,51 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
     final timeStr = DateFormat('h:mm a').format(createdAt);
     final dateStr = DateFormat('MMM d, yyyy').format(createdAt);
     final isToday = DateUtils.isSameDay(createdAt, DateTime.now());
+    final bool isRead = alert['isRead'] ?? false;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: GlassSurface(
-        padding: const EdgeInsets.all(24),
-        borderRadius: 24,
+      child: InkWell(
+        onTap: () {
+          if (!isRead) {
+            setState(() {
+              alert['isRead'] = true;
+            });
+          }
+        },
+        borderRadius: BorderRadius.circular(24),
+        child: GlassSurface(
+          padding: const EdgeInsets.all(24),
+          borderRadius: 24,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF43F5E), // Rose red
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Icon(LucideIcons.alertTriangle,
-                      color: Colors.white, size: 24),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF43F5E), // Rose red
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(LucideIcons.alertTriangle,
+                          color: Colors.white, size: 24),
+                    ),
+                    if (!isRead) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF43F5E),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 Container(
                   padding:
@@ -396,10 +407,10 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             const SizedBox(height: 20),
             Text(
               alert['title'] ?? 'Suspicious activity detected',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: isRead ? 0.7 : 1.0),
                 fontSize: 18,
-                fontWeight: FontWeight.w800,
+                fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
               ),
             ),
             const SizedBox(height: 6),
@@ -491,6 +502,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
               ),
             ),
           ],
+          ),
         ),
       ),
     );
@@ -498,6 +510,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
   Widget _buildStandardAlertCard(dynamic alert) {
     final category = alert['category'] ?? 'COMMUNITY';
+    final bool isRead = alert['isRead'] ?? false;
 
     Color iconColor;
     Color bgColor;
@@ -548,62 +561,94 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: GlassSurface(
-        padding: const EdgeInsets.all(20),
-        borderRadius: 24,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: bgColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(icon, color: iconColor, size: 24),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: InkWell(
+        onTap: () {
+          if (!isRead) {
+            setState(() {
+              alert['isRead'] = true;
+            });
+          }
+        },
+        borderRadius: BorderRadius.circular(24),
+        child: GlassSurface(
+          padding: const EdgeInsets.all(20),
+          borderRadius: 24,
+          child: Opacity(
+            opacity: isRead ? 0.6 : 1.0,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: bgColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          alert['title'] ?? 'Security Update',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    alert['title'] ?? 'Security Update',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: isRead
+                                          ? FontWeight.w500
+                                          : FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+                                if (!isRead) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      color: iconColor,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
-                        ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _getTimeAgo(alert['createdAt']),
+                            style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.4),
+                                fontSize: 12),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 8),
                       Text(
-                        _getTimeAgo(alert['createdAt']),
+                        alert['message'] ?? '',
                         style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.4),
-                            fontSize: 12),
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    alert['message'] ?? '',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      fontSize: 14,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
