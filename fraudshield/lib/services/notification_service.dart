@@ -14,6 +14,10 @@ class NotificationService extends ChangeNotifier {
   Map<String, dynamic>? _activeIntervention;
   Map<String, dynamic>? get activeIntervention => _activeIntervention;
 
+  DateTime? _lastRiskyCallTime;
+  Map<String, dynamic>? _lastRiskyCallData;
+  DateTime? get lastRiskyCallTime => _lastRiskyCallTime;
+
   // ── Caller Risk State ────────────────────────────────
   Map<String, dynamic>? _activeCallerRisk;
   Map<String, dynamic>? get activeCallerRisk => _activeCallerRisk;
@@ -48,6 +52,35 @@ class NotificationService extends ChangeNotifier {
   void dismissIntervention() {
     _activeIntervention = null;
     notifyListeners();
+  }
+
+  void recordRiskyCall(Map<String, dynamic> data) {
+    _lastRiskyCallTime = DateTime.now();
+    _lastRiskyCallData = data;
+    debugPrint(
+        'NotificationService: Recorded risky call for behavioral tracking at $_lastRiskyCallTime');
+  }
+
+  bool isCheckRequiredForSensitiveAction() {
+    if (_lastRiskyCallTime == null) return false;
+    final diff = DateTime.now().difference(_lastRiskyCallTime!);
+    // Macau Scam pattern typically occurs within 2-5 minutes of call ending
+    return diff.inMinutes <= 2;
+  }
+
+  void triggerMacauWarning() {
+    if (_lastRiskyCallData != null) {
+      showMacauIntervention({
+        ..._lastRiskyCallData!,
+        'type': 'behavioral_correlation',
+        'reason':
+            'Detected sensitive action immediately after a high-risk call.',
+        'reasons': [
+          'Macau Scam Pattern Detected',
+          'High-urgency call followed by financial action'
+        ],
+      });
+    }
   }
 
   // ── Post-Call Safety Check State ──────────────────────

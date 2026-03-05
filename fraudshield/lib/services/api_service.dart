@@ -539,11 +539,13 @@ class ApiService {
     required String event,
     int? duration,
     String? incomingNumber,
+    bool? inContacts,
   }) async {
     await post('/features/behavioral/call-signal', {
       'event': event,
       if (duration != null) 'duration': duration,
       if (incomingNumber != null) 'incomingNumber': incomingNumber,
+      if (inContacts != null) 'inContacts': inContacts,
     });
   }
 

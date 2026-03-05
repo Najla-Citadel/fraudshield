@@ -572,6 +572,15 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onNavTap(int index) {
     setState(() => _selectedIndex = index);
 
+    // Macau Scam Behavioral Check:
+    // If user navigates to a sensitive tab (Home, Rewards, or Profile)
+    // within 2 minutes of a high-risk call, trigger a warning.
+    if (index == 0 || index == 3 || index == 4) {
+      if (NotificationService.instance.isCheckRequiredForSensitiveAction()) {
+        NotificationService.instance.triggerMacauWarning();
+      }
+    }
+
     if (index == 0) {
       _loadProfile(); // refresh greeting
     }

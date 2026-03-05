@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart'
     hide NotificationVisibility;
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'notification_service.dart';
 import 'api_service.dart';
 import 'risk_evaluator.dart';
@@ -19,6 +20,7 @@ class CallStateService {
   String? _lastNumber;
   int? _lastScore;
   String? _lastLevel;
+  bool? _inContacts;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -52,11 +54,13 @@ class CallStateService {
           'CallStateService: [STREAM] Status=$statusStr Number=${event.number}');
 
       if (statusStr == 'RINGING' || statusStr == 'CALL_INCOMING') {
+        _inContacts = await _isNumberInContacts(event.number);
         _handleIncomingCall(event.number);
       } else if (statusStr == 'OFFHOOK' || statusStr == 'CALL_STARTED') {
         _dismissOverlay();
         _callStartTime = DateTime.now();
-        _reportSignal('CALL_ACTIVE', number: event.number);
+        _reportSignal('CALL_ACTIVE',
+            number: event.number, inContacts: _inContacts);
       } else if (statusStr == 'DISCONNECTED' || statusStr == 'CALL_ENDED') {
         _dismissOverlay();
 
@@ -68,6 +72,7 @@ class CallStateService {
             'level': _lastLevel,
           };
           NotificationService.instance.showPostCallCheck(data);
+          NotificationService.instance.recordRiskyCall(data);
 
           if (_lastLevel == 'critical') {
             NotificationService.instance.startCoolDown();
@@ -81,10 +86,15 @@ class CallStateService {
         }
 
         // Reset risk state for the next call
+        final currentInContacts = _inContacts;
         _lastScore = null;
         _lastLevel = null;
+        _inContacts = null;
 
-        _reportSignal('CALL_ENDED', duration: duration, number: event.number);
+        _reportSignal('CALL_ENDED',
+            duration: duration,
+            number: event.number,
+            inContacts: currentInContacts);
       }
     });
 
@@ -222,16 +232,62 @@ class CallStateService {
     NotificationService.instance.showCallAlert(number: displayNumber);
 
     // Report call start to backend
-    _reportSignal('CALL_START', number: number);
+    _reportSignal('CALL_START', number: number, inContacts: _inContacts);
 
     // Step 2 — Risk Lookup
     _fetchAndShowRisk(number);
+  }
+
+  Future<bool> _isNumberInContacts(String? number) async {
+    if (number == null || number.isEmpty) return false;
+    if (!await Permission.contacts.isGranted) {
+      await Permission.contacts.request();
+    }
+    if (!await Permission.contacts.isGranted) return false;
+
+    try {
+      // Normalizing the incoming number for comparison (very basic)
+      final cleanIncoming = number.replaceAll(RegExp(r'[^0-9]'), '');
+      if (cleanIncoming.isEmpty) return false;
+
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
+      for (final contact in contacts) {
+        for (final phone in contact.phones) {
+          final cleanPhone = phone.number.replaceAll(RegExp(r'[^0-9]'), '');
+          if (cleanPhone.endsWith(cleanIncoming) ||
+              cleanIncoming.endsWith(cleanPhone)) {
+            debugPrint(
+                'CallStateService: Match found in contacts: ${contact.displayName}');
+            return true;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('CallStateService: Error checking contacts: $e');
+    }
+    return false;
   }
 
   Future<void> _fetchAndShowRisk(String? number) async {
     final displayNumber =
         (number == null || number.isEmpty) ? 'Unknown Number' : number;
 
+    // Contact Book Bypass
+    if (_inContacts == true) {
+      debugPrint(
+          'CallStateService: Bypassing risk lookup for verified contact');
+      final contactData = {
+        'phoneNumber': displayNumber,
+        'loading': false,
+        'score': 0,
+        'level': 'low',
+        'isVerifiedContact': true,
+        'categories': ['Verified Contact'],
+      };
+      NotificationService.instance.updateCallerRiskData(contactData);
+      await FlutterOverlayWindow.shareData(contactData);
+      return;
+    }
     // Step 1: Unknown number shortcut
     if (number == null || number.isEmpty) {
       final unknownData = {
@@ -297,13 +353,14 @@ class CallStateService {
   }
 
   Future<void> _reportSignal(String type,
-      {int? duration, String? number}) async {
+      {int? duration, String? number, bool? inContacts}) async {
     try {
       if (!ApiService.instance.isAuthenticated) return;
       await ApiService.instance.reportCallSignal(
         event: type,
         duration: duration,
         incomingNumber: number,
+        inContacts: inContacts,
       );
       debugPrint('CallStateService: Reported $type to backend');
     } catch (e) {
