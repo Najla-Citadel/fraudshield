@@ -35,23 +35,21 @@ void overlayMain() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.5), // Tint everything
-        body: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red, width: 4),
-          ),
-          child: StreamBuilder<dynamic>(
-            stream: FlutterOverlayWindow.overlayListener,
-            builder: (context, snapshot) {
-              final data = snapshot.data;
-              debugPrint('OVERLAY: >>> Received Data Update: $data <<<');
-              return CallerRiskOverlay(
-                callerData: data is Map<String, dynamic> ? data : null,
-                isSystemOverlay: true,
-              );
-            },
-          ),
+      theme: ThemeData(
+        colorScheme: const ColorScheme.dark(),
+      ),
+      home: Material(
+        color: Colors.transparent,
+        child: StreamBuilder<dynamic>(
+          stream: FlutterOverlayWindow.overlayListener,
+          builder: (context, snapshot) {
+            final data = snapshot.data;
+            debugPrint('OVERLAY: >>> Received Data Update: $data <<<');
+            return CallerRiskOverlay(
+              callerData: data is Map<String, dynamic> ? data : null,
+              isSystemOverlay: true,
+            );
+          },
         ),
       ),
     ),

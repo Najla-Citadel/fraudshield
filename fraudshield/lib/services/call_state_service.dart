@@ -182,30 +182,34 @@ class CallStateService {
       if (!await FlutterOverlayWindow.isActive()) {
         debugPrint('CallStateService: Attempting to launch System Overlay...');
 
-        // Ensure we have permission first
         if (!await FlutterOverlayWindow.isPermissionGranted()) {
           debugPrint(
               'CallStateService: System Alert Window permission MISSING. Prompting user...');
+          // Redirect to Settings. Do NOT return — in-app overlay still shows.
           await FlutterOverlayWindow.requestPermission();
-          return; // Stop here, user needs to grant permission
+          debugPrint(
+              'CallStateService: No system overlay this call; in-app overlay active.');
+        } else {
+          await FlutterOverlayWindow.showOverlay(
+            enableDrag: false,
+            overlayTitle: "FraudShield Caller Risk",
+            overlayContent: "Detecting scam risk...",
+            alignment: OverlayAlignment.center,
+            visibility: NotificationVisibility.visibilityPublic,
+            flag: OverlayFlag.focusPointer,
+            height: WindowSize.fullCover,
+            width: WindowSize.matchParent,
+            startPosition: const OverlayPosition(0, 0),
+          );
+          debugPrint(
+              'CallStateService: FlutterOverlayWindow.showOverlay() called successfully.');
+
+          // Small delay to ensure the overlay window is fully started before data arrives
+          await Future.delayed(const Duration(milliseconds: 400));
+
+          await FlutterOverlayWindow.shareData(initialData);
+          debugPrint('CallStateService: initialData shared to overlay.');
         }
-
-        await FlutterOverlayWindow.showOverlay(
-          enableDrag: true,
-          overlayTitle: "FraudShield Caller Risk",
-          overlayContent: "Detecting scam risk...",
-          alignment: OverlayAlignment.center,
-          visibility: NotificationVisibility.visibilityPublic,
-          flag: OverlayFlag.defaultFlag,
-          height: 800, // Fixed height for testing
-          width: WindowSize.matchParent,
-        );
-        debugPrint(
-            'CallStateService: FlutterOverlayWindow.showOverlay() called successfully.');
-
-        // Share initial data
-        await FlutterOverlayWindow.shareData(initialData);
-        debugPrint('CallStateService: initialData shared to overlay.');
       } else {
         debugPrint('CallStateService: System Overlay is already ACTIVE.');
         await FlutterOverlayWindow.shareData(initialData);
