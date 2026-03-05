@@ -24,6 +24,7 @@ import '../services/biometric_service.dart';
 import '../services/smart_capture_service.dart';
 import '../services/call_state_service.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'log_payment_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,6 +115,9 @@ class _AccountScreenState extends State<AccountScreen> {
     await prefs.setBool('caller_id_protection_enabled', enabled);
 
     if (enabled) {
+      if (!await Permission.systemAlertWindow.isGranted) {
+        await Permission.systemAlertWindow.request();
+      }
       await CallStateService.instance.startProtection();
     } else {
       await CallStateService.instance.stopProtection();

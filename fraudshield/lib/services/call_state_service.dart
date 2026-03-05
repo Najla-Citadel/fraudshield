@@ -182,11 +182,11 @@ class CallStateService {
       if (!await FlutterOverlayWindow.isActive()) {
         debugPrint('CallStateService: Attempting to launch System Overlay...');
 
-        if (!await FlutterOverlayWindow.isPermissionGranted()) {
+        if (!await Permission.systemAlertWindow.isGranted) {
           debugPrint(
               'CallStateService: System Alert Window permission MISSING. Prompting user...');
-          // Redirect to Settings. Do NOT return — in-app overlay still shows.
-          await FlutterOverlayWindow.requestPermission();
+          // Use permission_handler to avoid collision crash with notification_listener_service
+          await Permission.systemAlertWindow.request();
           debugPrint(
               'CallStateService: No system overlay this call; in-app overlay active.');
         } else {
