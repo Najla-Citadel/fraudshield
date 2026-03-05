@@ -1,0 +1,61 @@
+# Consolidated .gitignore for Fraudshield
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+frontend-design-*.md
+implementation_plan-*.md
+walkthrough-*.md
+task-*.md
+
+# Node.js (backend)
+fraudshield-backend/node_modules/
+fraudshield-backend/dist/
+fraudshield-backend/logs/
+fraudshield-backend/npm-debug.log*
+fraudshield-backend/coverage/
+fraudshield-backend/prisma/migrations/*_migration_lock.toml
+fraudshield-backend/build/
+fraudshield-backend/src/generated/prisma
+
+# Admin Dashboard
+fraudshield-admin/node_modules/
+fraudshield-admin/dist/
+fraudshield-admin/.env
+
+# Flutter (frontend)
+fraudshield/*.class
+fraudshield/*.log
+fraudshield/*.pyc
+fraudshield/*.swp
+fraudshield/.DS_Store
+fraudshield/.atom/
+fraudshield/.build/
+fraudshield/.buildlog/
+fraudshield/.history
+fraudshield/.svn/
+fraudshield/.swiftpm/
+fraudshield/migrate_working_dir/
+fraudshield/*.iml
+fraudshield/*.ipr
+fraudshield/*.iws
+fraudshield/.idea/
+fraudshield/.dart_tool/
+fraudshield/.flutter-plugins
+fraudshield/.flutter-plugins-dependencies
+fraudshield/.pub-cache/
+fraudshield/.pub/
+fraudshield/build/
+fraudshield/app.*.symbols
+fraudshield/app.*.map.json
+fraudshield/android/app/debug
+fraudshield/android/app/profile
+fraudshield/android/app/release
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db

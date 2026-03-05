@@ -1,0 +1,33 @@
+import { Router } from 'express';
+import { AuthController } from '../controllers/auth.controller';
+import { authLimiter, loginLimiter } from '../middleware/rateLimiter';
+import { validateSignup, validateLogin, validateChangePassword, validateForgotPassword, validateResetPassword } from '../middleware/validators';
+import { authenticate } from '../middleware/auth.middleware';
+
+const router = Router();
+
+// Apply general rate limiter to all auth routes
+router.use(authLimiter);
+
+// Strict rate limiter on sensitive unauthenticated endpoints
+router.post('/signup', loginLimiter, validateSignup, AuthController.signup);
+router.post('/verify-email', loginLimiter, AuthController.verifyEmail);
+router.post('/login', loginLimiter, validateLogin, AuthController.login);
+router.post('/google', loginLimiter, AuthController.googleLogin);
+router.post('/refresh', AuthController.refresh);
+
+// Password Reset Flow (Unauthenticated but heavily rate limited)
+router.post('/forgot-password', loginLimiter, validateForgotPassword, AuthController.requestPasswordReset);
+router.post('/reset-password', loginLimiter, validateResetPassword, AuthController.verifyAndResetPassword);
+
+// Protected routes
+router.use(authenticate);
+
+router.get('/profile', AuthController.getProfile);
+router.patch('/profile', AuthController.updateProfile);
+router.post('/request-verification', AuthController.requestEmailVerification);
+router.post('/change-password', authenticate, validateChangePassword, AuthController.changePassword);
+router.post('/accept-terms', AuthController.acceptTerms);
+router.post('/logout', AuthController.logout);
+
+export default router;

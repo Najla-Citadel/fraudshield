@@ -1,0 +1,117 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database (Data is persisted in /var/lib/postgresql/data)
+  postgres:
+    image: postgres:16.7-alpine
+    container_name: fraudshield-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fraudshield}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-fraudshield}
+    # No ports exposed to public for security
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraudshield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis Cache (Required for Bull queues)
+  redis:
+    image: redis:7.4-alpine
+    container_name: fraudshield-redis-prod
+    restart: always
+    command: >
+      sh -c 'if [ -z "$REDIS_PASSWORD" ]; then
+               redis-server;
+             else
+               redis-server --requirepass "$REDIS_PASSWORD";
+             fi'
+    # No ports exposed to public
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # API Server
+  api:
+    build: .
+    container_name: fraudshield-api-prod
+    restart: always
+    # Ports removed for security (only accessible via nginx)
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public&connection_limit=20&pool_timeout=20
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      PORT: 3000
+      NODE_ENV: production
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_SECURE: ${SMTP_SECURE:-true}
+  # Daily Automated Backups (3 AM)
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:16-alpine
+    container_name: fraudshield-db-backup
+    restart: always
+    user: root
+    volumes:
+      - ./backups:/backups
+    links:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB:-fraudshield}
+      - POSTGRES_USER=${POSTGRES_USER:-fraudshield}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_SUFFIX=.sql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ../fraudshield-admin
+      args:
+        - VITE_API_BASE_URL=https://api.${DOMAIN_NAME}/api/v1
+    container_name: fraudshield-admin-prod
+    restart: always
+    depends_on:
+      api:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data_prod:

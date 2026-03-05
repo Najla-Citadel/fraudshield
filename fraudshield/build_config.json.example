@@ -1,0 +1,5 @@
+{
+  "API_BASE_URL": "https://api.fraudshieldprotect.com/api/v1",
+  "TURNSTILE_SITE_KEY": "0x4AAAAAA...",
+  "GOOGLE_WEB_CLIENT_ID": "your-google-id.apps.googleusercontent.com"
+}
