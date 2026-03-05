@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -19,6 +21,40 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/locale_provider.dart';
 import 'widgets/macau_intervention_overlay.dart';
+import 'widgets/caller_risk_overlay.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
+@pragma('vm:entry-point')
+void overlayMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
+  debugPrint('OVERLAY: >>> overlayMain STARTED (Inside main.dart) <<<');
+
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.black.withOpacity(0.5), // Tint everything
+        body: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.red, width: 4),
+          ),
+          child: StreamBuilder<dynamic>(
+            stream: FlutterOverlayWindow.overlayListener,
+            builder: (context, snapshot) {
+              final data = snapshot.data;
+              debugPrint('OVERLAY: >>> Received Data Update: $data <<<');
+              return CallerRiskOverlay(
+                callerData: data is Map<String, dynamic> ? data : null,
+                isSystemOverlay: true,
+              );
+            },
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 @pragma('vm:entry-point')
 void main() async {
@@ -44,6 +80,7 @@ void main() async {
   await SecurityService.instance.init();
 
   // 🔔 Initialize Phase 2 Services
+  await _initBackgroundService();
   await NotificationService.instance.init();
   await CallStateService.instance.init();
   ClipboardMonitorService.instance.init();
@@ -52,8 +89,39 @@ void main() async {
   if (prefs.getBool('smart_capture_enabled') ?? false) {
     await SmartCaptureService().start();
   }
+  if (prefs.getBool('caller_id_protection_enabled') ?? false) {
+    await CallStateService.instance.startProtection();
+  }
 
   runApp(const FraudShieldApp());
+}
+
+Future<void> _initBackgroundService() async {
+  FlutterForegroundTask.init(
+    androidNotificationOptions: AndroidNotificationOptions(
+      channelId: 'fraudshield_background',
+      channelName: 'FraudShield Protection',
+      channelDescription: 'Maintains background call & alert monitoring',
+      channelImportance: NotificationChannelImportance.LOW,
+      priority: NotificationPriority.LOW,
+      iconData: const NotificationIconData(
+        resType: ResourceType.mipmap,
+        resPrefix: ResourcePrefix.ic,
+        name: 'launcher',
+      ),
+    ),
+    iosNotificationOptions: const IOSNotificationOptions(
+      showNotification: true,
+      playSound: false,
+    ),
+    foregroundTaskOptions: const ForegroundTaskOptions(
+      interval: 5000,
+      isOnceEvent: false,
+      autoRunOnBoot: true,
+      allowWakeLock: true,
+      allowWifiLock: true,
+    ),
+  );
 }
 
 class FraudShieldApp extends StatelessWidget {
@@ -103,6 +171,10 @@ class FraudShieldApp extends StatelessWidget {
                   return Stack(
                     children: [
                       if (child != null) child,
+                      if (notification.activeCallerRisk != null)
+                        CallerRiskOverlay(
+                          callerData: notification.activeCallerRisk!,
+                        ),
                       if (notification.activeIntervention != null)
                         MacauInterventionOverlay(
                           evaluation: notification.activeIntervention!,

@@ -22,6 +22,7 @@ import 'profile_screen.dart';
 import 'alert_preferences_screen.dart';
 import '../services/biometric_service.dart';
 import '../services/smart_capture_service.dart';
+import '../services/call_state_service.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 import 'log_payment_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +42,7 @@ class _AccountScreenState extends State<AccountScreen> {
   bool _biometricEnabled = false;
   bool _isBiometricAvailable = false;
   bool _smartCaptureEnabled = false;
+  bool _callerIdProtectionEnabled = false;
 
   // ================= LIFECYCLE =================
   @override
@@ -49,6 +51,7 @@ class _AccountScreenState extends State<AccountScreen> {
     _loadProfile();
     _checkBiometrics();
     _loadSmartCaptureState();
+    _loadCallerIdProtectionState();
   }
 
   Future<void> _loadSmartCaptureState() async {
@@ -67,11 +70,23 @@ class _AccountScreenState extends State<AccountScreen> {
     await prefs.setBool('smart_capture_enabled', enabled);
 
     if (enabled) {
-      bool hasPermission =
-          await NotificationListenerService.isPermissionGranted();
-      if (!hasPermission) {
-        await NotificationListenerService.requestPermission();
-        // Permission is requested, we assume they might say yes
+      try {
+        bool hasPermission =
+            await NotificationListenerService.isPermissionGranted();
+        if (!hasPermission) {
+          // Wrap in try-catch to prevent crash if plugin returns null or fails
+          await NotificationListenerService.requestPermission()
+              .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => false,
+          )
+              .catchError((e) {
+            debugPrint('AccountScreen: requestPermission error: $e');
+            return false;
+          });
+        }
+      } catch (e) {
+        debugPrint('AccountScreen: Error checking notification permission: $e');
       }
       await SmartCaptureService().start();
     } else {
@@ -80,6 +95,32 @@ class _AccountScreenState extends State<AccountScreen> {
 
     if (mounted) {
       setState(() => _smartCaptureEnabled = enabled);
+    }
+  }
+
+  Future<void> _loadCallerIdProtectionState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool('caller_id_protection_enabled') ?? false;
+    if (enabled) {
+      CallStateService.instance.startProtection();
+    }
+    if (mounted) {
+      setState(() => _callerIdProtectionEnabled = enabled);
+    }
+  }
+
+  Future<void> _toggleCallerIdProtection(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('caller_id_protection_enabled', enabled);
+
+    if (enabled) {
+      await CallStateService.instance.startProtection();
+    } else {
+      await CallStateService.instance.stopProtection();
+    }
+
+    if (mounted) {
+      setState(() => _callerIdProtectionEnabled = enabled);
     }
   }
 
@@ -308,47 +349,70 @@ class _AccountScreenState extends State<AccountScreen> {
                                     activeColor: AppColors.accentGreen,
                                   ),
                                 ),
-                                if (_smartCaptureEnabled)
-                                  SettingsTile(
-                                    icon: Icons.bug_report_rounded,
-                                    title: 'Simulate Banking Alert',
-                                    subtitle: 'Test auto-capture logic',
-                                    onTap: () async {
-                                      const testText =
-                                          'RM 1250.00 transferred to MULE_ACC_123';
-                                      debugPrint(
-                                          'AccountScreen: Tapping Simulation Button');
-                                      try {
-                                        // 1. Show the visual notification (status bar feedback)
-                                        await NotificationService.instance
-                                            .showNotification(
-                                          title: 'MAE Alert',
-                                          body: testText,
-                                        );
-                                      } catch (e) {
-                                        debugPrint(
-                                            'AccountScreen: Visual notification failed: $e');
-                                      }
-
-                                      // 2. Directly invoke Smart Capture parsing
-                                      //    (NotificationListenerService does not reliably
-                                      //    receive same-app notifications on emulators)
-                                      try {
-                                        await SmartCaptureService()
-                                            .simulateCapture(testText);
-                                        if (mounted) {
-                                          _toast(
-                                              'Simulation complete! Check Transaction Journal.');
-                                        }
-                                      } catch (e) {
-                                        debugPrint(
-                                            'AccountScreen: simulateCapture failed: $e');
-                                        if (mounted) {
-                                          _toast('Capture failed. Check logs.');
-                                        }
-                                      }
-                                    },
+                                SettingsTile(
+                                  icon: Icons.shield_rounded,
+                                  title: 'Caller ID Protection',
+                                  subtitle: 'Real-time scam detection in calls',
+                                  onTap: () {},
+                                  trailing: Switch(
+                                    value: _callerIdProtectionEnabled,
+                                    onChanged: _toggleCallerIdProtection,
+                                    activeColor: AppColors.accentGreen,
                                   ),
+                                ),
+                                if (_smartCaptureEnabled ||
+                                    _callerIdProtectionEnabled) ...[
+                                  if (_smartCaptureEnabled)
+                                    SettingsTile(
+                                      icon: Icons.bug_report_rounded,
+                                      title: 'Simulate Banking Alert',
+                                      subtitle: 'Test auto-capture logic',
+                                      onTap: () async {
+                                        const testText =
+                                            'RM 1250.00 transferred to MULE_ACC_123';
+                                        debugPrint(
+                                            'AccountScreen: Tapping Simulation Button');
+                                        try {
+                                          await NotificationService.instance
+                                              .showNotification(
+                                            title: 'MAE Alert',
+                                            body: testText,
+                                          );
+                                        } catch (e) {
+                                          debugPrint(
+                                              'AccountScreen: Visual notification failed: $e');
+                                        }
+
+                                        try {
+                                          await SmartCaptureService()
+                                              .simulateCapture(testText);
+                                          if (mounted) {
+                                            _toast(
+                                                'Simulation complete! Check Transaction Journal.');
+                                          }
+                                        } catch (e) {
+                                          debugPrint(
+                                              'AccountScreen: simulateCapture failed: $e');
+                                          if (mounted) {
+                                            _toast(
+                                                'Capture failed. Check logs.');
+                                          }
+                                        }
+                                      },
+                                    ),
+                                  if (_callerIdProtectionEnabled)
+                                    SettingsTile(
+                                      icon: Icons.phone_callback_rounded,
+                                      title: 'Simulate Incoming Call',
+                                      subtitle: 'Test Caller ID Overlay',
+                                      onTap: () async {
+                                        _toast('Simulating incoming call...');
+                                        // Directly trigger the internal handler for testing
+                                        CallStateService.instance
+                                            .simulateRinging('0123456789');
+                                      },
+                                    ),
+                                ],
                                 SettingsTile(
                                   icon: Icons.add_card_rounded,
                                   title: 'Log Test Transaction',

@@ -14,6 +14,27 @@ class NotificationService extends ChangeNotifier {
   Map<String, dynamic>? _activeIntervention;
   Map<String, dynamic>? get activeIntervention => _activeIntervention;
 
+  // ── Caller Risk State ────────────────────────────────
+  Map<String, dynamic>? _activeCallerRisk;
+  Map<String, dynamic>? get activeCallerRisk => _activeCallerRisk;
+
+  void showCallerRiskScreen(Map<String, dynamic> data) {
+    _activeCallerRisk = data;
+    notifyListeners();
+  }
+
+  void updateCallerRiskData(Map<String, dynamic> data) {
+    if (_activeCallerRisk != null) {
+      _activeCallerRisk = {..._activeCallerRisk!, ...data, 'loading': false};
+      notifyListeners();
+    }
+  }
+
+  void dismissCallerRisk() {
+    _activeCallerRisk = null;
+    notifyListeners();
+  }
+
   void addAlert(Map<String, dynamic> alert) {
     _alerts.insert(0, alert);
     notifyListeners();

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { authLimiter, loginLimiter } from '../middleware/rateLimiter';
-import { validateSignup, validateLogin, validateChangePassword } from '../middleware/validators';
+import { validateSignup, validateLogin, validateChangePassword, validateForgotPassword, validateResetPassword } from '../middleware/validators';
 import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -17,8 +17,8 @@ router.post('/google', loginLimiter, AuthController.googleLogin);
 router.post('/refresh', AuthController.refresh);
 
 // Password Reset Flow (Unauthenticated but heavily rate limited)
-router.post('/forgot-password', loginLimiter, AuthController.requestPasswordReset);
-router.post('/reset-password', loginLimiter, AuthController.verifyAndResetPassword);
+router.post('/forgot-password', loginLimiter, validateForgotPassword, AuthController.requestPasswordReset);
+router.post('/reset-password', loginLimiter, validateResetPassword, AuthController.verifyAndResetPassword);
 
 // Protected routes
 router.use(authenticate);

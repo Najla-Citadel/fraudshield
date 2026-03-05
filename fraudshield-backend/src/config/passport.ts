@@ -3,6 +3,7 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import bcrypt from 'bcrypt';
 import { prisma } from './database';
+import logger from '../utils/logger';
 
 // Local Strategy for login
 passport.use(
@@ -19,12 +20,14 @@ passport.use(
                 });
 
                 if (!user) {
+                    logger.warn(`Login failed: User not found for email ${email}`);
                     return done(null, false, { message: 'Invalid email or password' });
                 }
 
                 const isMatch = await bcrypt.compare(password, user.passwordHash);
 
                 if (!isMatch) {
+                    logger.warn(`Login failed: Password mismatch for email ${email}`);
                     return done(null, false, { message: 'Invalid email or password' });
                 }
 
