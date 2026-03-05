@@ -6,7 +6,7 @@ class RiskResult {
   final String level; // high, medium, low
   final List<String> reasons;
   final bool apiChecked; // Whether Safe Browsing API was consulted
-  
+
   // Payment check specific fields
   final int communityReports;
   final int verifiedReports;
@@ -26,10 +26,10 @@ class RiskResult {
 
   // Document scan (PDF/APK) specific fields
   final List<String> extractedLinks; // URLs found embedded in PDF
-  final String? packageName;         // APK package name
+  final String? packageName; // APK package name
   final List<String> dangerousPermissions; // APK dangerous permissions
-  final int? pageCount;              // PDF page count
-  final String? sha256;              // File fingerprint
+  final int? pageCount; // PDF page count
+  final String? sha256; // File fingerprint
 
   RiskResult({
     required this.score,
@@ -74,14 +74,15 @@ class RiskEvaluator {
       final res = await _api.evaluateRisk(type: 'url', value: url);
       apiChecked = true;
 
-      final int v2Score  = (res['score'] as num?)?.toInt() ?? 0;
+      final int v2Score = (res['score'] as num?)?.toInt() ?? 0;
       final String level = res['level'] as String? ?? 'low';
       final List<dynamic> v2Reasons = res['reasons'] as List? ?? [];
 
       if (v2Score > score) {
         // V2 backend knows more — use its score and reasons
         score = v2Score;
-        reasons = ['🤖 Community Intelligence Score'] + v2Reasons.cast<String>();
+        reasons =
+            ['🤖 Community Intelligence Score'] + v2Reasons.cast<String>();
       }
 
       // Still apply Google Safe Browsing for URLs specifically
@@ -93,13 +94,16 @@ class RiskEvaluator {
           for (final threat in threats) {
             switch (threat) {
               case 'SOCIAL_ENGINEERING':
-                reasons.insert(0, '⚠️ Phishing site detected by Google Safe Browsing');
+                reasons.insert(
+                    0, '⚠️ Phishing site detected by Google Safe Browsing');
                 break;
               case 'MALWARE':
-                reasons.insert(0, '⚠️ Malware distribution detected by Google Safe Browsing');
+                reasons.insert(0,
+                    '⚠️ Malware distribution detected by Google Safe Browsing');
                 break;
               default:
-                reasons.insert(0, '⚠️ Flagged as $threat by Google Safe Browsing');
+                reasons.insert(
+                    0, '⚠️ Flagged as $threat by Google Safe Browsing');
             }
           }
         } else if (v2Score < 30) {
@@ -115,10 +119,14 @@ class RiskEvaluator {
 
     // 3. Determine level from final score
     String level;
-    if (score >= 80) level = 'critical';
-    else if (score >= 55) level = 'high';
-    else if (score >= 30) level = 'medium';
-    else level = 'low';
+    if (score >= 80)
+      level = 'critical';
+    else if (score >= 55)
+      level = 'high';
+    else if (score >= 30)
+      level = 'medium';
+    else
+      level = 'low';
 
     return RiskResult(
       score: score.clamp(0, 100),
@@ -165,10 +173,12 @@ class RiskEvaluator {
     } catch (e) {
       log('QR deep scan failed, falling back to heuristics: $e');
       reasons.add('⚡ Deep link analysis unavailable (offline check only)');
-      
+
       String level = 'low';
-      if (score >= 80) level = 'critical';
-      else if (score >= 55) level = 'high';
+      if (score >= 80)
+        level = 'critical';
+      else if (score >= 55)
+        level = 'high';
       else if (score >= 30) level = 'medium';
 
       return RiskResult(
@@ -184,7 +194,7 @@ class RiskEvaluator {
   static Future<RiskResult> analyzeMessage(String message) async {
     try {
       final res = await _api.analyzeMessage(message);
-      
+
       return RiskResult(
         score: (res['score'] as num?)?.toInt() ?? 0,
         level: res['level'] as String? ?? 'low',
@@ -193,7 +203,8 @@ class RiskEvaluator {
         scamType: res['scamType'] as String?,
         language: res['language'] as String?,
         matchedPatterns: (res['matchedPatterns'] as List? ?? []).cast<String>(),
-        highlightedPhrases: (res['highlightedPhrases'] as List? ?? []).cast<String>(),
+        highlightedPhrases:
+            (res['highlightedPhrases'] as List? ?? []).cast<String>(),
       );
     } catch (e) {
       log('Message analysis failed: $e');
@@ -237,18 +248,22 @@ class RiskEvaluator {
 
         // PDF-specific
         extractedLinks: (data['extractedLinks'] as List? ?? []).cast<String>(),
-        pageCount: (data['metadata'] as Map?)?.cast<String, dynamic>()['pageCount'] as int?,
+        pageCount: (data['metadata'] as Map?)
+            ?.cast<String, dynamic>()['pageCount'] as int?,
 
         // APK-specific
         packageName: data['packageName'] as String?,
-        dangerousPermissions: (data['dangerousPermissions'] as List? ?? []).cast<String>(),
+        dangerousPermissions:
+            (data['dangerousPermissions'] as List? ?? []).cast<String>(),
       );
     } catch (e) {
       log('Document scan failed: $e');
       return RiskResult(
         score: 0,
         level: 'low',
-        reasons: ['⚡ Document scan service is currently unavailable. Please try again.'],
+        reasons: [
+          '⚡ Document scan service is currently unavailable. Please try again.'
+        ],
         apiChecked: false,
       );
     }
@@ -260,22 +275,28 @@ class RiskEvaluator {
   }) async {
     String cleanValue = value.replaceAll(RegExp(r'[\s\-]'), '');
     String backendType = type.toLowerCase();
-    
+
     // Infer if it's phone or bank when generic 'Payment' is used
     if (type == 'Payment') {
-      if (cleanValue.startsWith('+') || cleanValue.startsWith('01') || (cleanValue.length >= 9 && cleanValue.length <= 11)) {
-         backendType = 'phone';
+      if (cleanValue.startsWith('+') ||
+          cleanValue.startsWith('01') ||
+          (cleanValue.length >= 9 && cleanValue.length <= 11)) {
+        backendType = 'phone';
       } else {
-         backendType = 'bank'; 
+        backendType = 'bank';
       }
     }
 
     // Run local heuristic for instant offline feedback while API loads
-    String localType = backendType == 'phone' ? 'Phone No' : backendType == 'bank' ? 'Bank Account' : type;
+    String localType = backendType == 'phone'
+        ? 'Phone No'
+        : backendType == 'bank'
+            ? 'Bank Account'
+            : type;
     RiskResult localCheck = evaluate(type: localType, value: cleanValue);
     int score = localCheck.score;
     List<String> reasons = List.from(localCheck.reasons);
-    
+
     int communityReports = 0;
     int verifiedReports = 0;
     List<String> categories = [];
@@ -288,10 +309,11 @@ class RiskEvaluator {
 
       final int v2Score = (res['score'] as num?)?.toInt() ?? 0;
       final List<dynamic> v2Reasons = res['reasons'] as List? ?? [];
-      final Map<String, dynamic> factors = Map<String, dynamic>.from(res['factors'] ?? {});
+      final Map<String, dynamic> factors =
+          Map<String, dynamic>.from(res['factors'] ?? {});
 
       communityReports = (factors['communityReports'] as num?)?.toInt() ?? 0;
-      verifiedReports  = (factors['verifiedReports'] as num?)?.toInt() ?? 0;
+      verifiedReports = (factors['verifiedReports'] as num?)?.toInt() ?? 0;
       sources = communityReports > 0 ? ['community'] : [];
 
       if (v2Score > score) {
@@ -309,10 +331,14 @@ class RiskEvaluator {
       // Fall through to local heuristic result
     }
 
-    if (score >= 80) level = 'critical';
-    else if (score >= 55) level = 'high';
-    else if (score >= 30) level = 'medium';
-    else level = 'low';
+    if (score >= 80)
+      level = 'critical';
+    else if (score >= 55)
+      level = 'high';
+    else if (score >= 30)
+      level = 'medium';
+    else
+      level = 'low';
 
     // Remove generic fallback message if we have community data
     if (score > 0) reasons.remove('No risks detected');
@@ -393,6 +419,66 @@ class RiskEvaluator {
     );
   }
 
+  // ── New: Evaluate Neighbor Spoofing ──
+  static RiskResult evaluateNeighborSpoofing({
+    required String incomingNumber,
+    required String? userPhoneNumber,
+  }) {
+    if (userPhoneNumber == null ||
+        userPhoneNumber.isEmpty ||
+        incomingNumber.isEmpty) {
+      return RiskResult(score: 0, level: 'low', reasons: []);
+    }
+
+    final cleanIncoming = incomingNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    final cleanUser = userPhoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (cleanIncoming.length < 5 || cleanUser.length < 5) {
+      return RiskResult(score: 0, level: 'low', reasons: []);
+    }
+
+    int matchLength = 0;
+    for (int i = 0; i < cleanIncoming.length && i < cleanUser.length; i++) {
+      if (cleanIncoming[i] == cleanUser[i]) {
+        matchLength++;
+      } else {
+        break;
+      }
+    }
+
+    int score = 0;
+    String level = 'low';
+    List<String> reasons = [];
+
+    // Assuming exact match means calling oneself or an error, we ignore it or treat it as suspicious.
+    // Let's assume neighbor spoofing applies when they are similar but not identical.
+    if (cleanIncoming == cleanUser) {
+      // Technically spoofing own number, very suspicious
+      score = 80;
+      level = 'critical';
+      reasons.add('Call appears to be from your own number (Spoofing)');
+    } else if (matchLength >= 7) {
+      score = 60;
+      level = 'critical';
+      reasons.add(
+          'High similarity to your own number (Neighbor Spoofing pattern)');
+    } else if (matchLength >= 6) {
+      score = 40;
+      level = 'medium';
+      reasons.add('Moderate similarity to your own number');
+    } else if (matchLength >= 5) {
+      score = 20;
+      level = 'low';
+      reasons.add('Slight similarity to your own number');
+    }
+
+    return RiskResult(
+      score: score,
+      level: level,
+      reasons: reasons,
+    );
+  }
+
   // ── Private: heuristic URL analysis (runs offline) ──
   static RiskResult _heuristicUrlCheck(String url) {
     int score = 0;
@@ -415,7 +501,9 @@ class RiskEvaluator {
       return RiskResult(
         score: 100,
         level: 'high',
-        reasons: ['Dangerous script or file execution detected (${uri.scheme}:)'],
+        reasons: [
+          'Dangerous script or file execution detected (${uri.scheme}:)'
+        ],
       );
     }
 
@@ -433,7 +521,15 @@ class RiskEvaluator {
     }
 
     // Shortened URLs
-    final shorteners = ['bit.ly', 'tinyurl.com', 'goo.gl', 't.co', 'is.gd', 'buff.ly', 'ow.ly'];
+    final shorteners = [
+      'bit.ly',
+      'tinyurl.com',
+      'goo.gl',
+      't.co',
+      'is.gd',
+      'buff.ly',
+      'ow.ly'
+    ];
     if (shorteners.any((domain) => url.contains(domain))) {
       score += 40;
       reasons.add('URL shortener detected (often used to hide scams)');
@@ -441,9 +537,22 @@ class RiskEvaluator {
 
     // Suspicious keywords
     final suspiciousKeywords = [
-      'login', 'verify', 'bank', 'secure', 'update', 'account',
-      'reward', 'free', 'claim', 'bonus', 'gift', 'winner',
-      'urgent', 'action', 'suspend', 'limited'
+      'login',
+      'verify',
+      'bank',
+      'secure',
+      'update',
+      'account',
+      'reward',
+      'free',
+      'claim',
+      'bonus',
+      'gift',
+      'winner',
+      'urgent',
+      'action',
+      'suspend',
+      'limited'
     ];
 
     int keywordCount = 0;
@@ -455,7 +564,8 @@ class RiskEvaluator {
 
     if (keywordCount > 0) {
       score += 20 + (keywordCount * 10);
-      reasons.add('Contains words commonly used in phishing ($keywordCount found)');
+      reasons.add(
+          'Contains words commonly used in phishing ($keywordCount found)');
     }
 
     // Phishing patterns

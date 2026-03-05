@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fraudshield/services/notification_service.dart';
+import 'package:fraudshield/services/risk_evaluator.dart';
 
 void main() {
   late NotificationService service;
@@ -54,6 +55,56 @@ void main() {
       expect(interventionTriggered, isTrue);
       // State should be cleared after trigger to avoid double warnings
       expect(service.isCheckRequiredForSensitiveAction(), isFalse);
+    });
+  });
+
+  group('Neighbor Spoofing Tests', () {
+    test('Identical number treated as spoofing (critical)', () {
+      final res = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '60123456789',
+        userPhoneNumber: '60123456789',
+      );
+      expect(res.score, 80);
+      expect(res.level, 'critical');
+    });
+
+    test('7 digit match treated as neighbor spoofing (critical)', () {
+      final res = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '60123456999',
+        userPhoneNumber: '60123456789',
+      );
+      expect(res.score, 60);
+      expect(res.level, 'critical');
+    });
+
+    test('6 digit match treated as moderate spoofing (medium)', () {
+      final res = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '60123411111',
+        userPhoneNumber: '60123456789',
+      );
+      expect(res.score, 40);
+      expect(res.level, 'medium');
+    });
+
+    test('No similarity returns 0 risk', () {
+      final res = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '60199999999',
+        userPhoneNumber: '60123456789',
+      );
+      expect(res.score, 0);
+    });
+
+    test('Empty or null numbers return 0 risk', () {
+      final res1 = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '',
+        userPhoneNumber: '60123456789',
+      );
+      final res2 = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: '60123456789',
+        userPhoneNumber: null,
+      );
+      expect(res1.score, 0);
+      expect(res2.score, 0);
     });
   });
 }

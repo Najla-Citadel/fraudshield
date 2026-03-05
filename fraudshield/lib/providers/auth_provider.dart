@@ -53,6 +53,7 @@ class AuthProvider extends ChangeNotifier {
 
         if (_user != null) {
           NotificationService.instance.initialize(_user!.id);
+          CallStateService.instance.setUserPhoneNumber(_user!.phoneNumber);
         }
       } else {
         log('AuthProvider: No token found.');
@@ -71,6 +72,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       final userData = await api.getProfile();
       _user = UserModel.fromJson(userData);
+      if (_user != null) {
+        CallStateService.instance.setUserPhoneNumber(_user!.phoneNumber);
+      }
       notifyListeners();
     } catch (e) {
       log('AuthProvider refreshProfile error: $e');
@@ -96,6 +100,7 @@ class AuthProvider extends ChangeNotifier {
       final userData = await api.signIn(email: email, password: password);
       _user = UserModel.fromJson(userData);
       NotificationService.instance.initialize(_user!.id);
+      CallStateService.instance.setUserPhoneNumber(_user!.phoneNumber);
       return true;
     } catch (e) {
       log('AuthProvider signIn error: $e');

@@ -5,6 +5,7 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart'
     hide NotificationVisibility;
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter/services.dart';
 import 'notification_service.dart';
 import 'api_service.dart';
 import 'risk_evaluator.dart';
@@ -21,6 +22,15 @@ class CallStateService {
   int? _lastScore;
   String? _lastLevel;
   bool? _inContacts;
+  String? _userPhoneNumber;
+
+  static const _attestationChannel =
+      MethodChannel('com.citadel.fraudshield/call_attestation');
+
+  void setUserPhoneNumber(String? number) {
+    _userPhoneNumber = number;
+    debugPrint('CallStateService: userPhoneNumber set to $_userPhoneNumber');
+  }
 
   Future<void> init() async {
     if (_initialized) return;
@@ -301,27 +311,76 @@ class CallStateService {
       return;
     }
 
-    // Step 2: Live risk lookup
+    // Step 2: Live risk lookup & Neighbor Spoofing Check
     try {
+      final neighborResult = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: displayNumber,
+        userPhoneNumber: _userPhoneNumber,
+      );
+
       final result = await RiskEvaluator.evaluatePayment(
         type: 'phone',
         value: number,
       );
 
+      int finalScore = result.score;
+      String finalLevel = result.level;
+      List<String> finalReasons = List.from(result.categories);
+
+      // Check STIR/SHAKEN Attestation Status
+      try {
+        final int attestationStatus =
+            await _attestationChannel.invokeMethod('getVerificationStatus', {
+          'phoneNumber': displayNumber,
+        });
+
+        if (attestationStatus == 1) {
+          // VERIFICATION_STATUS_PASSED
+          finalScore = (finalScore - 20).clamp(0, 100);
+          finalReasons.insert(
+              0, '✅ Caller Identity Verified by Carrier (STIR/SHAKEN)');
+        } else if (attestationStatus == 2) {
+          // VERIFICATION_STATUS_FAILED
+          finalScore = (finalScore + 30).clamp(0, 100);
+          finalReasons.insert(0,
+              '❌ Caller Identity Failed Carrier Verification (Spoofing Risk)');
+        }
+      } catch (e) {
+        debugPrint('CallStateService: Failed to get STIR/SHAKEN status: $e');
+      }
+
+      // Merge Neighbor Spoofing Risk if it's higher
+      if (neighborResult.score > 0) {
+        if (neighborResult.score > finalScore) {
+          finalScore = neighborResult.score;
+        }
+        finalReasons.insertAll(0, neighborResult.reasons);
+      }
+
+      // Recalculate level based on exact score after adjustments
+      if (finalScore >= 80)
+        finalLevel = 'critical';
+      else if (finalScore >= 55)
+        finalLevel = 'high';
+      else if (finalScore >= 30)
+        finalLevel = 'medium';
+      else
+        finalLevel = 'low';
+
       final riskData = {
         'phoneNumber': number,
         'loading': false,
-        'score': result.score,
-        'level': result.level,
+        'score': finalScore,
+        'level': finalLevel,
         'communityReports': result.communityReports,
-        'categories': result.categories,
+        'categories': finalReasons,
       };
 
-      _lastScore = result.score;
-      _lastLevel = result.level;
+      _lastScore = finalScore;
+      _lastLevel = finalLevel;
 
       debugPrint(
-          'CallStateService: Risk lookup done. Score=${result.score} Level=${result.level}');
+          'CallStateService: Risk lookup done. Score=$finalScore Level=$finalLevel');
 
       // Shared to both UI systems
       NotificationService.instance.updateCallerRiskData(riskData);
