@@ -75,16 +75,8 @@ class _AccountScreenState extends State<AccountScreen> {
         bool hasPermission =
             await NotificationListenerService.isPermissionGranted();
         if (!hasPermission) {
-          // Wrap in try-catch to prevent crash if plugin returns null or fails
-          await NotificationListenerService.requestPermission()
-              .timeout(
-            const Duration(seconds: 5),
-            onTimeout: () => false,
-          )
-              .catchError((e) {
-            debugPrint('AccountScreen: requestPermission error: $e');
-            return false;
-          });
+          _toast('Please enable FraudShield in Notification Access settings');
+          await SmartCaptureService.requestPermission();
         }
       } catch (e) {
         debugPrint('AccountScreen: Error checking notification permission: $e');
@@ -704,7 +696,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                       : 'Failed to update password';
                                 });
                               }
-                              return <String, dynamic>{};
                             });
                           },
                     text: 'Update Password',

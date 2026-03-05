@@ -24,7 +24,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Last updated: February 20, 2026',
+              'Last updated: March 5, 2026',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.6),
                   ),
@@ -38,7 +38,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildSection(
               context,
               '2. Notice and Choice Principle',
-              'We collect data to provide fraud protection services, improve security algorithms, and communicate alerts. You can choose not to provide certain data, though this may limit functionality.',
+              'We collect data to provide fraud protection services, improve security algorithms, and communicate alerts. Specifically for our Caller ID Protection feature, we collect and process your Phone State and Call Logs in real-time to identify potential scam numbers. You can choose not to provide certain data, though this may limit functionality.',
             ),
             _buildSection(
               context,
@@ -69,6 +69,11 @@ class PrivacyPolicyScreen extends StatelessWidget {
               context,
               '8. Contact our DPO',
               'If you have questions regarding your data or wish to exercise your rights, contact our Data Protection Officer at:\n\nEmail: dpo@fraudshield.com\nAddress: Kuala Lumpur, Malaysia',
+            ),
+            _buildSection(
+              context,
+              '9. Specific Data Collection',
+              'FraudShield requires access to sensitive information including Phone State and Call Logs to proactively detect scam calls and protect you from financial fraud. This data is processed locally and in real-time against our threat intelligence database to provide immediate warnings.',
             ),
             const SizedBox(height: 48),
           ],

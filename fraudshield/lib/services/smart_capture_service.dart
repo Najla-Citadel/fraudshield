@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 import 'package:notification_listener_service/notification_event.dart';
+import 'package:flutter/services.dart';
 import 'api_service.dart';
 import 'notification_service.dart';
 
@@ -184,6 +185,11 @@ class SmartCaptureService {
   }
 
   static Future<void> requestPermission() async {
-    await NotificationListenerService.requestPermission();
+    try {
+      const platform = MethodChannel('com.citadel.fraudshield/settings');
+      await platform.invokeMethod('openNotificationListenerSettings');
+    } catch (e) {
+      debugPrint('SmartCaptureService: Failed to open settings: $e');
+    }
   }
 }
