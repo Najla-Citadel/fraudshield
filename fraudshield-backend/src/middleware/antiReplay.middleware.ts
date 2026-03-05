@@ -14,6 +14,18 @@ export const antiReplay = async (req: Request, res: Response, next: NextFunction
         return next();
     }
 
+    // 🛡️ EXCEPTION: Allow authentication and administrative routes to skip anti-replay protection.
+    // These are often called from clients/webapps that haven't implemented full security headers yet.
+    const EXEMPT_PATHS = [
+        '/api/v1/auth/login',
+        '/api/v1/auth/signup',
+        '/api/v1/auth/refresh',
+        '/api/v1/admin'
+    ];
+    if (EXEMPT_PATHS.some(path => req.path.startsWith(path))) {
+        return next();
+    }
+
     const timestampHeader = req.headers['x-fs-timestamp'];
     const nonceHeader = req.headers['x-fs-nonce'];
 

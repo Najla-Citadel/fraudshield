@@ -59,7 +59,8 @@ class VoicePatternAnalysis {
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 class VoiceDetectionScreen extends StatefulWidget {
-  const VoiceDetectionScreen({super.key});
+  final bool autoStart;
+  const VoiceDetectionScreen({super.key, this.autoStart = false});
 
   @override
   State<VoiceDetectionScreen> createState() => _VoiceDetectionScreenState();
@@ -106,6 +107,18 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
     _initForegroundTask();
+
+    if (widget.autoStart) {
+      _handleAutoStart();
+    }
+  }
+
+  Future<void> _handleAutoStart() async {
+    // Small delay to let animations/overlay settle
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      await _startRecording();
+    }
   }
 
   void _initForegroundTask() {

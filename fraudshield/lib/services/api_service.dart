@@ -453,6 +453,7 @@ class ApiService {
     required String platform,
     String? notes,
     String checkType = 'MANUAL',
+    bool isPriority = false,
   }) async {
     final response = await post('/transactions', {
       'amount': amount,
@@ -462,6 +463,7 @@ class ApiService {
       'platform': platform,
       'notes': notes,
       'checkType': checkType,
+      'isPriority': isPriority,
     });
     return response as Map<String, dynamic>;
   }
@@ -530,6 +532,18 @@ class ApiService {
     return post('/features/behavioral', {
       'type': type,
       'metadata': metadata ?? {},
+    });
+  }
+
+  Future<void> reportCallSignal({
+    required String event,
+    int? duration,
+    String? incomingNumber,
+  }) async {
+    await post('/features/behavioral/call-signal', {
+      'event': event,
+      if (duration != null) 'duration': duration,
+      if (incomingNumber != null) 'incomingNumber': incomingNumber,
     });
   }
 

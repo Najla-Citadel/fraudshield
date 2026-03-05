@@ -62,10 +62,46 @@ export const validateLogin = [
 
 /**
  * Validation rules for POST /auth/change-password
- */
-export const validateChangePassword = [
+ */export const validateChangePassword = [
     body('currentPassword')
         .notEmpty().withMessage('Current password is required.'),
+
+    body('newPassword')
+        .notEmpty().withMessage('New password is required.')
+        .isLength({ min: 8 }).withMessage('New password must be at least 8 characters.')
+        .matches(/[A-Z]/).withMessage('New password must contain at least one uppercase letter.')
+        .matches(/[0-9]/).withMessage('New password must contain at least one number.'),
+
+    handleValidationErrors,
+];
+
+/**
+ * Validation rules for POST /auth/forgot-password
+ */
+export const validateForgotPassword = [
+    body('email')
+        .trim()
+        .notEmpty().withMessage('Email is required.')
+        .isEmail().withMessage('Must be a valid email address.')
+        .normalizeEmail(),
+
+    handleValidationErrors,
+];
+
+/**
+ * Validation rules for POST /auth/reset-password
+ */
+export const validateResetPassword = [
+    body('email')
+        .trim()
+        .notEmpty().withMessage('Email is required.')
+        .isEmail().withMessage('Must be a valid email address.')
+        .normalizeEmail(),
+
+    body('otp')
+        .trim()
+        .notEmpty().withMessage('Verification code is required.')
+        .isLength({ min: 6, max: 6 }).withMessage('Verification code must be 6 digits.'),
 
     body('newPassword')
         .notEmpty().withMessage('New password is required.')

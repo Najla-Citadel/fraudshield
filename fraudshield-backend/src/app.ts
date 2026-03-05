@@ -79,7 +79,17 @@ const corsOptions = {
         }
 
         // In production, require strict match from CORS_ORIGIN env var
-        if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) {
+        const isAllowed = allowedOrigins.some(pattern => {
+            if (pattern === origin) return true;
+            if (pattern.includes('*')) {
+                const regexPattern = pattern.replace(/\./g, '\\.').replace(/\*/g, '.*');
+                const regex = new RegExp(`^${regexPattern}$`);
+                return regex.test(origin || '');
+            }
+            return false;
+        });
+
+        if (isAllowed) {
             return callback(null, true);
         }
 
