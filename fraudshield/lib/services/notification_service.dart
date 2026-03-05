@@ -18,16 +18,30 @@ class NotificationService extends ChangeNotifier {
   Map<String, dynamic>? _lastRiskyCallData;
   DateTime? get lastRiskyCallTime => _lastRiskyCallTime;
 
+  // ── Voice Scan State ─────────────────────────────────
+  bool _isVoiceScanActive = false;
+  bool get isVoiceScanActive => _isVoiceScanActive;
+
+  void setVoiceScanActive(bool active) {
+    _isVoiceScanActive = active;
+    if (active) {
+      // Dismiss any active caller risk overlays immediately when starting scan
+      dismissCallerRisk();
+    }
+  }
+
   // ── Caller Risk State ────────────────────────────────
   Map<String, dynamic>? _activeCallerRisk;
   Map<String, dynamic>? get activeCallerRisk => _activeCallerRisk;
 
   void showCallerRiskScreen(Map<String, dynamic> data) {
+    if (_isVoiceScanActive) return; // Suppress during voice scan
     _activeCallerRisk = data;
     notifyListeners();
   }
 
   void updateCallerRiskData(Map<String, dynamic> data) {
+    if (_isVoiceScanActive) return; // Suppress during voice scan
     if (_activeCallerRisk != null) {
       _activeCallerRisk = {..._activeCallerRisk!, ...data, 'loading': false};
       notifyListeners();
@@ -54,9 +68,14 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void recordRiskyCall(Map<String, dynamic> data) {
-    _lastRiskyCallTime = DateTime.now();
-    _lastRiskyCallData = data;
+  void recordRiskyCall(Map<String, dynamic>? data) {
+    if (data == null) {
+      _lastRiskyCallTime = null;
+      _lastRiskyCallData = null;
+    } else {
+      _lastRiskyCallTime = DateTime.now();
+      _lastRiskyCallData = data;
+    }
     debugPrint(
         'NotificationService: Recorded risky call for behavioral tracking at $_lastRiskyCallTime');
   }
@@ -72,7 +91,7 @@ class NotificationService extends ChangeNotifier {
     if (_lastRiskyCallData != null) {
       showMacauIntervention({
         ..._lastRiskyCallData!,
-        'type': 'behavioral_correlation',
+        'type': 'MACAU_SCAM',
         'reason':
             'Detected sensitive action immediately after a high-risk call.',
         'reasons': [
@@ -80,6 +99,8 @@ class NotificationService extends ChangeNotifier {
           'High-urgency call followed by financial action'
         ],
       });
+      // Clear state after triggering to prevent re-triggering
+      recordRiskyCall(null);
     }
   }
 

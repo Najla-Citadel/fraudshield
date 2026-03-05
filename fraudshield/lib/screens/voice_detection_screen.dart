@@ -10,6 +10,8 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/notification_service.dart';
 
 // ─── Data model ───────────────────────────────────────────────────────────────
 
@@ -108,6 +110,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     );
     _initForegroundTask();
 
+    // Mark voice scan as active globally to suppress overlays and duplicate routing
+    NotificationService.instance.setVoiceScanActive(true);
+
     if (widget.autoStart) {
       _handleAutoStart();
     }
@@ -162,6 +167,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
   Future<bool> _showDisclaimerIfNeeded() async {
     if (_disclaimerAccepted) return true;
+
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('voice_scan_disclaimer_accepted') == true) {
+      if (mounted) setState(() => _disclaimerAccepted = true);
+      return true;
+    }
+
     final accepted = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -227,6 +239,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     );
     if (accepted == true) {
       if (mounted) setState(() => _disclaimerAccepted = true);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('voice_scan_disclaimer_accepted', true);
       return true;
     }
     return false;
@@ -447,35 +461,43 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
-          onPressed: () => Navigator.pop(context),
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, result) {
+        // Release the global lock when leaving this screen
+        NotificationService.instance.setVoiceScanActive(false);
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.lightBg,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon:
+                const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text(
+            'Call Screen',
+            style: TextStyle(
+                color: AppColors.textDark, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
-        title: const Text(
-          'Call Screen',
-          style:
-              TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            _buildInfoCard(),
-            const SizedBox(height: 48),
-            _buildMicSection(),
-            const SizedBox(height: 48),
-            if (_errorMessage != null) _buildErrorCard(),
-            if (_result != null && !_isAnalyzing) _buildResultCard(),
-            const SizedBox(height: 32),
-            _buildRecentSection(),
-          ],
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              _buildInfoCard(),
+              const SizedBox(height: 48),
+              _buildMicSection(),
+              const SizedBox(height: 48),
+              if (_errorMessage != null) _buildErrorCard(),
+              if (_result != null && !_isAnalyzing) _buildResultCard(),
+              const SizedBox(height: 32),
+              _buildRecentSection(),
+            ],
+          ),
         ),
       ),
     );

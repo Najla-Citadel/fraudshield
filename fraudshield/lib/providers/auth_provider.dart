@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
 import '../services/notification_service.dart';
+import '../services/call_state_service.dart';
+import '../services/smart_capture_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService api = ApiService.instance;
@@ -152,6 +155,15 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    // 🛡️ Cleanup background services on logout
+    await CallStateService.instance.stopProtection();
+    await SmartCaptureService().stop();
+
+    // 🧹 Clear auto-start preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('caller_id_protection_enabled', false);
+    await prefs.setBool('smart_capture_enabled', false);
+
     await api.signOut();
     NotificationService.instance.clearAlerts();
     _user = null;

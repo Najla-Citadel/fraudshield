@@ -1,76 +1,61 @@
-  console.log
-    [dotenv@17.2.4] injecting env (32) from .env -- tip: Γ£à audit secrets and track compliance: https://dotenvx.com/ops
+FAIL tests/voice-signal.controller.test.ts
+  VoiceSignalController
+    ├ù successfully stores inContacts flag on CALL_START (3 ms)
+    ├ù defaults inContacts to false if not provided
+    ├ù stores duration and inContacts on CALL_ENDED
 
-      at _log (node_modules/dotenv/lib/main.js:142:11)
+  ΓùÅ VoiceSignalController ΓÇ║ successfully stores inContacts flag on CALL_START
 
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 201 2 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 400 34 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 149 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 100 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 112 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 125 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/signup HTTP/1.1" 422 115 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 149 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 100 "-" "-"
-::ffff:127.0.0.1 - - [20/Feb/2026:02:47:29 +0000] "POST /api/v1/auth/login HTTP/1.1" 422 94 "-" "-"
-FAIL tests/auth.controller.test.ts
-  POST /api/v1/auth/signup
-    ├ù Γ£à should create a new user and return 201 with token (39 ms)
-    ├ù Γ£à should sign up without optional fullName (5 ms)
-    ΓêÜ Γ¥î should return 400 if email is already in use (5 ms)
-    ΓêÜ Γ¥î should return 422 if email is missing (4 ms)
-    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
-    ΓêÜ Γ¥î should return 422 if password is shorter than 8 characters (3 ms)
-    ΓêÜ Γ¥î should return 422 if password has no uppercase letter (3 ms)
-    ΓêÜ Γ¥î should return 422 if password has no number (3 ms)
-  POST /api/v1/auth/login
-    ΓêÜ Γ¥î should return 422 if email is missing (4 ms)
-    ΓêÜ Γ¥î should return 422 if email format is invalid (4 ms)
-    ΓêÜ Γ¥î should return 422 if password is missing (3 ms)
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should create a new user and return 201 with token
+    Expected: 204
 
-    expect(received).toHaveProperty(path, value)
+    Number of calls: 0
 
-    Expected path: "token"
-    Received path: []
+      55 |
+      56 |         const redis = getRedisClient();
+    > 57 |         expect(mockResponse.status).toHaveBeenCalledWith(204);
+         |                                     ^
+      58 |         expect(redis.set).toHaveBeenCalledWith(
+      59 |             'macau_signal:voice:user-123',
+      60 |             expect.stringContaining('"inContacts":true'),
 
-    Expected value: "mock_jwt_token"
-    Received value: {}
+      at Object.<anonymous> (tests/voice-signal.controller.test.ts:57:37)
 
-      90 |
-      91 |         expect(res.status).toBe(201);
-    > 92 |         expect(res.body).toHaveProperty('token', 'mock_jwt_token');
-         |                          ^
-      93 |         expect(res.body).toHaveProperty('user');
-      94 |         expect(res.body.user).toHaveProperty('email', 'test@example.com');
-      95 |         expect(mockCreate).toHaveBeenCalledTimes(1);
+  ΓùÅ VoiceSignalController ΓÇ║ defaults inContacts to false if not provided
 
-      at Object.<anonymous> (tests/auth.controller.test.ts:92:26)
+    TypeError: Cannot read properties of undefined (reading 'set')
 
-  ΓùÅ POST /api/v1/auth/signup ΓÇ║ Γ£à should sign up without optional fullName
+      78 |
+      79 |         const redis = getRedisClient();
+    > 80 |         expect(redis.set).toHaveBeenCalledWith(
+         |                      ^
+      81 |             'macau_signal:voice:user-123',
+      82 |             expect.stringContaining('"inContacts":false'),
+      83 |             'EX',
 
-    expect(received).toHaveProperty(path)
+      at Object.<anonymous> (tests/voice-signal.controller.test.ts:80:22)
 
-    Expected path: "token"
-    Received path: []
+  ΓùÅ VoiceSignalController ΓÇ║ stores duration and inContacts on CALL_ENDED
 
-    Received value: {}
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
 
-      102 |
-      103 |         expect(res.status).toBe(201);
-    > 104 |         expect(res.body).toHaveProperty('token');
-          |                          ^
-      105 |     });
-      106 |
-      107 |     it('Γ¥î should return 400 if email is already in use', async () => {
+    Expected: 204
 
-      at Object.<anonymous> (tests/auth.controller.test.ts:104:26)
+    Number of calls: 0
+
+      100 |
+      101 |         const redis = getRedisClient();
+    > 102 |         expect(mockResponse.status).toHaveBeenCalledWith(204);
+          |                                     ^
+      103 |         expect(redis.set).toHaveBeenCalledWith(
+      104 |             'macau_signal:voice:user-123',
+      105 |             expect.stringContaining('"durationSeconds":120'),
+
+      at Object.<anonymous> (tests/voice-signal.controller.test.ts:102:37)
 
 Test Suites: 1 failed, 1 total
-Tests:       2 failed, 9 passed, 11 total
+Tests:       3 failed, 3 total
 Snapshots:   0 total
-Time:        2.188 s
-Ran all test suites.
-Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+Time:        2.906 s, estimated 3 s
+Ran all test suites matching tests/voice-signal.controller.test.ts.

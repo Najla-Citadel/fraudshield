@@ -136,8 +136,17 @@ class FraudShieldApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) {
           final service = NotificationService.instance;
           service.onNavigate = (route, args) {
-            AppRouter.navigatorKey.currentState
-                ?.pushNamed(route, arguments: args);
+            final navigator = AppRouter.navigatorKey.currentState;
+            if (navigator != null) {
+              // Deduplicate voice-scan pushes to avoid stacked screens/disclaimers
+              if (route == '/voice-scan' && service.isVoiceScanActive) return;
+
+              if (route == '/voice-scan') {
+                service
+                    .dismissCallerRisk(); // Ensure we don't have overlapping UIs
+              }
+              navigator.pushNamed(route, arguments: args);
+            }
           };
           return service;
         }),
