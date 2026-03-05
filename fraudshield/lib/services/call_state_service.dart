@@ -17,6 +17,8 @@ class CallStateService {
   bool _initialized = false;
   PhoneStateStatus? _lastStatus;
   String? _lastNumber;
+  int? _lastScore;
+  String? _lastLevel;
 
   Future<void> init() async {
     if (_initialized) return;
@@ -57,11 +59,31 @@ class CallStateService {
         _reportSignal('CALL_ACTIVE', number: event.number);
       } else if (statusStr == 'DISCONNECTED' || statusStr == 'CALL_ENDED') {
         _dismissOverlay();
+
+        // Trigger Post-Call UX if it was a risky call
+        if (_lastScore != null && _lastScore! >= 55) {
+          final data = {
+            'phoneNumber': event.number ?? 'Unknown Number',
+            'score': _lastScore,
+            'level': _lastLevel,
+          };
+          NotificationService.instance.showPostCallCheck(data);
+
+          if (_lastLevel == 'critical') {
+            NotificationService.instance.startCoolDown();
+          }
+        }
+
         int duration = 0;
         if (_callStartTime != null) {
           duration = DateTime.now().difference(_callStartTime!).inSeconds;
           _callStartTime = null;
         }
+
+        // Reset risk state for the next call
+        _lastScore = null;
+        _lastLevel = null;
+
         _reportSignal('CALL_ENDED', duration: duration, number: event.number);
       }
     });
@@ -193,7 +215,7 @@ class CallStateService {
     }
 
     // Also trigger the system notification (for background/lock screen)
-    NotificationService.instance.showCallAlert();
+    NotificationService.instance.showCallAlert(number: displayNumber);
 
     // Report call start to backend
     _reportSignal('CALL_START', number: number);
@@ -235,12 +257,23 @@ class CallStateService {
         'categories': result.categories,
       };
 
+      _lastScore = result.score;
+      _lastLevel = result.level;
+
       debugPrint(
           'CallStateService: Risk lookup done. Score=${result.score} Level=${result.level}');
 
       // Shared to both UI systems
       NotificationService.instance.updateCallerRiskData(riskData);
       await FlutterOverlayWindow.shareData(riskData);
+
+      // Update the push notification with real-time risk info
+      NotificationService.instance.showCallAlert(
+        number: displayNumber,
+        score: result.score,
+        level: result.level,
+        categories: result.categories,
+      );
     } catch (e) {
       debugPrint('CallStateService: Risk evaluation error: $e');
       final errorData = {

@@ -5,7 +5,7 @@ import '../services/notification_service.dart';
 import '../app_router.dart';
 import '../constants/colors.dart';
 
-class CallerRiskOverlay extends StatelessWidget {
+class CallerRiskOverlay extends StatefulWidget {
   final Map<String, dynamic>? callerData;
   final bool isSystemOverlay;
 
@@ -15,17 +15,24 @@ class CallerRiskOverlay extends StatelessWidget {
     this.isSystemOverlay = false,
   });
 
+  @override
+  State<CallerRiskOverlay> createState() => _CallerRiskOverlayState();
+}
+
+class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   // ── Helpers ───────────────────────────────────────────
 
   String get _phoneNumber =>
-      callerData?['phoneNumber'] as String? ?? 'Unknown Number';
-  int get _score => (callerData?['score'] as num?)?.toInt() ?? 0;
-  String get _level => callerData?['level'] as String? ?? 'low';
+      widget.callerData?['phoneNumber'] as String? ?? 'Unknown Number';
+  int get _score => (widget.callerData?['score'] as num?)?.toInt() ?? 0;
+  String get _level => widget.callerData?['level'] as String? ?? 'low';
   int get _communityReports =>
-      (callerData?['communityReports'] as num?)?.toInt() ?? 0;
+      (widget.callerData?['communityReports'] as num?)?.toInt() ?? 0;
   List<String> get _categories =>
-      (callerData?['categories'] as List?)?.cast<String>() ?? [];
-  bool get _isLoading => callerData?['loading'] == true;
+      (widget.callerData?['categories'] as List?)?.cast<String>() ?? [];
+  bool get _isLoading => widget.callerData?['loading'] == true;
+  String? get _verifiedEntity =>
+      widget.callerData?['verifiedEntity'] as String?;
 
   Color get _levelColor {
     switch (_level) {
@@ -176,6 +183,47 @@ class CallerRiskOverlay extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // HANG UP NOW CTA (Critical Only)
+        if (_level == 'critical') ...[
+          InkWell(
+            onTap: () => _forceDismiss(context),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: const Color(0xFFDC2626),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFDC2626).withOpacity(0.5),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.call_end_rounded, color: Colors.white, size: 28),
+                  SizedBox(width: 12),
+                  Text(
+                    'HANG UP NOW',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+
         // Risk Icon
         Container(
           padding: const EdgeInsets.all(18),
@@ -186,6 +234,37 @@ class CallerRiskOverlay extends StatelessWidget {
           child: Icon(_levelIcon, color: _levelColor, size: 44),
         ),
         const SizedBox(height: 14),
+
+        // Verified Entity
+        if (_verifiedEntity != null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFF22C55E).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+              border:
+                  Border.all(color: const Color(0xFF22C55E).withOpacity(0.4)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.verified_rounded,
+                    color: Color(0xFF22C55E), size: 16),
+                const SizedBox(width: 6),
+                Text(
+                  _verifiedEntity!,
+                  style: const TextStyle(
+                    color: Color(0xFF22C55E),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
 
         // Level label
         Text(
@@ -267,6 +346,9 @@ class CallerRiskOverlay extends StatelessWidget {
                     ))
                 .toList(),
           ),
+
+          // Scam Script Preview Banner
+          _buildScamScriptBanner(),
         ],
 
         const SizedBox(height: 24),
@@ -323,14 +405,77 @@ class CallerRiskOverlay extends StatelessWidget {
     );
   }
 
+  Widget _buildScamScriptBanner() {
+    String message = '';
+    if (_categories.contains('Bank Officer') ||
+        _categories.contains('Fake Bank Officer')) {
+      message =
+          'Scammers claiming to be bank officers NEVER ask for your OTP or TAC number.';
+    } else if (_categories.contains('Government Agency') ||
+        _categories.contains('Police / Court')) {
+      message =
+          'Government agencies NEVER call to demand immediate money transfers.';
+    } else if (_categories.contains('Parcel/Courier') ||
+        _categories.contains('Post Laju')) {
+      message =
+          'Delivery companies NEVER charge redelivery fees via phone call.';
+    }
+
+    if (message.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF59E0B).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline_rounded,
+              color: Color(0xFFF59E0B), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: Color(0xFFFCD34D),
+                fontSize: 12,
+                height: 1.4,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _forceDismiss(BuildContext context) async {
+    if (widget.isSystemOverlay) {
+      await FlutterOverlayWindow.closeOverlay();
+    } else {
+      NotificationService.instance.dismissCallerRisk();
+    }
+  }
+
   void _handleAction(BuildContext context, String action) async {
-    if (isSystemOverlay) {
+    // Friction for High/Critical risk dismissals
+    if (action == 'dismiss' && _score >= 55) {
+      bool shouldDismiss = await _showFrictionDialog(context);
+      if (!shouldDismiss) return;
+    }
+
+    if (widget.isSystemOverlay) {
       if (action == 'dismiss') {
         await FlutterOverlayWindow.closeOverlay();
+      } else if (action == 'record') {
+        // Send message to main app to launch voice scan, then close overlay
+        await FlutterOverlayWindow.shareData('launch_voice_scan');
+        await FlutterOverlayWindow.closeOverlay();
       } else {
-        // For record/report, we could try to open the app or send message
-        // For now, just dismiss the overlay and let user handle in app if they want
-        // or we could use FlutterOverlayWindow.sendMessage
         await FlutterOverlayWindow.closeOverlay();
       }
     } else {
@@ -346,44 +491,116 @@ class CallerRiskOverlay extends StatelessWidget {
     }
   }
 
-  void _showBlockGuide(BuildContext context) {
-    if (isSystemOverlay) {
-      // Dialogs are tricky in overlays, but Material works if there's a Navigator or Overlay
-      // For now, let's keep it simple or just show a message.
-      // Actually, we can show a Modal in the overlay Material.
-    }
+  Future<bool> _showFrictionDialog(BuildContext context) async {
+    // In system overlay, showing a dialog inside the overlay window Material works,
+    // but requires a Navigator. Since we are inside a simple Material, showDialog
+    // requires a Navigator.
+    // If there is no Navigator in the system overlay, we might need to handle it differently.
+    // Assuming root widget in overlayMain sets up a MaterialApp or Router, showDialog will work.
 
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text('Block This Number',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'To block this caller from your phone:',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
+    // For safety, let's wrap in a try-catch. If it fails, fallback to force dismiss.
+    try {
+      bool result = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              backgroundColor: const Color(0xFF0F172A),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: const BorderSide(color: Color(0xFFDC2626), width: 2)),
+              title: const Row(
+                children: [
+                  Icon(Icons.gpp_bad_rounded, color: Color(0xFFDC2626)),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text('Risk Warning',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+              content: Text(
+                'This caller is flagged as High/Critical Risk.\nAre you sure you want to continue?',
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.9), height: 1.5),
+              ),
+              actionsAlignment: MainAxisAlignment.center,
+              actionsOverflowAlignment: OverflowBarAlignment.center,
+              actionsOverflowDirection: VerticalDirection.down,
+              actions: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF22C55E),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('Keep Hanging Up',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text('I Understand, Continue',
+                        style: TextStyle(color: Colors.white54)),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _blockStep('1', 'Open your Phone app'),
-            _blockStep('2', 'Go to Recent Calls'),
-            _blockStep('3', 'Tap & hold "$_phoneNumber"'),
-            _blockStep('4', 'Select "Block / Report Spam"'),
+          ) ??
+          false;
+      return result;
+    } catch (e) {
+      // If error (e.g., no Navigator), fallback to true to unblock the user.
+      return true;
+    }
+  }
+
+  void _showBlockGuide(BuildContext context) {
+    try {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text('Block This Number',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'To block this caller from your phone:',
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+              const SizedBox(height: 12),
+              _blockStep('1', 'Open your Phone app'),
+              _blockStep('2', 'Go to Recent Calls'),
+              _blockStep('3', 'Tap & hold "$_phoneNumber"'),
+              _blockStep('4', 'Select "Block / Report Spam"'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Got It',
+                  style: TextStyle(color: AppColors.primaryBlue)),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got It',
-                style: TextStyle(color: AppColors.primaryBlue)),
-          ),
-        ],
-      ),
-    );
+      );
+    } catch (e) {
+      // Ignore if no navigator available.
+    }
   }
 
   Widget _blockStep(String num, String text) => Padding(

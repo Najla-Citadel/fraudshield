@@ -22,6 +22,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/locale_provider.dart';
 import 'widgets/macau_intervention_overlay.dart';
 import 'widgets/caller_risk_overlay.dart';
+import 'widgets/post_call_safety_check.dart';
+import 'widgets/cooldown_banner.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 @pragma('vm:entry-point')
@@ -179,6 +181,11 @@ class FraudShieldApp extends StatelessWidget {
                         MacauInterventionOverlay(
                           evaluation: notification.activeIntervention!,
                         ),
+                      if (notification.postCallCheck != null)
+                        PostCallSafetyCheck(
+                          data: notification.postCallCheck!,
+                        ),
+                      if (notification.coolDownActive) const CoolDownBanner(),
                     ],
                   );
                 },

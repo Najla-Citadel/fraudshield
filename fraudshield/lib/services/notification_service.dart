@@ -50,6 +50,39 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Post-Call Safety Check State ──────────────────────
+  Map<String, dynamic>? _postCallCheck;
+  Map<String, dynamic>? get postCallCheck => _postCallCheck;
+
+  void showPostCallCheck(Map<String, dynamic> data) {
+    _postCallCheck = data;
+    notifyListeners();
+  }
+
+  void dismissPostCallCheck() {
+    _postCallCheck = null;
+    notifyListeners();
+  }
+
+  // ── Cool-down Timer State ─────────────────────────────
+  bool _coolDownActive = false;
+  bool get coolDownActive => _coolDownActive;
+
+  DateTime? _coolDownEndsAt;
+  DateTime? get coolDownEndsAt => _coolDownEndsAt;
+
+  void startCoolDown() {
+    _coolDownActive = true;
+    _coolDownEndsAt = DateTime.now().add(const Duration(minutes: 10));
+    notifyListeners();
+  }
+
+  void dismissCoolDown() {
+    _coolDownActive = false;
+    _coolDownEndsAt = null;
+    notifyListeners();
+  }
+
   void clearAlerts() {
     _alerts.clear();
     notifyListeners();
@@ -89,7 +122,12 @@ class NotificationService extends ChangeNotifier {
     );
   }
 
-  Future<void> showCallAlert() async {
+  Future<void> showCallAlert({
+    required String number,
+    int? score,
+    String? level,
+    List<String>? categories,
+  }) async {
     const fln.AndroidNotificationDetails androidPlatformChannelSpecifics =
         fln.AndroidNotificationDetails(
       'call_alerts',
@@ -113,14 +151,31 @@ class NotificationService extends ChangeNotifier {
       android: androidPlatformChannelSpecifics,
     );
 
+    String title = 'Incoming Call: $number';
+    String body = 'Suspect a scam? Tap to start Safety Scan.';
+
+    if (level == 'critical' || level == 'high') {
+      title = '🚨 Scam Warning: $number';
+      body = 'Risk Score: $score/100. Do not provide OTPs or transfer money.';
+      if (categories != null && categories.isNotEmpty) {
+        body = '⚠️ ${categories.first}: Risk Score $score. Do not answer.';
+      }
+    } else if (level == 'medium') {
+      title = '⚠️ Suspicious Call: $number';
+    } else if (level == 'low') {
+      title = '✅ Safe Call: $number';
+      body = 'Checks passed. Tap to enable voice recording.';
+    }
+
     await _notificationsPlugin.show(
       0,
-      'Incoming Call Detected',
-      'Suspect a scam? Tap to start Safety Scan.',
+      title,
+      body,
       platformChannelSpecifics,
       payload: 'voice_scan_auto_start',
     );
-    debugPrint('NotificationService: Call alert shown successfully.');
+    debugPrint(
+        'NotificationService: Call alert shown successfully. Level: $level');
   }
 
   Future<void> showNotification(
