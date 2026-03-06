@@ -160,7 +160,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fraudPhoneBankDetected => 'Phone/Bank Detected';
 
   @override
-  String get fraudHint => 'Paste phone, account, URL, or message...';
+  String get fraudHint => 'Paste phone or bank account number...';
 
   @override
   String get fraudUploadFile => 'Upload File';
@@ -182,6 +182,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fraudStayProtected => 'Stay Protected';
+
+  @override
+  String get fraudTipOtp => 'Never share your OTP or banking details';
+
+  @override
+  String get fraudTipVerify => 'Always verify official website URLs';
+
+  @override
+  String get fraudTipReport => 'Report suspicious activity immediately';
 
   @override
   String get fraudCheckResult => 'Check Result';

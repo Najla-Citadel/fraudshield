@@ -138,6 +138,15 @@ class FraudShieldApp extends StatelessWidget {
           service.onNavigate = (route, args) {
             final navigator = AppRouter.navigatorKey.currentState;
             if (navigator != null) {
+              // Guard premium features
+              if (route == '/voice-scan') {
+                final auth = Provider.of<AuthProvider>(context, listen: false);
+                if (!auth.isSubscribed) {
+                  navigator.pushNamed('/subscription');
+                  return;
+                }
+              }
+
               // Deduplicate voice-scan pushes to avoid stacked screens/disclaimers
               if (route == '/voice-scan' && service.isVoiceScanActive) return;
 
@@ -148,6 +157,13 @@ class FraudShieldApp extends StatelessWidget {
               navigator.pushNamed(route, arguments: args);
             }
           };
+
+          // Listen for messages from the system overlay (Record & Analyze button)
+          FlutterOverlayWindow.overlayListener.listen((data) {
+            if (data == 'launch_voice_scan') {
+              service.onNavigate?.call('/voice-scan', {'autoStart': true});
+            }
+          });
           return service;
         }),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),

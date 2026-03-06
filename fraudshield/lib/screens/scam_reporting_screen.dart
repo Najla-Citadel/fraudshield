@@ -4,13 +4,13 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:file_picker/file_picker.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
-import 'report_history_screen.dart';
 import '../widgets/selection_sheet.dart';
 import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:lucide_icons/lucide_icons.dart';
+import '../widgets/glass_surface.dart';
 import '../l10n/app_localizations.dart';
 
 class ScamReportingScreen extends StatefulWidget {
@@ -417,68 +417,52 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   Widget build(BuildContext context) {
     if (_reportSent) return _buildSuccessScreen();
 
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.scamReportTitle,
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF0F172A),
+            AppColors.deepNavy,
+            Color(0xFF1E3A8A),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded, color: Colors.white),
-            tooltip: 'Report History',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ReportHistoryScreen()),
-            ),
-          ),
-        ],
       ),
-      body: Stack(
-        children: [
-          // Background Depth
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.scamReportTitle,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
           ),
-          SafeArea(
-            child: Column(
-              children: [
-                _buildProgressBar(),
-                Expanded(
-                  child: PageView(
-                    controller: _pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      _buildStep1Identity(),
-                      _buildStep2Category(),
-                      _buildStep3Details(),
-                      _buildStep4Review(),
-                    ],
-                  ),
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildProgressBar(),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    _buildStep1Identity(),
+                    _buildStep2Category(),
+                    _buildStep3Details(),
+                    _buildStep4Review(),
+                  ],
                 ),
-                _buildBottomNav(),
-              ],
-            ),
+              ),
+              _buildBottomNav(),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -498,14 +482,14 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       EdgeInsets.only(right: index == _totalSteps - 1 ? 0 : 8),
                   decoration: BoxDecoration(
                     color: isActive
-                        ? AppColors.accentGreen
+                        ? AppColors.primaryBlue
                         : Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: isActive
                         ? [
                             BoxShadow(
                               color:
-                                  AppColors.accentGreen.withValues(alpha: 0.3),
+                                  AppColors.primaryBlue.withValues(alpha: 0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             )
@@ -585,43 +569,31 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               itemBuilder: (context, index) {
                 final opt = _targetTypeOptions[index];
                 final isSelected = _targetType == opt['id'];
-                return GestureDetector(
+                return GlassSurface(
                   onTap: () => setState(() => _targetType = opt['id']),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primaryBlue.withValues(alpha: 0.15)
-                          : Colors.white.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? AppColors.primaryBlue
-                            : Colors.white.withValues(alpha: 0.08),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(opt['icon'],
+                  padding: const EdgeInsets.all(12),
+                  borderRadius: 20,
+                  accentColor: isSelected ? AppColors.primaryBlue : null,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(opt['icon'],
+                          color: isSelected
+                              ? AppColors.primaryBlue
+                              : Colors.white24,
+                          size: 28),
+                      const SizedBox(height: 10),
+                      Text(opt['label'],
+                          style: TextStyle(
                             color: isSelected
-                                ? AppColors.primaryBlue
-                                : Colors.white24,
-                            size: 28),
-                        const SizedBox(height: 10),
-                        Text(opt['label'],
-                            style: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.5),
-                              fontSize: 13,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            )),
-                      ],
-                    ),
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.5),
+                            fontSize: 13,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          )),
+                    ],
                   ),
                 );
               },
@@ -754,34 +726,25 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             const SizedBox(height: 24),
             ...categories.map((cat) {
               final isSelected = _selectedCategory == cat['label'];
-              return GestureDetector(
-                onTap: () =>
-                    setState(() => _selectedCategory = cat['label'] as String),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
+              final color = cat['color'] as Color;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GlassSurface(
+                  onTap: () => setState(
+                      () => _selectedCategory = cat['label'] as String),
                   padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? (cat['color'] as Color).withValues(alpha: 0.1)
-                        : Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: isSelected
-                          ? (cat['color'] as Color)
-                          : Colors.white.withValues(alpha: 0.08),
-                      width: isSelected ? 1.5 : 1,
-                    ),
-                  ),
+                  borderRadius: 20,
+                  accentColor: isSelected ? color : null,
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: (cat['color'] as Color).withValues(alpha: 0.1),
+                          color: color.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(cat['icon'] as IconData,
-                            color: cat['color'] as Color, size: 20),
+                            color: color, size: 20),
                       ),
                       const SizedBox(width: 16),
                       Text(cat['label'] as String,
@@ -790,8 +753,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                               fontWeight: FontWeight.bold)),
                       const Spacer(),
                       if (isSelected)
-                        Icon(LucideIcons.checkCircle2,
-                            color: cat['color'] as Color, size: 20),
+                        Icon(LucideIcons.checkCircle2, color: color, size: 20),
                     ],
                   ),
                 ),
@@ -853,63 +815,52 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildFileUpload() {
-    return GestureDetector(
+    return GlassSurface(
       onTap: _pickFile,
-      child: Container(
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: _selectedFileName != null
-                ? AppColors.accentGreen
-                : Colors.white.withValues(alpha: 0.1),
-            style: BorderStyle.solid,
-            width: 1.5,
+      padding: const EdgeInsets.all(32),
+      borderRadius: 24,
+      accentColor: _selectedFileName != null ? AppColors.accentGreen : null,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: (_selectedFileName != null
+                      ? AppColors.accentGreen
+                      : Colors.white)
+                  .withValues(alpha: 0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              _selectedFileName != null
+                  ? LucideIcons.checkCircle
+                  : LucideIcons.uploadCloud,
+              color: _selectedFileName != null
+                  ? AppColors.accentGreen
+                  : Colors.white38,
+              size: 32,
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: (_selectedFileName != null
-                        ? AppColors.accentGreen
-                        : Colors.white)
-                    .withValues(alpha: 0.05),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                _selectedFileName != null
-                    ? LucideIcons.checkCircle
-                    : LucideIcons.uploadCloud,
-                color: _selectedFileName != null
-                    ? AppColors.accentGreen
-                    : Colors.white38,
-                size: 32,
-              ),
+          const SizedBox(height: 16),
+          Text(
+            _selectedFileName ?? 'Upload Screenshot or Evidence',
+            style: TextStyle(
+              color: _selectedFileName != null
+                  ? AppColors.accentGreen
+                  : Colors.white70,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 16),
-            Text(
-              _selectedFileName ?? 'Upload Screenshot or Evidence',
-              style: TextStyle(
-                color: _selectedFileName != null
-                    ? AppColors.accentGreen
-                    : Colors.white70,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
+          ),
+          if (_selectedFileName == null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text('JPG, PNG or PDF (Max 5MB)',
+                  style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      fontSize: 11)),
             ),
-            if (_selectedFileName == null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text('JPG, PNG or PDF (Max 5MB)',
-                    style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        fontSize: 11)),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -963,13 +914,10 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildReviewCard() {
-    return Container(
+    return GlassSurface(
+      borderRadius: 24,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-      ),
+      accentColor: AppColors.primaryBlue,
       child: Column(
         children: [
           _ReviewItem(label: 'Identity', value: _targetType),

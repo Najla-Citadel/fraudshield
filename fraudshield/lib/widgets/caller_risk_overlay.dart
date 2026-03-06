@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
+import '../providers/auth_provider.dart';
 import '../app_router.dart';
 import '../constants/colors.dart';
 
@@ -481,10 +483,15 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
     } else {
       NotificationService.instance.dismissCallerRisk();
       if (action == 'record') {
-        AppRouter.navigatorKey.currentState?.pushNamed(
-          '/voice-scan',
-          arguments: {'autoStart': true},
-        );
+        final auth = Provider.of<AuthProvider>(context, listen: false);
+        if (auth.isSubscribed) {
+          AppRouter.navigatorKey.currentState?.pushNamed(
+            '/voice-scan',
+            arguments: {'autoStart': true},
+          );
+        } else {
+          AppRouter.navigatorKey.currentState?.pushNamed('/subscription');
+        }
       } else if (action == 'report') {
         AppRouter.navigatorKey.currentState?.pushNamed('/report');
       }

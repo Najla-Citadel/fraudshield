@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/community_map_card.dart';
-import '../screens/scam_reporting_screen.dart';
+import '../screens/scam_report_entry_screen.dart';
 import '../screens/report_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -472,7 +472,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ScamReportingScreen()),
+            MaterialPageRoute(builder: (_) => const ScamReportEntryScreen()),
           );
         },
         backgroundColor: AppColors.accentGreen,

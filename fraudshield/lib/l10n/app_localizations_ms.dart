@@ -160,7 +160,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get fraudPhoneBankDetected => 'Telefon/Bank Dikesan';
 
   @override
-  String get fraudHint => 'Tampal telefon, akaun, URL, atau mesej...';
+  String get fraudHint => 'Tampal nombor telefon atau akaun bank...';
 
   @override
   String get fraudUploadFile => 'Muat Naik Fail';
@@ -182,6 +182,15 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get fraudStayProtected => 'Kekal Dilindungi';
+
+  @override
+  String get fraudTipOtp => 'Never share your OTP or banking details';
+
+  @override
+  String get fraudTipVerify => 'Always verify official website URLs';
+
+  @override
+  String get fraudTipReport => 'Report suspicious activity immediately';
 
   @override
   String get fraudCheckResult => 'Keputusan Semakan';

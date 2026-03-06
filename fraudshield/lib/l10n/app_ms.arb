@@ -50,7 +50,7 @@
   "fraudSmartInput": "Input Pintar",
   "fraudDetected": "Dikesan",
   "fraudPhoneBankDetected": "Telefon/Bank Dikesan",
-  "fraudHint": "Tampal telefon, akaun, URL, atau mesej...",
+  "fraudHint": "Tampal nombor telefon atau akaun bank...",
   "fraudUploadFile": "Muat Naik Fail",
   "fraudPdfApk": "PDF atau APK",
   "fraudScanQr": "Imbas QR",

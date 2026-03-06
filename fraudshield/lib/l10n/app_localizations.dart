@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// No description provided for @fraudHint.
   ///
   /// In en, this message translates to:
-  /// **'Paste phone, account, URL, or message...'**
+  /// **'Paste phone or bank account number...'**
   String get fraudHint;
 
   /// No description provided for @fraudUploadFile.
@@ -445,6 +445,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stay Protected'**
   String get fraudStayProtected;
+
+  /// No description provided for @fraudTipOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Never share your OTP or banking details'**
+  String get fraudTipOtp;
+
+  /// No description provided for @fraudTipVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Always verify official website URLs'**
+  String get fraudTipVerify;
+
+  /// No description provided for @fraudTipReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report suspicious activity immediately'**
+  String get fraudTipReport;
 
   /// No description provided for @fraudCheckResult.
   ///

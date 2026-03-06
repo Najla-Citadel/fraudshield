@@ -138,14 +138,36 @@ docker exec -it fraudshield-api-prod npx prisma db push
 
 ---
 
-## 🔄 6. Maintenance
+## 🔄 6. Maintenance & Updates
 
+### A. Regular Updates (Same Branch)
 - **View Logs**: `docker compose -f docker-compose.prod.yml logs -f api`
 - **Rebuild after Code Update**:
     ```bash
     git pull
     docker compose -f docker-compose.prod.yml up -d --build
     ```
+
+### B. Switching Repositories or Branches
+If you are switching from a team repository to your own repository or changing branches:
+
+1.  **Update Remote URL** (if repo changed):
+    ```bash
+    git remote set-url origin https://github.com/karyuanfangwork-ui/fraudshield-v2.git
+    git remote -v  # Verify it points to your repo
+    ```
+2.  **Fetch and Switch Branch**:
+    ```bash
+    git fetch origin
+    git checkout main  # Or your specific branch name
+    git reset --hard origin/main
+    ```
+3.  **Rebuild Container**:
+    ```bash
+    cd fraudshield-backend
+    docker compose -f docker-compose.prod.yml up -d --build
+    ```
+
 - **SSL Renewal**: Certbot is already configured in the `docker-compose.prod.yml` to attempt renewal every 12 hours automatically.
 
 ---

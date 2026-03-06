@@ -7,11 +7,11 @@ import '../services/api_service.dart';
 import '../services/notification_service.dart';
 import '../widgets/latest_news_widget.dart';
 import 'fraud_check_screen.dart';
-import 'phishing_protection_screen.dart';
+import 'url_link_check_screen.dart';
 import 'voice_detection_screen.dart';
 import 'qr_detection_screen.dart';
 import 'ai_file_scanner_screen.dart';
-import 'scam_reporting_screen.dart';
+import 'scam_report_entry_screen.dart';
 import 'scam_alerts_screen.dart';
 import 'subscription_screen.dart';
 import 'points_screen.dart';
@@ -955,7 +955,7 @@ class _HomeTab extends StatelessWidget {
                     () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const ScamReportingScreen())))),
+                            builder: (_) => const ScamReportEntryScreen())))),
             const SizedBox(width: 16),
             Expanded(
                 child: _buildGridButton(
@@ -979,8 +979,7 @@ class _HomeTab extends StatelessWidget {
                     () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) =>
-                                const PhishingProtectionScreen())))),
+                            builder: (_) => const UrlLinkCheckScreen())))),
             const SizedBox(width: 16),
             Expanded(
                 child: _buildGridButton(
@@ -1072,8 +1071,16 @@ class _HomeTab extends StatelessWidget {
                 context,
                 'AI Message Scanner',
                 LucideIcons.messageSquare,
-                () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => MessageAnalysisScreen())),
+                () {
+                  if (isSubscribed) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MessageAnalysisScreen()));
+                  } else {
+                    Navigator.pushNamed(context, '/subscription');
+                  }
+                },
               ),
               const SizedBox(width: 16),
               _buildPremiumCard(
@@ -1081,13 +1088,17 @@ class _HomeTab extends StatelessWidget {
                 'AI Voice Scanner',
                 LucideIcons.phoneCall,
                 () async {
-                  if (await BiometricService.instance.guardAction(
-                      reason: 'Authenticate to access AI Voice Scanner')) {
-                    if (!context.mounted) return;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const VoiceDetectionScreen()));
+                  if (isSubscribed) {
+                    if (await BiometricService.instance.guardAction(
+                        reason: 'Authenticate to access AI Voice Scanner')) {
+                      if (!context.mounted) return;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const VoiceDetectionScreen()));
+                    }
+                  } else {
+                    Navigator.pushNamed(context, '/subscription');
                   }
                 },
               ),
@@ -1097,13 +1108,17 @@ class _HomeTab extends StatelessWidget {
                 'AI File Scanner',
                 LucideIcons.fileLock,
                 () async {
-                  if (await BiometricService.instance.guardAction(
-                      reason: 'Authenticate to access AI File Scanner')) {
-                    if (!context.mounted) return;
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const AIFileScannerScreen()));
+                  if (isSubscribed) {
+                    if (await BiometricService.instance.guardAction(
+                        reason: 'Authenticate to access AI File Scanner')) {
+                      if (!context.mounted) return;
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const AIFileScannerScreen()));
+                    }
+                  } else {
+                    Navigator.pushNamed(context, '/subscription');
                   }
                 },
               ),

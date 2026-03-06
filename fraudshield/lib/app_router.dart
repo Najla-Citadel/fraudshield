@@ -14,6 +14,8 @@ import 'screens/scam_insight_screen.dart';
 import 'screens/privacy_settings_screen.dart';
 import 'screens/security_alert_screen.dart';
 import 'screens/voice_detection_screen.dart';
+import 'screens/subscription_screen.dart';
+import 'screens/scam_reporting_screen.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -53,6 +55,10 @@ class AppRouter {
             autoStart: args?['autoStart'] ?? false,
           ),
         );
+      case '/subscription':
+        return MaterialPageRoute(builder: (_) => const SubscriptionScreen());
+      case '/report':
+        return MaterialPageRoute(builder: (_) => const ScamReportingScreen());
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }

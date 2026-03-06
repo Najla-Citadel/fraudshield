@@ -32,14 +32,24 @@ class GlassSurface extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     // Premium base color: Surface color with transparency
-    final baseColor = isDark 
-        ? Colors.white.withValues(alpha: 0.05) // Subtle glass for dark mode
-        : Colors.white.withValues(alpha: 0.65);
+    // We favor a subtle look even in light mode when used on dark backgrounds
+    final baseOpacity = isDark
+        ? (opacity == 0.7 ? 0.05 : opacity)
+        : (opacity == 0.7 ? 0.12 : opacity);
+
+    // Mix in a bit of the accent color if provided for a premium tinted glass look
+    final baseColor = accentColor == null
+        ? Colors.white.withValues(alpha: baseOpacity)
+        : Color.alphaBlend(
+            accentColor!.withValues(alpha: 0.1),
+            Colors.white.withValues(alpha: baseOpacity),
+          );
 
     // Subtle border color
-    final effectiveBorderColor = borderColor ?? accentColor?.withValues(alpha: 0.3) ?? 
-        (isDark 
-            ? Colors.white.withValues(alpha: 0.1) 
+    final effectiveBorderColor = borderColor ??
+        accentColor?.withValues(alpha: 0.3) ??
+        (isDark
+            ? Colors.white.withValues(alpha: 0.1)
             : Colors.white.withValues(alpha: 0.6));
 
     return ClipRRect(
@@ -71,7 +81,8 @@ class GlassSurface extends StatelessWidget {
                   ),
                   // 2. Direct Shadow (Keeps it grounded)
                   BoxShadow(
-                    color: colorScheme.shadow.withValues(alpha: isDark ? 0.3 : 0.05),
+                    color: colorScheme.shadow
+                        .withValues(alpha: isDark ? 0.3 : 0.05),
                     blurRadius: 5,
                     offset: const Offset(0, 2),
                   ),

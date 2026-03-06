@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/glass_surface.dart';
-import 'scam_reporting_screen.dart';
+import 'scam_report_entry_screen.dart';
 
 class ScamMapScreen extends StatefulWidget {
   const ScamMapScreen({super.key});
@@ -24,10 +24,10 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
   LatLng? _lastSearchPosition;
   bool _showSearchThisArea = false;
   LatLng? _currentCameraPosition;
-  
+
   final Set<Marker> _markers = {};
   final Set<Circle> _circles = {};
-  
+
   static const _initialCameraPosition = CameraPosition(
     target: LatLng(3.1390, 101.6869), // Kuala Lumpur
     zoom: 12.0,
@@ -70,10 +70,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
         );
         // Initial fetch around user
         _fetchReports(
-          lat: position.latitude, 
-          lng: position.longitude, 
-          radius: 5.0
-        );
+            lat: position.latitude, lng: position.longitude, radius: 5.0);
       }
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -131,7 +128,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
 
   void _onCameraIdle() {
     if (_lastSearchPosition == null || _currentCameraPosition == null) return;
-    
+
     // Check if camera moved significantly (e.g. more than 1km)
     final distance = Geolocator.distanceBetween(
       _lastSearchPosition!.latitude,
@@ -146,12 +143,17 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
   }
 
   void _updateMarkers() {
-    final filteredReports = _selectedCategory == null || _selectedCategory == 'All'
-        ? _reports
-        : _reports.where((r) => r['category'].toString().toLowerCase().contains(_selectedCategory!.toLowerCase())).toList();
+    final filteredReports =
+        _selectedCategory == null || _selectedCategory == 'All'
+            ? _reports
+            : _reports
+                .where((r) => r['category']
+                    .toString()
+                    .toLowerCase()
+                    .contains(_selectedCategory!.toLowerCase()))
+                .toList();
 
-    final markers = filteredReports
-        .map((report) {
+    final markers = filteredReports.map((report) {
       return Marker(
         markerId: MarkerId(report['id'].toString()),
         position: LatLng(
@@ -218,10 +220,9 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 onVerify: () {
                   Navigator.pop(context);
                   _fetchReports(
-                    lat: _lastSearchPosition?.latitude,
-                    lng: _lastSearchPosition?.longitude,
-                    radius: 5.0
-                  );
+                      lat: _lastSearchPosition?.latitude,
+                      lng: _lastSearchPosition?.longitude,
+                      radius: 5.0);
                 },
               ),
             ],
@@ -250,21 +251,17 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ScamReportingScreen(
-                    prefilledLat: latLng.latitude,
-                    prefilledLng: latLng.longitude,
-                  ),
+                  builder: (_) => const ScamReportEntryScreen(),
                 ),
               ).then((_) => _fetchReports(
-                lat: _lastSearchPosition?.latitude,
-                lng: _lastSearchPosition?.longitude,
-                radius: 5.0
-              ));
+                  lat: _lastSearchPosition?.latitude,
+                  lng: _lastSearchPosition?.longitude,
+                  radius: 5.0));
             },
             markers: _markers,
             circles: _circles,
             myLocationEnabled: true,
-            myLocationButtonEnabled: false, 
+            myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
           ),
@@ -285,14 +282,17 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                       Expanded(
                         child: GlassSurface(
                           borderRadius: 30,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           child: Row(
                             children: [
-                              const Icon(Icons.search, color: Colors.white70, size: 20),
+                              const Icon(Icons.search,
+                                  color: Colors.white70, size: 20),
                               const SizedBox(width: 8),
                               Text(
                                 'Search areas...',
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                                style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.5)),
                               ),
                             ],
                           ),
@@ -301,7 +301,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Categories Horizontal List
                 SizedBox(
                   height: 40,
@@ -311,8 +311,9 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                     itemCount: _categories.length,
                     itemBuilder: (context, index) {
                       final category = _categories[index];
-                      final isSelected = _selectedCategory == category || (_selectedCategory == null && category == 'All');
-                      
+                      final isSelected = _selectedCategory == category ||
+                          (_selectedCategory == null && category == 'All');
+
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: GestureDetector(
@@ -322,20 +323,29 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                              color: isSelected ? AppColors.accentGreen : AppColors.deepNavy.withValues(alpha: 0.7),
+                              color: isSelected
+                                  ? AppColors.accentGreen
+                                  : AppColors.deepNavy.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: isSelected ? AppColors.accentGreen : Colors.white24,
+                                color: isSelected
+                                    ? AppColors.accentGreen
+                                    : Colors.white24,
                               ),
                             ),
                             child: Center(
                               child: Text(
                                 category,
                                 style: TextStyle(
-                                  color: isSelected ? Colors.white : Colors.white70,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.white70,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                   fontSize: 12,
                                 ),
                               ),
@@ -369,7 +379,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   },
                   child: GlassSurface(
                     borderRadius: 30,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
@@ -398,14 +409,19 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
               left: 20,
               child: GlassSurface(
                 borderRadius: 12,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Row(
                   children: [
-                    Icon(Icons.touch_app_outlined, color: AppColors.accentGreen.withValues(alpha: 0.7), size: 14),
+                    Icon(Icons.touch_app_outlined,
+                        color: AppColors.accentGreen.withValues(alpha: 0.7),
+                        size: 14),
                     const SizedBox(width: 6),
                     Text(
                       'Long press to report a scam at a location',
-                      style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 10),
+                      style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.6),
+                          fontSize: 10),
                     ),
                   ],
                 ),
@@ -426,10 +442,9 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 _buildRoundButton(
                   icon: Icons.refresh,
                   onTap: () => _fetchReports(
-                    lat: _lastSearchPosition?.latitude,
-                    lng: _lastSearchPosition?.longitude,
-                    radius: 5.0
-                  ),
+                      lat: _lastSearchPosition?.latitude,
+                      lng: _lastSearchPosition?.longitude,
+                      radius: 5.0),
                 ),
               ],
             ),
@@ -444,7 +459,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
     );
   }
 
-  Widget _buildRoundButton({required IconData icon, required VoidCallback onTap}) {
+  Widget _buildRoundButton(
+      {required IconData icon, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: GlassSurface(
