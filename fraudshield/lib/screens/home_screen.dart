@@ -23,7 +23,7 @@ import '../widgets/glass_surface.dart';
 // import '../widgets/skeleton_loader.dart';
 import 'trending_scams_screen.dart';
 import 'news_screen.dart';
-import '../constants/colors.dart';
+// Removed: import '../constants/colors.dart';
 import '../widgets/floating_nav_bar.dart';
 import '../widgets/security_report_sheet.dart';
 import 'security_score_detail_screen.dart';
@@ -31,6 +31,8 @@ import 'transaction_journal_screen.dart';
 import 'message_analysis_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../l10n/app_localizations.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import 'report_details_screen.dart';
 import 'report_history_screen.dart';
 import '../widgets/terms_acceptance_overlay.dart';
@@ -108,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.security,
-                      size: 64, color: AppColors.accentGreen),
+                  Icon(Icons.security,
+                      size: 64, color: DesignTokens.colors.accentGreen),
                   const SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.homeWelcomeTitle,
@@ -125,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     AppLocalizations.of(context)!.homeWelcomeDesc,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 14,
                       height: 1.5,
                     ),
@@ -139,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         await prefs.setBool('score_guide_seen', true);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentGreen,
+                        backgroundColor: DesignTokens.colors.accentGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -376,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showCustomizationSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.deepNavy,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -403,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Select which actions to display on your dashboard.',
                       style:
-                          TextStyle(color: Colors.white.withValues(alpha: 0.6)),
+                          TextStyle(color: Colors.white.withOpacity(0.6)),
                     ),
                     const SizedBox(height: 24),
 
@@ -491,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accentGreen,
+                          backgroundColor: DesignTokens.colors.accentGreen,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -540,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: Colors.white.withOpacity(0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -550,8 +552,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColors.accentGreen,
-              activeTrackColor: AppColors.accentGreen.withValues(alpha: 0.3),
+              activeColor: DesignTokens.colors.accentGreen,
+              activeTrackColor: DesignTokens.colors.accentGreen.withOpacity(0.3),
             ),
           ],
         ),
@@ -608,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.deepNavy,
       body: Stack(
         children: [
           IndexedStack(
@@ -702,115 +704,103 @@ class _HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A), // Slate 900
-            AppColors.deepNavy, // Base
-            Color(0xFF1E3A8A), // Blue 900
-          ],
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: RefreshIndicator(
-          onRefresh: onRefresh,
-          color: AppColors.accentGreen,
-          backgroundColor: const Color(0xFF1E293B),
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 1. HEADER
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryBlue,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(LucideIcons.shieldCheck,
-                              color: Colors.white, size: 24),
+    return ScreenScaffold(
+      useSafeArea: true,
+      extendBodyBehindAppBar: true,
+      body: RefreshIndicator(
+        onRefresh: onRefresh,
+        color: DesignTokens.colors.accentGreen,
+        backgroundColor: DesignTokens.colors.surfaceDark,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // 1. HEADER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: DesignTokens.colors.primaryBlue,
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'FraudShield',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.5,
-                          ),
+                        child: const Icon(LucideIcons.shieldCheck,
+                            color: Colors.white, size: 24),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'FraudShield',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
                         ),
-                      ],
-                    ),
-                    Stack(
-                      children: [
-                        IconButton(
-                          icon:
-                              const Icon(LucideIcons.bell, color: Colors.white),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const ScamAlertsScreen()),
-                            );
-                          },
-                        ),
-                        Positioned(
-                          right: 12,
-                          top: 12,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
+                      ),
+                    ],
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                        icon:
+                            const Icon(LucideIcons.bell, color: Colors.white),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const ScamAlertsScreen()),
+                          );
+                        },
+                      ),
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // 2. SECURITY HEALTH SCORE (Gradient Card)
-                _buildSecurityHealthCard(context),
+              // 2. SECURITY HEALTH SCORE (Gradient Card)
+              _buildSecurityHealthCard(context),
 
-                const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-                // 3. SERVICES ROW
-                _buildQuickActions(context),
+              // 3. SERVICES ROW
+              _buildQuickActions(context),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // 4. PREMIUM PROTECTION
-                _buildPremiumProtectionSection(context),
+              // 4. PREMIUM PROTECTION
+              _buildPremiumProtectionSection(context),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // 5. SECURITY NEWS & INSIGHTS
-                _buildSecurityNewsSection(context),
+              // 5. SECURITY NEWS & INSIGHTS
+              _buildSecurityNewsSection(context),
 
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // 6. SUBMITTED REPORTS
-                _buildSubmittedReportsSection(context),
+              // 6. SUBMITTED REPORTS
+              _buildSubmittedReportsSection(context),
 
-                const SizedBox(height: 40), // Bottom padding
-              ],
-            ),
+              const SizedBox(height: 40), // Bottom padding
+            ],
           ),
         ),
       ),
@@ -905,18 +895,18 @@ class _HomeTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.accentGreen.withValues(alpha: 0.1),
+                    color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: AppColors.accentGreen.withValues(alpha: 0.2)),
+                        color: DesignTokens.colors.accentGreen.withValues(alpha: 0.2)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'Environment Protected',
                         style: TextStyle(
-                          color: AppColors.accentGreen,
+                          color: DesignTokens.colors.accentGreen,
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1197,7 +1187,7 @@ class _HomeTab extends StatelessWidget {
                 latestAlert['severity'] == 'critical');
         final iconColor = hasAlerts
             ? (isWarning ? Colors.redAccent : Colors.orangeAccent)
-            : AppColors.accentGreen;
+            : DesignTokens.colors.accentGreen;
 
         final iconData =
             hasAlerts ? LucideIcons.alertTriangle : LucideIcons.shieldCheck;
@@ -1291,11 +1281,11 @@ class _HomeTab extends StatelessWidget {
             color: const Color(0xFF1E293B), // Dark Slate
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: AppColors.accentGreen.withValues(alpha: 0.3 * value),
+              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.3 * value),
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.accentGreen.withValues(alpha: 0.1 * value),
+                color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1 * value),
                 blurRadius: 8 * value,
                 spreadRadius: 2,
               ),
@@ -1306,14 +1296,14 @@ class _HomeTab extends StatelessWidget {
             children: [
               Icon(
                 Icons.circle,
-                color: AppColors.accentGreen.withValues(alpha: value),
+                color: DesignTokens.colors.accentGreen.withValues(alpha: value),
                 size: 8,
               ),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.homeSystemActive,
                 style: TextStyle(
-                  color: AppColors.accentGreen,
+                  color: DesignTokens.colors.accentGreen,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1347,10 +1337,10 @@ class _HomeTab extends StatelessWidget {
           color: const Color(0xFF1E293B), // Match trending alerts style
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color: AppColors.accentGreen.withValues(alpha: 0.3), width: 1),
+              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.3), width: 1),
           boxShadow: [
             BoxShadow(
-              color: AppColors.accentGreen.withValues(alpha: 0.1),
+              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -1361,13 +1351,13 @@ class _HomeTab extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.menu_book_rounded,
-                    color: AppColors.accentGreen, size: 24),
+                Icon(Icons.check_circle_rounded,
+                    color: DesignTokens.colors.accentGreen, size: 24),
                 const SizedBox(width: 10),
-                const Text(
+                Text(
                   'PAYMENT JOURNAL',
                   style: TextStyle(
-                    color: AppColors.accentGreen,
+                    color: DesignTokens.colors.accentGreen,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -1402,7 +1392,7 @@ class _HomeTab extends StatelessWidget {
                 label: const Icon(Icons.arrow_forward_rounded,
                     color: Colors.white, size: 18),
                 style: TextButton.styleFrom(
-                  backgroundColor: AppColors.accentGreen,
+                  backgroundColor: DesignTokens.colors.accentGreen,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
@@ -1448,10 +1438,10 @@ class _HomeTab extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const NewsScreen())),
-              child: const Text(
+              child: Text(
                 'See All',
                 style: TextStyle(
-                    color: AppColors.accentGreen, fontWeight: FontWeight.bold),
+                    color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1486,10 +1476,10 @@ class _HomeTab extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (_) => const ReportHistoryScreen()),
               ),
-              child: const Text(
+              child: Text(
                 'See All',
                 style: TextStyle(
-                    color: AppColors.accentGreen, fontWeight: FontWeight.bold),
+                    color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -1558,7 +1548,7 @@ class _HomeTab extends StatelessWidget {
                   Text(
                     date,
                     style: TextStyle(
-                        color: AppColors.textDark.withValues(alpha: 0.5),
+                        color: DesignTokens.colors.textDark.withValues(alpha: 0.5),
                         fontSize: 12),
                   ),
                 ],
@@ -1790,11 +1780,11 @@ class _StatusItem extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen,
+                  color: DesignTokens.colors.accentGreen,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                        color: AppColors.accentGreen.withValues(alpha: 0.5),
+                        color: DesignTokens.colors.accentGreen.withValues(alpha: 0.5),
                         blurRadius: 6)
                   ],
                 ),
@@ -1889,7 +1879,7 @@ class _DailyRewardDialog extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGreen,
+                  backgroundColor: DesignTokens.colors.accentGreen,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(

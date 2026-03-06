@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class ArticleReaderScreen extends StatefulWidget {
   final String title;
@@ -35,19 +37,15 @@ class _ArticleReaderScreenState extends State<ArticleReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return ScreenScaffold(
+      title: widget.title,
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
           if (_loading)
-            const Center(child: CircularProgressIndicator()),
+            Center(
+                child: CircularProgressIndicator(
+                    color: DesignTokens.colors.primaryBlue)),
         ],
       ),
     );

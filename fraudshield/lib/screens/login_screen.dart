@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'signup_screen.dart';
-import '../constants/colors.dart';
 import 'home_screen.dart';
 import '../widgets/adaptive_text_field.dart';
-import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
 import 'forgot_password_screen.dart';
-import 'package:flutter/foundation.dart'; // For kDebugMode
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -113,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
 
     try {
-      // 0. Ensure initialized
       if (_initializationFuture != null) {
         debugPrint('Google Sign-In: Waiting for initialization...');
         await _initializationFuture!.timeout(const Duration(seconds: 10));
@@ -124,7 +123,6 @@ class _LoginScreenState extends State<LoginScreen> {
             'Google Sign-In failed to initialize. Check your configuration.');
       }
 
-      // 1. Trigger Google account picker
       debugPrint('Google Sign-In: Calling authenticate()...');
       final GoogleSignInAccount? account = await _googleSignIn
           .authenticate()
@@ -137,7 +135,6 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint(
           'Google Sign-In: Authentication successful for ${account.email}');
 
-      // 2. Get the auth tokens (must be awaited — async in google_sign_in v6+)
       final GoogleSignInAuthentication auth = await account.authentication;
       final String? idToken = auth.idToken;
       debugPrint('Google Sign-In: ID Token retrieved: ${idToken != null}');
@@ -146,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
         throw Exception('Failed to get Google ID Token');
       }
 
-      // 3. Authenticate with backend
       if (!mounted) return;
       debugPrint('Google Sign-In: Calling backend /auth/google...');
       final success =
@@ -177,281 +173,201 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Force dark theme for the login screen to match the Deep Navy aesthetic
+    final colors = DesignTokens.colors;
     return Theme(
       data: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: AppColors.deepNavy,
-        primaryColor: AppColors.accentGreen,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.accentGreen,
-          surface: AppColors.deepNavy,
+        scaffoldBackgroundColor: colors.backgroundDark,
+        primaryColor: colors.accentGreen,
+        colorScheme: ColorScheme.dark(
+          primary: colors.accentGreen,
+          surface: colors.surfaceDark,
           onSurface: Colors.white,
         ),
       ),
-      child: Scaffold(
-        backgroundColor: AppColors.deepNavy,
+      child: ScreenScaffold(
+        showBackButton: false,
         extendBodyBehindAppBar: true,
-        body: Stack(
-          children: [
-            // Background Elements (Optional: subtle gradient or orbs if desired,
-            // but Home Screen is mostly solid. We'll use a subtle gradient to give it depth)
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A), // Slate 900
-                      AppColors.deepNavy, // Base
-                      Color(0xFF1E3A8A), // Blue 900
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Content
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // 🛡️ Logo / Icon
-                      const AppLogo(size: 80),
-                      const SizedBox(height: 32),
-
-                      // 🌫️ Glass Login Card
-                      AnimationConfiguration.synchronized(
-                        duration: const Duration(milliseconds: 800),
-                        child: FadeInAnimation(
-                          curve: Curves.easeOutCubic,
-                          child: SlideAnimation(
-                            verticalOffset: 30.0,
-                            child: GlassSurface(
-                              padding: const EdgeInsets.all(32),
-                              borderRadius: 24,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  // 🧭 Title
-                                  Text(
-                                    'Welcome Back',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AppLogo(size: 80),
+                const SizedBox(height: 32),
+                AnimationConfiguration.synchronized(
+                  duration: const Duration(milliseconds: 800),
+                  child: FadeInAnimation(
+                    curve: Curves.easeOutCubic,
+                    child: SlideAnimation(
+                      verticalOffset: 30.0,
+                      child: GlassSurface(
+                        padding: const EdgeInsets.all(32),
+                        borderRadius: 24,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'Welcome Back',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Sign in to continue to FraudShield',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Colors.white
-                                              .withValues(alpha: 0.7),
-                                        ),
-                                  ),
-                                  const SizedBox(height: 32),
-
-                                  // 📧 Email Field
-                                  AdaptiveTextField(
-                                    controller: _emailController,
-                                    label: 'Email',
-                                    prefixIcon: Icons.email_outlined,
-                                    keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  const SizedBox(height: 16),
-
-                                  // 🔒 Password Field
-                                  AdaptiveTextField(
-                                    controller: _passwordController,
-                                    label: 'Password',
-                                    prefixIcon: Icons.lock_outline,
-                                    obscureText: true,
-                                  ),
-
-                                  const SizedBox(height: 12),
-
-                                  // 🔗 Forgot Password
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ForgotPasswordScreen(),
-                                          ),
-                                        );
-                                      },
-                                      child: const Text(
-                                        'Forgot password?',
-                                        style: TextStyle(
-                                            color: AppColors.accentGreen,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  // 🟦 Log In Button
-                                  AdaptiveButton(
-                                    text: 'Log In',
-                                    isLoading: _loading,
-                                    onPressed: _trySignIn,
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  // 🔘 OR Divider
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Divider(
-                                              color: Colors.white
-                                                  .withValues(alpha: 0.2))),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16),
-                                        child: Text(
-                                          'OR',
-                                          style: TextStyle(
-                                            color: Colors.white
-                                                .withValues(alpha: 0.4),
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                          child: Divider(
-                                              color: Colors.white
-                                                  .withValues(alpha: 0.2))),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: 24),
-
-                                  // ⚪ Google Sign In Button
-                                  InkWell(
-                                    onTap: _loading ? null : _tryGoogleSignIn,
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: GlassSurface(
-                                      opacity: 0.1,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
-                                      borderRadius: 16,
-                                      borderColor:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Image.network(
-                                            'https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png',
-                                            height: 20,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Icon(Icons.login,
-                                                        size: 20,
-                                                        color: Colors.white),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          const Text(
-                                            'Sign in with Google',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // 👆 Biometric Placeholder
-                      IconButton(
-                        icon: const Icon(Icons.fingerprint,
-                            size: 48, color: AppColors.accentGreen),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Biometric Login coming soon!')),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // 👤 Sign Up link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don’t have an account? ",
-                            style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.7)),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const SignUpScreen()),
-                              );
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                'Sign Up',
-                                style: TextStyle(
-                                  color: AppColors.primaryBlue,
-                                  fontWeight: FontWeight.bold,
+                            const SizedBox(height: 8),
+                            Text(
+                              'Sign in to continue to FraudShield',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                  ),
+                            ),
+                            const SizedBox(height: 32),
+                            AdaptiveTextField(
+                              controller: _emailController,
+                              label: 'Email',
+                              prefixIcon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            const SizedBox(height: 16),
+                            AdaptiveTextField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              prefixIcon: Icons.lock_outline,
+                              obscureText: true,
+                            ),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ForgotPasswordScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Forgot password?',
+                                  style: TextStyle(
+                                      color: DesignTokens.colors.accentGreen,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 24),
+                            AppButton(
+                              label: 'Log In',
+                              isLoading: _loading,
+                              onPressed: _trySignIn,
+                              variant: AppButtonVariant.primary,
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Divider(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.2))),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                      color: Colors.white
+                                          .withValues(alpha: 0.4),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Divider(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.2))),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            AppButton(
+                              label: 'Sign in with Google',
+                              onPressed: _loading ? null : _tryGoogleSignIn,
+                              variant: AppButtonVariant.outline,
+                              icon: Icons.login,
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 24),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/privacy-policy');
-                        },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                IconButton(
+                  icon: Icon(Icons.fingerprint,
+                      size: 48, color: DesignTokens.colors.accentGreen),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Biometric Login coming soon!')),
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don’t have an account? ",
+                      style:
+                          TextStyle(color: Colors.white.withOpacity(0.7)),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const SignUpScreen()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Privacy Policy',
+                          'Sign Up',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            fontSize: 12,
-                            decoration: TextDecoration.underline,
+                            color: DesignTokens.colors.primaryBlue,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/privacy-policy');
+                  },
+                  child: Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontSize: 12,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

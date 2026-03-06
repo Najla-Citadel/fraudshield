@@ -39,12 +39,10 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Build variants
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/
 .env
-<<<<<<< HEAD
-=======
 build_config.json
->>>>>>> dev-ui2

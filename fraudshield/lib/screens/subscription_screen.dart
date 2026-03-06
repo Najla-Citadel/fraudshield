@@ -2,8 +2,10 @@ import 'dart:ui';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../widgets/adaptive_button.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -37,7 +39,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   final PageController _pageController = PageController(viewportFraction: 0.88);
 
-  // ── Getters ───────────────────────────────────────────
   bool get hasActiveSub => _activeSub != null && _activeSub!['status'] == 'ACTIVE';
 
   String get _expiryText {
@@ -50,7 +51,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-  // ── Data Loaders ─────────────────────────────────────
   @override
   void initState() {
     super.initState();
@@ -73,32 +73,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     try {
       final res = await _api.getPlans();
       if (!mounted) return;
-      
-      // Only override default plans if API returns valid data
       if (res.isNotEmpty) {
         setState(() => _plans = List<Map<String, dynamic>>.from(res));
       }
     } catch (e) {
       log('Error loading plans: $e');
-      if (mounted) {
-        setState(() {
-          _plans = [
-            {
-              'id': 'free',
-              'name': 'Basic',
-              'price': 0,
-              'features': ['Essential protection', 'Casual browsing'],
-            },
-            {
-              'id': 'premium',
-              'name': 'Premium',
-              'price': 9.90,
-              'priceYearly': 99.00,
-              'features': ['Complete protection', 'Real-time alerts', 'Bank Verification', 'Priority Support'],
-            }
-          ];
-        });
-      }
     }
   }
 
@@ -114,22 +93,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Future<void> _subscribe(Map<String, dynamic> plan) async {
     if (plan['price'] == 0) return;
-
     setState(() => _isSubscribing = true);
-
     try {
       final duration = _isYearly ? const Duration(days: 365) : const Duration(days: 30);
-
       await _api.createSubscription(
         planId: plan['id'],
         expiresAt: DateTime.now().add(duration),
       );
-
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('🎉 Welcome to Premium!'),
-          backgroundColor: AppColors.accentGreen,
+          backgroundColor: DesignTokens.colors.accentGreen,
         ),
       );
       await _loadActiveSubscription();
@@ -145,23 +120,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
   }
 
-  // ── BUILD ─────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+    return ScreenScaffold(
+      title: 'Subscription',
       body: Stack(
         children: [
-          // Ambient glow
           Positioned(
             top: -80, left: -80,
             child: ImageFiltered(
@@ -170,14 +134,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 width: 280, height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.accentGreen.withValues(alpha: 0.08),
+                  color: DesignTokens.colors.accentGreen.withValues(alpha: 0.08),
                 ),
               ),
             ),
           ),
           SafeArea(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.accentGreen))
+                ? Center(child: CircularProgressIndicator(color: DesignTokens.colors.accentGreen))
                 : Column(
                     children: [
                       _buildHeader(),
@@ -192,8 +156,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     ],
                   ),
           ),
-
-          // Sticky Bottom Button (for free users only)
           if (!_loading && !hasActiveSub)
             Positioned(
               bottom: 24, left: 20, right: 20,
@@ -204,8 +166,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // ── Header ─────────────────────────────────────────────
   Widget _buildHeader() {
+    final colors = DesignTokens.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Column(
@@ -215,11 +177,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: AppColors.accentGreen,
+                decoration: BoxDecoration(
+                  color: colors.accentGreen,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.shield, color: Colors.black, size: 24),
+                child: Icon(LucideIcons.shield, color: colors.backgroundDark, size: 24),
               ),
               const SizedBox(width: 12),
               Column(
@@ -230,7 +192,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
                   Text('PREMIUM',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.accentGreen, fontWeight: FontWeight.bold, letterSpacing: 2.0)),
+                      color: colors.accentGreen, fontWeight: FontWeight.bold, letterSpacing: 2.0)),
                 ],
               ),
             ],
@@ -246,7 +208,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // ── FREE USER VIEW ─────────────────────────────────────
   Widget _buildFreeUserView() {
     return Column(
       children: [
@@ -255,13 +216,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         const SizedBox(height: 28),
         SizedBox(
           height: 400,
-          child: _plans.isEmpty
-              ? Row(children: [_buildSkeletonCard(), _buildSkeletonCard()])
-              : PageView.builder(
-                  controller: _pageController,
-                  itemCount: _plans.length,
-                  itemBuilder: (_, i) => _buildPlanCard(_plans[i]),
-                ),
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _plans.length,
+            itemBuilder: (_, i) => _buildPlanCard(_plans[i]),
+          ),
         ),
         const SizedBox(height: 36),
         _buildFeatureComparison(),
@@ -269,30 +228,29 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // ── SUBSCRIBER VIEW ────────────────────────────────────
   Widget _buildSubscriberView() {
+    final colors = DesignTokens.colors;
     return Column(
       children: [
         const SizedBox(height: 20),
-        // Premium Active Banner
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.accentGreen.withValues(alpha: 0.1),
+              color: colors.accentGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColors.accentGreen.withValues(alpha: 0.4), width: 1.5),
+              border: Border.all(color: colors.accentGreen.withValues(alpha: 0.4), width: 1.5),
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.accentGreen.withValues(alpha: 0.15),
+                    color: colors.accentGreen.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.verified_rounded, color: AppColors.accentGreen, size: 44),
+                  child: Icon(LucideIcons.badgeCheck, color: colors.accentGreen, size: 44),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -316,7 +274,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle_rounded, color: AppColors.accentGreen, size: 18),
+                      Icon(LucideIcons.checkCircle, color: colors.accentGreen, size: 18),
                       const SizedBox(width: 10),
                       Text(f, style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontSize: 14)),
                     ],
@@ -327,7 +285,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        // Manage subscription
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Container(
@@ -367,7 +324,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // ── Components ─────────────────────────────────────────
   Widget _buildToggle() {
     return Container(
       padding: const EdgeInsets.all(4),
@@ -393,7 +349,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.accentGreen : Colors.transparent,
+          color: isActive ? DesignTokens.colors.accentGreen : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Row(
@@ -409,7 +365,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(color: AppColors.accentGreen, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: DesignTokens.colors.accentGreen, borderRadius: BorderRadius.circular(8)),
                 child: const Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
             ],
@@ -422,15 +378,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildPlanCard(Map<String, dynamic> plan) {
     final bool isPremium = (plan['price'] as num) > 0;
     final bool isCurrent = hasActiveSub && _activeSub!['planId'] == plan['id'];
-
     double monthlyPrice = (plan['price'] as num).toDouble();
     double? yearlyTotal;
-
     if (_isYearly && isPremium) {
       yearlyTotal = (plan['priceYearly'] as num?)?.toDouble() ?? (monthlyPrice * 12 * 0.8);
       monthlyPrice = yearlyTotal / 12;
     }
-
     final priceStr = isPremium ? 'RM ${monthlyPrice.toStringAsFixed(2)}' : 'RM 0';
     final billingText = _isYearly && isPremium
         ? 'Billed RM ${yearlyTotal!.toStringAsFixed(2)} yearly'
@@ -443,40 +396,38 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         color: const Color(0xFF162032),
         borderRadius: BorderRadius.circular(28),
         border: isPremium
-            ? Border.all(color: AppColors.accentGreen.withValues(alpha: 0.5), width: 1.5)
+            ? Border.all(color: DesignTokens.colors.accentGreen.withValues(alpha: 0.5), width: 1.5)
             : Border.all(color: Colors.white.withValues(alpha: 0.06)),
         gradient: isPremium
             ? LinearGradient(
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
-                colors: [AppColors.accentGreen.withValues(alpha: 0.07), Colors.transparent])
+                colors: [DesignTokens.colors.accentGreen.withValues(alpha: 0.07), Colors.transparent])
             : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Badge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                plan['name'].toString().toUpperCase(),
-                style: TextStyle(
-                  color: isPremium ? AppColors.accentGreen : Colors.white54,
-                  fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
-              ),
-              if (isPremium)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGreen.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text('POPULAR', style: TextStyle(color: AppColors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
+                Text(
+                  plan['name'].toString().toUpperCase(),
+                  style: TextStyle(
+                    color: isPremium ? DesignTokens.colors.accentGreen : Colors.white54,
+                    fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
                 ),
+                if (isPremium)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: DesignTokens.colors.accentGreen.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text('POPULAR', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
+                  ),
             ],
           ),
           const SizedBox(height: 16),
-          // Price
           RichText(
             text: TextSpan(
               children: [
@@ -506,44 +457,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           SizedBox(
             width: double.infinity,
             child: isCurrent
-                ? OutlinedButton(
+                ? AppButton(
                     onPressed: null,
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: const Text('Current Plan', style: TextStyle(color: Colors.white54)),
+                    label: 'Current Plan',
+                    variant: AppButtonVariant.ghost,
                   )
-                : ElevatedButton(
+                : AppButton(
                     onPressed: isPremium ? () => _subscribe(plan) : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isPremium ? AppColors.accentGreen : const Color(0xFF1E293B),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: Text(
-                      isPremium ? 'Get Premium' : 'Current Plan',
-                      style: TextStyle(
-                        color: isPremium ? Colors.black : Colors.white38,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    label: isPremium ? 'Get Premium' : 'Current Plan',
+                    variant: isPremium ? AppButtonVariant.primary : AppButtonVariant.secondary,
                   ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSkeletonCard() {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(28),
-        ),
       ),
     );
   }
@@ -566,7 +491,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           const Text('FEATURE COMPARISON',
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
           const SizedBox(height: 16),
-          // Column Headers
           Row(
             children: [
               const Expanded(child: SizedBox()),
@@ -576,7 +500,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Text('FREE', style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('PREMIUM', style: TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text('PREMIUM', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -621,10 +545,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: (isPremium || isHighlighted) ? AppColors.accentGreen : Colors.transparent,
+        color: (isPremium || isHighlighted) ? DesignTokens.colors.accentGreen : Colors.transparent,
       ),
-      child: Icon(Icons.check, size: 14,
-        color: (isPremium || isHighlighted) ? Colors.black : Colors.white54),
+      child: Icon(Icons.check,
+          size: 14,
+          color: (isPremium || isHighlighted) ? Colors.black : Colors.white54),
     );
   }
 
@@ -632,17 +557,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(color: AppColors.accentGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 6)),
+          BoxShadow(color: DesignTokens.colors.accentGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 6)),
         ],
       ),
-      child: AdaptiveButton(
+      child: AppButton(
         isLoading: _isSubscribing,
         onPressed: () {
           final premium = _plans.firstWhere((p) => (p['price'] as num) > 0, orElse: () => {});
           if (premium.isNotEmpty) _subscribe(premium);
         },
-        text: 'Upgrade to Premium',
-        icon: const Icon(Icons.arrow_forward_rounded, size: 20, color: Colors.black),
+        label: 'Upgrade to Premium',
+        icon: Icons.arrow_forward_rounded,
+        width: double.infinity,
       ),
     );
   }

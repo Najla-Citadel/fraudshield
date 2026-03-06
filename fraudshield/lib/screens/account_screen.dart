@@ -7,11 +7,11 @@ import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../services/notification_service.dart';
 import '../l10n/app_localizations.dart';
-import '../constants/colors.dart';
-import '../constants/app_theme.dart';
 import 'login_screen.dart';
-import '../widgets/adaptive_button.dart';
 import '../widgets/adaptive_text_field.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate;
 import 'status_details_screen.dart';
@@ -202,8 +202,8 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     if (_hasError) {
-      return Scaffold(
-        backgroundColor: AppColors.deepNavy,
+      return ScreenScaffold(
+        title: 'Account',
         body: ErrorState(onRetry: () {
           setState(() {
             _loading = true;
@@ -214,381 +214,291 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
+    final colors = DesignTokens.colors;
+
     if (_loading) {
-      return Scaffold(
-        backgroundColor: AppColors.deepNavy,
+      return ScreenScaffold(
+        title: 'Account',
         body: Padding(
-          padding: const EdgeInsets.only(top: 100, left: 24, right: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
-            children: [
-              const SkeletonCard(height: 250, margin: EdgeInsets.zero),
-              const SizedBox(height: 24),
-              const SkeletonCard(height: 150, margin: EdgeInsets.zero),
-              const SizedBox(height: 24),
-              const SkeletonCard(height: 150, margin: EdgeInsets.zero),
+            children: const [
+              SizedBox(height: 24),
+              SkeletonCard(height: 250, margin: EdgeInsets.zero),
+              SizedBox(height: 24),
+              SkeletonCard(height: 150, margin: EdgeInsets.zero),
+              SizedBox(height: 24),
+              SkeletonCard(height: 150, margin: EdgeInsets.zero),
             ],
           ),
         ),
       );
     }
 
-    // Using standard Scaffold for deep navy background
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
-          ),
-          SafeArea(
+    return ScreenScaffold(
+      title: 'Account',
+      body: RefreshIndicator(
+        onRefresh: _loadProfile,
+        color: colors.primary,
+        backgroundColor: colors.surfaceDark,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 100),
+          child: AnimationLimiter(
             child: Column(
-              children: [
-                _buildAppBar(context),
-                Expanded(
-                  child: AnimationLimiter(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 100),
-                      child: Column(
-                        children: AnimationConfiguration.toStaggeredList(
-                          duration: const Duration(milliseconds: 375),
-                          childAnimationBuilder: (widget) => SlideAnimation(
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(child: widget),
-                          ),
+              children: AnimationConfiguration.toStaggeredList(
+                duration: const Duration(milliseconds: 375),
+                childAnimationBuilder: (widget) => SlideAnimation(
+                  verticalOffset: 50.0,
+                  child: FadeInAnimation(child: widget),
+                ),
+                children: [
+                  const SizedBox(height: 20),
+                  _premiumProfileHeader(),
+                  const SizedBox(height: 16),
+                  _statisticsCard(),
+                  const SizedBox(height: 24),
+
+                  // Preferences
+                  SettingsGroup(
+                    title: AppLocalizations.of(context)!.accountPreferences,
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    items: [
+                      SettingsTile(
+                        icon: Icons.card_membership,
+                        title: AppLocalizations.of(context)!.accountSubscriptionPlan,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const SizedBox(height: 20),
-                            _premiumProfileHeader(),
-                            const SizedBox(height: 16),
-                            _statisticsCard(),
-
-                            const SizedBox(height: 24),
-
-                            // Preferences
-                            SettingsGroup(
-                              title: AppLocalizations.of(context)!
-                                  .accountPreferences,
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              items: [
-                                SettingsTile(
-                                  icon: Icons.card_membership,
-                                  title: AppLocalizations.of(context)!
-                                      .accountSubscriptionPlan,
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                          context
-                                                  .watch<AuthProvider>()
-                                                  .isSubscribed
-                                              ? AppLocalizations.of(context)!
-                                                  .accountPremium
-                                              : AppLocalizations.of(context)!
-                                                  .accountFree,
-                                          style: TextStyle(
-                                              color: context
-                                                      .watch<AuthProvider>()
-                                                      .isSubscribed
-                                                  ? Colors.amber
-                                                  : Colors.white
-                                                      .withValues(alpha: 0.5),
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold)),
-                                      const SizedBox(width: 8),
-                                      Icon(Icons.arrow_forward_ios,
-                                          color: Colors.white
-                                              .withValues(alpha: 0.2),
-                                          size: 14),
-                                    ],
-                                  ),
-                                  onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => const crate
-                                              .SubscriptionScreen())),
-                                ),
-                                SettingsTile(
-                                  icon: Icons.notifications_active_outlined,
-                                  title: AppLocalizations.of(context)!
-                                      .accountNotificationSetting,
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const AlertPreferencesScreen()),
-                                  ),
-                                ),
-                                SettingsTile(
-                                  icon: Icons.auto_awesome_rounded,
-                                  title: 'Smart Capture (Beta)',
-                                  subtitle: 'Auto-log banking transactions',
-                                  onTap: () {},
-                                  trailing: Switch(
-                                    value: _smartCaptureEnabled,
-                                    onChanged: _toggleSmartCapture,
-                                    activeColor: AppColors.accentGreen,
-                                  ),
-                                ),
-                                SettingsTile(
-                                  icon: Icons.shield_rounded,
-                                  title: 'Caller ID Protection',
-                                  subtitle: 'Real-time scam detection in calls',
-                                  onTap: () {},
-                                  trailing: Switch(
-                                    value: _callerIdProtectionEnabled,
-                                    onChanged: _toggleCallerIdProtection,
-                                    activeColor: AppColors.accentGreen,
-                                  ),
-                                ),
-                                if (_smartCaptureEnabled ||
-                                    _callerIdProtectionEnabled) ...[
-                                  if (_smartCaptureEnabled)
-                                    SettingsTile(
-                                      icon: Icons.bug_report_rounded,
-                                      title: 'Simulate Banking Alert',
-                                      subtitle: 'Test auto-capture logic',
-                                      onTap: () async {
-                                        const testText =
-                                            'RM 1250.00 transferred to MULE_ACC_123';
-                                        debugPrint(
-                                            'AccountScreen: Tapping Simulation Button');
-                                        try {
-                                          await NotificationService.instance
-                                              .showNotification(
-                                            title: 'MAE Alert',
-                                            body: testText,
-                                          );
-                                        } catch (e) {
-                                          debugPrint(
-                                              'AccountScreen: Visual notification failed: $e');
-                                        }
-
-                                        try {
-                                          await SmartCaptureService()
-                                              .simulateCapture(testText);
-                                          if (mounted) {
-                                            _toast(
-                                                'Simulation complete! Check Transaction Journal.');
-                                          }
-                                        } catch (e) {
-                                          debugPrint(
-                                              'AccountScreen: simulateCapture failed: $e');
-                                          if (mounted) {
-                                            _toast(
-                                                'Capture failed. Check logs.');
-                                          }
-                                        }
-                                      },
-                                    ),
-                                  if (_callerIdProtectionEnabled)
-                                    SettingsTile(
-                                      icon: Icons.phone_callback_rounded,
-                                      title: 'Simulate Incoming Call',
-                                      subtitle: 'Test Caller ID Overlay',
-                                      onTap: () async {
-                                        _toast('Simulating incoming call...');
-                                        // Directly trigger the internal handler for testing
-                                        CallStateService.instance
-                                            .simulateRinging('0123456789');
-                                      },
-                                    ),
-                                ],
-                                SettingsTile(
-                                  icon: Icons.add_card_rounded,
-                                  title: 'Log Test Transaction',
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      builder: (_) => LogPaymentSheet(
-                                        onLogSuccess: () {
-                                          _toast(
-                                              'Transaction logged successfully! Check your notifications.');
-                                        },
-                                      ),
-                                    );
-                                  },
-                                ),
-                                SettingsTile(
-                                  icon: Icons.receipt_long_rounded,
-                                  title: 'Transaction Journal',
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) =>
-                                            const TransactionJournalScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-
-                            // Security
-                            SettingsGroup(
-                              title: AppLocalizations.of(context)!
-                                  .accountSecurityTitle,
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              items: [
-                                SettingsTile(
-                                  icon: Icons.lock_rounded,
-                                  title: AppLocalizations.of(context)!
-                                      .accountChangePassword,
-                                  onTap: _openChangePassword,
-                                ),
-                                if (_isBiometricAvailable)
-                                  SettingsTile(
-                                    icon: Icons.fingerprint_rounded,
-                                    title: 'Biometric Authentication',
-                                    subtitle:
-                                        'Extra security for sensitive actions',
-                                    onTap: () {},
-                                    trailing: Switch(
-                                      value: _biometricEnabled,
-                                      onChanged: (val) async {
-                                        await BiometricService.instance
-                                            .setEnabled(val);
-                                        setState(() => _biometricEnabled = val);
-                                      },
-                                      activeColor: AppColors.accentGreen,
-                                    ),
-                                  ),
-                              ],
-                            ),
-
-                            // Legal
-                            SettingsGroup(
-                              title: 'Legal',
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 12),
-                              items: [
-                                SettingsTile(
-                                  icon: Icons.policy_rounded,
-                                  title: 'Privacy Policy',
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () => Navigator.pushNamed(
-                                      context, '/privacy-policy'),
-                                ),
-                                SettingsTile(
-                                  icon: Icons.description_rounded,
-                                  title: 'Terms of Service',
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () => Navigator.pushNamed(
-                                      context, '/terms-of-service'),
-                                ),
-                                SettingsTile(
-                                  icon: Icons.gavel_rounded,
-                                  title: 'Manage Consent',
-                                  trailing: Icon(Icons.arrow_forward_ios,
-                                      color:
-                                          Colors.white.withValues(alpha: 0.2),
-                                      size: 14),
-                                  onTap: () => Navigator.pushNamed(
-                                      context, '/privacy-settings'),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            _logoutButton(),
-                            // Delete Account Button
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12),
-                              child: TextButton(
-                                onPressed: _confirmDeleteAccount,
-                                child: Text(
-                                  'Delete Account',
-                                  style: TextStyle(
-                                    color: Colors.red.withValues(alpha: 0.7),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                            Text(
+                              context.watch<AuthProvider>().isSubscribed
+                                  ? AppLocalizations.of(context)!.accountPremium
+                                  : AppLocalizations.of(context)!.accountFree,
+                              style: TextStyle(
+                                color: context.watch<AuthProvider>().isSubscribed
+                                    ? Colors.amber
+                                    : Colors.white.withOpacity(0.5),
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 24),
-                            // Version text with manual white color for safety
-                            Text('Version 1.1.0',
-                                style: AppTheme.darkTheme.textTheme.labelSmall
-                                    ?.copyWith(
-                                        color: Colors.white
-                                            .withValues(alpha: 0.5))),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white.withOpacity(0.2),
+                              size: 14,
+                            ),
                           ],
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const crate.SubscriptionScreen()),
+                        ),
+                      ),
+                      SettingsTile(
+                        icon: Icons.notifications_active_outlined,
+                        title: AppLocalizations.of(context)!.accountNotificationSetting,
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
+                        ),
+                      ),
+                      SettingsTile(
+                        icon: Icons.auto_awesome_rounded,
+                        title: 'Smart Capture (Beta)',
+                        subtitle: 'Auto-log banking transactions',
+                        onTap: () {},
+                        trailing: Switch(
+                          value: _smartCaptureEnabled,
+                          onChanged: _toggleSmartCapture,
+                          activeColor: colors.accentGreen,
+                        ),
+                      ),
+                      SettingsTile(
+                        icon: Icons.shield_rounded,
+                        title: 'Caller ID Protection',
+                        subtitle: 'Real-time scam detection in calls',
+                        onTap: () {},
+                        trailing: Switch(
+                          value: _callerIdProtectionEnabled,
+                          onChanged: _toggleCallerIdProtection,
+                          activeColor: colors.accentGreen,
+                        ),
+                      ),
+                      if (_smartCaptureEnabled || _callerIdProtectionEnabled) ...[
+                        if (_smartCaptureEnabled)
+                          SettingsTile(
+                            icon: Icons.bug_report_rounded,
+                            title: 'Simulate Banking Alert',
+                            subtitle: 'Test auto-capture logic',
+                            onTap: () async {
+                              const testText = 'RM 1250.00 transferred to MULE_ACC_123';
+                              try {
+                                await NotificationService.instance.showNotification(
+                                  title: 'MAE Alert',
+                                  body: testText,
+                                );
+                              } catch (e) {
+                                debugPrint('Visual notification failed: $e');
+                              }
+                              try {
+                                await SmartCaptureService().simulateCapture(testText);
+                                if (mounted) _toast('Simulation complete!');
+                              } catch (e) {
+                                if (mounted) _toast('Capture failed.');
+                              }
+                            },
+                          ),
+                        if (_callerIdProtectionEnabled)
+                          SettingsTile(
+                            icon: Icons.phone_callback_rounded,
+                            title: 'Simulate Incoming Call',
+                            subtitle: 'Test Caller ID Overlay',
+                            onTap: () async {
+                              _toast('Simulating incoming call...');
+                              CallStateService.instance.simulateRinging('0123456789');
+                            },
+                          ),
+                      ],
+                      SettingsTile(
+                        icon: Icons.add_card_rounded,
+                        title: 'Log Test Transaction',
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => LogPaymentSheet(
+                              onLogSuccess: () => _toast('Transaction logged successfully!'),
+                            ),
+                          );
+                        },
+                      ),
+                      SettingsTile(
+                        icon: Icons.receipt_long_rounded,
+                        title: 'Transaction Journal',
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TransactionJournalScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  // Security
+                  SettingsGroup(
+                    title: AppLocalizations.of(context)!.accountSecurityTitle,
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    items: [
+                      SettingsTile(
+                        icon: Icons.lock_rounded,
+                        title: AppLocalizations.of(context)!.accountChangePassword,
+                        onTap: _openChangePassword,
+                      ),
+                      if (_isBiometricAvailable)
+                        SettingsTile(
+                          icon: Icons.fingerprint_rounded,
+                          title: 'Biometric Authentication',
+                          subtitle: 'Extra security for sensitive actions',
+                          onTap: () {},
+                          trailing: Switch(
+                            value: _biometricEnabled,
+                            onChanged: (val) async {
+                              await BiometricService.instance.setEnabled(val);
+                              setState(() => _biometricEnabled = val);
+                            },
+                            activeColor: colors.accentGreen,
+                          ),
+                        ),
+                    ],
+                  ),
+
+                  // Legal
+                  SettingsGroup(
+                    title: 'Legal',
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    items: [
+                      SettingsTile(
+                        icon: Icons.policy_rounded,
+                        title: 'Privacy Policy',
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
+                      ),
+                      SettingsTile(
+                        icon: Icons.description_rounded,
+                        title: 'Terms of Service',
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
+                      ),
+                      SettingsTile(
+                        icon: Icons.gavel_rounded,
+                        title: 'Manage Consent',
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white.withOpacity(0.2),
+                          size: 14,
+                        ),
+                        onTap: () => Navigator.pushNamed(context, '/privacy-settings'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  _logoutButton(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: TextButton(
+                      onPressed: _confirmDeleteAccount,
+                      child: Text(
+                        'Delete Account',
+                        style: TextStyle(
+                          color: Colors.red.withOpacity(0.7),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  Text(
+                    'Version 1.1.0',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            'My Account',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.language, color: Colors.white, size: 20),
-              onPressed: _showLanguagePicker,
-              tooltip: 'Change Language',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // =================PASSWORD===================
   void _openChangePassword() {
@@ -641,8 +551,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     label: 'New Password',
                     obscureText: true,
                   ),
-                  const SizedBox(height: 24),
-                  AdaptiveButton(
+                  SizedBox(height: DesignTokens.spacing.xxl),
+                  AppButton(
                     isLoading: isLoading,
                     onPressed: isLoading
                         ? null
@@ -698,7 +608,8 @@ class _AccountScreenState extends State<AccountScreen> {
                               }
                             });
                           },
-                    text: 'Update Password',
+                    label: 'Update Password',
+                    variant: AppButtonVariant.primary,
                   ),
                 ],
               ),
@@ -712,7 +623,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void _showLanguagePicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -759,7 +670,7 @@ class _AccountScreenState extends State<AccountScreen> {
           style: const TextStyle(fontSize: 24)),
       title: Text(name, style: const TextStyle(color: Colors.white)),
       trailing: isSelected
-          ? const Icon(Icons.check_circle, color: AppColors.accentGreen)
+          ? Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen)
           : null,
     );
   }
@@ -798,11 +709,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   bottom: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: AppColors.accentGreen,
-                      shape: BoxShape.circle,
-                    ),
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: DesignTokens.colors.accentGreen,
+                    shape: BoxShape.circle,
+                  ),
                     child: const Icon(Icons.camera_alt_rounded,
                         color: Colors.white, size: 14),
                   ),
@@ -835,14 +746,14 @@ class _AccountScreenState extends State<AccountScreen> {
                     color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'View Profile',
-                    style: TextStyle(
-                      color: AppColors.accentGreen,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                    child: Text(
+                      'View Profile',
+                      style: TextStyle(
+                        color: DesignTokens.colors.accentGreen,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
                 ),
               ),
             ],
@@ -976,14 +887,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       Text(
                         'Benefits',
                         style: TextStyle(
-                          color: AppColors.accentGreen.withValues(alpha: 0.8),
+                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
-                          color: AppColors.accentGreen.withValues(alpha: 0.8),
+                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
                           size: 14),
                     ],
                   ),
@@ -999,32 +910,11 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _logoutButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: _logout,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.redAccent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-              border:
-                  Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
-            ),
-            child: const Center(
-              child: Text(
-                'Log Out',
-                style: TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ),
+      child: AppButton(
+        label: 'Log Out',
+        onPressed: _logout,
+        variant: AppButtonVariant.destructive,
+        width: double.infinity,
       ),
     );
   }

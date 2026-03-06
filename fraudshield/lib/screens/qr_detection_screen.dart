@@ -174,12 +174,12 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         padding: const EdgeInsets.all(32),
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.accentGreen.withValues(alpha: 0.1),
+              color: AppColors.accentGreen.withOpacity(0.1),
               blurRadius: 30,
               offset: const Offset(0, 10),
             ),
@@ -190,7 +190,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withValues(alpha: 0.1),
+                color: AppColors.accentGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(LucideIcons.scanLine,
@@ -210,7 +210,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
               'Instantly check URLs for phishing and threats',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.6),
+                color: Colors.white.withOpacity(0.6),
                 fontSize: 14,
               ),
             ),
@@ -227,9 +227,9 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.03),
+            color: Colors.white.withOpacity(0.03),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: ListTile(
             contentPadding:
@@ -238,7 +238,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: (isSafe ? AppColors.accentGreen : Colors.red)
-                    .withValues(alpha: 0.1),
+                    .withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -260,7 +260,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
             subtitle: Text(
               '${_formatTimestamp(item.timestamp)} • ${item.riskLevel.toUpperCase()}',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.4),
+                color: Colors.white.withOpacity(0.4),
                 fontSize: 12,
               ),
             ),
@@ -292,12 +292,12 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         children: [
           const SizedBox(height: 40),
           Icon(LucideIcons.history,
-              size: 64, color: Colors.white.withValues(alpha: 0.1)),
+              size: 64, color: Colors.white.withOpacity(0.1)),
           const SizedBox(height: 16),
           Text(
             'No scan history yet',
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.3),
+              color: Colors.white.withOpacity(0.3),
               fontSize: 16,
             ),
           ),
@@ -314,7 +314,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       builder: (_) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withValues(alpha: 0.95),
+          color: const Color(0xFF0F172A).withOpacity(0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -403,7 +403,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                     fontSize: 18, fontWeight: FontWeight.bold, color: color)),
             Text('Risk Score: ${result.score}/100',
                 style: TextStyle(
-                    fontSize: 12, color: color.withValues(alpha: 0.7))),
+                    fontSize: 12, color: color.withOpacity(0.7))),
           ],
         ),
       ],
@@ -514,7 +514,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
       builder: (_) => Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withValues(alpha: 0.95),
+          color: const Color(0xFF0F172A).withOpacity(0.95),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -633,7 +633,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                     fontSize: 18, fontWeight: FontWeight.bold, color: color)),
             Text('Risk Score: ${result.score}/100',
                 style: TextStyle(
-                    fontSize: 12, color: color.withValues(alpha: 0.7))),
+                    fontSize: 12, color: color.withOpacity(0.7))),
           ],
         ),
       ],

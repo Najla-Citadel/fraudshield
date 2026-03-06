@@ -1,54 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class AppTheme {
   // Private constructor to prevent instantiation
   AppTheme._();
 
-  // 🎨 Semantic Colors
-  static const _primaryLight = Color(0xFF2563EB); // Royal Blue
-  static const _primaryDark = Color(0xFF3B82F6);
-  
-  static const _secondaryLight = Color(0xFF0F172A); // Slate 900
-  static const _secondaryDark = Color(0xFFF8FAFC); // Slate 50
-  
-  static const _surfaceLight = Color(0xFFFFFFFF);
-  static const _surfaceDark = Color(0xFF1E293B); // Slate 800
-  
-  static const _backgroundLight = Color(0xFFF1F5F9); // Slate 100
-  static const _backgroundDark = Color(0xFF0F172A); // Slate 900
-  
-  static const _error = Color(0xFFEF4444);
-  static const _success = Color(0xFF10B981);
-  static const _warning = Color(0xFFF59E0B);
-
   // 🌞 Light Theme
   static ThemeData get lightTheme {
+    final colors = DesignTokens.colors;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: const ColorScheme.light(
-        primary: _primaryLight,
+      colorScheme: ColorScheme.light(
+        primary: colors.primary,
         onPrimary: Colors.white,
-        secondary: _secondaryLight,
+        secondary: colors.backgroundDark,
         onSecondary: Colors.white,
-        surface: _surfaceLight,
-        onSurface: _secondaryLight,
-        background: _backgroundLight,
-        onBackground: _secondaryLight,
-        error: _error,
-        outline: Color(0xFFE2E8F0), // Slate 200
+        surface: colors.surfaceLight,
+        onSurface: colors.backgroundDark,
+        background: colors.backgroundLight,
+        onBackground: colors.backgroundDark,
+        error: colors.error,
+        outline: const Color(0xFFE2E8F0), // Slate 200
       ),
-      scaffoldBackgroundColor: _backgroundLight,
-      cardColor: _surfaceLight,
+      scaffoldBackgroundColor: colors.backgroundLight,
+      cardColor: colors.surfaceLight,
       textTheme: _textTheme,
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: _secondaryLight),
+        iconTheme: IconThemeData(color: colors.backgroundDark),
         titleTextStyle: TextStyle(
-          color: _secondaryLight,
+          color: colors.backgroundDark,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
@@ -58,31 +43,32 @@ class AppTheme {
 
   // 🌚 Dark Theme
   static ThemeData get darkTheme {
+    final colors = DesignTokens.colors;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: const ColorScheme.dark(
-        primary: _primaryDark,
+      colorScheme: ColorScheme.dark(
+        primary: colors.primaryDark,
         onPrimary: Colors.white,
-        secondary: _secondaryDark,
-        onSecondary: _secondaryLight,
-        surface: _surfaceDark,
-        onSurface: _secondaryDark,
-        background: _backgroundDark,
-        onBackground: _secondaryDark,
-        error: _error,
-        outline: Color(0xFF334155), // Slate 700
+        secondary: colors.secondaryDark,
+        onSecondary: colors.secondaryLight,
+        surface: colors.surfaceDark,
+        onSurface: colors.secondaryDark,
+        background: colors.backgroundDark,
+        onBackground: colors.secondaryDark,
+        error: colors.error,
+        outline: const Color(0xFF334155), // Slate 700
       ),
-      scaffoldBackgroundColor: _backgroundDark,
-      cardColor: _surfaceDark,
-      textTheme: _textTheme, // Google Fonts handles dark mode adaptation mostly, but colors need check
-      appBarTheme: const AppBarTheme(
+      scaffoldBackgroundColor: colors.backgroundDark,
+      cardColor: colors.surfaceDark,
+      textTheme: _textTheme,
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: _secondaryDark),
+        iconTheme: IconThemeData(color: colors.secondaryDark),
         titleTextStyle: TextStyle(
-          color: _secondaryDark,
+          color: colors.secondaryDark,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),

@@ -24,13 +24,13 @@ class FloatingNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(36),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 30,
               spreadRadius: -5,
               offset: const Offset(0, 15),
             ),
             BoxShadow(
-              color: AppColors.primaryBlue.withValues(alpha: 0.05),
+              color: AppColors.primaryBlue.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -43,10 +43,10 @@ class FloatingNavBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.85),
+                color: Colors.white.withOpacity(0.85),
                 borderRadius: BorderRadius.circular(36),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: Colors.white.withOpacity(0.6),
                   width: 1.0,
                 ),
               ),

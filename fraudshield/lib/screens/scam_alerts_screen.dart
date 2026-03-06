@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../widgets/glass_surface.dart';
 
 class ScamAlertsScreen extends StatefulWidget {
-  const ScamAlertsScreen({Key? key}) : super(key: key);
+  const ScamAlertsScreen({super.key});
 
   @override
   State<ScamAlertsScreen> createState() => _ScamAlertsScreenState();
@@ -52,72 +53,38 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(brightness: Brightness.dark),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F172A), // Slate 900
-              AppColors.deepNavy, // Base
-              Color(0xFF1E3A8A), // Blue 900
-            ],
+    return ScreenScaffold(
+      title: 'Notifications',
+      actions: [
+        TextButton(
+          onPressed: _markAllAsRead,
+          child: Text(
+            'Mark all as read',
+            style: TextStyle(
+              color: DesignTokens.colors.accentGreen,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
           ),
         ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new,
-                  color: Colors.white, size: 20),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Notifications',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 22,
-                letterSpacing: -0.5,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: _markAllAsRead,
-                child: const Text(
-                  'Mark all as read',
-                  style: TextStyle(
-                    color: AppColors.accentGreen,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+        const SizedBox(width: 20),
+      ],
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                  color: DesignTokens.colors.primaryBlue))
+          : _alerts.isEmpty
+              ? _buildEmptyState()
+              : RefreshIndicator(
+                  onRefresh: _fetchAlerts,
+                  color: DesignTokens.colors.primaryBlue,
+                  backgroundColor: DesignTokens.colors.surfaceDark,
+                  child: ListView(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    children: _buildGroupedAlertList(),
                   ),
                 ),
-              ),
-              const SizedBox(width: 20),
-            ],
-          ),
-          body: _isLoading
-              ? const Center(
-                  child:
-                      CircularProgressIndicator(color: AppColors.primaryBlue))
-              : _alerts.isEmpty
-                  ? _buildEmptyState()
-                  : RefreshIndicator(
-                      onRefresh: _fetchAlerts,
-                      color: AppColors.primaryBlue,
-                      child: ListView(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8),
-                        children: _buildGroupedAlertList(),
-                      ),
-                    ),
-        ),
-      ),
     );
   }
 
@@ -159,7 +126,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       child: Text(
         title,
         style: TextStyle(
-          color: Colors.white.withValues(alpha: 0.5),
+          color: Colors.white.withOpacity(0.5),
           fontWeight: FontWeight.w700,
           fontSize: 12,
           letterSpacing: 0.5,
@@ -214,7 +181,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFE4E6).withValues(alpha: 0.1),
+                color: const Color(0xFFFFE4E6).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(LucideIcons.alertTriangle,
@@ -244,7 +211,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                       Text(
                         _getTimeAgo(alert['createdAt']),
                         style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: Colors.white.withOpacity(0.4),
                             fontSize: 12),
                       ),
                     ],
@@ -253,7 +220,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   Text(
                     alert['message'] ?? '',
                     style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: Colors.white.withOpacity(0.7),
                         fontSize: 14,
                         height: 1.5),
                   ),
@@ -286,13 +253,13 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         decoration: BoxDecoration(
           color: isPrimary
               ? const Color(0xFFDC2626)
-              : Colors.white.withValues(alpha: 0.1),
+              : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            color: isPrimary ? Colors.white : Colors.white,
+          style: const TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 13,
           ),
@@ -315,7 +282,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(LucideIcons.shieldCheck,
-              size: 64, color: Colors.white.withValues(alpha: 0.2)),
+              size: 64, color: Colors.white.withOpacity(0.2)),
           const SizedBox(height: 16),
           const Text(
             'All Clear!',
@@ -326,7 +293,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           Text(
             'No active security alerts for your account.',
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
+                color: Colors.white.withOpacity(0.5), fontSize: 14),
           ),
         ],
       ),
@@ -355,153 +322,153 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         child: GlassSurface(
           padding: const EdgeInsets.all(24),
           borderRadius: 24,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF43F5E), // Rose red
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(LucideIcons.alertTriangle,
-                          color: Colors.white, size: 24),
-                    ),
-                    if (!isRead) ...[
-                      const SizedBox(width: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
                       Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF43F5E),
-                          shape: BoxShape.circle,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF43F5E), // Rose red
+                          borderRadius: BorderRadius.circular(16),
                         ),
+                        child: const Icon(LucideIcons.alertTriangle,
+                            color: Colors.white, size: 24),
+                      ),
+                      if (!isRead) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF43F5E),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF43F5E).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'HIGH RISK',
+                      style: TextStyle(
+                        color: Color(0xFFF43F5E),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                alert['title'] ?? 'Suspicious activity detected',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: isRead ? 0.7 : 1.0),
+                  fontSize: 18,
+                  fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${isToday ? 'Today' : dateStr} at $timeStr',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                          fontStyle: FontStyle.italic,
+                          height: 1.5,
+                        ),
+                        children: [
+                          TextSpan(text: '"${alert['message']}"'),
+                        ],
+                      ),
+                    ),
+                    if (metadata.containsKey('sender')) ...[
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Icon(Icons.chat_bubble,
+                              color: Colors.white24, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Sender: ${metadata['sender']}',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.4),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],
                 ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF43F5E).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE11D48), // Deep Rose
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text(
-                    'HIGH RISK',
-                    style: TextStyle(
-                      color: Color(0xFFF43F5E),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
+                  child: const Text('Block & Report Sender',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: ElevatedButton(
+                  onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white.withOpacity(0.1),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                   ),
+                  child: const Text('Not a Scam',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              alert['title'] ?? 'Suspicious activity detected',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: isRead ? 0.7 : 1.0),
-                fontSize: 18,
-                fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '${isToday ? 'Today' : dateStr} at $timeStr',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.4),
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                        height: 1.5,
-                      ),
-                      children: [
-                        TextSpan(text: '"${alert['message']}"'),
-                      ],
-                    ),
-                  ),
-                  if (metadata.containsKey('sender')) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(Icons.chat_bubble,
-                            color: AppColors.greyText, size: 14),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Sender: ${metadata['sender']}',
-                          style: TextStyle(
-                            color: AppColors.greyText.withValues(alpha: 0.8),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE11D48), // Deep Rose
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                ),
-                child: const Text('Block & Report Sender',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.1),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                ),
-                child: const Text('Not a Scam',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              ),
-            ),
-          ],
+            ],
           ),
         ),
       ),
@@ -526,7 +493,6 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         iconColor = const Color(0xFF10B981);
         bgColor = const Color(0xFFD1FAE5);
         icon = LucideIcons.shieldCheck;
-        // Check for specific titles for different icons
         if (alert['title']?.toString().contains('Report') ?? false) {
           iconColor = const Color(0xFF3B82F6);
           bgColor = const Color(0xFFDBEAFE);
@@ -540,22 +506,22 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         break;
       case 'COMMUNITY':
         if (alert['title']?.toString().contains('Scam Trend') ?? false) {
-          iconColor = const Color(0xFFF59E0B); // Amber for lightbulb
+          iconColor = const Color(0xFFF59E0B);
           bgColor = const Color(0xFFFEF3C7);
           icon = LucideIcons.lightbulb;
         } else if (alert['title']?.toString().contains('Benefit') ?? false) {
-          iconColor = const Color(0xFF8B5CF6); // Purple for awards
+          iconColor = const Color(0xFF8B5CF6);
           bgColor = const Color(0xFFF5F3FF);
           icon = LucideIcons.award;
         } else {
-          iconColor = AppColors.primaryBlue;
-          bgColor = AppColors.primaryBlue.withValues(alpha: 0.1);
+          iconColor = DesignTokens.colors.primaryBlue;
+          bgColor = DesignTokens.colors.primaryBlue.withOpacity(0.1);
           icon = LucideIcons.users;
         }
         break;
       default:
-        iconColor = AppColors.primaryBlue;
-        bgColor = AppColors.primaryBlue.withValues(alpha: 0.1);
+        iconColor = DesignTokens.colors.primaryBlue;
+        bgColor = DesignTokens.colors.primaryBlue.withOpacity(0.1);
         icon = LucideIcons.bell;
     }
 
@@ -581,7 +547,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: bgColor.withValues(alpha: 0.1),
+                    color: bgColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Icon(icon, color: iconColor, size: 24),
@@ -629,7 +595,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                           Text(
                             _getTimeAgo(alert['createdAt']),
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.4),
+                                color: Colors.white.withOpacity(0.4),
                                 fontSize: 12),
                           ),
                         ],
@@ -638,7 +604,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                       Text(
                         alert['message'] ?? '',
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.white.withOpacity(0.7),
                           fontSize: 14,
                           height: 1.5,
                         ),

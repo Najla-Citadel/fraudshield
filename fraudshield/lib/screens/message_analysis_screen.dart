@@ -15,6 +15,7 @@ class MessageAnalysisScreen extends StatefulWidget {
 class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
   final _controller = TextEditingController();
   bool _isLoading = false;
+  RiskResult? _result;
 
   @override
   void dispose() {
@@ -38,16 +39,9 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CheckResultScreen(
-            type: 'Message',
-            value: text.length > 100 ? '${text.substring(0, 97)}...' : text,
-            result: result,
-          ),
-        ),
-      );
+      setState(() {
+        _result = result;
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
@@ -85,6 +79,10 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoCard(),
+            if (_result != null) ...[
+              const SizedBox(height: 24),
+              _buildResultCard(),
+            ],
             const SizedBox(height: 32),
             const Text(
               'Paste Message Content',
@@ -107,7 +105,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                   hintText:
                       'Paste a suspicious SMS, WhatsApp message, or email here...',
                   hintStyle: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 14,
                   ),
                   contentPadding: const EdgeInsets.all(20),
@@ -167,6 +165,65 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     );
   }
 
+  Widget _buildResultCard() {
+    if (_result == null) return const SizedBox.shrink();
+    final isRisky = _result!.score >= 50;
+    final color = isRisky ? Colors.red : Colors.green;
+
+    return GlassSurface(
+      padding: const EdgeInsets.all(24),
+      borderRadius: 24,
+      borderColor: color.withOpacity(0.3),
+      child: Column(
+        children: [
+          Icon(
+            isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck,
+            color: color,
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            isRisky ? 'Threat Detected' : 'Message Looks Safe',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Risk Score: ${_result!.score}/100',
+            style: TextStyle(
+              color: color.withOpacity(0.7),
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          if (_result!.reasons.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Divider(color: Colors.white10),
+            const SizedBox(height: 16),
+            ..._result!.reasons.map((r) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(LucideIcons.alertCircle,
+                          color: color.withOpacity(0.5), size: 14),
+                      const SizedBox(width: 8),
+                      Expanded(
+                          child: Text(r,
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 13))),
+                    ],
+                  ),
+                )),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildInfoCard() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -183,7 +240,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(LucideIcons.shieldCheck, color: Colors.white),
@@ -226,7 +283,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 24),
@@ -248,7 +305,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                 Text(
                   desc,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: Colors.white.withOpacity(0.6),
                     fontSize: 13,
                     height: 1.3,
                   ),

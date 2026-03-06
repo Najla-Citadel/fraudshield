@@ -32,37 +32,35 @@ class GlassSurface extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     // Premium base color: Surface color with transparency
-    // We favor a subtle look even in light mode when used on dark backgrounds
     final baseOpacity = isDark
         ? (opacity == 0.7 ? 0.05 : opacity)
         : (opacity == 0.7 ? 0.12 : opacity);
 
-    // Mix in a bit of the accent color if provided for a premium tinted glass look
     final baseColor = accentColor == null
-        ? Colors.white.withValues(alpha: baseOpacity)
+        ? Colors.white.withOpacity(baseOpacity)
         : Color.alphaBlend(
-            accentColor!.withValues(alpha: 0.1),
-            Colors.white.withValues(alpha: baseOpacity),
+            accentColor!.withOpacity(0.1),
+            Colors.white.withOpacity(baseOpacity),
           );
 
     // Subtle border color
     final effectiveBorderColor = borderColor ??
-        accentColor?.withValues(alpha: 0.3) ??
+        accentColor?.withOpacity(0.3) ??
         (isDark
-            ? Colors.white.withValues(alpha: 0.1)
-            : Colors.white.withValues(alpha: 0.6));
+            ? Colors.white.withOpacity(0.1)
+            : Colors.white.withOpacity(0.6));
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Material(
-          color: Colors.transparent, // Important for ripple
+          color: Colors.transparent,
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(borderRadius),
-            highlightColor: colorScheme.primary.withValues(alpha: 0.1),
-            splashColor: colorScheme.primary.withValues(alpha: 0.1),
+            highlightColor: colorScheme.primary.withOpacity(0.1),
+            splashColor: colorScheme.primary.withOpacity(0.1),
             child: Container(
               padding: padding ?? const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -73,16 +71,14 @@ class GlassSurface extends StatelessWidget {
                   width: 1.0,
                 ),
                 boxShadow: [
-                  // 1. Ambient Shadow (Soft)
                   BoxShadow(
-                    color: colorScheme.shadow.withValues(alpha: 0.05),
+                    color: colorScheme.shadow.withOpacity(0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
-                  // 2. Direct Shadow (Keeps it grounded)
                   BoxShadow(
                     color: colorScheme.shadow
-                        .withValues(alpha: isDark ? 0.3 : 0.05),
+                        .withOpacity(isDark ? 0.3 : 0.05),
                     blurRadius: 5,
                     offset: const Offset(0, 2),
                   ),

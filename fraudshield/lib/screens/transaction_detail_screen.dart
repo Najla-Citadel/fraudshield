@@ -213,7 +213,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
             child: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: Colors.white.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.arrow_back_ios_new_rounded,
@@ -476,7 +476,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            sColor.withValues(alpha: 0.15),
+            sColor.withOpacity(0.15),
             const Color(0xFF0B1121),
           ],
           begin: Alignment.topCenter,
@@ -492,9 +492,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: sColor.withValues(alpha: 0.15),
+                color: sColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: sColor.withValues(alpha: 0.5)),
+                border: Border.all(color: sColor.withOpacity(0.5)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -576,7 +576,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _scoreColor(score).withValues(alpha: 0.12),
+                color: _scoreColor(score).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child:
@@ -638,10 +638,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   Widget _threatChip(String label) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+          color: const Color(0xFFEF4444).withOpacity(0.12),
           borderRadius: BorderRadius.circular(20),
           border:
-              Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFFEF4444).withOpacity(0.3)),
         ),
         child: Text(
           label,
@@ -655,10 +655,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   Widget _buildWarningBanner(int score) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF59E0B).withValues(alpha: 0.08),
+          color: const Color(0xFFF59E0B).withOpacity(0.08),
           borderRadius: BorderRadius.circular(16),
           border:
-              Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+              Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -712,9 +712,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   Widget _buildReportedBanner() => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.green.withValues(alpha: 0.08),
+          color: Colors.green.withOpacity(0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+          border: Border.all(color: Colors.green.withOpacity(0.3)),
         ),
         child: const Row(
           children: [
@@ -773,7 +773,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -838,13 +838,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                             decoration: BoxDecoration(
                               color: selectedCategory == c
                                   ? const Color(0xFFEF4444)
-                                      .withValues(alpha: 0.15)
+                                      .withOpacity(0.15)
                                   : const Color(0xFF1A2332),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: selectedCategory == c
                                     ? const Color(0xFFEF4444)
-                                        .withValues(alpha: 0.6)
+                                        .withOpacity(0.6)
                                     : const Color(0xFF1E2D45),
                               ),
                             ),
@@ -943,7 +943,7 @@ class _RiskGaugePainter extends CustomPainter {
     const sweep = math.pi * 1.5;
 
     final trackPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.07)
+      ..color = Colors.white.withOpacity(0.07)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6
       ..strokeCap = StrokeCap.round;

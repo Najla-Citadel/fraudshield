@@ -15,8 +15,8 @@
     <application
         android:label="FraudShield"
         android:name="${applicationName}"
-        android:allowBackup="true"
-        android:usesCleartextTraffic="true"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

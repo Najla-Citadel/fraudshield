@@ -177,8 +177,8 @@ class StatusDetailsScreen extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                tierColor.withValues(alpha: 0.2),
-                tierColor.withValues(alpha: 0.0),
+                tierColor.withOpacity(0.2),
+                tierColor.withOpacity(0.0),
               ],
             ),
           ),

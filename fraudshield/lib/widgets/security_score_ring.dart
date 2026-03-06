@@ -76,7 +76,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: _getStatusColor(widget.score).withValues(alpha: pulse),
+                        color: _getStatusColor(widget.score).withOpacity(pulse),
                         blurRadius: 40,
                         spreadRadius: 10,
                       ),
@@ -94,7 +94,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 value: 1.0,
                 strokeWidth: 16,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white.withValues(alpha: 0.05),
+                  Colors.white.withOpacity(05),
                 ),
               ),
             ),
@@ -118,7 +118,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     gradient: LinearGradient(
                       colors: [
                         _getStatusColor(widget.score),
-                        _getStatusColor(widget.score).withValues(alpha: 0.8),
+                        _getStatusColor(widget.score).withOpacity(8),
                       ],
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
@@ -193,7 +193,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: Colors.white.withOpacity(7),
                     fontSize: 14,
                   ),
                 ),
@@ -206,7 +206,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               child: IconButton(
                 icon: Icon(
                   Icons.info_outline,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  color: Colors.white.withOpacity(5),
                   size: 20,
                 ),
                 onPressed: widget.onInfoTap,

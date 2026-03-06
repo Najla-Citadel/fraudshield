@@ -3,8 +3,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../models/news_item.dart';
 import '../services/news_service.dart';
 import '../screens/article_reader_screen.dart';
-import '../constants/colors.dart';
 import '../constants/news_categories.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../widgets/glass_surface.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -19,7 +21,6 @@ class _NewsScreenState extends State<NewsScreen> {
   String? _error;
   List<NewsItem> _items = [];
   NewsCategory? _selectedCategory;
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -56,55 +57,39 @@ class _NewsScreenState extends State<NewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lightBg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Fraud Intelligence',
-          style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
+    return ScreenScaffold(
+      title: 'Fraud Intelligence',
       body: Column(
         children: [
-          _buildSearchAndFilters(),
+          _buildFilters(),
           Expanded(
-            child: _isLoading 
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryBlue))
-              : _error != null
-                ? _buildErrorState()
-                : _items.isEmpty
-                  ? _buildEmptyState()
-                  : _buildNewsList(),
+            child: _isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                        color: DesignTokens.colors.primaryBlue))
+                : _error != null
+                    ? _buildErrorState()
+                    : _items.isEmpty
+                        ? _buildEmptyState()
+                        : _buildNewsList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSearchAndFilters() {
+  Widget _buildFilters() {
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      child: Column(
-        children: [
-          const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildCategoryChip('All', null),
-                ...allNewsCategories.map((cat) => _buildCategoryChip(cat.label, cat)),
-              ],
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildCategoryChip('All', null),
+            ...allNewsCategories
+                .map((cat) => _buildCategoryChip(cat.label, cat)),
+          ],
+        ),
       ),
     );
   }
@@ -122,12 +107,13 @@ class _NewsScreenState extends State<NewsScreen> {
             _loadNews();
           }
         },
-        selectedColor: AppColors.primaryBlue,
+        selectedColor: DesignTokens.colors.primaryBlue,
         labelStyle: TextStyle(
-          color: isSelected ? Colors.white : AppColors.textDark,
+          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          fontSize: 12,
         ),
-        backgroundColor: AppColors.lightBg,
+        backgroundColor: Colors.white.withValues(alpha: 0.05),
         elevation: 0,
         pressElevation: 0,
         side: BorderSide.none,
@@ -139,6 +125,8 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _buildNewsList() {
     return RefreshIndicator(
       onRefresh: _loadNews,
+      color: DesignTokens.colors.primaryBlue,
+      backgroundColor: DesignTokens.colors.surfaceDark,
       child: ListView.separated(
         padding: const EdgeInsets.all(20),
         itemCount: _items.length,
@@ -149,27 +137,20 @@ class _NewsScreenState extends State<NewsScreen> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ArticleReaderScreen(title: item.title, url: item.url),
+                builder: (_) =>
+                    ArticleReaderScreen(title: item.title, url: item.url),
               ),
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+            child: GlassSurface(
+              borderRadius: 24,
+              padding: EdgeInsets.zero,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (item.image != null)
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
                       child: Image.network(
                         item.image!,
                         height: 180,
@@ -188,7 +169,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         Text(
                           item.title,
                           style: const TextStyle(
-                            color: AppColors.textDark,
+                            color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             height: 1.3,
@@ -201,7 +182,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: AppColors.textDark.withValues(alpha: 0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               fontSize: 13,
                               height: 1.4,
                             ),
@@ -210,16 +191,22 @@ class _NewsScreenState extends State<NewsScreen> {
                         const SizedBox(height: 16),
                         Row(
                           children: [
-                            const Icon(LucideIcons.clock, size: 14, color: AppColors.greyText),
+                            const Icon(LucideIcons.clock,
+                                size: 14, color: Colors.white24),
                             const SizedBox(width: 6),
                             Text(
                               'Latest Update',
-                              style: TextStyle(color: AppColors.greyText.withValues(alpha: 0.8), fontSize: 11),
+                              style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.4),
+                                  fontSize: 11),
                             ),
                             const Spacer(),
-                            const Text(
+                            Text(
                               'Read More',
-                              style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold, fontSize: 12),
+                              style: TextStyle(
+                                  color: DesignTokens.colors.primaryBlue,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
                             ),
                           ],
                         ),
@@ -240,10 +227,12 @@ class _NewsScreenState extends State<NewsScreen> {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.primaryBlue.withValues(alpha: 0.05),
-        borderRadius: isTop ? const BorderRadius.vertical(top: Radius.circular(24)) : BorderRadius.circular(24),
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: isTop
+            ? const BorderRadius.vertical(top: Radius.circular(24))
+            : BorderRadius.circular(24),
       ),
-      child: const Icon(LucideIcons.newspaper, color: AppColors.primaryBlue, size: 48),
+      child: const Icon(LucideIcons.newspaper, color: Colors.white24, size: 48),
     );
   }
 
@@ -252,9 +241,12 @@ class _NewsScreenState extends State<NewsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(LucideIcons.searchX, size: 48, color: AppColors.greyText.withValues(alpha: 0.5)),
+          Icon(LucideIcons.searchX,
+              size: 48, color: Colors.white.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
-          const Text('No news found for this category', style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.bold)),
+          const Text('No news found',
+              style:
+                  TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -269,7 +261,9 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             const Icon(LucideIcons.wifiOff, size: 48, color: Colors.redAccent),
             const SizedBox(height: 16),
-            Text('Failed to load news: $_error', textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent)),
+            Text('Failed to load news: $_error',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.redAccent)),
             const SizedBox(height: 24),
             ElevatedButton(onPressed: _loadNews, child: const Text('Try Again')),
           ],

@@ -167,7 +167,7 @@ class PointsScreenState extends State<PointsScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: IconButton(
               icon: const Icon(Icons.history_rounded,
@@ -310,18 +310,18 @@ class PointsScreenState extends State<PointsScreen> {
           color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1), width: 1.5),
+              color: Colors.white.withOpacity(0.1), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
           ],
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF1E293B).withValues(alpha: 0.8),
-              const Color(0xFF0F172A).withValues(alpha: 0.8)
+              const Color(0xFF1E293B).withOpacity(0.8),
+              const Color(0xFF0F172A).withOpacity(0.8)
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -335,7 +335,7 @@ class PointsScreenState extends State<PointsScreen> {
                 Text(
                   'AVAILABLE BALANCE',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: Colors.white.withOpacity(0.6),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -370,7 +370,7 @@ class PointsScreenState extends State<PointsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.accentGreen.withValues(alpha: 0.8),
+                      color: AppColors.accentGreen.withOpacity(0.8),
                     ),
                   ),
                 ],
@@ -382,10 +382,10 @@ class PointsScreenState extends State<PointsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withValues(alpha: 0.1),
+                  color: AppColors.accentGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: AppColors.accentGreen.withValues(alpha: 0.3)),
+                      color: AppColors.accentGreen.withOpacity(0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -409,7 +409,7 @@ class PointsScreenState extends State<PointsScreen> {
             Text(
               'You\'ve reached ${_calculateTierName(context.read<AuthProvider>().user?.profile?.totalPoints ?? 0)} status. Keep it up!',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 14,
                 height: 1.4,
               ),
@@ -450,11 +450,11 @@ class PointsScreenState extends State<PointsScreen> {
         decoration: BoxDecoration(
           color: isActive
               ? AppColors.accentGreen
-              : Colors.white.withValues(alpha: 0.05),
+              : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(22),
           border: isActive
               ? null
-              : Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              : Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -523,7 +523,7 @@ class PointsScreenState extends State<PointsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(isFeatured ? 24 : 20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -536,12 +536,12 @@ class PointsScreenState extends State<PointsScreen> {
               gradient: LinearGradient(
                 colors: isFeatured
                     ? [
-                        Colors.blue.withValues(alpha: 0.2),
-                        Colors.blue.withValues(alpha: 0.05)
+                        Colors.blue.withOpacity(0.2),
+                        Colors.blue.withOpacity(0.05)
                       ]
                     : [
-                        AppColors.accentGreen.withValues(alpha: 0.1),
-                        AppColors.accentGreen.withValues(alpha: 0.02)
+                        AppColors.accentGreen.withOpacity(0.1),
+                        AppColors.accentGreen.withOpacity(0.02)
                       ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -560,8 +560,8 @@ class PointsScreenState extends State<PointsScreen> {
                     color: isLocked
                         ? Colors.white24
                         : (isFeatured
-                            ? Colors.blue.withValues(alpha: 0.5)
-                            : AppColors.accentGreen.withValues(alpha: 0.5)),
+                            ? Colors.blue.withOpacity(0.5)
+                            : AppColors.accentGreen.withOpacity(0.5)),
                   ),
                 ),
                 Positioned(
@@ -612,7 +612,7 @@ class PointsScreenState extends State<PointsScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: isFeatured ? 14 : 12,
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: Colors.white.withOpacity(0.5),
                     height: 1.4,
                   ),
                 ),
@@ -628,10 +628,10 @@ class PointsScreenState extends State<PointsScreen> {
                           ? (isFeatured
                               ? AppColors.accentGreen
                               : const Color(0xFF2563EB))
-                          : Colors.white.withValues(alpha: 0.05),
+                          : Colors.white.withOpacity(0.05),
                       foregroundColor: (canAfford && !isLocked)
                           ? (isFeatured ? Colors.black87 : Colors.white)
-                          : Colors.white.withValues(alpha: 0.4),
+                          : Colors.white.withOpacity(0.4),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
@@ -669,7 +669,7 @@ class PointsScreenState extends State<PointsScreen> {
             height: 50,
             decoration: BoxDecoration(
               color:
-                  AppColors.accentGreen.withValues(alpha: 0.2), // Darker teal
+                  AppColors.accentGreen.withOpacity(0.2), // Darker teal
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.volunteer_activism,
@@ -692,7 +692,7 @@ class PointsScreenState extends State<PointsScreen> {
                 Text(
                   'Donate 200 pts to provide legal aid to victims.',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
+                    color: Colors.white.withOpacity(0.6),
                     fontSize: 12,
                   ),
                 ),
@@ -734,9 +734,9 @@ class PointsScreenState extends State<PointsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.02),
+        color: Colors.white.withOpacity(0.02),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

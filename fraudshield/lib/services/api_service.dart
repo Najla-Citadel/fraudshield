@@ -38,9 +38,9 @@ class ApiService {
   static const String _prodFingerprint =
       '71c19421bf024457a008b35ef53290f59e7b828cdbe1e4ef81ea29a8b3b8e9cd';
 
-  // Backup fingerprint for certificate rotation (Primary replacement)
+  // Backup fingerprint for certificate rotation (ISRG Root X1 / Let's Encrypt Root)
   static const String _backupFingerprint =
-      '0000000000000000000000000000000000000000000000000000000000000000';
+      '6d99fb265eb1c5b3744765fcbc648f3cd8e1bee26287915b067b4059a817fa36';
 
   Future<void> init() async {
     if (kReleaseMode && baseUrl.isEmpty) {
