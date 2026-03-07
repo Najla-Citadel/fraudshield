@@ -82,7 +82,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Widget _buildFilters() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.sm, DesignTokens.spacing.xl, DesignTokens.spacing.lg),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -99,7 +99,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _buildCategoryChip(String label, NewsCategory? category) {
     final isSelected = _selectedCategory == category;
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: EdgeInsets.only(right: DesignTokens.spacing.sm),
       child: ChoiceChip(
         label: Text(label),
         selected: isSelected,
@@ -130,9 +130,9 @@ class _NewsScreenState extends State<NewsScreen> {
       color: DesignTokens.colors.primary,
       backgroundColor: DesignTokens.colors.surfaceDark,
       child: ListView.separated(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         itemCount: _items.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 20),
+        separatorBuilder: (_, __) => SizedBox(height: 20),
         itemBuilder: (context, index) {
           final item = _items[index];
           return GestureDetector(
@@ -152,7 +152,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   if (item.image != null)
                     ClipRRect(
                       borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(24)),
+                          BorderRadius.vertical(top: Radius.circular(24)),
                       child: Image.network(
                         item.image!,
                         height: 180,
@@ -164,7 +164,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   else
                     _buildPlaceholderImage(isTop: true),
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(DesignTokens.spacing.xl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -178,7 +178,7 @@ class _NewsScreenState extends State<NewsScreen> {
                           ),
                         ),
                         if (item.excerpt != null) ...[
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             item.excerpt!,
                             maxLines: 2,
@@ -190,19 +190,19 @@ class _NewsScreenState extends State<NewsScreen> {
                             ),
                           ),
                         ],
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         Row(
                           children: [
-                            const Icon(LucideIcons.clock,
+                            Icon(LucideIcons.clock,
                                 size: 14, color: Colors.white24),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 6),
                             Text(
                               AppLocalizations.of(context)!.newsLatestUpdate,
                               style: TextStyle(
                                   color: Colors.white.withOpacity(0.4),
                                   fontSize: 11),
                             ),
-                            const Spacer(),
+                            Spacer(),
                             Text(
                               AppLocalizations.of(context)!.newsReadMore,
                               style: TextStyle(
@@ -231,15 +231,15 @@ class _NewsScreenState extends State<NewsScreen> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: isTop
-            ? const BorderRadius.vertical(top: Radius.circular(24))
+            ? BorderRadius.vertical(top: Radius.circular(24))
             : BorderRadius.circular(DesignTokens.radii.xl),
       ),
-      child: const Icon(LucideIcons.newspaper, color: Colors.white24, size: 48),
+      child: Icon(LucideIcons.newspaper, color: Colors.white24, size: 48),
     );
   }
 
   Widget _buildEmptyState() {
-    return const AppEmptyState(
+    return AppEmptyState(
       icon: LucideIcons.searchX,
       title: 'No news found',
       description: 'We couldn\'t find any news articles matching your current filter.',

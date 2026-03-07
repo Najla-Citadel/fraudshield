@@ -35,18 +35,18 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
       backgroundColor: DesignTokens.colors.backgroundLight,
       appBar: AppBar(
         backgroundColor: DesignTokens.colors.primary,
-        title: const Text(
+        title: Text(
           'Facial Detection',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // 🧠 Info
             Text(
@@ -57,7 +57,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             // 📷 Face placeholder / camera frame
             Container(
@@ -82,7 +82,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             // 🟦 Scan Button
             AppButton(
@@ -94,13 +94,13 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               width: double.infinity,
             ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
 
             // 🧾 Result Section
             if (isSuspicious != null)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(DesignTokens.spacing.xl),
                 decoration: BoxDecoration(
                   color: isSuspicious! ? Colors.red[50] : Colors.green[50],
                   borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -118,7 +118,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
                       color: isSuspicious! ? Colors.redAccent : Colors.green,
                       size: 70,
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     Text(
                       isSuspicious!
                           ? 'Suspicious Face Detected!'
@@ -130,7 +130,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    SizedBox(height: 6),
                     Text(
                       isSuspicious!
                           ? 'This person may not match the registered identity.'

@@ -465,7 +465,7 @@ class ApiService {
       'checkType': checkType,
       'isPriority': isPriority,
     });
-    return response as Map<String, dynamic>;
+    return response;
   }
 
   Future<Map<String, dynamic>> convertToScamReport({
@@ -477,7 +477,7 @@ class ApiService {
       'description': description,
       'category': category,
     });
-    return response as Map<String, dynamic>;
+    return response;
   }
 
   // ---------------- Subscriptions ----------------

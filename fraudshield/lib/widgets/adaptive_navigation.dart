@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 import 'dart:ui';
-import '../providers/theme_provider.dart';
 
 class AdaptiveNavigation extends StatelessWidget {
   final int currentIndex;
@@ -48,7 +46,7 @@ class AdaptiveNavigation extends StatelessWidget {
       return NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: Theme.of(context).primaryColor.withOpacity(0.15),
-          labelTextStyle: MaterialStateProperty.all(
+          labelTextStyle: WidgetStateProperty.all(
             const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),
         ),

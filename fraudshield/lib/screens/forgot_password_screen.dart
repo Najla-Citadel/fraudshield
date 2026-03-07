@@ -100,12 +100,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(DesignTokens.spacing.xl),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -116,10 +116,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   color: DesignTokens.colors.primary,
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               GlassSurface(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
                 borderRadius: 24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -131,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         color: colors.textLight,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       _isCodeSent
                           ? 'Enter the 6-digit code sent to your email'
@@ -142,7 +142,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         height: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32),
                     
                     if (!_isCodeSent) ...[
                       AdaptiveTextField(
@@ -153,7 +153,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         errorText: _emailError,
                         onChanged: (_) => setState(() => _emailError = null),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       AppButton(
                         label: 'Send Code',
                         onPressed: _handleRequestCode,
@@ -168,7 +168,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         errorText: _otpError,
                         onChanged: (_) => setState(() => _otpError = null),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       AdaptiveTextField(
                         controller: _passwordController,
                         label: 'New Password',
@@ -177,13 +177,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         errorText: _passwordError,
                         onChanged: (_) => setState(() => _passwordError = null),
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24),
                       AppButton(
                         label: 'Reset Password',
                         onPressed: _handleResetPassword,
                         isLoading: _isLoading,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       TextButton(
                         onPressed: () => setState(() => _isCodeSent = false),
                         child: Text(

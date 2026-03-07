@@ -17,13 +17,13 @@ class SecurityHealthCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.lg),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF00C6A5), // Greenish
+            Color(0xFF00C6A5), // Greenish
             DesignTokens.colors.primary, // Blue
           ],
         ),
@@ -46,7 +46,7 @@ class SecurityHealthCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Security Health Score',
                 style: TextStyle(
                   color: Colors.white,
@@ -67,7 +67,7 @@ class SecurityHealthCard extends StatelessWidget {
                       letterSpacing: -1,
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     '/100',
                     style: TextStyle(
@@ -78,10 +78,10 @@ class SecurityHealthCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               // Status Badge
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -89,8 +89,8 @@ class SecurityHealthCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(LucideIcons.checkCircle2, color: Colors.white, size: 16),
-                    const SizedBox(width: 8),
+                    Icon(LucideIcons.checkCircle2, color: Colors.white, size: 16),
+                    SizedBox(width: 8),
                     Text(
                       status,
                       style: const TextStyle(

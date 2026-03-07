@@ -46,7 +46,7 @@ class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
         style: ButtonStyle(
           visualDensity: VisualDensity.comfortable,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: MaterialStateProperty.all(
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.sm)),
           ),
         ),

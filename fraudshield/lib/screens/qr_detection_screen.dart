@@ -54,11 +54,11 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  const Color(0xFF0F172A),
+                  Color(0xFF0F172A),
                   DesignTokens.colors.backgroundDark,
-                  const Color(0xFF1E3A8A),
+                  Color(0xFF1E3A8A),
                 ],
-                stops: const [0.0, 0.5, 1.0],
+                stops: [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -71,14 +71,14 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 _buildAppBar(),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20),
                         _buildHeroScanButton(),
-                        const SizedBox(height: 40),
-                        const Text(
+                        SizedBox(height: 40),
+                        Text(
                           'Recent Scans',
                           style: TextStyle(
                             color: Colors.white,
@@ -86,11 +86,11 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         if (_isLoading)
                           Center(
                             child: Padding(
-                              padding: const EdgeInsets.all(40),
+                              padding: EdgeInsets.all(40),
                               child: AppLoadingIndicator(
                                   size: 40,
                                   strokeWidth: 4,
@@ -101,7 +101,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                           _buildEmptyState()
                         else
                           _buildHistoryList(),
-                        const SizedBox(height: 40),
+                        SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -116,12 +116,12 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
 
   Widget _buildAppBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           AppBackButton(color: Colors.white, onPressed: () => Navigator.pop(context)),
-          const Text(
+          Text(
             'QR Security Hub',
             style: TextStyle(
               color: Colors.white,
@@ -130,23 +130,23 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
             ),
           ),
           IconButton(
-            icon: const Icon(LucideIcons.trash2, color: Colors.white38),
+            icon: Icon(LucideIcons.trash2, color: Colors.white38),
             onPressed: () async {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   backgroundColor: DesignTokens.colors.backgroundDark,
-                  title: const Text('Clear History?',
+                  title: Text('Clear History?',
                       style: TextStyle(color: Colors.white)),
-                  content: const Text('This will remove all recent scans.',
+                  content: Text('This will remove all recent scans.',
                       style: TextStyle(color: Colors.white70)),
                   actions: [
                     TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancel')),
+                        child: Text('Cancel')),
                     TextButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Clear',
+                        child: Text('Clear',
                             style: TextStyle(color: Colors.red))),
                   ],
                 ),
@@ -172,7 +172,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         _loadHistory();
       },
       child: Container(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
@@ -183,7 +183,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(DesignTokens.spacing.xl),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -191,8 +191,8 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
               child: Icon(LucideIcons.scanLine,
                   color: DesignTokens.colors.accentGreen, size: 48),
             ),
-            const SizedBox(height: 24),
-            const Text(
+            SizedBox(height: 24),
+            Text(
               'Scan New QR Code',
               style: TextStyle(
                 color: Colors.white,
@@ -200,7 +200,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Instantly check URLs for phishing and threats',
               textAlign: TextAlign.center,
@@ -220,7 +220,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       children: _history.map((item) {
         final isSafe = item.riskLevel == 'low';
         return Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.03),
             borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -228,9 +228,9 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
           ),
           child: ListTile(
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
             leading: Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.accentGreen : Colors.red)
                     .withOpacity(0.1),
@@ -259,7 +259,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 fontSize: 12,
               ),
             ),
-            trailing: const Icon(LucideIcons.chevronRight,
+            trailing: Icon(LucideIcons.chevronRight,
                 color: Colors.white24, size: 16),
             onTap: () {
               // Show report details (Re-using evaluation from Camera screen if needed)
@@ -285,10 +285,10 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
     return Center(
       child: Column(
         children: [
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
           Icon(LucideIcons.history,
               size: 64, color: Colors.white.withOpacity(0.1)),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'No scan history yet',
             style: TextStyle(
@@ -307,18 +307,18 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.95),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          color: Color(0xFF0F172A).withOpacity(0.95),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _riskHeader(result),
-            const SizedBox(height: 16),
-            const Text('Content:',
+            SizedBox(height: 16),
+            Text('Content:',
                 style: TextStyle(
                     color: Colors.white54,
                     fontSize: 12,
@@ -326,7 +326,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
             Text(raw,
                 style: const TextStyle(
                     color: Colors.white, fontSize: 14, fontFamily: 'Courier')),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Row(
               children: [
                 if (result.level != 'high' && result.level != 'critical')
@@ -342,7 +342,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                       text: 'Open Link',
                     ),
                   ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: AdaptiveButton(
                     onPressed: () => Navigator.pop(context),
@@ -351,7 +351,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -389,7 +389,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
     return Row(
       children: [
         Icon(icon, color: color, size: 28),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -471,23 +471,23 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
       builder: (_) => Container(
         height: 250,
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          color: Color(0xFF0F172A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AppLoadingIndicator(color: DesignTokens.colors.accentGreen),
-              const SizedBox(height: 24),
-              const Text('Analyzing QR Content...',
+              SizedBox(height: 24),
+              Text('Analyzing QR Content...',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxxl),
                 child: Text(raw,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -507,18 +507,18 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.95),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          color: Color(0xFF0F172A).withOpacity(0.95),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _riskHeader(result),
-            const SizedBox(height: 16),
-            const Text('Content:',
+            SizedBox(height: 16),
+            Text('Content:',
                 style: TextStyle(
                     color: Colors.white54,
                     fontSize: 12,
@@ -528,22 +528,22 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                     color: Colors.white, fontSize: 14, fontFamily: 'Courier'),
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis),
-            const SizedBox(height: 16),
-            const Text('Analysis:',
+            SizedBox(height: 16),
+            Text('Analysis:',
                 style: TextStyle(
                     color: Colors.white54,
                     fontSize: 12,
                     fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ...result.reasons.map((r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
                   child: Row(
                     children: [
                       Icon(LucideIcons.shieldCheck,
                           size: 14,
                           color:
                               r.startsWith('✅') ? Colors.green : Colors.orange),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                           child: Text(r,
                               style: const TextStyle(
@@ -551,7 +551,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                     ],
                   ),
                 )),
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
             Row(
               children: [
                 if (result.level != 'high' && result.level != 'critical')
@@ -567,7 +567,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                       text: 'Open Link',
                     ),
                   ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: AdaptiveButton(
                     onPressed: () => Navigator.pop(context),
@@ -576,7 +576,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
           ],
         ),
       ),
@@ -619,7 +619,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
     return Row(
       children: [
         Icon(icon, color: color, size: 28),
-        const SizedBox(width: 8),
+        SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -653,7 +653,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               title:
-                  const Text('Scan QR', style: TextStyle(color: Colors.white)),
+                  Text('Scan QR', style: TextStyle(color: Colors.white)),
               leading: const BackButton(color: Colors.white),
               actions: [
                 IconButton(
@@ -665,7 +665,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                   },
                 ),
                 IconButton(
-                  icon: const Icon(LucideIcons.refreshCw, color: Colors.white),
+                  icon: Icon(LucideIcons.refreshCw, color: Colors.white),
                   onPressed: () => _controller.switchCamera(),
                 ),
               ],
@@ -679,10 +679,10 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
                 border: Border.all(color: Colors.white70, width: 2),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
-              child: const Align(
+              child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(DesignTokens.spacing.sm),
                   child: Text('Center QR code in frame',
                       style: TextStyle(color: Colors.white70, fontSize: 12)),
                 ),

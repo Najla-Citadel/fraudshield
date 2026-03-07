@@ -74,6 +74,7 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
 
+  flutter_dotenv: any
 flutter_launcher_icons:
   android: true
   ios: false
@@ -89,6 +90,7 @@ flutter:
     - .env
     - assets/images/hi_bot.png
     - assets/images/logo.png
+    - assets/images/google_logo.png
     - assets/images/tip_image.png
     - assets/images/tip1.png
     - assets/images/tip2.png

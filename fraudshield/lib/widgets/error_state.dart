@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/tokens/design_tokens.dart';
 class ErrorState extends StatelessWidget {
   final VoidCallback onRetry;
   final String title;
@@ -16,23 +17,23 @@ class ErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               decoration: BoxDecoration(
                 color: Colors.redAccent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.wifi_off_rounded,
                 size: 48,
                 color: Colors.redAccent,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Text(
               title,
               style: const TextStyle(
@@ -41,7 +42,7 @@ class ErrorState extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -51,7 +52,7 @@ class ErrorState extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             AppButton(
               onPressed: onRetry,
               icon: Icons.refresh_rounded,

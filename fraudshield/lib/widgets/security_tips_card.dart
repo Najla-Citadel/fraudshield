@@ -15,17 +15,17 @@ class SecurityTipsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassSurface(
       borderRadius: 20,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       accentColor: DesignTokens.colors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.lightbulb_outline_rounded,
+              Icon(Icons.lightbulb_outline_rounded,
                   color: Colors.amber, size: 18),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'Security Tips',
                 style: TextStyle(
                   color: Colors.white,
@@ -35,15 +35,15 @@ class SecurityTipsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           ...tips.map((tip) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: 10),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(LucideIcons.shieldCheck,
                         color: DesignTokens.colors.accentGreen, size: 16),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         tip,

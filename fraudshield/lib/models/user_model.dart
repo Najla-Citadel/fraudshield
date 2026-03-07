@@ -75,7 +75,7 @@ class UserProfile {
     this.totalPoints = 0,
     this.reputation = 0,
     this.loginStreak = 0,
-    this.badges = const [],
+    this.badges = [],
     this.metadata,
   });
 

@@ -108,13 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             child: GlassSurface(
               borderRadius: 24,
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.security,
                       size: 64, color: DesignTokens.colors.accentGreen),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.homeWelcomeTitle,
                     textAlign: TextAlign.center,
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.homeWelcomeDesc,
                     textAlign: TextAlign.center,
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   AppButton(
                     onPressed: () async {
                       Navigator.pop(context);
@@ -230,9 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _healthData = health;
           _securityScore = health['score'];
           final score = _securityScore;
-          if (score >= 90)
+          if (score >= 90) {
             _securityStatus = l10n.statusExcellent;
-          else if (score >= 75)
+          } else if (score >= 75)
             _securityStatus = l10n.statusGood;
           else if (score >= 50)
             _securityStatus = l10n.statusProtected;
@@ -355,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -369,13 +369,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       AppLocalizations.of(context)!.homeSelectActionsDesc,
                       style:
                           TextStyle(color: Colors.white.withOpacity(0.6)),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     // Toggles
                     _buildToggleItem(
@@ -455,13 +455,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     AppButton(
                       onPressed: () => Navigator.pop(context),
                       label: AppLocalizations.of(context)!.btnDone,
                       variant: AppButtonVariant.primary,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -479,11 +479,11 @@ class _HomeScreenState extends State<HomeScreen> {
     ValueChanged<bool> onChanged,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.sm),
       child: GlassSurface(
         // Reusing GlassSurface for consistent look
         borderRadius: 16,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
         child: Row(
           children: [
             Expanded(
@@ -511,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: DesignTokens.colors.accentGreen,
+              activeThumbColor: DesignTokens.colors.accentGreen,
               activeTrackColor: DesignTokens.colors.accentGreen.withOpacity(0.3),
             ),
           ],
@@ -565,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
       name = null;
     }
     final displayUserName =
-        name ?? authProvider.user?.email?.split('@').first ?? 'User';
+        name ?? authProvider.user?.email.split('@').first ?? 'User';
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
@@ -602,7 +602,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 🛡️ Terms Acceptance Mandatory Barrier
           if (authProvider.isAuthenticated &&
               authProvider.user?.acceptedTermsVersion == null)
-            const Positioned.fill(child: TermsAcceptanceOverlay()),
+            Positioned.fill(child: TermsAcceptanceOverlay()),
         ],
       ),
       bottomNavigationBar: FloatingNavBar(
@@ -672,7 +672,7 @@ class _HomeTab extends StatelessWidget {
         backgroundColor: DesignTokens.colors.surfaceDark,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
+          padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xxl, DesignTokens.spacing.xl, DesignTokens.spacing.xxl, 100),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -683,16 +683,16 @@ class _HomeTab extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(DesignTokens.spacing.sm),
                         decoration: BoxDecoration(
                           color: DesignTokens.colors.primary,
                           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         ),
-                        child: const Icon(LucideIcons.shieldCheck,
+                        child: Icon(LucideIcons.shieldCheck,
                             color: Colors.white, size: 24),
                       ),
-                      const SizedBox(width: 12),
-                      const Text(
+                      SizedBox(width: 12),
+                      Text(
                         'FraudShield',
                         style: TextStyle(
                           color: Colors.white,
@@ -707,7 +707,7 @@ class _HomeTab extends StatelessWidget {
                     children: [
                       IconButton(
                         icon:
-                            const Icon(LucideIcons.bell, color: Colors.white),
+                            Icon(LucideIcons.bell, color: Colors.white),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -733,7 +733,7 @@ class _HomeTab extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // 2. SECURITY HEALTH SCORE (Gradient Card)
               TweenAnimationBuilder<double>(
@@ -752,7 +752,7 @@ class _HomeTab extends StatelessWidget {
                 child: _buildSecurityHealthCard(context),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               // 3. SERVICES ROW
               TweenAnimationBuilder<double>(
@@ -771,7 +771,7 @@ class _HomeTab extends StatelessWidget {
                 child: _buildQuickActions(context),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // 4. PREMIUM PROTECTION
               TweenAnimationBuilder<double>(
@@ -790,7 +790,7 @@ class _HomeTab extends StatelessWidget {
                 child: _buildPremiumProtectionSection(context),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // 5. SECURITY NEWS & INSIGHTS
               TweenAnimationBuilder<double>(
@@ -809,7 +809,7 @@ class _HomeTab extends StatelessWidget {
                 child: _buildSecurityNewsSection(context),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // 6. SUBMITTED REPORTS
               TweenAnimationBuilder<double>(
@@ -828,7 +828,7 @@ class _HomeTab extends StatelessWidget {
                 child: _buildSubmittedReportsSection(context),
               ),
 
-              const SizedBox(height: 40), // Bottom padding
+              SizedBox(height: 40), // Bottom padding
             ],
           ),
         ),
@@ -848,17 +848,17 @@ class _HomeTab extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A), // Slate 900
+          color: Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(
               color: Colors.white.withOpacity(0.1), width: 1.5),
           boxShadow: DesignTokens.shadows.lg,
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF1E293B).withOpacity(0.8),
-              const Color(0xFF0F172A).withOpacity(0.8)
+              Color(0xFF1E293B).withOpacity(0.8),
+              Color(0xFF0F172A).withOpacity(0.8)
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -888,7 +888,7 @@ class _HomeTab extends StatelessWidget {
                     letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
@@ -902,7 +902,7 @@ class _HomeTab extends StatelessWidget {
                         height: 1.0,
                       ),
                     ),
-                    const Text(
+                    Text(
                       ' /100',
                       style: TextStyle(
                         color: Colors.white,
@@ -912,11 +912,11 @@ class _HomeTab extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 // Status Pill
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                   decoration: BoxDecoration(
                     color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -957,7 +957,7 @@ class _HomeTab extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -969,7 +969,7 @@ class _HomeTab extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (_) => const ScamReportEntryScreen())))),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
                 child: _buildGridButton(
                     context,
@@ -981,7 +981,7 @@ class _HomeTab extends StatelessWidget {
                             builder: (_) => const FraudCheckScreen())))),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -993,7 +993,7 @@ class _HomeTab extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (_) => const UrlLinkCheckScreen())))),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
                 child: _buildGridButton(
                     context,
@@ -1025,7 +1025,7 @@ class _HomeTab extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: Colors.white, size: 28),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               title,
               style: const TextStyle(
@@ -1054,16 +1054,16 @@ class _HomeTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF7E6), // Light yellow tint
+                color: Color(0xFFFFF7E6), // Light yellow tint
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                 border: Border.all(
-                    color: const Color(0xFFFFCC00).withOpacity(0.5)),
+                    color: Color(0xFFFFCC00).withOpacity(0.5)),
               ),
-              child: const Text(
+              child: Text(
                 'GOLD TIER',
                 style: TextStyle(
                   color: Color(0xFFE5A800),
@@ -1075,7 +1075,7 @@ class _HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           clipBehavior: Clip.none,
@@ -1096,7 +1096,7 @@ class _HomeTab extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               _buildPremiumCard(
                 context,
                 'AI Voice Scanner',
@@ -1116,7 +1116,7 @@ class _HomeTab extends StatelessWidget {
                   }
                 },
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               _buildPremiumCard(
                 context,
                 'AI File Scanner',
@@ -1150,7 +1150,7 @@ class _HomeTab extends StatelessWidget {
       child: Container(
         width: 120,
         height: 140, // Uniform height
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.xl, horizontal: DesignTokens.spacing.md),
         decoration: BoxDecoration(
           color: Colors.white
               .withOpacity(0.08), // Increased opacity for consistency
@@ -1172,18 +1172,18 @@ class _HomeTab extends StatelessWidget {
                   bottom: -4,
                   right: -4,
                   child: Container(
-                    padding: const EdgeInsets.all(2),
+                    padding: EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: Color(0xFF0F172A),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.stars,
+                    child: Icon(Icons.stars,
                         color: Color(0xFFFFCC00), size: 14),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               title,
               textAlign: TextAlign.center,
@@ -1235,9 +1235,9 @@ class _HomeTab extends StatelessWidget {
           },
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(DesignTokens.spacing.xl),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(
                 color: hasAlerts
@@ -1253,7 +1253,7 @@ class _HomeTab extends StatelessWidget {
                 Row(
                   children: [
                     Icon(iconData, color: iconColor, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       title,
                       style: TextStyle(
@@ -1263,12 +1263,12 @@ class _HomeTab extends StatelessWidget {
                         letterSpacing: 1.0,
                       ),
                     ),
-                    const Spacer(),
+                    Spacer(),
                     Icon(Icons.arrow_forward_ios,
                         color: Colors.white.withOpacity(0.5), size: 14),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text(
                   subtitle,
                   style: const TextStyle(
@@ -1293,9 +1293,9 @@ class _HomeTab extends StatelessWidget {
       duration: const Duration(milliseconds: 1500),
       builder: (context, value, child) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B), // Dark Slate
+            color: Color(0xFF1E293B), // Dark Slate
             borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3 * value),
@@ -1310,7 +1310,7 @@ class _HomeTab extends StatelessWidget {
                 color: DesignTokens.colors.accentGreen.withValues(alpha: value),
                 size: 8,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context)!.homeSystemActive,
                 style: TextStyle(
@@ -1343,9 +1343,9 @@ class _HomeTab extends StatelessWidget {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Match trending alerts style
+          color: Color(0xFF1E293B), // Match trending alerts style
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3), width: 1),
@@ -1358,7 +1358,7 @@ class _HomeTab extends StatelessWidget {
               children: [
                 Icon(Icons.check_circle_rounded,
                     color: DesignTokens.colors.accentGreen, size: 24),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 Text(
                   AppLocalizations.of(context)!.homePaymentJournal.toUpperCase(),
                   style: TextStyle(
@@ -1370,13 +1370,13 @@ class _HomeTab extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'Unsure about a seller? Log the payment here before you transfer money.',
               style: TextStyle(
                   color: Colors.white.withOpacity(0.8), height: 1.4),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
@@ -1394,12 +1394,12 @@ class _HomeTab extends StatelessWidget {
                 icon: Text(AppLocalizations.of(context)!.btnLogNow,
                     style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold)),
-                label: const Icon(Icons.arrow_forward_rounded,
+                label: Icon(Icons.arrow_forward_rounded,
                     color: Colors.white, size: 18),
                 style: TextButton.styleFrom(
                   backgroundColor: DesignTokens.colors.accentGreen,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(DesignTokens.radii.xs)),
                 ),
@@ -1426,7 +1426,7 @@ class _HomeTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             IconButton(
               onPressed: () => newsKey.currentState?.showCustomization(),
               icon: Icon(
@@ -1439,7 +1439,7 @@ class _HomeTab extends StatelessWidget {
               visualDensity: VisualDensity.compact,
               tooltip: 'Filter Categories',
             ),
-            const Spacer(),
+            Spacer(),
             TextButton(
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const NewsScreen())),
@@ -1451,14 +1451,14 @@ class _HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         LatestNewsWidget(key: newsKey, limit: 5),
       ],
     );
   }
 
   Widget _buildSubmittedReportsSection(BuildContext context) {
-    if (myReports.isEmpty) return const SizedBox.shrink();
+    if (myReports.isEmpty) return SizedBox.shrink();
 
     final displaysReports = myReports.take(3).toList();
 
@@ -1489,7 +1489,7 @@ class _HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         ...displaysReports.map((report) => _buildReportCard(context, report)),
       ],
     );
@@ -1518,8 +1518,8 @@ class _HomeTab extends StatelessWidget {
         MaterialPageRoute(builder: (_) => ReportDetailsScreen(report: report)),
       ),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
+        padding: EdgeInsets.all(DesignTokens.spacing.lg),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -1528,15 +1528,15 @@ class _HomeTab extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.fileText,
+              child: Icon(LucideIcons.fileText,
                   color: Colors.white70, size: 20),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1549,7 +1549,7 @@ class _HomeTab extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     date,
                     style: TextStyle(
@@ -1560,7 +1560,7 @@ class _HomeTab extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
               decoration: BoxDecoration(
                 color: statusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -1614,8 +1614,6 @@ class _BigActionButton extends StatefulWidget {
     required this.icon,
     required this.color,
     required this.onTap,
-    this.isAlert = false,
-    this.isLocked = false,
   });
 
   @override
@@ -1654,8 +1652,8 @@ class _BigActionButtonState extends State<_BigActionButton> {
           child: Container(
             width: 100, // Fixed width for uniformity
             height: 115, // Increased height to prevent overflow
-            padding: const EdgeInsets.symmetric(
-                vertical: 12, horizontal: 8), // Reduced horizontal padding
+            padding: EdgeInsets.symmetric(
+                vertical: DesignTokens.spacing.md, horizontal: DesignTokens.spacing.sm), // Reduced horizontal padding
             decoration: BoxDecoration(
               color: widget.color,
               borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -1679,7 +1677,7 @@ class _BigActionButtonState extends State<_BigActionButton> {
                       size: 32,
                       color: widget.isAlert ? Colors.orange : Colors.white,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       widget.label,
                       textAlign: TextAlign.center,
@@ -1723,8 +1721,6 @@ class _StatusItem extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.isActive,
-    this.onTap,
-    this.isLocked = false,
   });
 
   @override
@@ -1732,9 +1728,9 @@ class _StatusItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(DesignTokens.spacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B),
+          color: Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border: onTap != null
               ? Border.all(color: Colors.white.withOpacity(0.05))
@@ -1743,14 +1739,14 @@ class _StatusItem extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: Colors.blueAccent),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1763,7 +1759,7 @@ class _StatusItem extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -1776,7 +1772,7 @@ class _StatusItem extends StatelessWidget {
             ),
             if (isLocked)
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: EdgeInsets.only(left: DesignTokens.spacing.sm),
                 child: Icon(Icons.lock,
                     color: Colors.white.withOpacity(0.5), size: 20),
               )
@@ -1820,20 +1816,20 @@ class _DailyRewardDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: GlassSurface(
         borderRadius: 20,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               '🎉 Daily Bonus!',
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
-            const SizedBox(height: 16),
-            const Icon(Icons.stars, size: 64, color: Colors.amber),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
+            Icon(Icons.stars, size: 64, color: Colors.amber),
+            SizedBox(height: 16),
             Text(
               '+$points Points',
               style: const TextStyle(
@@ -1842,15 +1838,15 @@ class _DailyRewardDialog extends StatelessWidget {
                 color: Colors.green,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -1858,8 +1854,8 @@ class _DailyRewardDialog extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.bolt, color: Colors.orange, size: 20),
-                  const SizedBox(width: 8),
+                  Icon(Icons.bolt, color: Colors.orange, size: 20),
+                  SizedBox(width: 8),
                   Text(
                     'Streak: $streak Days',
                     style: const TextStyle(
@@ -1868,13 +1864,13 @@ class _DailyRewardDialog extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Tomorrow\'s Reward: $nextReward Points',
               style: TextStyle(
                   fontSize: 12, color: Colors.white.withOpacity(0.4)),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             AppButton(
               onPressed: () => Navigator.pop(context),
               label: 'Awesome!',

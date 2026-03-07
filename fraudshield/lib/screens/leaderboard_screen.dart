@@ -71,17 +71,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     _buildTopThree(),
                     Expanded(
                       child: Container(
-                        margin: const EdgeInsets.only(top: 24),
+                        margin: EdgeInsets.only(top: DesignTokens.spacing.xxl),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.03),
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                         ),
                         child: _leaderboard.length <= 3 
                           ? _buildEmptyState()
                           : ListView.separated(
-                              padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
+                              padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xxl, DesignTokens.spacing.xxl, DesignTokens.spacing.xxl, 120),
                               itemCount: _leaderboard.length - 3,
-                              separatorBuilder: (context, index) => const SizedBox(height: 12),
+                              separatorBuilder: (context, index) => SizedBox(height: 12),
                               itemBuilder: (context, index) {
                                 final user = _leaderboard[index + 3];
                                 return _buildUserTile(user, index + 4);
@@ -98,10 +98,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget _buildTopThree() {
-    if (_leaderboard.isEmpty) return const SizedBox.shrink();
+    if (_leaderboard.isEmpty) return SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.md),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -115,7 +115,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget _buildPodiumItem(dynamic user, int rank, double size) {
-    final color = rank == 1 ? const Color(0xFFFFD700) : (rank == 2 ? const Color(0xFFC0C0C0) : const Color(0xFFCD7F32));
+    final color = rank == 1 ? Color(0xFFFFD700) : (rank == 2 ? Color(0xFFC0C0C0) : Color(0xFFCD7F32));
     
     return Column(
       children: [
@@ -123,7 +123,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           alignment: Alignment.bottomCenter,
           children: [
             Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: color.withOpacity(0.5), width: 3),
@@ -139,7 +139,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(4),
+              padding: EdgeInsets.all(DesignTokens.spacing.xs),
               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               child: Text(
                 rank.toString(),
@@ -148,7 +148,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           user['name'] ?? 'Anonymous',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
@@ -164,7 +164,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildUserTile(dynamic user, int rank) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.02),
         borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -187,7 +187,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +210,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 '${user['points']}',
                 style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              const Text(
+              Text(
                 'POINTS',
                 style: TextStyle(color: Color(0xFF64748B), fontSize: 9, fontWeight: FontWeight.bold),
               ),
@@ -225,10 +225,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        margin: const EdgeInsets.all(24),
-        padding: const EdgeInsets.all(20),
+        margin: EdgeInsets.all(DesignTokens.spacing.xxl),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -240,7 +240,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -250,7 +250,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
-            const Spacer(),
+            Spacer(),
             Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -277,7 +277,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.military_tech_rounded, color: Colors.white.withOpacity(0.05), size: 80),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'The race is on!',
             style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),

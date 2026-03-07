@@ -54,17 +54,17 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     return ScreenScaffold(
       title: 'AI MESSAGE SCANNER',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildInfoCard(),
             if (_result != null) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               _buildResultCard(),
             ],
-            const SizedBox(height: 32),
-            const Text(
+            SizedBox(height: 32),
+            Text(
               'Paste Message Content',
               style: TextStyle(
                 color: Colors.white,
@@ -72,7 +72,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                 fontSize: 16,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             GlassSurface(
               borderRadius: 24,
               padding: EdgeInsets.zero,
@@ -88,12 +88,12 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                     color: Colors.white.withOpacity(0.4),
                     fontSize: 14,
                   ),
-                  contentPadding: const EdgeInsets.all(20),
+                  contentPadding: EdgeInsets.all(DesignTokens.spacing.xl),
                   border: InputBorder.none,
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             AppButton(
               onPressed: _isLoading ? null : _analyze,
               label: 'Analyze Message',
@@ -101,14 +101,14 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               isLoading: _isLoading,
               width: double.infinity,
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
             _featureRow(
               'Language Agnostic',
               'Analyzes English, Bahasa Malaysia, and Mandarin.',
               LucideIcons.languages,
               Colors.orange,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _featureRow(
               'Hook Detection',
               'Identifies urgency, financial triggers, and impersonation.',
@@ -122,12 +122,12 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
   }
 
   Widget _buildResultCard() {
-    if (_result == null) return const SizedBox.shrink();
+    if (_result == null) return SizedBox.shrink();
     final isRisky = _result!.score >= 50;
     final color = isRisky ? Colors.red : Colors.green;
 
     return GlassSurface(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderRadius: 24,
       borderColor: color.withOpacity(0.3),
       child: Column(
@@ -137,7 +137,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             color: color,
             size: 48,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             isRisky ? 'Threat Detected' : 'Message Looks Safe',
             style: TextStyle(
@@ -146,7 +146,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               fontSize: 20,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Risk Score: ${_result!.score}/100',
             style: TextStyle(
@@ -156,17 +156,17 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             ),
           ),
           if (_result!.reasons.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Divider(color: Colors.white10),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
+            Divider(color: Colors.white10),
+            SizedBox(height: 16),
             ..._result!.reasons.map((r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(LucideIcons.alertCircle,
                           color: color.withOpacity(0.5), size: 14),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Expanded(
                           child: Text(r,
                               style: const TextStyle(
@@ -182,7 +182,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
 
   Widget _buildInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -197,15 +197,15 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
-            child: const Icon(LucideIcons.shieldCheck, color: Colors.white),
+            child: Icon(LucideIcons.shieldCheck, color: Colors.white),
           ),
-          const SizedBox(width: 16),
-          const Expanded(
+          SizedBox(width: 16),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -235,19 +235,19 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
 
   Widget _featureRow(String title, String desc, IconData icon, Color color) {
     return GlassSurface(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       borderRadius: 16,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +260,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   desc,
                   style: TextStyle(

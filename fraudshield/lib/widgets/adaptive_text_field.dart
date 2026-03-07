@@ -52,7 +52,7 @@ class AdaptiveTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            padding: EdgeInsets.only(left: DesignTokens.spacing.xs, bottom: DesignTokens.spacing.sm),
             child: Text(
               label,
               style: TextStyle(
@@ -72,16 +72,16 @@ class AdaptiveTextField extends StatelessWidget {
             autofocus: autofocus,
             readOnly: readOnly,
             enabled: enabled,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             prefix: prefixIcon != null
                 ? Padding(
-                    padding: const EdgeInsets.only(left: 16),
+                    padding: EdgeInsets.only(left: DesignTokens.spacing.lg),
                     child: Icon(prefixIcon, color: CupertinoColors.systemGrey),
                   )
                 : null,
             suffix: suffixIcon != null
                 ? Padding(
-                    padding: const EdgeInsets.only(right: 16),
+                    padding: EdgeInsets.only(right: DesignTokens.spacing.lg),
                     child: Icon(suffixIcon, color: CupertinoColors.systemGrey),
                   )
                 : null,
@@ -137,7 +137,7 @@ class AdaptiveTextField extends StatelessWidget {
           errorStyle: TextStyle(color: DesignTokens.colors.error),
           filled: true,
           fillColor: fillColor ?? Colors.white.withValues(alpha: 0.05),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          contentPadding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: 18),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             borderSide: BorderSide.none,

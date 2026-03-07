@@ -57,7 +57,7 @@ class AppSnackBar {
         content: Row(
           children: [
             Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Text(
                 message,
@@ -75,7 +75,7 @@ class AppSnackBar {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
-        margin: const EdgeInsets.all(16),
+        margin: EdgeInsets.all(DesignTokens.spacing.lg),
         duration: const Duration(seconds: 4),
       ),
     );

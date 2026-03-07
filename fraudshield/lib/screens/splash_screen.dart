@@ -77,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF0F172A), // Dark Navy
+                    Color(0xFF0F172A), // Dark Navy
                     DesignTokens.colors.backgroundDark, // Slightly lighter Slate
                   ],
                 ),
@@ -145,7 +145,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         child: const AppLogo(size: 100),
                       ),
                       
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
 
                       // Brand Name
                       Text(
@@ -159,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12),
 
                       // Tagline
                       Text(

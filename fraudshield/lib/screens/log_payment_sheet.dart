@@ -78,18 +78,18 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
   }
 
   Widget _buildRiskBadge() {
-    if (_merchantController.text.trim().isEmpty) return const SizedBox.shrink();
+    if (_merchantController.text.trim().isEmpty) return SizedBox.shrink();
 
     if (_isChecking) {
       return Container(
-        margin: const EdgeInsets.only(top: 8, bottom: 16),
-        padding: const EdgeInsets.all(12),
+        margin: EdgeInsets.only(top: DesignTokens.spacing.sm, bottom: DesignTokens.spacing.lg),
+        padding: EdgeInsets.all(DesignTokens.spacing.md),
         decoration: BoxDecoration(
           color: Colors.blueAccent.withOpacity(0.1),
           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
         child: Row(
-          children: const [
+          children: [
             SizedBox(
                 width: 16,
                 height: 16,
@@ -103,13 +103,13 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
       );
     }
 
-    if (_riskCheckResult == null) return const SizedBox.shrink();
+    if (_riskCheckResult == null) return SizedBox.shrink();
 
     final bool found = _riskCheckResult!['found'] ?? false;
     if (!found) {
       return Container(
-        margin: const EdgeInsets.only(top: 8, bottom: 16),
-        padding: const EdgeInsets.all(12),
+        margin: EdgeInsets.only(top: DesignTokens.spacing.sm, bottom: DesignTokens.spacing.lg),
+        padding: EdgeInsets.all(DesignTokens.spacing.md),
         decoration: BoxDecoration(
           color: DesignTokens.colors.accentGreen.withOpacity(0.1),
           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -142,8 +142,8 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
     }
 
     return Container(
-      margin: const EdgeInsets.only(top: 8, bottom: 16),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(top: DesignTokens.spacing.sm, bottom: DesignTokens.spacing.lg),
+      padding: EdgeInsets.all(DesignTokens.spacing.md),
       decoration: BoxDecoration(
         color: badgeColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -153,7 +153,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(badgeIcon, color: badgeColor, size: 24),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +163,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                         color: badgeColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 14)),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   rec,
                   style: TextStyle(
@@ -237,7 +237,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Log Transaction',
                   style: TextStyle(
                       color: Colors.white,
@@ -245,22 +245,22 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                       fontWeight: FontWeight.bold),
                 ),
                 IconButton(
-                  icon: const Icon(LucideIcons.x, color: Colors.white),
+                  icon: Icon(LucideIcons.x, color: Colors.white),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             DropdownButtonFormField<String>(
-              value: _selectedCategory,
-              dropdownColor: const Color(0xFF0B1121),
+              initialValue: _selectedCategory,
+              dropdownColor: Color(0xFF0B1121),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Log Category',
                 labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.tag, color: Colors.grey),
+                prefixIcon: Icon(LucideIcons.tag, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
@@ -273,7 +273,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 _onTargetChanged(_merchantController.text); // Re-trigger lookup
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: _merchantController,
               onChanged: _onTargetChanged,
@@ -281,9 +281,9 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               decoration: InputDecoration(
                 labelText: 'Recipient / Merchant Name',
                 labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.user, color: Colors.grey),
+                prefixIcon: Icon(LucideIcons.user, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
@@ -293,7 +293,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
             // Risk Badge injected here
             _buildRiskBadge(),
             if (_riskCheckResult == null && !_isChecking)
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
             // In/Out Toggle
             Row(
@@ -302,7 +302,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                   child: GestureDetector(
                     onTap: () => setState(() => _isIncome = true),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
                       decoration: BoxDecoration(
                         color: _isIncome
                             ? DesignTokens.colors.accentGreen.withOpacity(0.2)
@@ -321,7 +321,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                                   ? DesignTokens.colors.accentGreen
                                   : Colors.grey,
                               size: 18),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text('MONEY IN',
                               style: TextStyle(
                                   color: _isIncome
@@ -334,12 +334,12 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: GestureDetector(
                     onTap: () => setState(() => _isIncome = false),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
                       decoration: BoxDecoration(
                         color: !_isIncome
                             ? Colors.redAccent.withOpacity(0.2)
@@ -357,7 +357,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                               color:
                                   !_isIncome ? Colors.redAccent : Colors.grey,
                               size: 18),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text('MONEY OUT',
                               style: TextStyle(
                                   color: !_isIncome
@@ -372,7 +372,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             TextField(
               controller: _amountController,
@@ -383,26 +383,26 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 labelText: 'Amount (RM)',
                 labelStyle: const TextStyle(color: Colors.grey),
                 prefixIcon:
-                    const Icon(LucideIcons.banknote, color: Colors.grey),
+                    Icon(LucideIcons.banknote, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedMethod,
-              dropdownColor: const Color(0xFF0B1121),
+              initialValue: _selectedMethod,
+              dropdownColor: Color(0xFF0B1121),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Payment Method',
                 labelStyle: const TextStyle(color: Colors.grey),
                 prefixIcon:
-                    const Icon(LucideIcons.creditCard, color: Colors.grey),
+                    Icon(LucideIcons.creditCard, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
@@ -413,17 +413,17 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               }).toList(),
               onChanged: (val) => setState(() => _selectedMethod = val!),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedPlatform,
-              dropdownColor: const Color(0xFF0B1121),
+              initialValue: _selectedPlatform,
+              dropdownColor: Color(0xFF0B1121),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 labelText: 'Platform',
                 labelStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: const Icon(LucideIcons.layout, color: Colors.grey),
+                prefixIcon: Icon(LucideIcons.layout, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
@@ -440,7 +440,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               }).toList(),
               onChanged: (val) => setState(() => _selectedPlatform = val!),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: _notesController,
               maxLines: 3,
@@ -449,15 +449,15 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 labelText: 'Notes (Optional)',
                 labelStyle: const TextStyle(color: Colors.grey),
                 prefixIcon:
-                    const Icon(LucideIcons.fileText, color: Colors.grey),
+                    Icon(LucideIcons.fileText, color: Colors.grey),
                 filled: true,
-                fillColor: const Color(0xFF1E293B),
+                fillColor: Color(0xFF1E293B),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             AppButton(
               onPressed: _isSubmitting ? null : _submit,
               label: 'SAVE TO JOURNAL',
@@ -465,7 +465,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               isLoading: _isSubmitting,
               width: double.infinity,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
           ],
         ),
       ),

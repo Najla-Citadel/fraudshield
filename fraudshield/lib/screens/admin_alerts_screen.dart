@@ -7,6 +7,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -92,18 +93,18 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
       showModalBottomSheet(
         context: context,
         builder: (_) => Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(DesignTokens.spacing.lg),
           child: ListView(
             shrinkWrap: true,
             children: [
               Text('Transaction ${tx['id']}',
                   style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text('Amount: ${tx['amount']}'),
               Text('Merchant: ${tx['merchant']}'),
               Text('Decision: ${tx['decision']}'),
               Text('Risk Score: ${tx['riskScore']}'),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AppButton(
                 onPressed: () => Navigator.pop(context),
                 label: 'Close',
@@ -126,19 +127,19 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
     final bool processed = a['processed'] == true;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
       child: GlassSurface(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(DesignTokens.spacing.lg),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('TX: $txId',
               style: const TextStyle(
                   color: Colors.white, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text('Decision: ${a['decision']}',
               style: TextStyle(color: Colors.white.withOpacity(0.7))),
           Text('Risk Score: ${a['riskScore']}',
               style: TextStyle(color: Colors.white.withOpacity(0.7))),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(children: [
             Expanded(
               child: AppButton(
@@ -148,7 +149,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
                 size: AppButtonSize.sm,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Expanded(
               child: AppButton(
                 onPressed: processed ? null : () => _labelTx(txId, alertId, 'fraud'),
@@ -157,7 +158,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
                 size: AppButtonSize.sm,
               ),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Expanded(
               child: AppButton(
                 onPressed: processed ? null : () => _labelTx(txId, alertId, 'legit'),
@@ -178,18 +179,18 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
       title: 'ADMIN ALERTS',
       actions: [
         IconButton(
-          icon: const Icon(Icons.refresh, color: Colors.white),
+          icon: Icon(Icons.refresh, color: Colors.white),
           onPressed: _fetchAlerts,
         )
       ],
       body: _loading
           ? AppLoadingIndicator.center()
           : _alerts.isEmpty
-              ? const Center(child: Text('No alerts yet', style: TextStyle(color: Colors.white)))
+              ? Center(child: Text('No alerts yet', style: TextStyle(color: Colors.white)))
               : RefreshIndicator(
                   onRefresh: _fetchAlerts,
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.sm),
                     children: _alerts.map(_alertCard).toList(),
                   ),
                 ),

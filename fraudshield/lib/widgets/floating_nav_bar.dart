@@ -19,7 +19,7 @@ class FloatingNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+        margin: EdgeInsets.fromLTRB(DesignTokens.spacing.xxl, 0, DesignTokens.spacing.xxl, DesignTokens.spacing.lg),
         height: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
@@ -30,7 +30,7 @@ class FloatingNavBar extends StatelessWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(100),
@@ -102,17 +102,19 @@ class _NavItem extends StatelessWidget {
       selected: isSelected,
       button: true,
       container: true,
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap();
-        },
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 6),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               AnimatedScale(
                 scale: isSelected ? 1.15 : 1.0,
                 duration: const Duration(milliseconds: 400),
@@ -120,7 +122,7 @@ class _NavItem extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeOutCubic,
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(DesignTokens.spacing.sm),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? DesignTokens.colors.primary
@@ -135,7 +137,7 @@ class _NavItem extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 300),
                 style: TextStyle(
@@ -151,7 +153,9 @@ class _NavItem extends StatelessWidget {
             ],
           ),
         ),
+        ),
       ),
     );
   }
 }
+

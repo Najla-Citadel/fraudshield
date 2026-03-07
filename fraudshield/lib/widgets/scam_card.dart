@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'dart:ui'; // For ImageFilter if needed
+// For ImageFilter if needed
 
 class ScamCard extends StatelessWidget {
   final Map<String, dynamic> report;
@@ -24,15 +24,15 @@ class ScamCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
+        margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl, left: DesignTokens.spacing.lg, right: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Slate 800
+          color: Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: DesignTokens.shadows.md,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(DesignTokens.spacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,7 +55,7 @@ class ScamCard extends StatelessWidget {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
 
                   // Title & Metadata
                   Expanded(
@@ -79,22 +79,22 @@ class ScamCard extends StatelessWidget {
                             ),
                             // Badge
                             Container(
-                              margin: const EdgeInsets.only(left: 8),
-                              padding: const EdgeInsets.symmetric(
+                              margin: EdgeInsets.only(left: DesignTokens.spacing.sm),
+                              padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
                                 color: isVerified
-                                    ? const Color(0xFF10B981)
+                                    ? Color(0xFF10B981)
                                         .withOpacity(0.15)
-                                    : const Color(0xFFF59E0B)
+                                    : Color(0xFFF59E0B)
                                         .withOpacity(0.15),
                                 borderRadius:
                                     BorderRadius.circular(DesignTokens.radii.lg), // Pill shape
                                 border: Border.all(
                                   color: isVerified
-                                      ? const Color(0xFF10B981)
+                                      ? Color(0xFF10B981)
                                           .withOpacity(0.5)
-                                      : const Color(0xFFF59E0B)
+                                      : Color(0xFFF59E0B)
                                           .withOpacity(0.5),
                                   width: 1.5,
                                 ),
@@ -108,16 +108,16 @@ class ScamCard extends StatelessWidget {
                                         : LucideIcons.clock,
                                     size: 12,
                                     color: isVerified
-                                        ? const Color(0xFF10B981)
-                                        : const Color(0xFFF59E0B),
+                                        ? Color(0xFF10B981)
+                                        : Color(0xFFF59E0B),
                                   ),
-                                  const SizedBox(width: 4),
+                                  SizedBox(width: 4),
                                   Text(
                                     isVerified ? 'VERIFIED' : 'PENDING',
                                     style: TextStyle(
                                       color: isVerified
-                                          ? const Color(0xFF10B981)
-                                          : const Color(0xFFF59E0B),
+                                          ? Color(0xFF10B981)
+                                          : Color(0xFFF59E0B),
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 0.5,
@@ -128,7 +128,7 @@ class ScamCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'Anonymous'}',
                           style: TextStyle(
@@ -142,14 +142,14 @@ class ScamCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // --- Location (Mocked for now if not in API) ---
               Row(
                 children: [
                   Icon(Icons.location_on,
                       size: 16, color: Colors.white.withOpacity(0.5)),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       report['target'] ??
@@ -167,12 +167,12 @@ class ScamCard extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // --- "Stay Safe" Blue Box ---
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(DesignTokens.spacing.md),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -190,7 +190,7 @@ class ScamCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +210,7 @@ class ScamCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             _getStaySafeTip(report['category']),
                             style: TextStyle(
@@ -226,7 +226,7 @@ class ScamCard extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // --- Footer: Avatars + Action ---
               Row(
@@ -237,7 +237,7 @@ class ScamCard extends StatelessWidget {
                     Row(
                       children: [
                         _buildAvatarPile(verificationCount),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           '$verificationCount ${verificationCount == 1 ? "person" : "people"} flagged this',
                           style: TextStyle(
@@ -265,13 +265,13 @@ class ScamCard extends StatelessWidget {
                     },
                     borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(LucideIcons.share2,
                               size: 14, color: Colors.white),
@@ -323,7 +323,7 @@ class ScamCard extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         border: Border.all(
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
             width: 2), // Slate 800 border instead of white
       ),
       child: Center(
@@ -333,7 +333,7 @@ class ScamCard extends StatelessWidget {
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
                     color: Colors.white))
-            : const Icon(Icons.person,
+            : Icon(Icons.person,
                 size: 14,
                 color: Colors.white), // Using white icon on colorful bg
       ),
@@ -341,22 +341,28 @@ class ScamCard extends StatelessWidget {
   }
 
   Color _getCategoryColor(String? category) {
-    if (category?.toLowerCase().contains('phishing') == true)
-      return const Color(0xFFF87171); // Red
-    if (category?.toLowerCase().contains('investment') == true)
-      return const Color(0xFFFBBF24); // Amber
-    if (category?.toLowerCase().contains('courier') == true)
-      return const Color(0xFF60A5FA); // Blue
+    if (category?.toLowerCase().contains('phishing') == true) {
+      return Color(0xFFF87171); // Red
+    }
+    if (category?.toLowerCase().contains('investment') == true) {
+      return Color(0xFFFBBF24); // Amber
+    }
+    if (category?.toLowerCase().contains('courier') == true) {
+      return Color(0xFF60A5FA); // Blue
+    }
     return Colors.purpleAccent;
   }
 
   IconData _getCategoryIcon(String? category) {
-    if (category?.toLowerCase().contains('phishing') == true)
+    if (category?.toLowerCase().contains('phishing') == true) {
       return Icons.account_balance_wallet_outlined;
-    if (category?.toLowerCase().contains('investment') == true)
+    }
+    if (category?.toLowerCase().contains('investment') == true) {
       return Icons.trending_up_rounded;
-    if (category?.toLowerCase().contains('courier') == true)
+    }
+    if (category?.toLowerCase().contains('courier') == true) {
       return Icons.local_shipping_outlined;
+    }
     return Icons.warning_amber_rounded;
   }
 

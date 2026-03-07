@@ -37,9 +37,9 @@ class _AnimatedBackgroundState extends State<AnimatedBackground> with SingleTick
     final isDark = theme.brightness == Brightness.dark;
     
     // Define gradient colors based on theme
-    final color1 = isDark ? const Color(0xFF0F172A) : const Color(0xFFF0F9FF); // Slate 900 / Sky 50
-    final color2 = isDark ? const Color(0xFF1E3A8A) : const Color(0xFFDBEAFE); // Blue 900 / Blue 100
-    final color3 = isDark ? const Color(0xFF312E81) : const Color(0xFFE0E7FF); // Indigo 900 / Indigo 100
+    final color1 = isDark ? Color(0xFF0F172A) : Color(0xFFF0F9FF); // Slate 900 / Sky 50
+    final color2 = isDark ? Color(0xFF1E3A8A) : Color(0xFFDBEAFE); // Blue 900 / Blue 100
+    final color3 = isDark ? Color(0xFF312E81) : Color(0xFFE0E7FF); // Indigo 900 / Indigo 100
 
     return Stack(
       children: [

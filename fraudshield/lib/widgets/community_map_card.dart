@@ -45,9 +45,9 @@ class _CommunityMapCardState extends State<CommunityMapCard>
       onTap: () => Navigator.pushNamed(context, '/scam-map'),
       child: Container(
         height: 180,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Slate 800
+          color: Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: DesignTokens.shadows.md,
@@ -67,8 +67,8 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        const Color(0xFF1E293B).withOpacity(0.2),
-                        const Color(0xFF1E293B).withOpacity(0.9),
+                        Color(0xFF1E293B).withOpacity(0.2),
+                        Color(0xFF1E293B).withOpacity(0.9),
                       ],
                     ),
                   ),
@@ -77,7 +77,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
 
               // 3. Content
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(DesignTokens.spacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -87,18 +87,18 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       children: [
                         _buildLiveBadge(),
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                           ),
-                          child: const Icon(LucideIcons.maximize,
+                          child: Icon(LucideIcons.maximize,
                               color: Colors.white, size: 14),
                         ),
                       ],
                     ),
-                    const Spacer(),
+                    Spacer(),
 
                     // Stat Section
                     Text(
@@ -110,7 +110,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '${widget.threatCount} Clusters in ${widget.locationName}',
                       style: const TextStyle(
@@ -119,12 +119,12 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(LucideIcons.navigation,
                             color: DesignTokens.colors.accentGreen, size: 14),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(
                           'Tap to view interactive heat map',
                           style: TextStyle(
@@ -185,7 +185,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
 
             // Center Icon
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
@@ -212,19 +212,19 @@ class _CommunityMapCardState extends State<CommunityMapCard>
 
   Widget _buildLiveBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF4444).withOpacity(0.15),
+        color: Color(0xFFEF4444).withOpacity(0.15),
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border:
-            Border.all(color: const Color(0xFFEF4444).withOpacity(0.5)),
+            Border.all(color: Color(0xFFEF4444).withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           _BlinkingDot(),
-          const SizedBox(width: 8),
-          const Text(
+          SizedBox(width: 8),
+          Text(
             'LIVE',
             style: TextStyle(
               color: Color(0xFFEF4444),

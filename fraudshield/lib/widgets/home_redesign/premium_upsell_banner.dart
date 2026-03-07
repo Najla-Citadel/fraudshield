@@ -16,7 +16,7 @@ class PremiumUpsellBanner extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         decoration: BoxDecoration(
           color: DesignTokens.colors.premiumYellow,
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -26,14 +26,14 @@ class PremiumUpsellBanner extends StatelessWidget {
           children: [
             // Lock Icon Container
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(LucideIcons.lock, color: DesignTokens.colors.premiumYellowText, size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +46,7 @@ class PremiumUpsellBanner extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Upgrade to Premium to scan messages, files, APKs & detect scam calls.',
                     style: TextStyle(

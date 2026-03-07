@@ -40,7 +40,7 @@ class StatusDetailsScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const AppBackButton(color: Colors.white),
-        title: const Text(
+        title: Text(
           'Status Details',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
@@ -49,25 +49,25 @@ class StatusDetailsScreen extends StatelessWidget {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
             child: Column(
               children: [
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 _buildShieldHero(tier),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
                 _buildTierProgress(totalPoints),
-                const SizedBox(height: 48),
+                SizedBox(height: 48),
                 _buildBenefitSection(
                   title: 'CURRENT BENEFITS',
                   benefits: _getBenefitsForTier(tier, true),
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
                 if (tier != 'Diamond')
                   _buildBenefitSection(
                     title: 'LOCKED AT ${_getNextTierName(tier)}',
                     benefits: _getBenefitsForTier(_getNextTierName(tier).toLowerCase(), false),
                   ),
-                const SizedBox(height: 120),
+                SizedBox(height: 120),
               ],
             ),
           ),
@@ -186,7 +186,7 @@ class StatusDetailsScreen extends StatelessWidget {
               height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF1E293B),
+                color: Color(0xFF1E293B),
                 boxShadow: DesignTokens.shadows.md,
               ),
               child: Icon(
@@ -197,7 +197,7 @@ class StatusDetailsScreen extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           '$tier Protector',
           style: const TextStyle(
@@ -206,9 +206,9 @@ class StatusDetailsScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: 6),
           decoration: BoxDecoration(
             color: DesignTokens.colors.accentGreen.withOpacity(0.1),
             borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -225,7 +225,7 @@ class StatusDetailsScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'ACTIVE STATUS',
                 style: TextStyle(
@@ -263,7 +263,7 @@ class StatusDetailsScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   nextTierInfo,
                   style: const TextStyle(
@@ -285,7 +285,7 @@ class StatusDetailsScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
@@ -295,7 +295,7 @@ class StatusDetailsScreen extends StatelessWidget {
             valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.colors.accentGreen),
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -334,10 +334,10 @@ class StatusDetailsScreen extends StatelessWidget {
             letterSpacing: 1.0,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B).withOpacity(0.5),
+            color: Color(0xFF1E293B).withOpacity(0.5),
             borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
@@ -365,11 +365,11 @@ class StatusDetailsScreen extends StatelessWidget {
 
   Widget _buildBenefitTile(_BenefitItem item) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
               color: item.isLocked 
                   ? Colors.white.withOpacity(0.05)
@@ -384,7 +384,7 @@ class StatusDetailsScreen extends StatelessWidget {
                   : DesignTokens.colors.accentGreen,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,7 +397,7 @@ class StatusDetailsScreen extends StatelessWidget {
                     fontSize: 15,
                   ),
                 ),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   item.subtitle,
                   style: TextStyle(
@@ -433,7 +433,7 @@ class StatusDetailsScreen extends StatelessWidget {
             _showLevelUpGuide(context);
           },
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-          child: const Center(
+          child: Center(
             child: Text(
               'How to Earn Points',
               style: TextStyle(
@@ -451,26 +451,26 @@ class StatusDetailsScreen extends StatelessWidget {
   void _showLevelUpGuide(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Color(0xFF1E293B),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'How to Earn Points',
               style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             _guideItem(Icons.report_problem_rounded, 'Submit a Scam Report', '10 Points'),
             _guideItem(Icons.verified_rounded, 'Verify Others\' Reports', '5 Points'),
             _guideItem(Icons.login_rounded, 'Daily Login Streak', '2-10 Points'),
             _guideItem(Icons.share_rounded, 'Share Security Alerts', '5 Points'),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             Center(
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -485,11 +485,11 @@ class StatusDetailsScreen extends StatelessWidget {
 
   Widget _guideItem(IconData icon, String title, String points) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
       child: Row(
         children: [
           Icon(icon, color: DesignTokens.colors.accentGreen, size: 24),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
           ),

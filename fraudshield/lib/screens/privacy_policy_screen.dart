@@ -11,7 +11,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       title: 'Privacy Policy',
       backgroundColor: DesignTokens.colors.backgroundDark,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,14 +22,14 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Last updated: March 5, 2026',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withOpacity(0.6),
                   ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             _buildSection(
               context,
               '1. General Principle',
@@ -75,7 +75,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               '9. Specific Data Collection',
               'FraudShield requires access to sensitive information including Phone State and Call Logs to proactively detect scam calls and protect you from financial fraud. This data is processed locally and in real-time against our threat intelligence database to provide immediate warnings.',
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48),
           ],
         ),
       ),
@@ -84,7 +84,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   Widget _buildSection(BuildContext context, String title, String content) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -95,7 +95,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(

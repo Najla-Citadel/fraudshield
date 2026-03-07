@@ -45,7 +45,7 @@ class MockScamService {
         description:
             'Attackers impersonate postal services via SMS to steal credit card details for "unpaid customs fees."',
         badgeText: 'HIGH GROWTH',
-        badgeColor: const Color(0xFFF97316), // Orange
+        badgeColor: Color(0xFFF97316), // Orange
         timestamp: 'Updated 2h ago',
         example: const ScamExample(
           sender: 'USPS_Alert:',
@@ -66,7 +66,7 @@ class MockScamService {
         description:
             'Scammers use AI to clone voices or spoof bank numbers to request emergency transfers.',
         badgeText: 'CRITICAL ALERT',
-        badgeColor: const Color(0xFFEF4444), // Red
+        badgeColor: Color(0xFFEF4444), // Red
         timestamp: 'Updated 5h ago',
         safetyTips: [
           'Hang up and dial your bank\'s official number directly.',
@@ -80,7 +80,7 @@ class MockScamService {
         description:
             'Fake buyers "overpay" for items using fraudulent checks and ask for the difference back.',
         badgeText: 'EMERGING',
-        badgeColor: const Color(0xFF3B82F6), // Blue
+        badgeColor: Color(0xFF3B82F6), // Blue
         timestamp: 'Updated 1d ago',
         safetyTips: [
           'Never accept overpayment for an item you are selling.',

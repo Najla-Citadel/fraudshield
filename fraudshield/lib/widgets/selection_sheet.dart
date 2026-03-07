@@ -24,7 +24,7 @@ class SelectionSheet {
           cancelButton: CupertinoActionSheetAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
         ),
       );
@@ -40,7 +40,7 @@ class SelectionSheet {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Container(
                 width: 40,
                 height: 4,
@@ -49,7 +49,7 @@ class SelectionSheet {
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 title,
                 style: const TextStyle(
@@ -57,12 +57,12 @@ class SelectionSheet {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Flexible(
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: options.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, __) => Divider(height: 1),
                   itemBuilder: (context, index) {
                     final option = options[index];
                     return ListTile(
@@ -76,7 +76,7 @@ class SelectionSheet {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         ),

@@ -26,18 +26,18 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
       backgroundColor: DesignTokens.colors.backgroundLight,
       appBar: AppBar(
         backgroundColor: DesignTokens.colors.primary,
-        title: const Text(
+        title: Text(
           'Application Monitoring',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
             // 🧭 Header
             Text(
@@ -47,12 +47,12 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // 🟢 Status Overview
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(DesignTokens.spacing.xl),
               decoration: BoxDecoration(
                 color: allSafe ? Colors.green[50] : Colors.red[50],
                 borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -68,7 +68,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                     color: allSafe ? Colors.green : Colors.redAccent,
                     size: 70,
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Text(
                     allSafe ? 'All Applications Safe' : 'Some Apps are Risky!',
                     style: TextStyle(
@@ -77,7 +77,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     allSafe
                         ? 'No threats detected in installed apps.'
@@ -85,7 +85,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.white70),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   AppButton(
                     onPressed: () {
                       setState(() {
@@ -99,7 +99,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               ),
             ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
 
             // 📊 Summary Section
             Text(
@@ -110,7 +110,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -121,7 +121,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               ],
             ),
 
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
 
             // 📱 List of Monitored Apps
             Text(
@@ -132,7 +132,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
 
             Container(
               decoration: BoxDecoration(
@@ -159,7 +159,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                       style: TextStyle(color: Colors.white70),
                     ),
                     trailing: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: isSuspicious ? Colors.redAccent : Colors.green,
                         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -183,8 +183,8 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
   Widget _summaryCard(String label, String value, IconData icon) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xs),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -193,7 +193,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
         child: Column(
           children: [
             Icon(icon, color: DesignTokens.colors.primary),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               value,
               style: const TextStyle(
@@ -201,7 +201,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(

@@ -63,7 +63,7 @@ class GlassSurface extends StatelessWidget {
             highlightColor: colorScheme.primary.withOpacity(0.1),
             splashColor: colorScheme.primary.withOpacity(0.1),
             child: Container(
-              padding: padding ?? const EdgeInsets.all(20),
+              padding: padding ?? EdgeInsets.all(DesignTokens.spacing.xl),
               decoration: BoxDecoration(
                 color: baseColor,
                 borderRadius: BorderRadius.circular(borderRadius),

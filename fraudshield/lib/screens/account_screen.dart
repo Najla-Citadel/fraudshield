@@ -228,9 +228,9 @@ class _AccountScreenState extends State<AccountScreen> {
       return ScreenScaffold(
         title: 'Account',
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
           child: Column(
-            children: const [
+            children: [
               SizedBox(height: 24),
               SkeletonCard(height: 250, margin: EdgeInsets.zero),
               SizedBox(height: 24),
@@ -251,7 +251,7 @@ class _AccountScreenState extends State<AccountScreen> {
         backgroundColor: colors.surfaceDark,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 100),
+          padding: EdgeInsets.only(bottom: 100),
           child: AnimationLimiter(
             child: Column(
               children: AnimationConfiguration.toStaggeredList(
@@ -261,16 +261,16 @@ class _AccountScreenState extends State<AccountScreen> {
                   child: FadeInAnimation(child: widget),
                 ),
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   _premiumProfileHeader(),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   _statisticsCard(),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Preferences
                   SettingsGroup(
                     title: AppLocalizations.of(context)!.accountPreferences,
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
                         icon: Icons.card_membership,
@@ -290,7 +290,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
                               color: colors.textLight.withValues(alpha: 0.2),
@@ -331,7 +331,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 fontSize: 13,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
                               color: colors.textLight.withValues(alpha: 0.2),
@@ -438,7 +438,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   // Security
                   SettingsGroup(
                     title: AppLocalizations.of(context)!.accountSecurityTitle,
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
                         icon: Icons.lock_rounded,
@@ -466,7 +466,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   // Legal
                   SettingsGroup(
                     title: AppLocalizations.of(context)!.accountLegalTitle,
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
                         icon: Icons.policy_rounded,
@@ -500,10 +500,10 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   _logoutButton(),
                   Padding(
-                    padding: const EdgeInsets.only(top: 12),
+                    padding: EdgeInsets.only(top: DesignTokens.spacing.md),
                     child: TextButton(
                       onPressed: _confirmDeleteAccount,
                       child: Text(
@@ -516,7 +516,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Text(
                     'Version 1.1.0',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -552,11 +552,7 @@ class _AccountScreenState extends State<AccountScreen> {
           builder: (context, setSheetState) {
             final colors = DesignTokens.colors;
             return Padding(
-              padding: EdgeInsets.fromLTRB(
-                24,
-                24,
-                24,
-                MediaQuery.of(sheetCtx).viewInsets.bottom + 24,
+              padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xxl, DesignTokens.spacing.xxl, DesignTokens.spacing.xxl, MediaQuery.of(sheetCtx).viewInsets.bottom + 24,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -566,20 +562,20 @@ class _AccountScreenState extends State<AccountScreen> {
                     style: DesignTypography.h3,
                   ),
                   if (errorMessage != null) ...[
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     Text(
                       errorMessage!,
                       style: TextStyle(color: colors.error, fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ],
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   AdaptiveTextField(
                     controller: currentCtrl,
                     label: AppLocalizations.of(context)!.accountCurrentPassword,
                     obscureText: true,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   AdaptiveTextField(
                     controller: newCtrl,
                     label: AppLocalizations.of(context)!.accountNewPassword,
@@ -666,7 +662,7 @@ class _AccountScreenState extends State<AccountScreen> {
         final currentLocale = localeProvider.locale?.languageCode ?? 'en';
 
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -675,7 +671,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 AppLocalizations.of(context)!.accountSelectLanguage,
                 style: DesignTypography.h3,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               _buildLanguageItem('English', 'en', currentLocale == 'en', () {
                 localeProvider.setLocale(const Locale('en'));
                 Navigator.pop(context);
@@ -685,7 +681,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 localeProvider.setLocale(const Locale('ms'));
                 Navigator.pop(context);
               }),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
             ],
           ),
         );
@@ -717,14 +713,14 @@ class _AccountScreenState extends State<AccountScreen> {
     return Center(
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           // Avatar
           GestureDetector(
             onTap: _openAvatarPicker,
             child: Stack(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: EdgeInsets.all(DesignTokens.spacing.xs),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -732,7 +728,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: const Color(0xFF1E293B),
+                    backgroundColor: Color(0xFF1E293B),
                     backgroundImage: NetworkImage(
                       'https://api.dicebear.com/7.x/avataaars/png?seed=$_avatarSeed',
                     ),
@@ -742,7 +738,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   bottom: 0,
                   right: 0,
                   child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: DesignTokens.colors.accentGreen,
                     shape: BoxShape.circle,
@@ -754,7 +750,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           // Name and View Profile
           Column(
             children: [
@@ -762,7 +758,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 user?.fullName ?? 'Alexander Wright',
                 style: DesignTypography.h2,
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -770,7 +766,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.xs),
                   decoration: BoxDecoration(
                     color: colors.textLight.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -787,7 +783,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
         ],
       ),
     );
@@ -799,11 +795,11 @@ class _AccountScreenState extends State<AccountScreen> {
     final profile = authProvider.user?.profile;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
       child: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
+          color: Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(color: colors.textLight.withValues(alpha: 0.05)),
           boxShadow: DesignTokens.shadows.md,
@@ -822,7 +818,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        EdgeInsets.symmetric(horizontal: 14, vertical: DesignTokens.spacing.sm),
                     decoration: BoxDecoration(
                       color: colors.textLight,
                       borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -830,9 +826,9 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.shield_rounded,
+                        Icon(Icons.shield_rounded,
                             color: Colors.black, size: 14),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           _calculateTierName(profile?.totalPoints ?? 0),
                           style: TextStyle(
@@ -847,7 +843,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             // Benefits and Plan Info Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -861,7 +857,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        EdgeInsets.symmetric(horizontal: 14, vertical: DesignTokens.spacing.sm),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -879,7 +875,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               : colors.textLight.withValues(alpha: 0.4),
                           size: 14,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Text(
                           context.watch<AuthProvider>().isSubscribed
                               ? 'Premium Protector'
@@ -916,7 +912,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
                           color: colors.accentGreen.withValues(alpha: 0.8),
                           size: 14),
@@ -933,7 +929,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _logoutButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
       child: AppButton(
         label: 'Log Out',
         onPressed: _logout,
@@ -948,7 +944,7 @@ class _AccountScreenState extends State<AccountScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Color(0xFF1E293B),
         title: Text('Delete Account?',
             style: TextStyle(color: colors.textLight)),
         content: Text(
@@ -1026,10 +1022,10 @@ class _AvatarPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
       child: GridView.count(
         crossAxisCount: 4,

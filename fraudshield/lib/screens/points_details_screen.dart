@@ -74,13 +74,13 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color(0xFF0F172A), // Slate 900
+                  Color(0xFF0F172A), // Slate 900
                   DesignTokens.colors.backgroundDark, // Deep navy
-                  const Color(0xFF1E3A8A), // Blue 900
+                  Color(0xFF1E3A8A), // Blue 900
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                stops: const [0.0, 0.5, 1.0],
+                stops: [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -99,18 +99,18 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
   Widget _buildAppBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const AppBackButton(color: Colors.white),
-          const Text(
+          Text(
             'Points Details',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
           ),
           IconButton(
-            icon: const Icon(Icons.info_outline, color: Colors.white),
+            icon: Icon(Icons.info_outline, color: Colors.white),
             onPressed: () {
               // Future: Show points info/rules
             },
@@ -133,14 +133,14 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
     if (_loading) {
       return SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             const SkeletonCard(height: 200, margin: EdgeInsets.zero),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             const SkeletonCard(height: 80, margin: EdgeInsets.zero),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             const SkeletonCard(height: 80, margin: EdgeInsets.zero),
           ],
         ),
@@ -149,7 +149,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
     return AnimationLimiter(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: AnimationConfiguration.toStaggeredList(
@@ -159,15 +159,15 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               child: FadeInAnimation(child: widget),
             ),
             children: [
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               _buildSummaryHeader(),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               _buildLeaderboardCard(),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               _buildHistoryHeader(),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _buildTransactionHistory(),
-              const SizedBox(height: 40),
+              SizedBox(height: 40),
             ],
           ),
         ),
@@ -182,9 +182,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Match regular cards
+        color: Color(0xFF1E293B), // Match regular cards
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
@@ -206,7 +206,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                         letterSpacing: 1.1,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Row(
                       children: [
                         Text(
@@ -217,7 +217,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4),
                         Text(
                           'PTS',
                           style: TextStyle(
@@ -233,9 +233,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               ),
               Container(
                 width: 1,
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.xs),
                 color: Colors.white.withOpacity(0.1),
-                child: const SizedBox(height: 36), // Minimum height for divider
+                child: SizedBox(height: 36), // Minimum height for divider
               ),
               Flexible(
                 child: Column(
@@ -250,7 +250,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                         letterSpacing: 1.1,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '$totalPoints PTS',
                       style: const TextStyle(
@@ -264,7 +264,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           // Progress toward next level
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +287,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
@@ -322,9 +322,9 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   double _getTierProgress(int totalPoints) {
     int target = _getNextTierTarget(totalPoints);
     int start = 0;
-    if (totalPoints >= 5000)
+    if (totalPoints >= 5000) {
       start = 5000;
-    else if (totalPoints >= 1000) start = 1000;
+    } else if (totalPoints >= 1000) start = 1000;
 
     double progress = (totalPoints - start) / (target - start);
     return progress.clamp(0.0, 1.0);
@@ -335,7 +335,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       onTap: () => Navigator.pushNamed(context, '/leaderboard'),
       borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.03),
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -344,7 +344,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -352,19 +352,19 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               child: Icon(Icons.emoji_events_rounded,
                   color: DesignTokens.colors.accentGreen, size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Global Leaderboard',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'See how you rank against other protectors.',
                     style: TextStyle(
@@ -386,7 +386,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'HISTORY',
           style: TextStyle(
             color: Colors.white54,
@@ -411,7 +411,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     if (_transactions.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(40.0),
+          padding: EdgeInsets.all(40.0),
           child: Text(
             'No transaction history yet.',
             style: TextStyle(color: Colors.white.withOpacity(0.3)),
@@ -444,12 +444,12 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         if (todayTransactions.isNotEmpty) ...[
           _buildGroupHeader('TODAY'),
           ...todayTransactions.map((tx) => _buildTransactionItem(tx)),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
         if (thisMonthTransactions.isNotEmpty) ...[
           _buildGroupHeader('THIS MONTH'),
           ...thisMonthTransactions.map((tx) => _buildTransactionItem(tx)),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
         if (olderTransactions.isNotEmpty) ...[
           _buildGroupHeader('OLDER'),
@@ -461,7 +461,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
 
   Widget _buildGroupHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -484,13 +484,13 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     final formattedDate = DateFormat('MMM dd, yyyy').format(date);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             child: Icon(
@@ -499,7 +499,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               size: 20,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -512,7 +512,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     fontSize: 15,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   formattedDate,
                   style: TextStyle(

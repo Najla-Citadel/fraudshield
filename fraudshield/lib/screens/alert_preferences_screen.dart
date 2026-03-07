@@ -6,7 +6,7 @@ import '../design_system/components/app_snackbar.dart';
 import '../design_system/components/app_button.dart';
 
 class AlertPreferencesScreen extends StatefulWidget {
-  const AlertPreferencesScreen({Key? key}) : super(key: key);
+  const AlertPreferencesScreen({super.key});
 
   @override
   State<AlertPreferencesScreen> createState() => _AlertPreferencesScreenState();
@@ -113,15 +113,15 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
       body: _isLoading
           ? AppLoadingIndicator.center(color: DesignTokens.colors.primary)
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    // Master Switch
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(DesignTokens.spacing.xl),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
+                      color: Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                       border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
@@ -132,26 +132,26 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Proactive Alerts', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text('Receive warnings about trending scams', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
                           ],
                         ),
                         Switch(
                           value: _isActive,
                           onChanged: (val) => setState(() => _isActive = val),
-                          activeColor: DesignTokens.colors.primary,
+                          activeThumbColor: DesignTokens.colors.primary,
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   
                   // Email Digest Switch
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(DesignTokens.spacing.xl),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
+                      color: Color(0xFF1E293B),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                       border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
@@ -163,7 +163,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Daily Email Digest', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 4),
                               Text('Consolidated scam news in your inbox', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
                             ],
                           ),
@@ -171,7 +171,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                         Switch(
                           value: _emailDigestEnabled,
                           onChanged: (val) => setState(() => _emailDigestEnabled = val),
-                          activeColor: DesignTokens.colors.accentGreen,
+                          activeThumbColor: DesignTokens.colors.accentGreen,
                         ),
                       ],
                     ),
@@ -184,11 +184,11 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 32),
+                          SizedBox(height: 32),
                           Text('LOCAL THREATS', style: TextStyle(color: DesignTokens.colors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text('Alert radius for scams reported near you', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Row(
                             children: [
                               Text('${_radiusKm.toInt()} km', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
@@ -206,21 +206,21 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                             ],
                           ),
                           
-                          const SizedBox(height: 32),
+                          SizedBox(height: 32),
                           Text('SCAM CATEGORIES', style: TextStyle(color: DesignTokens.colors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text('Select which type of threats you want to monitor', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           
                           ..._availableCategories.map((cat) {
                             final isSelected = _selectedCategories.contains(cat['id']);
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
+                              padding: EdgeInsets.only(bottom: DesignTokens.spacing.md),
                               child: InkWell(
                                 onTap: () => _toggleCategory(cat['id']),
                                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.lg),
                                   decoration: BoxDecoration(
                                     color: isSelected ? DesignTokens.colors.primary.withOpacity(0.1) : Colors.transparent,
                                     borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -231,7 +231,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                   child: Row(
                                     children: [
                                       Icon(cat['icon'], color: isSelected ? DesignTokens.colors.primary : Colors.white54, size: 24),
-                                      const SizedBox(width: 16),
+                                      SizedBox(width: 16),
                                       Expanded(
                                         child: Text(
                                           cat['label'],
@@ -248,9 +248,9 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                           
-                          const SizedBox(height: 48),
+                          SizedBox(height: 48),
                         ],
                       ),
                     ),

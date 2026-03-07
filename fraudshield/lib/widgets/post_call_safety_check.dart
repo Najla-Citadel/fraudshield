@@ -31,8 +31,8 @@ class PostCallSafetyCheck extends StatelessWidget {
           // Content Container
           Center(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(24),
+              margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.backgroundDark.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
@@ -47,19 +47,19 @@ class PostCallSafetyCheck extends StatelessWidget {
                 children: [
                   // Icon
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(DesignTokens.spacing.lg),
                     decoration: BoxDecoration(
                       color: Colors.orangeAccent.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.health_and_safety_rounded,
                       color: Colors.orangeAccent,
                       size: 48,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
+                  SizedBox(height: 20),
+                  Text(
                     'Safety Check',
                     style: TextStyle(
                       color: Colors.orangeAccent,
@@ -68,8 +68,8 @@ class PostCallSafetyCheck extends StatelessWidget {
                       letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12),
+                  Text(
                     'Did the previous caller ask you to transfer money or provide your OTP/password?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -79,7 +79,7 @@ class PostCallSafetyCheck extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Action Buttons
                   Row(
@@ -94,7 +94,7 @@ class PostCallSafetyCheck extends StatelessWidget {
                           },
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _ActionBtn(
                           icon: Icons.flag_rounded,
@@ -138,7 +138,7 @@ class _ActionBtn extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
           color: color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -147,7 +147,7 @@ class _ActionBtn extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(

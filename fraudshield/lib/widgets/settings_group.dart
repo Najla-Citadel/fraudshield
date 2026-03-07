@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SettingsGroup extends StatelessWidget {
@@ -17,13 +16,13 @@ class SettingsGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ?? const EdgeInsets.only(bottom: 24),
+      margin: margin ?? EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null)
             Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
+              padding: EdgeInsets.only(left: DesignTokens.spacing.lg, bottom: DesignTokens.spacing.sm),
               child: Text(
                 title!.toUpperCase(),
                 style: TextStyle(
@@ -36,7 +35,7 @@ class SettingsGroup extends StatelessWidget {
             ),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
@@ -97,7 +96,7 @@ class SettingsTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(DesignTokens.radii.md), // For ripple effect if needed
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
           child: Row(
             children: [
               Container(
@@ -109,7 +108,7 @@ class SettingsTile extends StatelessWidget {
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

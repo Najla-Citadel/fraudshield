@@ -31,7 +31,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
         color: DesignTokens.colors.backgroundDark,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -51,7 +51,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -64,7 +64,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
                 decoration: BoxDecoration(
                   color: _getScoreColor(widget.score).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -80,7 +80,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
 
           // 1. Profile Security
           _buildCheckItem(
@@ -117,7 +117,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
             isLocked: !widget.isSubscribed,
           ),
 
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           
           AppButton(
             onPressed: () => Navigator.pop(context),
@@ -125,7 +125,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
             variant: AppButtonVariant.primary,
             width: double.infinity,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
         ],
       ),
     );
@@ -147,11 +147,11 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 bool isLocked = false,
               }) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isSafe 
                             ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
@@ -164,7 +164,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                           size: 20,
                         ),
                       ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,8 +201,8 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                     ),
                   ),
                   if (isLocked) ...[
-                    const SizedBox(width: 4),
-                    const Icon(Icons.lock, size: 14, color: Colors.amber),
+                    SizedBox(width: 4),
+                    Icon(Icons.lock, size: 14, color: Colors.amber),
                   ],
                 ],
               ),

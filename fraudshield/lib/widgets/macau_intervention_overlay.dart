@@ -31,8 +31,8 @@ class MacauInterventionOverlay extends StatelessWidget {
           // 2. Content Container
           Center(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(24),
+              margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.backgroundDark.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
@@ -47,19 +47,19 @@ class MacauInterventionOverlay extends StatelessWidget {
                 children: [
                   // Icon & Title
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(DesignTokens.spacing.lg),
                     decoration: BoxDecoration(
                       color: Colors.redAccent.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.warning_rounded,
                       color: Colors.redAccent,
                       size: 48,
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
+                  SizedBox(height: 20),
+                  Text(
                     'CRITICAL WARNING',
                     style: TextStyle(
                       color: Colors.redAccent,
@@ -68,8 +68,8 @@ class MacauInterventionOverlay extends StatelessWidget {
                       letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12),
+                  Text(
                     'Potential Macau Scam Detected',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -78,7 +78,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Recommendation text
                   Text(
@@ -91,7 +91,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Emergency Buttons
                   Row(
@@ -104,7 +104,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                           onTap: () => _launchCaller('997'),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _ActionBtn(
                           icon: Icons.phone_in_talk,
@@ -115,7 +115,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
 
                   // Secondary Action
                   TextButton(
@@ -167,7 +167,7 @@ class _ActionBtn extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
           color: color.withOpacity(0.15),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -176,7 +176,7 @@ class _ActionBtn extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(

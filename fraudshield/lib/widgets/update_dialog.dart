@@ -22,7 +22,7 @@ class UpdateDialog extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           decoration: BoxDecoration(
             color: DesignTokens.colors.backgroundDark.withOpacity(0.8),
             borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -35,7 +35,7 @@ class UpdateDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(DesignTokens.spacing.lg),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                   shape: BoxShape.circle,
@@ -46,7 +46,7 @@ class UpdateDialog extends StatelessWidget {
                   size: 48,
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Text(
                 isForce ? 'Update Required' : 'New Version Ready',
                 style: const TextStyle(
@@ -55,7 +55,7 @@ class UpdateDialog extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 isForce
                     ? 'A critical update is required to continue using FraudShield safely.'
@@ -66,7 +66,7 @@ class UpdateDialog extends StatelessWidget {
                   fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               AppButton(
                 onPressed: onUpdate,
                 label: 'Update Now',
@@ -75,7 +75,7 @@ class UpdateDialog extends StatelessWidget {
                 size: AppButtonSize.lg,
               ),
               if (!isForce) ...[
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(

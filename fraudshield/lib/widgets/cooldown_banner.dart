@@ -57,7 +57,7 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
 
   @override
   Widget build(BuildContext context) {
-    if (_remaining.isNegative) return const SizedBox.shrink();
+    if (_remaining.isNegative) return SizedBox.shrink();
 
     final minutes = _remaining.inMinutes;
     final seconds = (_remaining.inSeconds % 60).toString().padLeft(2, '0');
@@ -69,9 +69,9 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
       child: Material(
         color: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A).withOpacity(0.95),
+            color: Color(0xFF0F172A).withOpacity(0.95),
             borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             border: const Border(
               left: BorderSide(color: Color(0xFFDC2626), width: 4),
@@ -81,9 +81,9 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.timer_outlined,
+              Icon(Icons.timer_outlined,
                   color: Color(0xFFEF4444), size: 24),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +96,7 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       '🛑 Do not make any transfers. Scam calls often create false urgency!',
                       style: TextStyle(
@@ -111,7 +111,7 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                icon: const Icon(Icons.close_rounded,
+                icon: Icon(Icons.close_rounded,
                     color: Colors.white54, size: 20),
                 onPressed: () {
                   NotificationService.instance.dismissCoolDown();

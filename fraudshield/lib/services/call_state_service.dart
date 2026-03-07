@@ -358,9 +358,9 @@ class CallStateService {
       }
 
       // Recalculate level based on exact score after adjustments
-      if (finalScore >= 80)
+      if (finalScore >= 80) {
         finalLevel = 'critical';
-      else if (finalScore >= 55)
+      } else if (finalScore >= 55)
         finalLevel = 'high';
       else if (finalScore >= 30)
         finalLevel = 'medium';

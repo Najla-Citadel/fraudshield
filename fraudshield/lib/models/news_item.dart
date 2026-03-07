@@ -1,4 +1,3 @@
-import '../models/news_item.dart' as model;
 
 // lib/models/news_item.dart
 class NewsItem {

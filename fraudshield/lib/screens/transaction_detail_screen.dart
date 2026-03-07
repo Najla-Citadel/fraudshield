@@ -209,7 +209,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
           leading: const AppBackButton(),
           actions: [
             IconButton(
-              icon: const Icon(LucideIcons.copy, color: Colors.white, size: 20),
+              icon: Icon(LucideIcons.copy, color: Colors.white, size: 20),
               tooltip: 'Copy ID',
               onPressed: () {
                 Clipboard.setData(
@@ -225,7 +225,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
         // ── Content ────────────────────────────────────────────────────────
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+          padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.sm, DesignTokens.spacing.lg, 120),
           sliver: SliverList(
             delegate: SliverChildListDelegate([
               // ── Amount + recipient card ─────────────────────────────────
@@ -233,14 +233,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 child: Column(
                   children: [
                     _buildAmountRow(score, recipient),
-                    const Divider(color: Color(0xFF1E2D45), height: 1),
+                    Divider(color: Color(0xFF1E2D45), height: 1),
                     _buildInfoRow(
                       icon: LucideIcons.calendar,
                       label: 'Date',
                       value: _formatDate(_transaction!['createdAt']),
                     ),
                     if (_transaction!['paymentMethod'] != null) ...[
-                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      Divider(color: Color(0xFF1E2D45), height: 1),
                       _buildInfoRow(
                         icon: LucideIcons.creditCard,
                         label: 'Method',
@@ -248,14 +248,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                       ),
                     ],
                     if (_transaction!['platform'] != null) ...[
-                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      Divider(color: Color(0xFF1E2D45), height: 1),
                       _buildInfoRow(
                         icon: _typeIcon(type),
                         label: 'Source',
                         value: _transaction!['platform'].toString(),
                       ),
                     ],
-                    const Divider(color: Color(0xFF1E2D45), height: 1),
+                    Divider(color: Color(0xFF1E2D45), height: 1),
                     _buildInfoRow(
                       icon: LucideIcons.hash,
                       label: 'Check ID',
@@ -270,17 +270,17 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ── Risk Assessment ─────────────────────────────────────────
               _buildSectionLabel('Risk Assessment'),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               _buildSectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(DesignTokens.spacing.lg),
                       child: Row(
                         children: [
                           // Gauge
@@ -307,7 +307,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                               ),
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,7 +320,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: 4),
                                 Text(
                                   score == 0
                                       ? 'No threats detected for this transaction.'
@@ -338,16 +338,16 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                     // Optional threat tags
                     if (metadata.containsKey('threats') &&
                         (metadata['threats'] as List).isNotEmpty) ...[
-                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      Divider(color: Color(0xFF1E2D45), height: 1),
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(DesignTokens.spacing.lg),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Threats Detected',
+                            Text('Threats Detected',
                                 style: TextStyle(
                                     color: Color(0xFF94A3B8), fontSize: 12)),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Wrap(
                               spacing: 8,
                               runSpacing: 6,
@@ -362,12 +362,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
                     if (metadata.containsKey('communityReports') &&
                         (metadata['communityReports'] as int? ?? 0) > 0) ...[
-                      const Divider(color: Color(0xFF1E2D45), height: 1),
+                      Divider(color: Color(0xFF1E2D45), height: 1),
                       _buildInfoRow(
                         icon: LucideIcons.users,
                         label: 'Community Reports',
                         value: '${metadata['communityReports']} report(s)',
-                        valueColor: const Color(0xFFF59E0B),
+                        valueColor: Color(0xFFF59E0B),
                       ),
                     ],
                   ],
@@ -376,15 +376,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
               // ── Notes ──────────────────────────────────────────────────
               if (notes.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildSectionLabel('Notes'),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 _buildSectionCard(
                   child: GestureDetector(
                     onTap: () =>
                         setState(() => _notesExpanded = !_notesExpanded),
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(DesignTokens.spacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -411,7 +411,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                             duration: const Duration(milliseconds: 250),
                           ),
                           if (notes.length > 120) ...[
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               _notesExpanded ? 'Show less' : 'Show more',
                               style: TextStyle(
@@ -427,13 +427,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 ),
               ],
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // ── Safety tips for suspicious ──────────────────────────────
               if (status.toUpperCase() == 'SUSPICIOUS' ||
                   status.toUpperCase() == 'BLOCKED') ...[
                 _buildWarningBanner(score),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
 
               // ── Report CTA ─────────────────────────────────────────────
@@ -468,10 +468,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 48),
+            SizedBox(height: 48),
             // Status badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 color: sColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -481,7 +481,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(_statusIcon(status), color: sColor, size: 14),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Text(
                     status.toUpperCase(),
                     style: TextStyle(
@@ -494,20 +494,20 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             // Amount
             if (_transaction!['amount'] != null)
               Text(
                 amtStr,
                 style: TextStyle(
                   color:
-                      isOut ? const Color(0xFFF87171) : const Color(0xFF22D483),
+                      isOut ? Color(0xFFF87171) : Color(0xFF22D483),
                   fontSize: 38,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
                 ),
               ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             // Recipient
             Text(
               _transaction!['merchant'] ?? _transaction!['target'] ?? '—',
@@ -526,7 +526,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   // ─── Widgets ───────────────────────────────────────────────────────────────
 
   Widget _buildSectionLabel(String label) => Padding(
-        padding: const EdgeInsets.only(left: 4, bottom: 0),
+        padding: EdgeInsets.only(left: DesignTokens.spacing.xs, bottom: 0),
         child: Text(
           label.toUpperCase(),
           style: const TextStyle(
@@ -551,11 +551,11 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       );
 
   Widget _buildAmountRow(int score, String recipient) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+        padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, 18, DesignTokens.spacing.lg, 14),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: _scoreColor(score).withOpacity(0.12),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -563,13 +563,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
               child:
                   Icon(LucideIcons.user, color: _scoreColor(score), size: 22),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Recipient',
+                Text('Recipient',
                     style: TextStyle(color: Color(0xFF64748B), fontSize: 12)),
-                const SizedBox(height: 2),
+                SizedBox(height: 2),
                 Text(
                   recipient,
                   style: const TextStyle(
@@ -592,14 +592,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
     TextStyle? valueStyle,
   }) =>
       Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: const Color(0xFF475569)),
-            const SizedBox(width: 12),
+            Icon(icon, size: 16, color: Color(0xFF475569)),
+            SizedBox(width: 12),
             Text(label,
                 style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
-            const Spacer(),
+            Spacer(),
             Flexible(
               child: Text(
                 value,
@@ -617,12 +617,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       );
 
   Widget _threatChip(String label) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: const Color(0xFFEF4444).withOpacity(0.12),
+          color: Color(0xFFEF4444).withOpacity(0.12),
           borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border:
-              Border.all(color: const Color(0xFFEF4444).withOpacity(0.3)),
+              Border.all(color: Color(0xFFEF4444).withOpacity(0.3)),
         ),
         child: Text(
           label,
@@ -634,20 +634,20 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       );
 
   Widget _buildWarningBanner(int score) => Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(DesignTokens.spacing.lg),
         decoration: BoxDecoration(
-          color: const Color(0xFFF59E0B).withOpacity(0.08),
+          color: Color(0xFFF59E0B).withOpacity(0.08),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border:
-              Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+              Border.all(color: Color(0xFFF59E0B).withOpacity(0.3)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(LucideIcons.alertTriangle,
+            Icon(LucideIcons.alertTriangle,
                 color: Color(0xFFF59E0B), size: 20),
-            const SizedBox(width: 12),
-            const Expanded(
+            SizedBox(width: 12),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -678,13 +678,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       );
 
   Widget _buildReportedBanner() => Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(DesignTokens.spacing.lg),
         decoration: BoxDecoration(
           color: Colors.green.withOpacity(0.08),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: Colors.green.withOpacity(0.3)),
         ),
-        child: const Row(
+        child: Row(
           children: [
             Icon(LucideIcons.checkCircle, color: Color(0xFF22D483), size: 22),
             SizedBox(width: 12),
@@ -739,14 +739,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-              const Row(
+              Row(
                 children: [
                   Icon(LucideIcons.megaphone,
                       color: Color(0xFFF87171), size: 22),
@@ -758,13 +758,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                           fontWeight: FontWeight.bold)),
                 ],
               ),
-              const SizedBox(height: 6),
-              const Text(
+              SizedBox(height: 6),
+              Text(
                 'Help protect the community by reporting this suspicious transaction.',
                 style: TextStyle(
                     color: Color(0xFF94A3B8), fontSize: 13, height: 1.5),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               // Description
               TextField(
@@ -775,24 +775,24 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                   hintText: 'Describe what happened...',
                   hintStyle: const TextStyle(color: Color(0xFF475569)),
                   filled: true,
-                  fillColor: const Color(0xFF1A2332),
+                  fillColor: Color(0xFF1A2332),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.all(16),
+                  contentPadding: EdgeInsets.all(DesignTokens.spacing.lg),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
 
               // Category chips
-              const Text('Category',
+              Text('Category',
                   style: TextStyle(
                       color: Color(0xFF64748B),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1)),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
@@ -801,27 +801,27 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                           onTap: () => setSS(() => selectedCategory = c),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 150),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 14, vertical: DesignTokens.spacing.sm),
                             decoration: BoxDecoration(
                               color: selectedCategory == c
-                                  ? const Color(0xFFEF4444)
+                                  ? Color(0xFFEF4444)
                                       .withOpacity(0.15)
-                                  : const Color(0xFF1A2332),
+                                  : Color(0xFF1A2332),
                               borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                               border: Border.all(
                                 color: selectedCategory == c
-                                    ? const Color(0xFFEF4444)
+                                    ? Color(0xFFEF4444)
                                         .withOpacity(0.6)
-                                    : const Color(0xFF1E2D45),
+                                    : Color(0xFF1E2D45),
                               ),
                             ),
                             child: Text(
                               c,
                               style: TextStyle(
                                 color: selectedCategory == c
-                                    ? const Color(0xFFF87171)
-                                    : const Color(0xFF94A3B8),
+                                    ? Color(0xFFF87171)
+                                    : Color(0xFF94A3B8),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -831,7 +831,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                     .toList(),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               AppButton(
                 onPressed: () =>
                     _convertToReport(descCtrl.text, selectedCategory),

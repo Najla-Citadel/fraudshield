@@ -93,7 +93,7 @@ class PointsScreenState extends State<PointsScreen> {
           TextButton(
               onPressed: () => Navigator.pop(context, false),
               child:
-                  const Text('Cancel', style: TextStyle(color: Colors.white))),
+                  Text('Cancel', style: TextStyle(color: Colors.white))),
           AppButton(
             onPressed: () => Navigator.pop(context, true),
             label: 'Redeem',
@@ -124,15 +124,15 @@ class PointsScreenState extends State<PointsScreen> {
       title: 'Rewards',
       actions: [
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: EdgeInsets.all(DesignTokens.spacing.sm),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
             shape: BoxShape.circle,
             border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: IconButton(
             icon:
-                const Icon(LucideIcons.history, size: 20, color: Colors.white),
+                Icon(LucideIcons.history, size: 20, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -153,11 +153,11 @@ class PointsScreenState extends State<PointsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(LucideIcons.alertCircle, size: 48, color: Colors.white24),
-            const SizedBox(height: 16),
-            const Text('Failed to load rewards',
+            Icon(LucideIcons.alertCircle, size: 48, color: Colors.white24),
+            SizedBox(height: 16),
+            Text('Failed to load rewards',
                 style: TextStyle(color: Colors.white70)),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             AppButton(
               onPressed: refreshData,
               label: 'Retry',
@@ -170,9 +170,9 @@ class PointsScreenState extends State<PointsScreen> {
 
     if (_loading) {
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         child: Column(
-          children: const [
+          children: [
             SizedBox(height: 20),
             // Mock skeletons
             _Skeleton(height: 180),
@@ -187,7 +187,7 @@ class PointsScreenState extends State<PointsScreen> {
 
     return AnimationLimiter(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: AnimationConfiguration.toStaggeredList(
@@ -198,18 +198,18 @@ class PointsScreenState extends State<PointsScreen> {
             ),
             children: [
               _buildBalanceCard(),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _buildCategorySelector(),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               if (_selectedCategory == 'All' ||
                   _selectedCategory == 'Security') ...[
                 _buildSectionHeader('Security Upgrades'),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 ..._rewards
                     .where((r) =>
                         r['type'].toString().toUpperCase() == 'SUBSCRIPTION')
                     .map((r) => Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
                           child: _buildFeaturedReward(r),
                         )),
                 if (_rewards
@@ -218,12 +218,12 @@ class PointsScreenState extends State<PointsScreen> {
                     .isEmpty)
                   _buildEmptyState(LucideIcons.shieldAlert,
                       'No security upgrades available'),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
               ],
               if (_selectedCategory == 'All' ||
                   _selectedCategory == 'Vouchers') ...[
                 _buildSectionHeader('Store Items & Vouchers'),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -252,10 +252,10 @@ class PointsScreenState extends State<PointsScreen> {
                     .isEmpty)
                   _buildEmptyState(
                       LucideIcons.packageOpen, 'No store items available'),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
               ],
               _buildDonationCard(),
-              const SizedBox(height: 100),
+              SizedBox(height: 100),
             ],
           ),
         ),
@@ -275,7 +275,7 @@ class PointsScreenState extends State<PointsScreen> {
       },
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         decoration: BoxDecoration(
           color: DesignTokens.colors.glassDark,
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -295,7 +295,7 @@ class PointsScreenState extends State<PointsScreen> {
                     letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Container(
                   width: 8,
                   height: 8,
@@ -306,7 +306,7 @@ class PointsScreenState extends State<PointsScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             RichText(
               text: TextSpan(
                 children: [
@@ -332,10 +332,10 @@ class PointsScreenState extends State<PointsScreen> {
               ),
             ),
             if (_userDiscount > 0) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -348,7 +348,7 @@ class PointsScreenState extends State<PointsScreen> {
                   children: [
                     Icon(LucideIcons.tag,
                         size: 14, color: DesignTokens.colors.accentGreen),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6),
                     Text(
                       '${(_userDiscount * 100).toInt()}% $_userTier Discount Active',
                       style: TextStyle(
@@ -361,7 +361,7 @@ class PointsScreenState extends State<PointsScreen> {
                 ),
               ),
             ],
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'You\'ve reached ${_calculateTierName(context.read<AuthProvider>().user?.profile?.totalPoints ?? 0)} status. Keep it up!',
               style: TextStyle(
@@ -379,17 +379,17 @@ class PointsScreenState extends State<PointsScreen> {
   Widget _buildCategorySelector() {
     return Container(
       height: 44,
-      margin: const EdgeInsets.symmetric(vertical: 16),
+      margin: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
       child: ListView(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         children: [
           _categoryChip('All', LucideIcons.layers,
               isActive: _selectedCategory == 'All'),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _categoryChip('Vouchers', LucideIcons.ticket,
               isActive: _selectedCategory == 'Vouchers'),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _categoryChip('Security', LucideIcons.shieldCheck,
               isActive: _selectedCategory == 'Security'),
         ],
@@ -401,7 +401,7 @@ class PointsScreenState extends State<PointsScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive
@@ -420,7 +420,7 @@ class PointsScreenState extends State<PointsScreen> {
               size: 16,
               color: isActive ? Colors.black87 : Colors.white70,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
@@ -437,7 +437,7 @@ class PointsScreenState extends State<PointsScreen> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -525,7 +525,7 @@ class PointsScreenState extends State<PointsScreen> {
                   right: 12,
                   child: Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
                     decoration: BoxDecoration(
                       color: isLocked
                           ? Colors.black54
@@ -561,7 +561,7 @@ class PointsScreenState extends State<PointsScreen> {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   desc,
                   maxLines: isFeatured ? 3 : 2,
@@ -572,7 +572,7 @@ class PointsScreenState extends State<PointsScreen> {
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   child: AppButton(
@@ -600,7 +600,7 @@ class PointsScreenState extends State<PointsScreen> {
 
   Widget _buildDonationCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark,
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -618,12 +618,12 @@ class PointsScreenState extends State<PointsScreen> {
             child: Icon(LucideIcons.heart,
                 color: DesignTokens.colors.accentGreen),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Support Cyber Victims',
                   style: TextStyle(
                     color: Colors.white,
@@ -631,7 +631,7 @@ class PointsScreenState extends State<PointsScreen> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'Donate 200 pts to provide legal aid to victims.',
                   style: TextStyle(
@@ -639,7 +639,7 @@ class PointsScreenState extends State<PointsScreen> {
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 GestureDetector(
                   onTap: () {},
                   child: Row(
@@ -675,7 +675,7 @@ class PointsScreenState extends State<PointsScreen> {
   Widget _buildEmptyState(IconData icon, String message) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40),
+      padding: EdgeInsets.symmetric(vertical: 40),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -685,7 +685,7 @@ class PointsScreenState extends State<PointsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 48, color: Colors.white24),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             message,
             style: const TextStyle(

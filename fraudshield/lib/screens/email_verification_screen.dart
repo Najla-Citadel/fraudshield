@@ -94,9 +94,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      const Color(0xFF0F172A), // Slate 900
+                      Color(0xFF0F172A), // Slate 900
                       DesignTokens.colors.backgroundDark, // Base
-                      const Color(0xFF1E3A8A), // Blue 900
+                      Color(0xFF1E3A8A), // Blue 900
                     ],
                   ),
                 ),
@@ -107,14 +107,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             SafeArea(
               child: Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Header Icon
                       Center(
                         child: Container(
-                          padding: const EdgeInsets.all(20),
+                          padding: EdgeInsets.all(DesignTokens.spacing.xl),
                           decoration: BoxDecoration(
                             color: DesignTokens.colors.backgroundDark,
                             shape: BoxShape.circle,
@@ -127,10 +127,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
                       
                       GlassSurface(
-                        padding: const EdgeInsets.all(32),
+                        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
                         borderRadius: 24,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -143,7 +143,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 color: Colors.white,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             
                             Text(
                               'Enter the 6-digit code we sent to\n${widget.email}',
@@ -153,12 +153,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 height: 1.5,
                               ),
                             ),
-                            const SizedBox(height: 32),
+                            SizedBox(height: 32),
 
                             if (_errorMessage != null)
                               Container(
-                                padding: const EdgeInsets.all(12),
-                                margin: const EdgeInsets.only(bottom: 24),
+                                padding: EdgeInsets.all(DesignTokens.spacing.md),
+                                margin: EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
                                 decoration: BoxDecoration(
                                   color: Colors.red.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -166,8 +166,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.error_outline, color: Colors.red, size: 20),
-                                    const SizedBox(width: 12),
+                                    Icon(Icons.error_outline, color: Colors.red, size: 20),
+                                    SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
                                         _errorMessage!,
@@ -184,7 +184,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                               prefixIcon: Icons.numbers,
                               keyboardType: TextInputType.number,
                             ),
-                            const SizedBox(height: 32),
+                            SizedBox(height: 32),
                             AdaptiveButton(
                               text: 'Verify Email',
                               onPressed: _isLoading ? () {} : _handleVerifyEmail,

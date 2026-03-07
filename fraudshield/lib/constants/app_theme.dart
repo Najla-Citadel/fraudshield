@@ -19,10 +19,8 @@ class AppTheme {
         onSecondary: Colors.white,
         surface: colors.surfaceLight,
         onSurface: colors.backgroundDark,
-        background: colors.backgroundLight,
-        onBackground: colors.backgroundDark,
         error: colors.error,
-        outline: const Color(0xFFE2E8F0), // Slate 200
+        outline: Color(0xFFE2E8F0), // Slate 200
       ),
       scaffoldBackgroundColor: colors.backgroundLight,
       cardColor: colors.surfaceLight,
@@ -54,10 +52,8 @@ class AppTheme {
         onSecondary: colors.secondaryLight,
         surface: colors.surfaceDark,
         onSurface: colors.secondaryDark,
-        background: colors.backgroundDark,
-        onBackground: colors.secondaryDark,
         error: colors.error,
-        outline: const Color(0xFF334155), // Slate 700
+        outline: Color(0xFF334155), // Slate 700
       ),
       scaffoldBackgroundColor: colors.backgroundDark,
       cardColor: colors.surfaceDark,

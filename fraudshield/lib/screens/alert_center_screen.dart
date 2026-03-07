@@ -16,7 +16,7 @@ class AlertCenterScreen extends StatelessWidget {
       title: 'Alert Center',
       actions: [
         IconButton(
-          icon: const Icon(LucideIcons.trash2, color: Colors.white, size: 20),
+          icon: Icon(LucideIcons.trash2, color: Colors.white, size: 20),
           onPressed: () {
             NotificationService.instance.clearAlerts();
           },
@@ -33,7 +33,7 @@ class AlertCenterScreen extends StatelessWidget {
                 children: [
                   Icon(LucideIcons.bellOff,
                       size: 64, color: Colors.white.withOpacity(0.1)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     'No new alerts',
                     style: TextStyle(
@@ -47,14 +47,14 @@ class AlertCenterScreen extends StatelessWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(DesignTokens.spacing.xl),
             itemCount: alerts.length,
             itemBuilder: (context, index) {
               final alert = alerts[index];
               return FadeInSlideUp(
                 delay: Duration(milliseconds: index * 50),
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
                   child: _AlertCard(alert: alert),
                 ),
               );
@@ -88,24 +88,24 @@ class _AlertCard extends StatelessWidget {
               width: 4,
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
+                borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(DesignTokens.spacing.lg),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(icon, color: color, size: 20),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,7 +131,7 @@ class _AlertCard extends StatelessWidget {
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             alert['message'] ?? '',
                             style: TextStyle(
@@ -141,7 +141,7 @@ class _AlertCard extends StatelessWidget {
                             ),
                           ),
                           if (alert['type'] != null) ...[
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             _buildActionButton(context, alert),
                           ],
                         ],
@@ -163,7 +163,7 @@ class _AlertCard extends StatelessWidget {
         // Handle action based on type
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: 6),
         decoration: BoxDecoration(
           color: DesignTokens.colors.primaryBlue.withOpacity(0.1),
           borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -179,7 +179,7 @@ class _AlertCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Icon(LucideIcons.chevronRight,
                 size: 14, color: DesignTokens.colors.primaryBlue),
           ],

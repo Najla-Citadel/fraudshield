@@ -39,15 +39,15 @@ class _PointsHistoryScreenState extends State<PointsHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Points History'),
+        title: Text('Points History'),
         backgroundColor: DesignTokens.colors.primary,
       ),
       body: _loading
           ? AppLoadingIndicator.center()
           : _history.isEmpty
-              ? const Center(child: Text('No history yet'))
+              ? Center(child: Text('No history yet'))
               : ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(DesignTokens.spacing.lg),
                   itemCount: _history.length,
                   itemBuilder: (_, i) {
                     final item = _history[i];

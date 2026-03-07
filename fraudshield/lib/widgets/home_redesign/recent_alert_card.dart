@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../constants/colors.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 enum AlertSeverity { high, warning, info }
@@ -26,33 +25,33 @@ class RecentAlertCard extends StatelessWidget {
   Color get _backgroundColor {
     switch (severity) {
       case AlertSeverity.high:
-        return const Color(0xFFFFF5F5); // Light red
+        return Color(0xFFFFF5F5); // Light red
       case AlertSeverity.warning:
-        return const Color(0xFFFFFBEB); // Light yellow/orange
+        return Color(0xFFFFFBEB); // Light yellow/orange
       case AlertSeverity.info:
-        return const Color(0xFFEFF6FF); // Light blue
+        return Color(0xFFEFF6FF); // Light blue
     }
   }
 
   Color get _borderColor {
     switch (severity) {
       case AlertSeverity.high:
-        return const Color(0xFFFFE0E0);
+        return Color(0xFFFFE0E0);
       case AlertSeverity.warning:
-        return const Color(0xFFFEF08A);
+        return Color(0xFFFEF08A);
       case AlertSeverity.info:
-        return const Color(0xFFBFDBFE);
+        return Color(0xFFBFDBFE);
     }
   }
 
   Color get _iconBackgroundColor {
     switch (severity) {
       case AlertSeverity.high:
-        return const Color(0xFFEF4444); // Red
+        return Color(0xFFEF4444); // Red
       case AlertSeverity.warning:
-        return const Color(0xFFF59E0B); // Amber/Orange
+        return Color(0xFFF59E0B); // Amber/Orange
       case AlertSeverity.info:
-        return const Color(0xFF3B82F6); // Blue
+        return Color(0xFF3B82F6); // Blue
     }
   }
 
@@ -70,22 +69,22 @@ class RecentAlertCard extends StatelessWidget {
   Color get _titleColor {
     switch (severity) {
       case AlertSeverity.high:
-        return const Color(0xFF991B1B);
+        return Color(0xFF991B1B);
       case AlertSeverity.warning:
-        return const Color(0xFF92400E); // Dark amber
+        return Color(0xFF92400E); // Dark amber
       case AlertSeverity.info:
-        return const Color(0xFF1E3A8A); // Dark blue
+        return Color(0xFF1E3A8A); // Dark blue
     }
   }
 
   Color get _subtitleColor {
     switch (severity) {
       case AlertSeverity.high:
-        return const Color(0xFFB91C1C);
+        return Color(0xFFB91C1C);
       case AlertSeverity.warning:
-        return const Color(0xFFB45309);
+        return Color(0xFFB45309);
       case AlertSeverity.info:
-        return const Color(0xFF2563EB); // Medium blue
+        return Color(0xFF2563EB); // Medium blue
     }
   }
 
@@ -95,7 +94,7 @@ class RecentAlertCard extends StatelessWidget {
       onTap: onReview,
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.xl),
         decoration: BoxDecoration(
           color: _backgroundColor, 
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -105,14 +104,14 @@ class RecentAlertCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(DesignTokens.spacing.sm),
               decoration: BoxDecoration(
                 color: _iconBackgroundColor, 
                 shape: BoxShape.circle,
               ),
               child: Icon(_iconData, color: Colors.white, size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +124,7 @@ class RecentAlertCard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Text(
                     subtitle,
                     style: TextStyle(
@@ -137,8 +136,8 @@ class RecentAlertCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
+            Padding(
+              padding: EdgeInsets.only(top: DesignTokens.spacing.sm),
               child: Icon(LucideIcons.chevronRight, color: Colors.grey, size: 20),
             ),
           ],

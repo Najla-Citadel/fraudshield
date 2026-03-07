@@ -68,7 +68,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             ),
           ),
         ),
-        const SizedBox(width: 20),
+        SizedBox(width: 20),
       ],
       body: _isLoading
           ? AppLoadingIndicator.center(
@@ -81,7 +81,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   backgroundColor: DesignTokens.colors.surfaceDark,
                   child: ListView(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                        EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.sm),
                     children: _buildGroupedAlertList(),
                   ),
                 ),
@@ -115,14 +115,14 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       items.addAll(older.map((a) => _buildAlertItem(a)));
     }
 
-    items.add(const SizedBox(height: 100)); // Bottom padding for nav bar
+    items.add(SizedBox(height: 100)); // Bottom padding for nav bar
 
     return items;
   }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 16),
+      padding: EdgeInsets.only(top: DesignTokens.spacing.xxl, bottom: DesignTokens.spacing.lg),
       child: Text(
         title,
         style: TextStyle(
@@ -171,23 +171,23 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
   Widget _buildLoginAlertCard(dynamic alert) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
       child: GlassSurface(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         borderRadius: 24,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFE4E6).withOpacity(0.1),
+                color: Color(0xFFFFE4E6).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               ),
-              child: const Icon(LucideIcons.alertTriangle,
+              child: Icon(LucideIcons.alertTriangle,
                   color: Color(0xFFE11D48), size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +207,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         _getTimeAgo(alert['createdAt']),
                         style: TextStyle(
@@ -216,7 +216,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     alert['message'] ?? '',
                     style: TextStyle(
@@ -224,13 +224,13 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                         fontSize: 14,
                         height: 1.5),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Row(
                     children: [
                       _buildActionButton('It wasn\'t me',
                           isPrimary: true,
                           onTap: () => _resolveAlert(alert['id'], 'BLOCK')),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       _buildActionButton('Details',
                           isPrimary: false, onTap: () {}),
                     ],
@@ -249,10 +249,10 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
         decoration: BoxDecoration(
           color: isPrimary
-              ? const Color(0xFFDC2626)
+              ? Color(0xFFDC2626)
               : Colors.white.withOpacity(0.1),
           borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
@@ -283,13 +283,13 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         children: [
           Icon(LucideIcons.shieldCheck,
               size: 64, color: Colors.white.withOpacity(0.2)),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'All Clear!',
             style: TextStyle(
                 color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'No active security alerts for your account.',
             style: TextStyle(
@@ -309,7 +309,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
     final bool isRead = alert['isRead'] ?? false;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
       child: InkWell(
         onTap: () {
           if (!isRead) {
@@ -320,7 +320,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         },
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         child: GlassSurface(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           borderRadius: 24,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,16 +331,16 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(DesignTokens.spacing.md),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF43F5E), // Rose red
+                          color: Color(0xFFF43F5E), // Rose red
                           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                         ),
-                        child: const Icon(LucideIcons.alertTriangle,
+                        child: Icon(LucideIcons.alertTriangle,
                             color: Colors.white, size: 24),
                       ),
                       if (!isRead) ...[
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Container(
                           width: 8,
                           height: 8,
@@ -354,12 +354,12 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   ),
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF43F5E).withOpacity(0.2),
+                      color: Color(0xFFF43F5E).withOpacity(0.2),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                     ),
-                    child: const Text(
+                    child: Text(
                       'HIGH RISK',
                       style: TextStyle(
                         color: Color(0xFFF43F5E),
@@ -371,7 +371,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Text(
                 alert['title'] ?? 'Suspicious activity detected',
                 style: TextStyle(
@@ -380,7 +380,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 '${isToday ? 'Today' : dateStr} at $timeStr',
                 style: TextStyle(
@@ -388,9 +388,9 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   fontSize: 13,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(DesignTokens.spacing.lg),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -413,12 +413,12 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                       ),
                     ),
                     if (metadata.containsKey('sender')) ...[
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Row(
                         children: [
-                          const Icon(Icons.chat_bubble,
+                          Icon(Icons.chat_bubble,
                               color: Colors.white24, size: 14),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             'Sender: ${metadata['sender']}',
                             style: TextStyle(
@@ -432,14 +432,14 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               AppButton(
                 onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
                 label: 'Block & Report Sender',
                 variant: AppButtonVariant.destructive,
                 size: AppButtonSize.lg,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               AppButton(
                 onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
                 label: 'Not a Scam',
@@ -463,33 +463,33 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
 
     switch (category) {
       case 'LOGIN':
-        iconColor = const Color(0xFFF59E0B);
-        bgColor = const Color(0xFFFEF3C7);
+        iconColor = Color(0xFFF59E0B);
+        bgColor = Color(0xFFFEF3C7);
         icon = LucideIcons.user;
         break;
       case 'SYSTEM_SCAN':
-        iconColor = const Color(0xFF10B981);
-        bgColor = const Color(0xFFD1FAE5);
+        iconColor = Color(0xFF10B981);
+        bgColor = Color(0xFFD1FAE5);
         icon = LucideIcons.shieldCheck;
         if (alert['title']?.toString().contains('Report') ?? false) {
-          iconColor = const Color(0xFF3B82F6);
-          bgColor = const Color(0xFFDBEAFE);
+          iconColor = Color(0xFF3B82F6);
+          bgColor = Color(0xFFDBEAFE);
           icon = LucideIcons.shield;
         }
         break;
       case 'NETWORK':
-        iconColor = const Color(0xFF9CA3AF);
-        bgColor = const Color(0xFFF3F4F6);
+        iconColor = Color(0xFF9CA3AF);
+        bgColor = Color(0xFFF3F4F6);
         icon = LucideIcons.link2Off;
         break;
       case 'COMMUNITY':
         if (alert['title']?.toString().contains('Scam Trend') ?? false) {
-          iconColor = const Color(0xFFF59E0B);
-          bgColor = const Color(0xFFFEF3C7);
+          iconColor = Color(0xFFF59E0B);
+          bgColor = Color(0xFFFEF3C7);
           icon = LucideIcons.lightbulb;
         } else if (alert['title']?.toString().contains('Benefit') ?? false) {
-          iconColor = const Color(0xFF8B5CF6);
-          bgColor = const Color(0xFFF5F3FF);
+          iconColor = Color(0xFF8B5CF6);
+          bgColor = Color(0xFFF5F3FF);
           icon = LucideIcons.award;
         } else {
           iconColor = DesignTokens.colors.primary;
@@ -504,7 +504,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
       child: InkWell(
         onTap: () {
           if (!isRead) {
@@ -515,7 +515,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         },
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         child: GlassSurface(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
           borderRadius: 24,
           child: Opacity(
             opacity: isRead ? 0.6 : 1.0,
@@ -523,14 +523,14 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(DesignTokens.spacing.md),
                   decoration: BoxDecoration(
                     color: bgColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   ),
                   child: Icon(icon, color: iconColor, size: 24),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,7 +556,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                                   ),
                                 ),
                                 if (!isRead) ...[
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Container(
                                     width: 8,
                                     height: 8,
@@ -569,7 +569,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Text(
                             _getTimeAgo(alert['createdAt']),
                             style: TextStyle(
@@ -578,7 +578,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text(
                         alert['message'] ?? '',
                         style: TextStyle(

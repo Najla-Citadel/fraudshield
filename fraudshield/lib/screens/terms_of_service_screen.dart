@@ -11,7 +11,7 @@ class TermsOfServiceScreen extends StatelessWidget {
       title: 'Terms of Service',
       backgroundColor: DesignTokens.colors.backgroundDark,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,14 +22,14 @@ class TermsOfServiceScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Effective Date: February 20, 2026',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withOpacity(0.6),
                   ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             _buildSection(
               context,
               '1. Acceptance of Terms',
@@ -70,7 +70,7 @@ class TermsOfServiceScreen extends StatelessWidget {
               '8. Contact Us',
               'If you have any questions about these Terms, please contact us at: legal@fraudshield.com',
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48),
           ],
         ),
       ),
@@ -79,7 +79,7 @@ class TermsOfServiceScreen extends StatelessWidget {
 
   Widget _buildSection(BuildContext context, String title, String content) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -90,7 +90,7 @@ class TermsOfServiceScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             content,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(

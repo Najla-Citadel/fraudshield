@@ -54,7 +54,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
             borderRadius: BorderRadius.circular(widget.borderRadius),
             gradient: LinearGradient(
               colors: [baseColor, highlightColor, baseColor],
-              stops: const [0.1, 0.5, 0.9],
+              stops: [0.1, 0.5, 0.9],
               begin: const Alignment(-1.0, -0.3),
               end: const Alignment(1.0, 0.3),
               transform: _SlidingGradientTransform(

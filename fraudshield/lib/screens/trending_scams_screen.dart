@@ -49,9 +49,9 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
                 Expanded(
                   child: AnimationLimiter(
                     child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+                      padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xl, DesignTokens.spacing.lg, 100),
                       itemCount: _scams.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16),
+                      separatorBuilder: (context, index) => SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         return AnimationConfiguration.staggeredList(
                           position: index,
@@ -84,11 +84,11 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.lg),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             'Trending Scams',
             style: TextStyle(
               fontSize: 28,
@@ -98,13 +98,13 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(DesignTokens.spacing.sm),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
-            child: const Icon(LucideIcons.slidersHorizontal, size: 20, color: Colors.white),
+            child: Icon(LucideIcons.slidersHorizontal, size: 20, color: Colors.white),
           ),
         ],
       ),
@@ -113,22 +113,22 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Slate 800
+          color: Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
-        child: const TextField(
+        child: TextField(
           style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             hintText: 'Search scam types...',
             hintStyle: TextStyle(color: Color(0xFF9CA3AF), fontSize: 15),
             prefixIcon: Icon(LucideIcons.search, color: Color(0xFF9CA3AF), size: 20),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
           ),
         ),
       ),
@@ -139,10 +139,10 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
     return SizedBox(
       height: 70, // Ample space for padding
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.lg),
         scrollDirection: Axis.horizontal,
         itemCount: _filters.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 12),
+        separatorBuilder: (context, index) => SizedBox(width: 12),
         itemBuilder: (context, index) {
           final isSelected = _selectedFilterIndex == index;
           return GestureDetector(
@@ -153,7 +153,7 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.sm),
               decoration: BoxDecoration(
                 color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -200,9 +200,9 @@ class _ScamCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B), // Slate 800
+          color: Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: DesignTokens.shadows.md,
@@ -226,7 +226,7 @@ class _ScamCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             // Title
             Text(
               scam.title,
@@ -238,7 +238,7 @@ class _ScamCard extends StatelessWidget {
                 letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             // Description
             Text(
               scam.description,
@@ -254,10 +254,10 @@ class _ScamCard extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               alignment: Alignment.topCenter,
-              child: scam.isExpanded ? _buildExpandedContent(context) : const SizedBox.shrink(),
+              child: scam.isExpanded ? _buildExpandedContent(context) : SizedBox.shrink(),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             // Bottom Action Buttons
             _buildActionButtons(),
           ],
@@ -272,7 +272,7 @@ class _ScamCard extends StatelessWidget {
     if (text == 'HIGH GROWTH') iconData = LucideIcons.trendingUp;
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -282,7 +282,7 @@ class _ScamCard extends StatelessWidget {
         children: [
           if (iconData != null) ...[
             Icon(iconData, size: 12, color: color),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
           ],
           Text(
             text,
@@ -302,14 +302,14 @@ class _ScamCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         
         // Visual Example Box
         if (scam.example != null) ...[
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A), // Slate 900
+              color: Color(0xFF0F172A), // Slate 900
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
@@ -327,22 +327,22 @@ class _ScamCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       backgroundColor: Colors.white.withOpacity(0.1),
                       radius: 16,
-                      child: const Icon(LucideIcons.user, size: 18, color: Colors.white),
+                      child: Icon(LucideIcons.user, size: 18, color: Colors.white),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(DesignTokens.spacing.md),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E293B), // Slate 800
-                          borderRadius: const BorderRadius.only(
+                          color: Color(0xFF1E293B), // Slate 800
+                          borderRadius: BorderRadius.only(
                             topRight: Radius.circular(16),
                             bottomLeft: Radius.circular(16),
                             bottomRight: Radius.circular(16),
@@ -355,7 +355,7 @@ class _ScamCard extends StatelessWidget {
                               scam.example!.sender,
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             RichText(
                               text: TextSpan(
                                 style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, height: 1.4, fontFamily: 'Inter'),
@@ -377,7 +377,7 @@ class _ScamCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
         ],
 
         // How to Stay Safe
@@ -385,8 +385,8 @@ class _ScamCard extends StatelessWidget {
           Row(
             children: [
               Icon(LucideIcons.shieldCheck, color: DesignTokens.colors.accentGreen, size: 20),
-              const SizedBox(width: 8),
-              const Text(
+              SizedBox(width: 8),
+              Text(
                 'How to Stay Safe',
                 style: TextStyle(
                   fontSize: 16,
@@ -396,14 +396,14 @@ class _ScamCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ...scam.safetyTips.map((tip) => Padding(
-                padding: const EdgeInsets.only(bottom: 12, left: 4),
+                padding: EdgeInsets.only(bottom: DesignTokens.spacing.md, left: DesignTokens.spacing.xs),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(top: 6),
+                      margin: EdgeInsets.only(top: 6),
                       width: 4,
                       height: 4,
                       decoration: BoxDecoration(
@@ -411,7 +411,7 @@ class _ScamCard extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         tip,
@@ -444,7 +444,7 @@ class _ScamCard extends StatelessWidget {
               variant: AppButtonVariant.primary,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             flex: 1,
             child: AppButton(
@@ -469,7 +469,7 @@ class _ScamCard extends StatelessWidget {
               variant: AppButtonVariant.secondary,
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             flex: 1,
             child: AppButton(

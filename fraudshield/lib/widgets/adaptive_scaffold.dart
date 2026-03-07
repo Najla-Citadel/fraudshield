@@ -11,7 +11,7 @@ class AdaptiveScaffold extends StatelessWidget {
   const AdaptiveScaffold({
     super.key,
     required this.title,
-    this.slivers = const [],
+    this.slivers = [],
     this.body,
     this.actions,
     this.floatingActionButton,
@@ -45,8 +45,8 @@ class AdaptiveScaffold extends StatelessWidget {
             ),
             ...slivers,
              if (body != null)
-              SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
-             const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+              SliverToBoxAdapter(child: body ?? SizedBox.shrink()),
+             SliverPadding(padding: EdgeInsets.only(bottom: 80)),
           ],
         ),
       );
@@ -80,8 +80,8 @@ class AdaptiveScaffold extends StatelessWidget {
             ),
             ...slivers,
             if (body != null)
-              SliverToBoxAdapter(child: body ?? const SizedBox.shrink()),
-            const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
+              SliverToBoxAdapter(child: body ?? SizedBox.shrink()),
+            SliverPadding(padding: EdgeInsets.only(bottom: 80)),
           ],
         ),
         floatingActionButton: floatingActionButton,

@@ -4,12 +4,13 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/animated_background.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class AwarenessTipsScreen extends StatelessWidget {
   const AwarenessTipsScreen({super.key});
 
   // 🧠 Tips data
-  final List<Map<String, String>> tips = const [
+  final List<Map<String, String>> tips = [
     {
       'image': 'assets/images/tip1.png',
       'title': 'Never share your OTP',
@@ -49,14 +50,14 @@ class AwarenessTipsScreen extends StatelessWidget {
             // 🔷 HEADER SECTION
             GlassSurface(
               borderRadius: 0, // Header style
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xxl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Icon(Icons.lightbulb_outline, color: theme.colorScheme.primary, size: 28),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         'Must-Know Security Tips',
                         style: theme.textTheme.headlineSmall?.copyWith(
@@ -66,7 +67,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Learn how to protect yourself from scams and fraud.',
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -81,7 +82,7 @@ class AwarenessTipsScreen extends StatelessWidget {
             Expanded(
               child: AnimationLimiter(
                 child: ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                  padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xl, DesignTokens.spacing.lg, DesignTokens.spacing.xxl),
                   itemCount: tips.length,
                   itemBuilder: (context, index) {
                     final tip = tips[index];
@@ -92,7 +93,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                         verticalOffset: 50.0,
                         child: FadeInAnimation(
                           child: Padding(
-                            padding: const EdgeInsets.only(bottom: 18),
+                            padding: EdgeInsets.only(bottom: 18),
                             child: GlassSurface(
                               padding: EdgeInsets.zero,
                               borderRadius: 22,
@@ -101,7 +102,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                                 children: [
                                   // 🖼 IMAGE
                                   ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
+                                    borderRadius: BorderRadius.vertical(
                                       top: Radius.circular(22),
                                     ),
                                     child: Image.asset(
@@ -112,7 +113,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
                                           height: 160,
-                                          color: theme.colorScheme.surfaceVariant,
+                                          color: theme.colorScheme.surfaceContainerHighest,
                                           child: Center(
                                             child: Icon(Icons.image_not_supported, 
                                               color: theme.colorScheme.onSurfaceVariant, size: 40),
@@ -124,7 +125,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                         
                                   // 📄 CONTENT
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                                    padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.lg, DesignTokens.spacing.lg, 18),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -134,7 +135,7 @@ class AwarenessTipsScreen extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        const SizedBox(height: 8),
+                                        SizedBox(height: 8),
                                         Text(
                                           tip['desc']!,
                                           style: theme.textTheme.bodyMedium?.copyWith(

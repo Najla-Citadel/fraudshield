@@ -41,13 +41,13 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   Color get _levelColor {
     switch (_level) {
       case 'critical':
-        return const Color(0xFFDC2626);
+        return Color(0xFFDC2626);
       case 'high':
-        return const Color(0xFFEF4444);
+        return Color(0xFFEF4444);
       case 'medium':
-        return const Color(0xFFF59E0B);
+        return Color(0xFFF59E0B);
       default:
-        return const Color(0xFF22C55E);
+        return Color(0xFF22C55E);
     }
   }
 
@@ -99,12 +99,12 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
           // Main card
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildHeader(),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   _buildCard(context),
                 ],
               ),
@@ -118,7 +118,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   Widget _buildHeader() {
     return Column(
       children: [
-        const Text(
+        Text(
           'INCOMING CALL',
           style: TextStyle(
             color: Colors.white54,
@@ -128,7 +128,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             decoration: TextDecoration.none,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           _phoneNumber,
           style: const TextStyle(
@@ -145,9 +145,9 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
 
   Widget _buildCard(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withOpacity(0.9),
+        color: Color(0xFF0F172A).withOpacity(0.9),
         borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
         border: Border.all(
           color: _isLoading ? Colors.white12 : _levelColor.withOpacity(0.4),
@@ -160,9 +160,9 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   }
 
   Widget _buildLoading() {
-    return const Column(
+    return Column(
       children: [
-        const AppLoadingIndicator(color: Colors.white38),
+        AppLoadingIndicator(color: Colors.white38),
         SizedBox(height: 16),
         Text(
           'Checking caller database...',
@@ -187,14 +187,14 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              margin: const EdgeInsets.only(bottom: 24),
+              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
+              margin: EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
               decoration: BoxDecoration(
-                color: const Color(0xFFDC2626),
+                color: Color(0xFFDC2626),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 boxShadow: DesignTokens.shadows.md,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.call_end_rounded, color: Colors.white, size: 28),
@@ -217,31 +217,31 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
 
         // Risk Icon
         Container(
-          padding: const EdgeInsets.all(18),
+          padding: EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: _levelColor.withOpacity(0.12),
             shape: BoxShape.circle,
           ),
           child: Icon(_levelIcon, color: _levelColor, size: 44),
         ),
-        const SizedBox(height: 14),
+        SizedBox(height: 14),
 
         // Verified Entity
         if (_verifiedEntity != null) ...[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF22C55E).withOpacity(0.15),
+              color: Color(0xFF22C55E).withOpacity(0.15),
               borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
               border:
-                  Border.all(color: const Color(0xFF22C55E).withOpacity(0.4)),
+                  Border.all(color: Color(0xFF22C55E).withOpacity(0.4)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.verified_rounded,
+                Icon(Icons.verified_rounded,
                     color: Color(0xFF22C55E), size: 16),
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
                 Text(
                   _verifiedEntity!,
                   style: const TextStyle(
@@ -254,7 +254,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
         ],
 
         // Level label
@@ -267,7 +267,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             decoration: TextDecoration.none,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6),
 
         // Score bar
         ClipRRect(
@@ -279,7 +279,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             valueColor: AlwaysStoppedAnimation<Color>(_levelColor),
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -292,7 +292,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             if (_communityReports > 0)
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.redAccent.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -313,7 +313,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
 
         // Categories
         if (_categories.isNotEmpty) ...[
-          const SizedBox(height: 14),
+          SizedBox(height: 14),
           Wrap(
             spacing: 8,
             runSpacing: 6,
@@ -321,7 +321,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             children: _categories
                 .take(4)
                 .map((c) => Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.07),
@@ -342,9 +342,9 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
           _buildScamScriptBanner(),
         ],
 
-        const SizedBox(height: 24),
-        const Divider(color: Colors.white10),
-        const SizedBox(height: 16),
+        SizedBox(height: 24),
+        Divider(color: Colors.white10),
+        SizedBox(height: 16),
 
         // Action buttons - Row 1
         Row(
@@ -357,18 +357,18 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                 onTap: () => _handleAction(context, 'record'),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: _ActionBtn(
                 icon: Icons.flag_rounded,
                 label: 'Report Scam',
-                color: const Color(0xFFF59E0B),
+                color: Color(0xFFF59E0B),
                 onTap: () => _handleAction(context, 'report'),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: 10),
 
         // Action buttons - Row 2
         Row(
@@ -381,7 +381,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                 onTap: () => _showBlockGuide(context),
               ),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: _ActionBtn(
                 icon: Icons.close_rounded,
@@ -412,22 +412,22 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
           'Delivery companies NEVER charge redelivery fees via phone call.';
     }
 
-    if (message.isEmpty) return const SizedBox.shrink();
+    if (message.isEmpty) return SizedBox.shrink();
 
     return Container(
-      margin: const EdgeInsets.only(top: 16),
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.only(top: DesignTokens.spacing.lg),
+      padding: EdgeInsets.all(DesignTokens.spacing.md),
       decoration: BoxDecoration(
-        color: const Color(0xFFF59E0B).withOpacity(0.15),
+        color: Color(0xFFF59E0B).withOpacity(0.15),
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-        border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
+        border: Border.all(color: Color(0xFFF59E0B).withOpacity(0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.info_outline_rounded,
+          Icon(Icons.info_outline_rounded,
               color: Color(0xFFF59E0B), size: 20),
-          const SizedBox(width: 10),
+          SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
@@ -500,11 +500,11 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             context: context,
             barrierDismissible: false,
             builder: (ctx) => AlertDialog(
-              backgroundColor: const Color(0xFF0F172A),
+              backgroundColor: Color(0xFF0F172A),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
-                  side: const BorderSide(color: Color(0xFFDC2626), width: 2)),
-              title: const Row(
+                  side: BorderSide(color: Color(0xFFDC2626), width: 2)),
+              title: Row(
                 children: [
                   Icon(Icons.gpp_bad_rounded, color: Color(0xFFDC2626)),
                   SizedBox(width: 10),
@@ -530,12 +530,12 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                   variant: AppButtonVariant.primary,
                   width: double.infinity,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('I Understand, Continue',
+                    child: Text('I Understand, Continue',
                         style: TextStyle(color: Colors.white54)),
                   ),
                 ),
@@ -555,21 +555,21 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: Color(0xFF1E293B),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
-          title: const Text('Block This Number',
+          title: Text('Block This Number',
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'To block this caller from your phone:',
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               _blockStep('1', 'Open your Phone app'),
               _blockStep('2', 'Go to Recent Calls'),
               _blockStep('3', 'Tap & hold "$_phoneNumber"'),
@@ -591,7 +591,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   }
 
   Widget _blockStep(String num, String text) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -610,7 +610,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.none)),
             ),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
                 child: Text(text,
                     style: const TextStyle(
@@ -644,7 +644,7 @@ class _ActionBtn extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: color.withOpacity(0.12),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -653,7 +653,7 @@ class _ActionBtn extends StatelessWidget {
         child: Column(
           children: [
             Icon(icon, color: color, size: 24),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(label,
                 textAlign: TextAlign.center,
                 style: TextStyle(

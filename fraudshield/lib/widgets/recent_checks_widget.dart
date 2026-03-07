@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
 import '../services/recent_checks_service.dart';
 import 'package:intl/intl.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
@@ -44,8 +43,8 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const SizedBox.shrink();
-    if (_checks.isEmpty) return const SizedBox.shrink();
+    if (_isLoading) return SizedBox.shrink();
+    if (_checks.isEmpty) return SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,16 +69,16 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                 minimumSize: const Size(50, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text('Clear', style: TextStyle(fontSize: 12)),
+              child: Text('Clear', style: TextStyle(fontSize: 12)),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _checks.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          separatorBuilder: (context, index) => SizedBox(height: 8),
           itemBuilder: (context, index) {
             final item = _checks[index];
             return _buildCheckItem(item);
@@ -138,23 +137,23 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
         onTap: () => widget.onCheckSelected(item),
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(DesignTokens.spacing.sm),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                 ),
                 child: Icon(icon, color: color, size: 16),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +168,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       item.type,
                       style: TextStyle(
@@ -187,7 +186,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                   fontSize: 11,
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Icon(
                 Icons.restore, 
                 color: Colors.white.withOpacity(0.2), 

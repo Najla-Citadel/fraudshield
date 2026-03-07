@@ -103,7 +103,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
     return ScreenScaffold(
       title: 'URL LINK CHECK',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -112,17 +112,17 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               'Avoid clicking links that create a false sense of urgency.',
               "Always verify the domain name (e.g., 'google.com' vs 'qooqle.com').",
             ]),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _buildInputSection(),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             if (_lastResult != null) ...[
               _buildResultCard(),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
             ],
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Recent Activity',
                   style: TextStyle(
                     color: Colors.white,
@@ -142,13 +142,13 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                       minimumSize: const Size(50, 30),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                    child: Text('Clear', style: TextStyle(fontSize: 12)),
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildRecentActivity(),
-            const SizedBox(height: 100),
+            SizedBox(height: 100),
           ],
         ),
       ),
@@ -157,7 +157,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
   Widget _buildInputSection() {
     return GlassSurface(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderRadius: 24,
       accentColor: DesignTokens.colors.primary,
       child: Column(
@@ -177,7 +177,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           TextField(
             controller: _urlController,
             decoration: InputDecoration(
@@ -202,11 +202,11 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                 borderSide: BorderSide.none,
               ),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: 14),
             ),
             style: const TextStyle(fontSize: 15, color: Colors.white),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           AppButton(
             onPressed: _isLoading ? null : _checkUrl,
             label: 'Check Link',
@@ -220,7 +220,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
   }
 
   Widget _buildResultCard() {
-    if (_lastResult == null) return const SizedBox.shrink();
+    if (_lastResult == null) return SizedBox.shrink();
 
     final isSafe = _lastResult!.score < 30;
     final riskColor = _lastResult!.level == 'critical'
@@ -228,11 +228,11 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
         : _lastResult!.level == 'high'
             ? DesignTokens.colors.warning
             : _lastResult!.level == 'medium'
-                ? const Color(0xFFFBBF24)
+                ? Color(0xFFFBBF24)
                 : DesignTokens.colors.accentGreen;
 
     return GlassSurface(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderRadius: 24,
       borderColor: riskColor.withOpacity(0.3),
       accentColor: DesignTokens.colors.primary,
@@ -243,7 +243,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             color: riskColor,
             size: 48,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             isSafe ? 'Website is Safe' : 'Suspicious Website',
             style: TextStyle(
@@ -252,7 +252,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               fontSize: 20,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             _urlController.text.trim(),
             textAlign: TextAlign.center,
@@ -261,7 +261,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           // Risk Score Indicator
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -281,15 +281,15 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             ],
           ),
           if (_lastResult!.reasons.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Divider(color: Colors.white.withOpacity(0.1)),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ..._lastResult!.reasons.map((reason) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
+                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
                   child: Row(
                     children: [
                       Icon(LucideIcons.dot, color: riskColor, size: 16),
-                      const SizedBox(width: 4),
+                      SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           reason,
@@ -314,14 +314,14 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
     if (_recentScans.isEmpty) {
       return GlassSurface(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
         borderRadius: 24,
         accentColor: DesignTokens.colors.primary,
         child: Column(
           children: [
             Icon(LucideIcons.history,
                 color: DesignTokens.colors.textGrey.withOpacity(0.3), size: 40),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'No recent activity',
               style: TextStyle(color: DesignTokens.colors.textGrey),
@@ -350,9 +350,9 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
           return ListTile(
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.sm),
             leading: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(DesignTokens.spacing.sm),
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
                     .withOpacity(0.1),
@@ -379,7 +379,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                   color: Colors.white.withOpacity(0.5), fontSize: 12),
             ),
             trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
                     .withOpacity(0.1),

@@ -52,19 +52,19 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
           // 📜 Modal Content
           Center(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
               child: Hero(
                 tag: 'terms_acceptance',
                 child: GlassSurface(
-                  padding: const EdgeInsets.all(32),
+                  padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
                   borderRadius: 32,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.security_outlined,
                           size: 64, color: DesignTokens.colors.primary),
-                      const SizedBox(height: 24),
-                      const Text(
+                      SizedBox(height: 24),
+                      Text(
                         'Updates to Privacy & Terms',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -73,7 +73,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                           color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
                       Text(
                         'To continue using FraudShield, please review and accept our updated Privacy Policy and Terms of Service. This ensures compliance with PDPA 2010 and security standards.',
                         textAlign: TextAlign.center,
@@ -83,7 +83,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                           height: 1.5,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
 
                       // 📝 Checkbox & Legal Links
                       Row(
@@ -94,12 +94,12 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                             onChanged: (val) =>
                                 setState(() => _agreed = val ?? false),
                             activeColor: DesignTokens.colors.primary,
-                            side: const BorderSide(
+                            side: BorderSide(
                                 color: Colors.white54, width: 2),
                           ),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 12.0),
+                              padding: EdgeInsets.only(top: DesignTokens.spacing.md),
                               child: RichText(
                                 text: TextSpan(
                                   style: TextStyle(
@@ -148,7 +148,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
 
                       // 🟦 Accept Button
                       AdaptiveButton(

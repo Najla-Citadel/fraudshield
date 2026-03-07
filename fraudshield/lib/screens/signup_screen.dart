@@ -109,12 +109,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const AppLogo(size: 80),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               
               Text(
                 'Create Account',
@@ -123,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   color: colors.textLight,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Join the community to stay protected',
                 textAlign: TextAlign.center,
@@ -131,10 +131,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   color: colors.textLight.withValues(alpha: 0.5),
                 ),
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
 
               GlassSurface(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
                 borderRadius: 24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -146,7 +146,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       errorText: _nameError,
                       onChanged: (_) => setState(() => _nameError = null),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     AdaptiveTextField(
                       controller: _emailController,
@@ -156,7 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       errorText: _emailError,
                       onChanged: (_) => setState(() => _emailError = null),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     AdaptiveTextField(
                       controller: _passwordController,
@@ -166,7 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       errorText: _passwordError,
                       onChanged: (_) => setState(() => _passwordError = null),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     AdaptiveTextField(
                       controller: _confirmPasswordController,
@@ -176,7 +176,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       errorText: _confirmError,
                       onChanged: (_) => setState(() => _confirmError = null),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 borderRadius: BorderRadius.circular(4)),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: RichText(
                             text: TextSpan(
@@ -238,13 +238,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     TurnstileWidget(
                       onTokenReceived: (token) {
                         setState(() => _captchaToken = token);
                       },
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     AppButton(
                       label: 'Sign Up',
                       isLoading: _loading,
@@ -254,7 +254,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

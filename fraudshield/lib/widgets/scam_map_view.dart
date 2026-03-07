@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../widgets/scam_card.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class ScamMapView extends StatelessWidget {
   final List<dynamic> reports;
@@ -58,11 +59,11 @@ class ScamMapView extends StatelessWidget {
         maxChildSize: 0.9,
         minChildSize: 0.3,
         builder: (_, controller) => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(DesignTokens.spacing.lg),
           child: ListView(
             controller: controller,
             children: [
@@ -70,7 +71,7 @@ class ScamMapView extends StatelessWidget {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl),
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(2),

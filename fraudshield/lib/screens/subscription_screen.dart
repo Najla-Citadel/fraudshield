@@ -143,7 +143,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       _buildHeader(),
                       Expanded(
                         child: SingleChildScrollView(
-                          padding: const EdgeInsets.only(bottom: 120),
+                          padding: EdgeInsets.only(bottom: 120),
                           child: hasActiveSub
                               ? _buildSubscriberView()
                               : _buildFreeUserView(),
@@ -165,21 +165,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildHeader() {
     final colors = DesignTokens.colors;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.sm),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: EdgeInsets.all(DesignTokens.spacing.sm),
                 decoration: BoxDecoration(
                   color: colors.accentGreen,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(LucideIcons.shield, color: colors.backgroundDark, size: 24),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -192,7 +192,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Next-gen AI protection for your digital wealth.',
             textAlign: TextAlign.center,
@@ -206,9 +206,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildFreeUserView() {
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         _buildToggle(),
-        const SizedBox(height: 28),
+        SizedBox(height: 28),
         SizedBox(
           height: 400,
           child: PageView.builder(
@@ -217,7 +217,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             itemBuilder: (_, i) => _buildPlanCard(_plans[i]),
           ),
         ),
-        const SizedBox(height: 36),
+        SizedBox(height: 36),
         _buildFeatureComparison(),
       ],
     );
@@ -227,11 +227,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final colors = DesignTokens.colors;
     return Column(
       children: [
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(DesignTokens.spacing.xxl),
             decoration: BoxDecoration(
               color: colors.accentGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -240,37 +240,37 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(DesignTokens.spacing.lg),
                   decoration: BoxDecoration(
                     color: colors.accentGreen.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(LucideIcons.badgeCheck, color: colors.accentGreen, size: 44),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'You\'re a Premium Member!',
                   style: DesignTypography.h3,
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   _expiryText,
                   style: TextStyle(color: colors.textLight.withValues(alpha: 0.55), fontSize: 13),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 Divider(color: colors.textLight.withValues(alpha: 0.1)),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 ...([
                   'AI Real-time SMS Blocking',
                   'Bank Account Verification',
                   'Priority Threat Insights',
                   '24/7 Priority Support',
                 ].map((f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
                       Icon(LucideIcons.checkCircle, color: colors.accentGreen, size: 18),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Text(f, style: TextStyle(color: colors.textLight.withValues(alpha: 0.75), fontSize: 14)),
                     ],
                   ),
@@ -279,31 +279,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(DesignTokens.spacing.xl),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: Color(0xFF1E293B),
               borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: colors.textLight.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   ),
                   child: Icon(Icons.settings_outlined, color: colors.textLight.withValues(alpha: 0.7), size: 20),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Manage Subscription', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text('Manage Subscription', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                       Text('Cancel or modify at any time', style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 12)),
                     ],
                   ),
@@ -313,7 +313,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
         _buildFeatureComparison(showActivePlan: true),
       ],
     );
@@ -322,9 +322,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildToggle() {
     final colors = DesignTokens.colors;
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: EdgeInsets.all(DesignTokens.spacing.xs),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: colors.textLight.withValues(alpha: 0.1)),
       ),
@@ -344,7 +344,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       onTap: () => setState(() => _isYearly = text == 'Yearly'),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: 10),
         decoration: BoxDecoration(
           color: isActive ? DesignTokens.colors.accentGreen : Colors.transparent,
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -359,9 +359,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
             ),
             if (hasBadge && !isActive) ...[
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(color: colors.accentGreen, borderRadius: BorderRadius.circular(DesignTokens.radii.xs)),
                 child: Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colors.textDark)),
               ),
@@ -388,10 +388,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         : 'Billed monthly';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      padding: const EdgeInsets.all(24),
+      margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.sm),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
-        color: const Color(0xFF162032),
+        color: Color(0xFF162032),
         borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
         border: isPremium
             ? Border.all(color: colors.accentGreen.withValues(alpha: 0.5), width: 1.5)
@@ -416,7 +416,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 if (isPremium)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
                     decoration: BoxDecoration(
                       color: DesignTokens.colors.accentGreen.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -425,7 +425,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           RichText(
             text: TextSpan(
               children: [
@@ -441,17 +441,17 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
           if (isPremium) ...[
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(billingText, style: TextStyle(color: colors.textLight.withValues(alpha: 0.4), fontSize: 12)),
           ],
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             isPremium
                 ? 'Complete AI-powered protection with real-time alerts.'
                 : 'Basic protection for everyday use.',
             style: TextStyle(color: colors.textLight.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
           ),
-          const Spacer(),
+          Spacer(),
           SizedBox(
             width: double.infinity,
             child: isCurrent
@@ -483,16 +483,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     ];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('FEATURE COMPARISON',
+          Text('FEATURE COMPARISON',
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             children: [
-              const Expanded(child: SizedBox()),
+              Expanded(child: SizedBox()),
               SizedBox(
                 width: 100,
                 child: Row(
@@ -505,9 +505,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Divider(color: colors.textLight.withValues(alpha: 0.06)),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           ...features.map((f) => _featureRow(f.label, f.basic, f.premium, showActivePlan: showActivePlan)),
         ],
       ),
@@ -517,7 +517,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _featureRow(String label, bool basic, bool premium, {bool showActivePlan = false}) {
     final colors = DesignTokens.colors;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
       child: Row(
         children: [
           Expanded(
@@ -543,7 +543,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final colors = DesignTokens.colors;
     if (!enabled) return Container(width: 20, height: 2, color: colors.textLight.withValues(alpha: 0.15));
     return Container(
-      padding: const EdgeInsets.all(2),
+      padding: EdgeInsets.all(2),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: (isPremium || isHighlighted) ? DesignTokens.colors.accentGreen : Colors.transparent,

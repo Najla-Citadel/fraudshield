@@ -4,7 +4,6 @@ import 'dart:convert';
 import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import 'glass_surface.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class DailyDigestWidget extends StatefulWidget {
@@ -77,13 +76,13 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
         child: AppLoadingIndicator.center(color: DesignTokens.colors.accentGreen),
       );
     }
 
     if (_error != null || _digest == null) {
-      return const SizedBox.shrink(); // Hide if error or no data
+      return SizedBox.shrink(); // Hide if error or no data
     }
 
     int totalReports = _digest!['totalReports'] ?? 0;
@@ -97,15 +96,15 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
     final topTrends = _digest!['topTrends'] as List? ?? [];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A).withOpacity(0.95), // Deeper, more integrated navy
+          color: Color(0xFF0F172A).withOpacity(0.95), // Deeper, more integrated navy
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.06)), // Subtle edge
           boxShadow: DesignTokens.shadows.md,
         ),
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -115,14 +114,14 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(5),
+                      padding: EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: DesignTokens.colors.accentGreen.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                       ),
                       child: Icon(LucideIcons.zap, color: DesignTokens.colors.accentGreen, size: 14),
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Text(
                       'DAILY INSIGHT',
                       style: TextStyle(
@@ -144,7 +143,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                 ),
               ],
             ),
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             
             // Stats Row
             Row(
@@ -163,7 +162,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                           height: 1,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       Text(
                         reportLabel,
                         style: TextStyle(
@@ -193,7 +192,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         Text(
                           'TOP TRENDING THREAT',
                           style: TextStyle(
@@ -208,11 +207,11 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                   ),
               ],
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             
             // Safety Tip Box - Recessed look
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(DesignTokens.spacing.xl),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.15), // Recessed/darker inner box
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -222,12 +221,12 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(LucideIcons.lightbulb, color: DesignTokens.colors.accentGreen, size: 20),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'PRO TIP',
                           style: TextStyle(
                             color: Color(0xFFFFB347),
@@ -236,7 +235,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                             letterSpacing: 1.2,
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         Text(
                           safetyTip,
                           style: TextStyle(

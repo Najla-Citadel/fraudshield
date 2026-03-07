@@ -21,38 +21,38 @@ class SecurityAlertScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: isDark
-                ? [const Color(0xFF0F172A), const Color(0xFF1E293B)]
-                : [const Color(0xFFF1F5F9), const Color(0xFFE2E8F0)],
+                ? [Color(0xFF0F172A), Color(0xFF1E293B)]
+                : [Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(DesignTokens.spacing.xxl),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     LucideIcons.shieldAlert,
                     color: Colors.red,
                     size: 80,
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 Text(
                   'Security Alert',
                   style: theme.textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    color: isDark ? Colors.white : Color(0xFF0F172A),
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
                   'Your device security integrity has been compromised.',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -61,14 +61,14 @@ class SecurityAlertScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 _buildInfoCard(
                   context,
                   title: 'Why am I seeing this?',
                   description:
                       'FraudShield detected that your device is rooted or jailbroken. To protect your financial data and prevent unauthorized access, FraudShield cannot run on modified devices.',
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 AppButton(
                   onPressed: () async {
                     final isSecure =
@@ -87,7 +87,7 @@ class SecurityAlertScreen extends StatelessWidget {
                   variant: AppButtonVariant.primary,
                   width: double.infinity,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
                     // In a real app, you might provide a help link
@@ -112,7 +112,7 @@ class SecurityAlertScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
         color: isDark
             ? Colors.white.withOpacity(0.05)
@@ -131,10 +131,10 @@ class SecurityAlertScreen extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                  color: isDark ? Colors.white : Color(0xFF0F172A),
                 ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(

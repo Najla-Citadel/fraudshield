@@ -19,12 +19,12 @@ class CallOverlayButton extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
+              color: Color(0xFF0F172A),
               shape: BoxShape.circle,
               boxShadow: DesignTokens.shadows.sm,
-              border: Border.all(color: const Color(0xFF38BDF8), width: 2),
+              border: Border.all(color: Color(0xFF38BDF8), width: 2),
             ),
-            child: const Icon(
+            child: Icon(
               LucideIcons.shieldCheck,
               color: Color(0xFF38BDF8),
               size: 30,

@@ -111,7 +111,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(color: Colors.grey[200]!),
@@ -120,7 +120,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Filters',
                   style: TextStyle(
                     fontSize: 20,
@@ -128,7 +128,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -138,19 +138,19 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Date Range Section
-                  const Text(
+                  Text(
                     '📅 Date Range',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Row(
                     children: [
                       Expanded(
@@ -160,7 +160,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                           onTap: _selectDateFrom,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: _buildDateButton(
                           label: 'To',
@@ -170,7 +170,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   // Quick filters
                   Wrap(
                     spacing: 8,
@@ -182,17 +182,17 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Verification Count Section
-                  const Text(
+                  Text(
                     '✓ Minimum Verifications',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
@@ -225,17 +225,17 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                     ],
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
 
                   // Sort By Section
-                  const Text(
+                  Text(
                     '🔽 Sort By',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   _buildSortOption('Newest First', 'newest'),
                   _buildSortOption('Most Verified', 'verified'),
                   _buildSortOption('Highest Trust Score', 'trust'),
@@ -246,7 +246,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
 
           // Footer Actions
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(color: Colors.grey[200]!),
@@ -261,7 +261,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                     variant: AppButtonVariant.destructive,
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   flex: 2,
                   child: AppButton(
@@ -286,7 +286,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[300]!),
           borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -301,7 +301,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                 color: Colors.grey[600],
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               date != null
                   ? '${date.day}/${date.month}/${date.year}'

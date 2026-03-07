@@ -194,12 +194,12 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
           // Filter Chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
             child: Row(
               children: _filters.map((filter) {
                 final isSelected = _selectedFilter == filter;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: EdgeInsets.only(right: DesignTokens.spacing.sm),
                   child: FilterChip(
                     label: Text(filter),
                     selected: isSelected,
@@ -231,7 +231,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
             ),
           ),
 
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
 
           // Ledger List
           _buildBody(),
@@ -241,8 +241,8 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
         onPressed: _showManualLogForm,
         backgroundColor: DesignTokens.colors.accentGreen,
         foregroundColor: DesignTokens.colors.backgroundDark,
-        icon: const Icon(LucideIcons.plus),
-        label: const Text('Log Payment',
+        icon: Icon(LucideIcons.plus),
+        label: Text('Log Payment',
             style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
@@ -263,10 +263,10 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
     if (_isLoading && _transactions.isEmpty) {
       return Expanded(
         child: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
           itemCount: 5,
           itemBuilder: (context, index) => const SkeletonCard(
-              height: 80, margin: EdgeInsets.only(bottom: 12)),
+              height: 80, margin: EdgeInsets.only(bottom: DesignTokens.spacing.md)),
         ),
       );
     }
@@ -287,7 +287,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(28),
+                padding: EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.glassDark.withOpacity(0.6),
                   shape: BoxShape.circle,
@@ -296,15 +296,15 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                 child: Icon(LucideIcons.list,
                     color: Colors.white.withOpacity(0.2), size: 52),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20),
+              Text(
                 'Nothing here yet',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 _selectedFilter == 'ALL'
                     ? 'Your transaction history will appear here.'
@@ -321,12 +321,12 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
     return Expanded(
       child: ListView.builder(
         controller: _scrollController,
-        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 100),
+        padding: EdgeInsets.only(left: DesignTokens.spacing.lg, right: DesignTokens.spacing.lg, bottom: 100),
         itemCount: _transactions.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _transactions.length) {
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               child: Center(
                 child: AppLoadingIndicator.center(),
               ),
@@ -355,7 +355,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
               ),
             ).then((_) => _fetchTransactions()),
             child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.glassDark.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -370,7 +370,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                       Container(width: 4, color: statusColor),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 14, vertical: 14),
                           child: Row(
                             children: [
@@ -384,7 +384,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                 ),
                                 child: Icon(icon, color: statusColor, size: 20),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: 12),
                               // Merchant + meta
                               Expanded(
                                 child: Column(
@@ -400,11 +400,11 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4),
                                     Row(
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
+                                          padding: EdgeInsets.symmetric(
                                               horizontal: 7, vertical: 2),
                                           decoration: BoxDecoration(
                                             color: statusColor.withOpacity(0.12),
@@ -421,7 +421,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 6),
+                                        SizedBox(width: 6),
                                         Flexible(
                                           child: Text(
                                             date,
@@ -437,7 +437,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               // Amount + risk score
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -454,16 +454,16 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                     )
                                   else
                                     Icon(LucideIcons.chevronRight,
-                                        color: const Color(0xFF475569),
+                                        color: Color(0xFF475569),
                                         size: 18),
                                   if (riskScore > 0) ...[
-                                    const SizedBox(height: 3),
+                                    SizedBox(height: 3),
                                     Text(
                                       '$riskScore/100',
                                       style: TextStyle(
                                         color: riskScore >= 75
-                                            ? const Color(0xFFF87171)
-                                            : const Color(0xFFF59E0B),
+                                            ? Color(0xFFF87171)
+                                            : Color(0xFFF59E0B),
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
                                       ),

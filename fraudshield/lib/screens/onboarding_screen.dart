@@ -64,10 +64,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: _finish,
-                        child: const Text('Skip'),
+                        child: Text('Skip'),
                       ),
                     )
-                  : const SizedBox.shrink(),
+                  : SizedBox.shrink(),
             ),
             // 🔹 Pages
             Expanded(
@@ -80,7 +80,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, i) {
                   final item = _items[i];
                   return Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.all(DesignTokens.spacing.xxl),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -90,9 +90,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           height: 260,
                           fit: BoxFit.contain,
                           errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.security, size: 120),
+                              Icon(Icons.security, size: 120),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30),
                         Text(
                           item.title,
                           style: const TextStyle(
@@ -100,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         Text(
                           item.subtitle,
                           textAlign: TextAlign.center,
@@ -123,7 +123,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 _items.length,
                 (i) => AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xs),
                   height: 8,
                   width: _currentIndex == i ? 24 : 8,
                   decoration: BoxDecoration(
@@ -136,12 +136,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // 🔹 Button
             if (_currentIndex == _items.length - 1)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
                 child: SizedBox(
                   width: double.infinity,
                   child: AdaptiveButton(
@@ -157,7 +157,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
           ],
         ),
       ),

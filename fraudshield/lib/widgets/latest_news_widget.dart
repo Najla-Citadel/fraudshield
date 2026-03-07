@@ -116,7 +116,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,17 +133,17 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white54),
+                        icon: Icon(Icons.close, color: Colors.white54),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'Select categories to follow local scam trends.',
                     style: TextStyle(color: Colors.white54, fontSize: 14),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Wrap(
                     spacing: 8,
                     runSpacing: 12,
@@ -161,7 +161,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           _savePreferences();
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                           decoration: BoxDecoration(
                             color: isSelected 
                                 ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
@@ -175,7 +175,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               if (isSelected) 
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.only(right: 6),
                                   child: Icon(Icons.check, color: Colors.blueAccent, size: 14),
                                 ),
@@ -193,7 +193,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                   AppButton(
                     onPressed: () {
                       Navigator.pop(context);
@@ -203,7 +203,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                     variant: AppButtonVariant.primary,
                     width: double.infinity,
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                 ],
               ),
             );
@@ -222,10 +222,10 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
       return SizedBox(
         height: containerHeight,
         child: ListView.separated(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xs),
           scrollDirection: Axis.horizontal,
           itemCount: 3,
-          separatorBuilder: (_, __) => const SizedBox(width: 16),
+          separatorBuilder: (_, __) => SizedBox(width: 16),
           itemBuilder: (_, __) => AppSkeleton.card(
             width: 280,
             height: containerHeight,
@@ -237,7 +237,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
 
     if (_error != null) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
         child: Column(
           children: [
             Row(
@@ -248,14 +248,14 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                     style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.7)),
                   ),
                 ),
-                TextButton(onPressed: _loadNews, child: const Text('Retry')),
+                TextButton(onPressed: _loadNews, child: Text('Retry')),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextButton.icon(
               onPressed: showCustomization,
-              icon: const Icon(Icons.tune, size: 16),
-              label: const Text('Change Categories'),
+              icon: Icon(Icons.tune, size: 16),
+              label: Text('Change Categories'),
               style: TextButton.styleFrom(foregroundColor: Colors.blueAccent),
             ),
           ],
@@ -265,20 +265,20 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
 
     if (_items.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
         child: Column(
           children: [
             Row(
               children: [
                 Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.5)))),
-                TextButton(onPressed: _loadNews, child: const Text('Refresh')),
+                TextButton(onPressed: _loadNews, child: Text('Refresh')),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             TextButton.icon(
               onPressed: showCustomization,
-              icon: const Icon(Icons.tune, size: 16),
-              label: const Text('Change Categories'),
+              icon: Icon(Icons.tune, size: 16),
+              label: Text('Change Categories'),
               style: TextButton.styleFrom(foregroundColor: Colors.blueAccent),
             ),
           ],
@@ -289,10 +289,10 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     return SizedBox(
       height: containerHeight,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xs),
         scrollDirection: Axis.horizontal,
         itemCount: _items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        separatorBuilder: (_, __) => SizedBox(width: 16),
         itemBuilder: (context, index) {
           final item = _items[index];
           return GestureDetector(
@@ -308,7 +308,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     child: SizedBox(
                       height: 120,
                       width: double.infinity,
@@ -320,19 +320,19 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(DesignTokens.spacing.md),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
                             decoration: BoxDecoration(
                               color: Colors.red.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                             ),
-                            child: const Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                            child: Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             item.title,
                             maxLines: 3,

@@ -164,12 +164,12 @@ class _LoginScreenState extends State<LoginScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const AppLogo(size: 80),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               AnimationConfiguration.synchronized(
                 duration: const Duration(milliseconds: 800),
                 child: FadeInAnimation(
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SlideAnimation(
                     verticalOffset: 30.0,
                     child: GlassSurface(
-                      padding: const EdgeInsets.all(32),
+                      padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
                       borderRadius: 24,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: colors.textLight,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             AppLocalizations.of(context)!.loginSignInDesc,
                             textAlign: TextAlign.center,
@@ -197,21 +197,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: colors.textLight.withValues(alpha: 0.5),
                             ),
                           ),
-                          const SizedBox(height: 32),
+                          SizedBox(height: 32),
                           AdaptiveTextField(
                             controller: _emailController,
                             label: 'Email',
                             prefixIcon: LucideIcons.mail,
                             keyboardType: TextInputType.emailAddress,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           AdaptiveTextField(
                             controller: _passwordController,
                             label: 'Password',
                             prefixIcon: LucideIcons.lock,
                             obscureText: true,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               style: TextButton.styleFrom(
                                 minimumSize: const Size(44, 44),
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                                 ),
@@ -239,21 +239,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24),
                           AppButton(
                             label: 'Log In',
                             isLoading: _loading,
                             onPressed: _trySignIn,
                             variant: AppButtonVariant.primary,
                           ),
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24),
                           Row(
                             children: [
                               Expanded(
-                                  child: const AppDivider()),
+                                  child: AppDivider()),
                               Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
+                                    EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
                                     child: Text(
                                   AppLocalizations.of(context)!.loginOr,
                                   style: TextStyle(
@@ -268,12 +268,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                       color: colors.textLight.withValues(alpha: 0.2))),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          SizedBox(height: 24),
                           AppButton(
                             label: 'Sign in with Google',
                             onPressed: _loading ? null : _tryGoogleSignIn,
                             variant: AppButtonVariant.outline,
-                            icon: LucideIcons.logIn,
+                            iconWidget: Image.asset(
+                              'assets/images/google_logo.png',
+                              width: 24,
+                              height: 24,
+                            ),
                           ),
                         ],
                       ),
@@ -281,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -298,7 +302,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     style: TextButton.styleFrom(
                       minimumSize: const Size(44, 44),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                       ),

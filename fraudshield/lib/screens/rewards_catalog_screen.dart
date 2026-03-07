@@ -65,7 +65,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(reward['description']),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'Cost: $pointsCost points',
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -79,7 +79,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'),
           ),
           AppButton(
             onPressed: () => Navigator.pop(context, true),
@@ -124,18 +124,18 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
               children: [
                 // Points Balance Header
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xxl, DesignTokens.spacing.lg, DesignTokens.spacing.lg),
                   child: GlassSurface(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.all(DesignTokens.spacing.xxl),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.stars_rounded,
                           color: Color(0xFFFFD700),
                           size: 32,
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -173,7 +173,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
                           itemCount: _rewards.length,
                           itemBuilder: (context, index) {
                             final reward = _rewards[index];
@@ -211,8 +211,8 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark.withOpacity(0.4),
         borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -225,7 +225,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(DesignTokens.spacing.md),
                 decoration: BoxDecoration(
                   color: iconColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -233,7 +233,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
                 ),
                 child: Icon(icon, color: iconColor, size: 28),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +247,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
                         letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       description,
                       style: TextStyle(
@@ -262,7 +262,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
 
           // Points cost and redeem button
           Row(
@@ -270,12 +270,12 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.stars_rounded,
                     color: Color(0xFFFFD700),
                     size: 18,
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   Text(
                     '$pointsCost PTS',
                     style: const TextStyle(

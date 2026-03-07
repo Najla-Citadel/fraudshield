@@ -22,7 +22,7 @@ class SmartAlertsHorizontalList extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
         clipBehavior: Clip.none,
-        padding: const EdgeInsets.only(right: 16), // Adds padding at the end of the scroll to let the last item peek
+        padding: EdgeInsets.only(right: DesignTokens.spacing.lg), // Adds padding at the end of the scroll to let the last item peek
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -32,14 +32,14 @@ class SmartAlertsHorizontalList extends StatelessWidget {
             isSubscribed: isSubscribed,
             onTap: onMessageScan,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _SmartAlertCard(
             icon: LucideIcons.phoneCall,
             label: 'Call Screening',
             isSubscribed: isSubscribed,
             onTap: onVoiceDetection,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           _SmartAlertCard(
             icon: LucideIcons.fileText,
             label: 'File Security',
@@ -78,8 +78,8 @@ class _SmartAlertCard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFFFF9E6), // Very light premium gold
-              const Color(0xFFFFF2CC), // Slightly deeper premium gold
+              Color(0xFFFFF9E6), // Very light premium gold
+              Color(0xFFFFF2CC), // Slightly deeper premium gold
             ],
           ),
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -88,7 +88,7 @@ class _SmartAlertCard extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+              padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md, horizontal: DesignTokens.spacing.md),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start, // Align left
@@ -97,13 +97,13 @@ class _SmartAlertCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(icon, color: const Color(0xFF8B6B15), size: 20), // Dark gold icon
+                        Icon(icon, color: Color(0xFF8B6B15), size: 20), // Dark gold icon
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                                 // PRO gold badge
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: DesignTokens.colors.premiumYellow,
                                     borderRadius: BorderRadius.circular(4),
@@ -118,7 +118,7 @@ class _SmartAlertCard extends StatelessWidget {
                                   ),
                                 ),
                                 if (!isSubscribed) ...[
-                                  const SizedBox(height: 4),
+                                  SizedBox(height: 4),
                                   Icon(
                                     Icons.lock_outline,
                                     color: DesignTokens.colors.premiumYellow,
@@ -129,7 +129,7 @@ class _SmartAlertCard extends StatelessWidget {
                         )
                       ],
                   ),
-                  const Spacer(),
+                  Spacer(),
                   Text(
                     label,
                     style: TextStyle(

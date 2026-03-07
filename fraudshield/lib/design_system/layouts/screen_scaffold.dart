@@ -45,7 +45,7 @@ class ScreenScaffold extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: backgroundColors ?? DesignTokens.colors.mainGradient,
-          stops: const [0.0, 0.5, 1.0],
+          stops: [0.0, 0.5, 1.0],
         ),
       ),
       child: Scaffold(

@@ -38,18 +38,18 @@ class RiskResult {
     this.apiChecked = false,
     this.communityReports = 0,
     this.verifiedReports = 0,
-    this.categories = const [],
-    this.sources = const [],
-    this.redirectChain = const [],
+    this.categories = [],
+    this.sources = [],
+    this.redirectChain = [],
     this.finalUrl,
-    this.detectedBy = const [],
+    this.detectedBy = [],
     this.scamType,
     this.language,
-    this.matchedPatterns = const [],
-    this.highlightedPhrases = const [],
-    this.extractedLinks = const [],
+    this.matchedPatterns = [],
+    this.highlightedPhrases = [],
+    this.extractedLinks = [],
     this.packageName,
-    this.dangerousPermissions = const [],
+    this.dangerousPermissions = [],
     this.pageCount,
     this.sha256,
   });
@@ -119,9 +119,9 @@ class RiskEvaluator {
 
     // 3. Determine level from final score
     String level;
-    if (score >= 80)
+    if (score >= 80) {
       level = 'critical';
-    else if (score >= 55)
+    } else if (score >= 55)
       level = 'high';
     else if (score >= 30)
       level = 'medium';
@@ -175,9 +175,9 @@ class RiskEvaluator {
       reasons.add('⚡ Deep link analysis unavailable (offline check only)');
 
       String level = 'low';
-      if (score >= 80)
+      if (score >= 80) {
         level = 'critical';
-      else if (score >= 55)
+      } else if (score >= 55)
         level = 'high';
       else if (score >= 30) level = 'medium';
 
@@ -331,9 +331,9 @@ class RiskEvaluator {
       // Fall through to local heuristic result
     }
 
-    if (score >= 80)
+    if (score >= 80) {
       level = 'critical';
-    else if (score >= 55)
+    } else if (score >= 55)
       level = 'high';
     else if (score >= 30)
       level = 'medium';

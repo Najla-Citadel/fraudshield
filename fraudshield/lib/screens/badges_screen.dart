@@ -68,16 +68,16 @@ class _BadgesScreenState extends State<BadgesScreen> {
               onRefresh: _loadBadges,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(DesignTokens.spacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSummaryCard(),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     _buildTierFilter(),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     _buildBadgeGrid(),
-                    const SizedBox(height: 40),
+                    SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -87,7 +87,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
 
   Widget _buildSummaryCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark,
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -130,19 +130,19 @@ class _BadgesScreenState extends State<BadgesScreen> {
               ),
             ],
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: 24),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Collection Progress',
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   'You\'ve unlocked ${(_allBadges.isEmpty ? 0 : (_earned.length / _allBadges.length * 100).toInt())}% of all security badges.',
                   style: TextStyle(
@@ -163,14 +163,14 @@ class _BadgesScreenState extends State<BadgesScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: tiers.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => SizedBox(width: 12),
         itemBuilder: (context, index) {
           final tier = tiers[index];
           final isActive = _selectedTier == tier;
           return GestureDetector(
             onTap: () => setState(() => _selectedTier = tier),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: isActive
@@ -200,7 +200,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
     if (_filteredBadges.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.only(top: 40),
+          padding: EdgeInsets.only(top: 40),
           child: Text(
             'No $_selectedTier badges yet.',
             style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
@@ -295,7 +295,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             badge.name,
             textAlign: TextAlign.center,
@@ -348,7 +348,7 @@ class _BadgeDetailSheet extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
       decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
@@ -364,7 +364,7 @@ class _BadgeDetailSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           Container(
             width: 100,
             height: 100,
@@ -390,15 +390,15 @@ class _BadgeDetailSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             badge.name,
             style: const TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.xs),
             decoration: BoxDecoration(
               color: tierColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -413,7 +413,7 @@ class _BadgeDetailSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             badge.description,
             textAlign: TextAlign.center,
@@ -422,10 +422,10 @@ class _BadgeDetailSheet extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.7),
                 height: 1.5),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           if (badge.isEarned)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -438,7 +438,7 @@ class _BadgeDetailSheet extends StatelessWidget {
                 children: [
                   Icon(LucideIcons.checkCircle2,
                       color: DesignTokens.colors.accentGreen, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     'Unlocked',
                     style: TextStyle(
@@ -460,7 +460,7 @@ class _BadgeDetailSheet extends StatelessWidget {
                     letterSpacing: 1.0,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   _getEarningInstruction(badge),
                   textAlign: TextAlign.center,
@@ -469,13 +469,13 @@ class _BadgeDetailSheet extends StatelessWidget {
                 ),
               ],
             ),
-          const SizedBox(height: 40),
+          SizedBox(height: 40),
           AppButton(
             onPressed: () => Navigator.pop(context),
             label: 'Close',
             variant: AppButtonVariant.outline,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
         ],
       ),
     );

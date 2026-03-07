@@ -91,7 +91,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -111,7 +111,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 ),
                 if (isVerified)
                   Container(
-                    margin: EdgeInsets.only(left: 12, top: 4),
+                    margin: EdgeInsets.only(left: DesignTokens.spacing.md, top: DesignTokens.spacing.xs),
                     padding:
                         EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
@@ -125,7 +125,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       children: [
                         Icon(Icons.verified_user_rounded,
                             color: DesignTokens.colors.accentGreen, size: 14),
-                        const SizedBox(width: 6),
+                        SizedBox(width: 6),
                         Text(
                           'VERIFIED',
                           style: TextStyle(
@@ -140,27 +140,27 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Icon(Icons.access_time_rounded,
                     size: 16,
                     color: DesignTokens.colors.textLight.withOpacity(0.5)),
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
                 Text(
                   'Reported ${_getTimeAgo(widget.report['createdAt'])}',
                   style: TextStyle(
                       color: DesignTokens.colors.textLight.withOpacity(0.7),
                       fontSize: 13),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Container(
                     width: 4,
                     height: 4,
                     decoration: BoxDecoration(
                         color: DesignTokens.colors.textLight.withOpacity(0.3),
                         shape: BoxShape.circle)),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     widget.report['location'] ?? 'Petaling Jaya',
@@ -173,33 +173,33 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               ],
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // 2. Scam Source Card
-            const Text('SCAM SOURCE',
+            Text('SCAM SOURCE',
                 style: TextStyle(
                     color: Color(0xFF64748B),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2)),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildSourceCard(widget.report),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // 3. Message Content
-            const Text('MESSAGE CONTENT',
+            Text('MESSAGE CONTENT',
                 style: TextStyle(
                     color: Color(0xFF64748B),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2)),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(DesignTokens.spacing.xxl),
               decoration: BoxDecoration(
-                color: const Color(0xFF162032),
+                color: Color(0xFF162032),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
@@ -214,13 +214,13 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
 
             // 4. AI Risk Analysis
             Row(
               children: [
                 Icon(Icons.psychology, color: DesignTokens.colors.accentGreen, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text('AI RISK ANALYSIS',
                     style: TextStyle(
                         color: DesignTokens.colors.accentGreen,
@@ -229,9 +229,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         letterSpacing: 1.2)),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
-              padding: EdgeInsets.all(20),
+              padding: EdgeInsets.all(DesignTokens.spacing.xl),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -246,7 +246,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       .map((entry) {
                     return Column(
                       children: [
-                        if (entry.key > 0) const SizedBox(height: 16),
+                        if (entry.key > 0) SizedBox(height: 16),
                         _riskItem(entry.value['title']!, entry.value['desc']!),
                       ],
                     );
@@ -255,7 +255,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // 5. Actions
             InkWell(
@@ -263,7 +263,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -275,7 +275,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   children: [
                     Icon(Icons.block_rounded,
                         color: DesignTokens.colors.accentGreen, size: 20),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Text(
                       'Stay Safe: Block This Number',
                       style: TextStyle(
@@ -289,45 +289,45 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // 6. Comments Section (New for Phase 3)
             Row(
               children: [
                 Icon(Icons.forum_rounded,
                     color: DesignTokens.colors.accentGreen, size: 20),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text('COMMUNITY DISCUSSION',
                     style: TextStyle(
                         color: DesignTokens.colors.accentGreen,
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2)),
-                const Spacer(),
+                Spacer(),
                 Text('${_comments.length} comments',
                     style: TextStyle(
                         color: DesignTokens.colors.textLight.withOpacity(0.5),
                         fontSize: 11)),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildCommentSection(),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
 
             // 7. Screenshots (Blurred)
             Row(
               children: [
                 Expanded(child: _screenshotPlaceholder()),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(child: _screenshotPlaceholder()),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(child: _screenshotPlaceholder()),
               ],
             ),
             Center(
               child: Padding(
-                padding: const EdgeInsets.only(top: 12),
+                padding: EdgeInsets.only(top: DesignTokens.spacing.md),
                 child: Text(
                   'Screenshots are anonymized to protect user privacy.',
                   style: TextStyle(
@@ -337,7 +337,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
           ],
         ),
       ),
@@ -350,17 +350,17 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         // Comment Input
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF162032),
+            color: Color(0xFF162032),
             borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Row(
             children: [
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               CircleAvatar(
                 radius: 14,
                 backgroundColor: DesignTokens.colors.accentGreen,
-                child: const Icon(Icons.person, size: 16, color: Colors.white),
+                child: Icon(Icons.person, size: 16, color: Colors.white),
               ),
               Expanded(
                 child: TextField(
@@ -373,8 +373,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         color: DesignTokens.colors.textLight.withValues(alpha: 0.3),
                         fontSize: 14),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                    contentPadding: EdgeInsets.symmetric(
+                        horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
                   ),
                 ),
               ),
@@ -392,24 +392,24 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
 
         // Comments List
         if (_isLoadingComments)
           Center(
               child: Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: EdgeInsets.all(DesignTokens.spacing.xl),
                   child:
                       AppLoadingIndicator.center(color: DesignTokens.colors.accentGreen)))
         else if (_comments.isEmpty)
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(DesignTokens.spacing.xxl),
             child: Column(
               children: [
                 Icon(Icons.chat_bubble_outline_rounded,
                     color: DesignTokens.colors.textLight.withValues(alpha: 0.1),
                     size: 48),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 Text('No comments yet. Be the first to discuss!',
                     style: TextStyle(
                         color: DesignTokens.colors.textLight.withValues(alpha: 0.3),
@@ -422,7 +422,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: _comments.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
+            separatorBuilder: (context, index) => SizedBox(height: 16),
             itemBuilder: (context, index) {
               final comment = _comments[index];
               final userData = comment['user'] ?? {};
@@ -439,7 +439,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                           color: DesignTokens.colors.textLight, fontSize: 12),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,7 +453,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13),
                             ),
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8),
                             Text(
                               _getTimeAgo(comment['createdAt']),
                                style: TextStyle(
@@ -463,9 +463,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: EdgeInsets.all(DesignTokens.spacing.md),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.03),
                             borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -523,23 +523,23 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
-        color: const Color(0xFF162032),
+        color: Color(0xFF162032),
         borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
+              color: Color(0xFF1E3A8A).withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
-            child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
+            child: Icon(icon, color: Color(0xFF3B82F6), size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -551,7 +551,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 16),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   sublabel,
                   style: TextStyle(
@@ -665,17 +665,17 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 6),
+          padding: EdgeInsets.only(top: 6),
           child: Container(
             width: 6,
             height: 6,
             decoration: BoxDecoration(
-              color: const Color(0xFFF87171), // Red
+              color: Color(0xFFF87171), // Red
               shape: BoxShape.circle,
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: RichText(
             text: TextSpan(

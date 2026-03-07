@@ -201,9 +201,9 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
         builder: (context, controller) => Container(
           decoration: BoxDecoration(
             color: DesignTokens.colors.backgroundDark,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(DesignTokens.spacing.lg),
           child: ListView(
             controller: controller,
             children: [
@@ -211,7 +211,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl),
                   decoration: BoxDecoration(
                     color: Colors.white24,
                     borderRadius: BorderRadius.circular(2),
@@ -274,23 +274,23 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(DesignTokens.spacing.lg),
                   child: Row(
                     children: [
                       AppBackButton(
                         onPressed: () => Navigator.pop(context),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: GlassSurface(
                           borderRadius: 30,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                           child: Row(
                             children: [
-                              const Icon(Icons.search,
+                              Icon(Icons.search,
                                   color: Colors.white70, size: 20),
-                              const SizedBox(width: 8),
+                              SizedBox(width: 8),
                               Text(
                                 'Search areas...',
                                 style: TextStyle(
@@ -309,7 +309,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   height: 40,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
                     itemCount: _categories.length,
                     itemBuilder: (context, index) {
                       final category = _categories[index];
@@ -317,7 +317,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                           (_selectedCategory == null && category == 'All');
 
                       return Padding(
-                        padding: const EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.only(right: DesignTokens.spacing.sm),
                         child: GestureDetector(
                           onTap: () {
                             setState(() => _selectedCategory = category);
@@ -325,8 +325,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? DesignTokens.colors.accentGreen
@@ -381,11 +381,11 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   },
                   child: GlassSurface(
                     borderRadius: 30,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: DesignTokens.spacing.xl, vertical: 10),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Icon(Icons.refresh, color: Colors.white, size: 16),
                         SizedBox(width: 8),
                         Text(
@@ -412,13 +412,13 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
               child: GlassSurface(
                 borderRadius: 12,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: 6),
                 child: Row(
                   children: [
                     Icon(Icons.touch_app_outlined,
                         color: DesignTokens.colors.accentGreen.withOpacity(0.7),
                         size: 14),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6),
                     Text(
                       'Long press to report a scam at a location',
                       style: TextStyle(
@@ -440,7 +440,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   icon: Icons.my_location,
                   onTap: _getUserLocation,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildRoundButton(
                   icon: Icons.refresh,
                   onTap: () => _fetchReports(
@@ -467,7 +467,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
       onTap: onTap,
       child: GlassSurface(
         borderRadius: 50,
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(DesignTokens.spacing.md),
         child: Icon(icon, color: Colors.white, size: 24),
       ),
     );

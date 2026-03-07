@@ -23,7 +23,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       title: 'SECURITY HEALTH',
       body: AnimationLimiter(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: AnimationConfiguration.toStaggeredList(
@@ -35,9 +35,9 @@ class SecurityScoreDetailScreen extends StatelessWidget {
               children: [
                       // 1. Hero Score Section
                       _buildScoreHero(score),
-                      const SizedBox(height: 32),
+                      SizedBox(height: 32),
 
-                      const Text(
+                      Text(
                         'Security Breakdown',
                         style: TextStyle(
                           color: Colors.white,
@@ -45,7 +45,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16),
 
                       // 2. Breakdown Items
                       _buildBreakdownItem(
@@ -147,7 +147,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(32),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark.withOpacity(0.6),
         borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
@@ -187,9 +187,9 @@ class SecurityScoreDetailScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -204,7 +204,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             'Your security environment is currently $status',
             textAlign: TextAlign.center,
@@ -231,8 +231,8 @@ class SecurityScoreDetailScreen extends StatelessWidget {
     final bool isCompleted = points >= maxPoints;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
@@ -244,7 +244,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: (isCompleted
                           ? DesignTokens.colors.accentGreen
@@ -260,7 +260,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +292,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                   onPressed: onAction,
                   style: TextButton.styleFrom(
                     foregroundColor: DesignTokens.colors.accentGreen,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md),
                   ),
                   child: Text(
                     actionLabel,
@@ -301,7 +301,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Text(
             description,
             style: TextStyle(

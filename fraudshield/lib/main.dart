@@ -183,7 +183,7 @@ class FraudShieldApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('ms'), // Bahasa Malaysia
             ],

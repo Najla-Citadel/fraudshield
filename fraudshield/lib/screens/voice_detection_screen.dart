@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
@@ -14,7 +13,6 @@ import '../widgets/glass_surface.dart';
 import '../design_system/components/app_button.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_snackbar.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
 
@@ -191,8 +189,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           children: [
             Icon(LucideIcons.alertTriangle,
                 color: DesignTokens.colors.primary, size: 22),
-            const SizedBox(width: 12),
-            const Text(
+            SizedBox(width: 12),
+            Text(
               'Before You Start',
               style: TextStyle(
                   color: Colors.white,
@@ -207,16 +205,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           children: [
             _disclaimerItem(LucideIcons.brainCircuit,
                 'AI-assisted analysis — not a guarantee of fraud or safety.'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _disclaimerItem(LucideIcons.lock,
                 'Audio is never stored. Only a transcript and hash are retained.'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _disclaimerItem(LucideIcons.gavel,
                 'Malaysia: recording requires consent of at least one party (you).'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _disclaimerItem(LucideIcons.volume2,
                 'Important: Please put your call on Speaker so the microphone can hear the scammer.'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _disclaimerItem(LucideIcons.phoneCall,
                 'If you suspect fraud, contact your bank or PDRM: 03-2610 1559.'),
           ],
@@ -251,7 +249,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         children: [
           Icon(icon,
               color: DesignTokens.colors.primary.withOpacity(0.6), size: 18),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Text(text,
                 style: TextStyle(
@@ -362,8 +360,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           _analysisStatus = 'Running Behavioral Heuristics...';
         });
         await Future.delayed(const Duration(milliseconds: 1200));
-        if (mounted)
+        if (mounted) {
           setState(() => _analysisStatus = 'Comparing with Scam Patterns...');
+        }
         await Future.delayed(const Duration(milliseconds: 800));
       }
 
@@ -464,16 +463,16 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       child: ScreenScaffold(
         title: 'CALL SCREEN',
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             children: [
               _buildInfoCard(),
-              const SizedBox(height: 48),
+              SizedBox(height: 48),
               _buildMicSection(),
-              const SizedBox(height: 48),
+              SizedBox(height: 48),
               if (_errorMessage != null) _buildErrorCard(),
               if (_result != null && !_isAnalyzing) _buildResultCard(),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               _buildRecentSection(),
             ],
           ),
@@ -484,12 +483,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
   Widget _buildInfoCard() {
     return GlassSurface(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(DesignTokens.spacing.xl),
       borderRadius: 24,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(DesignTokens.spacing.md),
             decoration: BoxDecoration(
               color: DesignTokens.colors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -497,12 +496,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             child: Icon(LucideIcons.phoneIncoming,
                 color: DesignTokens.colors.primary, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Voice Analysis',
                   style: TextStyle(
                       color: Colors.white,
@@ -576,7 +575,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         if (_isAnalyzing)
           Column(
             children: [
@@ -584,7 +583,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   style: TextStyle(
                       color: DesignTokens.colors.primary,
                       fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               SizedBox(
                 width: 100,
                 child: LinearProgressIndicator(
@@ -607,7 +606,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   fontFeatures: [FontFeature.tabularFigures()],
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Please put call on Speaker for best results',
                 style: TextStyle(
@@ -615,13 +614,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                     fontSize: 13,
                     fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Listening for scam patterns...',
                 style: TextStyle(
                     color: Colors.white.withOpacity(0.4), fontSize: 13),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               SizedBox(
                 height: 40,
                 child: CustomPaint(
@@ -645,8 +644,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
   Widget _buildErrorCard() {
     return Container(
-      margin: const EdgeInsets.only(top: 24),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(top: DesignTokens.spacing.xxl),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -654,8 +653,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       ),
       child: Row(
         children: [
-          const Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
-          const SizedBox(width: 12),
+          Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
+          SizedBox(width: 12),
           Expanded(
             child: Text(_errorMessage!,
                 style: const TextStyle(color: Colors.red, fontSize: 13)),
@@ -671,15 +670,15 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     final color = _levelColor;
 
     return Container(
-      margin: const EdgeInsets.only(top: 32),
+      margin: EdgeInsets.only(top: DesignTokens.spacing.xxxl),
       child: GlassSurface(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         borderRadius: 28,
         borderColor: color.withOpacity(0.15),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               decoration: BoxDecoration(
                 color: color.withOpacity(0.1),
                 shape: BoxShape.circle,
@@ -689,15 +688,15 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                   color: color,
                   size: 40),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               _levelLabel,
               style: TextStyle(
                   color: color, fontSize: 24, fontWeight: FontWeight.w900),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             ClipRRect(
               borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               child: LinearProgressIndicator(
@@ -708,14 +707,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               ),
             ),
             if (r.transcript.isNotEmpty) ...[
-              const Divider(height: 48),
-              const Align(
+              Divider(height: 48),
+              Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Transcript Analysis',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 r.transcript,
                 style: TextStyle(
@@ -725,13 +724,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               ),
             ],
             if (r.contentAnalysis.matchedPatterns.isNotEmpty) ...[
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: r.contentAnalysis.matchedPatterns
                     .map((p) => Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color:
@@ -772,26 +771,26 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   }
 
   Widget _buildRecentSection() {
-    if (_recentAnalysis.isEmpty) return const SizedBox.shrink();
+    if (_recentAnalysis.isEmpty) return SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Recent Analysis',
+        Text('Recent Analysis',
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16)),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ..._recentAnalysis.map((item) => Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
               child: GlassSurface(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(DesignTokens.spacing.lg),
                 child: Row(
                   children: [
-                    const Icon(LucideIcons.fileAudio,
+                    Icon(LucideIcons.fileAudio,
                         color: Colors.white, size: 20),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -809,8 +808,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
                       decoration: BoxDecoration(
                         color: (item['score'] >= 55
                                 ? DesignTokens.colors.error

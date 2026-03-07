@@ -23,7 +23,7 @@ class AppLogo extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFF60A5FA), // Light Blue
+                Color(0xFF60A5FA), // Light Blue
                 DesignTokens.colors.primary, // Primary
                 DesignTokens.colors.primary, // Darker Blue
               ],

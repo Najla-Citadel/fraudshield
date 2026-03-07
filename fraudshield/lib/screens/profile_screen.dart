@@ -121,15 +121,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
       ],
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _profileHeader(user),
-              const SizedBox(height: 32),
-              const Text(
+              SizedBox(height: 32),
+              Text(
                 'Personal Information',
                 style: TextStyle(
                   color: Colors.white,
@@ -137,14 +137,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               _item(
                 label: 'Full Name',
                 controller: _nameController,
                 isEditing: _isEditing,
                 icon: LucideIcons.user,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _item(
                 label: 'Email Address',
                 value: user?.email ?? 'N/A',
@@ -158,15 +158,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ? null
                             : () => _requestVerification(user?.email ?? ''),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.xs),
                           decoration: BoxDecoration(
                             color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                             border: Border.all(
                                 color: Colors.orange.withValues(alpha: 0.3)),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Verify Now',
                             style: TextStyle(
                               color: Colors.orange,
@@ -177,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _item(
                 label: 'Phone Number',
                 controller: _phoneController,
@@ -185,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: LucideIcons.smartphone,
                 keyboardType: TextInputType.phone,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _item(
                 label: 'Address',
                 controller: _addressController,
@@ -194,14 +194,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 maxLines: 3,
               ),
               if (_isEditing) ...[
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
                 AppButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   label: 'Save Changes',
                   isLoading: _isLoading,
                   variant: AppButtonVariant.primary,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
               ],
             ],
           ),
@@ -221,7 +221,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               'https://api.dicebear.com/7.x/avataaars/png?seed=${user?.profile?.avatar ?? "Felix"}',
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             user?.fullName ?? 'Anonymous',
             style: const TextStyle(
@@ -256,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -267,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Icon(icon,
               color: DesignTokens.colors.accentGreen.withValues(alpha: 0.7),
               size: 20),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -279,7 +279,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontSize: 12,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   value ?? controller?.text ?? 'Not provided',
                   style: const TextStyle(
@@ -292,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           if (trailing != null) ...[
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             trailing,
           ],
         ],

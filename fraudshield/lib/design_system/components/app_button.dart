@@ -14,6 +14,7 @@ class AppButton extends StatelessWidget {
   final AppButtonSize size;
   final bool isLoading;
   final IconData? icon;
+  final Widget? iconWidget;
   final IconData? suffixIcon;
   final double? width;
   final bool hapticFeedback;
@@ -26,6 +27,7 @@ class AppButton extends StatelessWidget {
     this.size = AppButtonSize.md,
     this.isLoading = false,
     this.icon,
+    this.iconWidget,
     this.suffixIcon,
     this.width,
     this.hapticFeedback = true,
@@ -117,8 +119,8 @@ class AppButton extends StatelessWidget {
               side: border ?? BorderSide.none,
             ),
           ).copyWith(
-            overlayColor: MaterialStateProperty.resolveWith((states) {
-              if (states.contains(MaterialState.pressed)) {
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.pressed)) {
                 return foregroundColor.withOpacity(0.1);
               }
               return null;
@@ -135,6 +137,9 @@ class AppButton extends StatelessWidget {
                   color: foregroundColor,
                 ),
                 SizedBox(width: spacing.md),
+              ] else if (iconWidget != null) ...[
+                iconWidget!,
+                SizedBox(width: spacing.sm),
               ] else if (icon != null) ...[
                 Icon(icon, size: iconSize),
                 SizedBox(width: spacing.sm),

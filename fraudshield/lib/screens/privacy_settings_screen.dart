@@ -24,11 +24,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     return ScreenScaffold(
       title: l10n.accountPrivacySettings,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl, vertical: DesignTokens.spacing.sm),
               child: Text(
                 l10n.privacyControlDesc,
                 style: TextStyle(
@@ -38,10 +38,10 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             SettingsGroup(
               title: l10n.privacyDataManagement,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
               items: [
                 SettingsTile(
                   icon: LucideIcons.download,
@@ -63,7 +63,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             ),
             SettingsGroup(
               title: l10n.privacyWithdrawConsent,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
               items: [
                 SettingsTile(
                   icon: LucideIcons.bell,
@@ -75,14 +75,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                     onChanged: (val) {
                       setState(() => _marketingConsent = val);
                     },
-                    activeColor: DesignTokens.colors.accentGreen,
+                    activeThumbColor: DesignTokens.colors.accentGreen,
                   ),
                 ),
               ],
             ),
             SettingsGroup(
               title: 'Legal & Contact',
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
               items: [
                 SettingsTile(
                   icon: LucideIcons.helpCircle,
@@ -125,34 +125,34 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
         decoration: BoxDecoration(
           color: DesignTokens.colors.backgroundDark,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Data Protection Officer',
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _infoRow(LucideIcons.mail, 'dpo@fraudshield.com'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _infoRow(LucideIcons.mapPin,
                 'FraudShield HQ, Kuala Lumpur, Malaysia'),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             Text(
               'Business Hours: 9:00 AM - 6:00 PM (Mon-Fri)',
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
           ],
         ),
       ),
@@ -163,7 +163,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     return Row(
       children: [
         Icon(icon, color: DesignTokens.colors.accentGreen, size: 20),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Expanded(
           child: Text(
             text,

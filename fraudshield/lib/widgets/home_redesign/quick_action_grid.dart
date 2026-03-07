@@ -37,7 +37,7 @@ class QuickActionGrid extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -68,7 +68,6 @@ class _QuickActionCard extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.onTap,
-    this.isExpandable = false,
   });
 
   @override
@@ -78,7 +77,7 @@ class _QuickActionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         width: (MediaQuery.of(context).size.width - 40 - 16) / 2, // 2 items per row
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.xl, horizontal: DesignTokens.spacing.md),
         decoration: BoxDecoration(
           color: DesignTokens.colors.surfaceLight,
           borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -88,14 +87,14 @@ class _QuickActionCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: DesignTokens.colors.primary.withOpacity(0.1),
               ),
               child: Icon(icon, color: DesignTokens.colors.primary, size: 28),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               label,
               textAlign: TextAlign.center,

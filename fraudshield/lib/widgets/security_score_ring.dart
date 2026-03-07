@@ -53,9 +53,9 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
   }
 
   Color _getStatusColor(int score) {
-    if (score >= 75) return const Color(0xFF10B981); // Emerald 500 (Green)
-    if (score >= 50) return const Color(0xFFF59E0B); // Amber 500
-    return const Color(0xFFEF4444); // Red 500
+    if (score >= 75) return Color(0xFF10B981); // Emerald 500 (Green)
+    if (score >= 50) return Color(0xFFF59E0B); // Amber 500
+    return Color(0xFFEF4444); // Red 500
   }
 
   @override
@@ -140,7 +140,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.shield, color: _getStatusColor(widget.score), size: 16),
-                      const SizedBox(width: 6),
+                      SizedBox(width: 6),
                       Text(
                         widget.status.toUpperCase(),
                         style: TextStyle(
@@ -152,7 +152,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                       ),
                     ],
                   ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 widget.isScanning
                     ? AnimatedBuilder(
                         animation: _scanController,
@@ -161,7 +161,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                           double opacity = 0.3 + 0.7 * (0.5 * (1 + math.sin(_scanController.value * 4 * math.pi)));
                           return Opacity(
                             opacity: opacity,
-                            child: const Text(
+                            child: Text(
                               '...',
                               style: TextStyle(
                                 color: Colors.white,
@@ -182,7 +182,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                           height: 1.0,
                         ),
                       ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
                   style: TextStyle(

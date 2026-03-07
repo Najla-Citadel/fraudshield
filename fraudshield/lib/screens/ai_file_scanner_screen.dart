@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../design_system/components/app_loading_indicator.dart';
@@ -8,7 +7,6 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_button.dart';
 import '../widgets/glass_surface.dart';
 import '../services/risk_evaluator.dart';
-import '../l10n/app_localizations.dart';
 
 class AIFileScannerScreen extends StatefulWidget {
   const AIFileScannerScreen({super.key});
@@ -95,15 +93,15 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
     return ScreenScaffold(
       title: 'AI FILE SCANNER',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           children: [
             _buildActionCard(),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             if (_isLoading) _buildLoadingState(),
             if (_errorMessage != null) _buildErrorCard(),
             if (_result != null && !_isLoading) _buildResultCard(),
-            const SizedBox(height: 32),
+            SizedBox(height: 32),
             _buildHistorySection(),
           ],
         ),
@@ -113,12 +111,12 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
 
   Widget _buildActionCard() {
     return GlassSurface(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderRadius: 28,
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
               color: DesignTokens.colors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
@@ -126,20 +124,20 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
             child: Icon(LucideIcons.fileSearch,
                 color: DesignTokens.colors.primary, size: 32),
           ),
-          const SizedBox(height: 20),
-          const Text(
+          SizedBox(height: 20),
+          Text(
             'Scan PDF or APK',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             'Upload suspicious files to detect hidden phishing links, malware markers, and dangerous permissions.',
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white.withOpacity(0.5), fontSize: 13, height: 1.5),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
             child: AppButton(
@@ -157,7 +155,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
     return Column(
       children: [
         AppLoadingIndicator.center(color: DesignTokens.colors.primary),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(
           'Deep scanning $_selectedFileName...',
           style: TextStyle(
@@ -169,7 +167,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
 
   Widget _buildErrorCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(DesignTokens.radii.md),
@@ -177,8 +175,8 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
       ),
       child: Row(
         children: [
-          const Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
-          const SizedBox(width: 12),
+          Icon(LucideIcons.alertCircle, color: Colors.red, size: 20),
+          SizedBox(width: 12),
           Expanded(
             child: Text(_errorMessage!, style: const TextStyle(color: Colors.red, fontSize: 13)),
           ),
@@ -193,7 +191,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
     final isRisky = res.score >= 55;
 
     return GlassSurface(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderRadius: 28,
       borderColor: color.withOpacity(0.3),
       child: Column(
@@ -202,14 +200,14 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(DesignTokens.spacing.md),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck, color: color, size: 28),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -220,18 +218,18 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                   Text('Security Analysis Complete', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
                 ],
               ),
-              const Spacer(),
+              Spacer(),
               Text(
                 '${res.score}%',
                 style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 24),
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          const Text('Analysis Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 12),
+          SizedBox(height: 24),
+          Text('Analysis Details', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            SizedBox(height: 12),
             ...res.reasons.map((r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -240,7 +238,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                               ? DesignTokens.colors.error.withOpacity(0.5)
                               : DesignTokens.colors.accentGreen,
                           size: 14),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       Expanded(
                           child: Text(r,
                               style: TextStyle(
@@ -251,12 +249,12 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                 )),
           
           if (res.extractedLinks.isNotEmpty) ...[
-            const Divider(height: 32),
-            const Text('Embedded Links Detected', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 12),
+            Divider(height: 32),
+            Text('Embedded Links Detected', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            SizedBox(height: 12),
             Container(
               constraints: const BoxConstraints(maxHeight: 120),
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.glassDark.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
@@ -266,7 +264,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: res.extractedLinks
                       .map((link) => Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
+                            padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
                             child: Text(link,
                                 style: TextStyle(
                                     fontSize: 11,
@@ -280,14 +278,14 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
           ],
 
           if (res.dangerousPermissions.isNotEmpty) ...[
-            const Divider(height: 32),
-            const Text('Dangerous Permissions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            const SizedBox(height: 12),
+            Divider(height: 32),
+            Text('Dangerous Permissions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: res.dangerousPermissions.map((p) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -297,7 +295,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
             ),
           ],
 
-          const Divider(height: 32),
+          Divider(height: 32),
           _detailRow('File Name', _selectedFileName ?? '-'),
           _detailRow('SHA-256', res.sha256 != null ? '${res.sha256!.substring(0, 8)}...${res.sha256!.substring(res.sha256!.length - 8)}' : '-'),
         ],
@@ -307,7 +305,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
 
   Widget _detailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -322,21 +320,21 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
   }
 
   Widget _buildHistorySection() {
-    if (_history.isEmpty) return const SizedBox.shrink();
+    if (_history.isEmpty) return SizedBox.shrink();
  
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Recent Scans',
+        Text('Recent Scans',
             style: TextStyle(
                 color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         ..._history.map((item) {
           final color = _getLevelColor(item['level']);
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
             child: GlassSurface(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
               child: Row(
                 children: [
                   Icon(
@@ -345,7 +343,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                           : LucideIcons.fileText,
                       color: Colors.white,
                       size: 20),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

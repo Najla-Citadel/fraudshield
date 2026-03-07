@@ -15,14 +15,14 @@ class ActivityScreen extends StatelessWidget {
       title: 'Activity Log',
       actions: [
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: EdgeInsets.all(DesignTokens.spacing.sm),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E293B),
+            color: Color(0xFF1E293B),
             shape: BoxShape.circle,
             border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: IconButton(
-            icon: const Icon(LucideIcons.sliders, size: 20, color: Colors.white),
+            icon: Icon(LucideIcons.sliders, size: 20, color: Colors.white),
             onPressed: () {
               // Filter action
             },
@@ -35,7 +35,7 @@ class ActivityScreen extends StatelessWidget {
           final grouped = _groupActivities(activities);
 
           return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+            padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, 100),
             itemCount: grouped.length,
             itemBuilder: (context, index) {
               final group = grouped.keys.elementAt(index);
@@ -45,7 +45,7 @@ class ActivityScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
                     child: Text(
                       group.toUpperCase(),
                       style: TextStyle(
@@ -189,8 +189,8 @@ class _ActivityCard extends StatelessWidget {
     final IconData icon = item['icon'] ?? LucideIcons.bell;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark,
         borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
@@ -200,14 +200,14 @@ class _ActivityCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: iconBg,
               borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             child: Icon(icon, color: iconColor, size: 24),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +234,7 @@ class _ActivityCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Text(
                   item['message'] ?? '',
                   style: TextStyle(

@@ -45,7 +45,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           centerTitle: true,
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -54,7 +54,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                 'Screenshots of conversations or transactions are valuable evidence.',
                 'Your reports help others avoid similar scams.',
               ]),
-              const SizedBox(height: 32),
+              SizedBox(height: 32),
               _buildEntryCard(
                 context,
                 title: 'Report New Scam',
@@ -67,7 +67,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                       builder: (_) => const ScamReportingScreen()),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               _buildEntryCard(
                 context,
                 title: 'My Report History',
@@ -103,14 +103,14 @@ class ScamReportEntryScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             child: Icon(icon, color: color, size: 32),
           ),
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +119,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                   title,
                   style: DesignTypography.h3,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   subtitle,
                   style: TextStyle(

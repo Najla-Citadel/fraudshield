@@ -177,7 +177,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     return ScreenScaffold(
       title: AppLocalizations.of(context)!.fraudCheckTitle,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -186,10 +186,10 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               AppLocalizations.of(context)!.fraudTipVerify,
               AppLocalizations.of(context)!.fraudTipReport,
             ]),
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             GlassSurface(
               borderRadius: 20,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(DesignTokens.spacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -206,8 +206,8 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                       if (_inputController.text.isNotEmpty &&
                           _detectedType == 'Payment')
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: DesignTokens.spacing.sm, vertical: 2),
                           decoration: BoxDecoration(
                             color: DesignTokens.colors.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -222,7 +222,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                         ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   TextField(
                     controller: _inputController,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
@@ -252,14 +252,14 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: DesignTokens.spacing.lg, vertical: 14),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: AppButton(
@@ -272,10 +272,10 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               ),
             ),
             if (_lastResult != null) ...[
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               _buildResultSection(),
             ],
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -303,9 +303,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildRecentActivity(),
-            const SizedBox(height: 100),
+            SizedBox(height: 100),
           ],
         ),
       ),
@@ -313,17 +313,17 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   }
 
   Widget _buildResultSection() {
-    if (_lastResult == null) return const SizedBox.shrink();
+    if (_lastResult == null) return SizedBox.shrink();
     final isCritical = _lastResult!.level == 'critical';
     final isHigh = _lastResult!.level == 'high';
     final isMedium = _lastResult!.level == 'medium';
     final Color riskColor = isCritical
         ? Colors.purple
         : isHigh
-            ? const Color(0xFFEF4444)
+            ? Color(0xFFEF4444)
             : isMedium
-                ? const Color(0xFFF59E0B)
-                : const Color(0xFF22C55E);
+                ? Color(0xFFF59E0B)
+                : Color(0xFF22C55E);
     final IconData riskIcon = isCritical
         ? Icons.security_rounded
         : isHigh
@@ -341,21 +341,21 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
     return GlassSurface(
       borderRadius: 24,
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       borderColor: riskColor.withOpacity(0.3),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: riskColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(riskIcon, color: riskColor, size: 24),
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,7 +377,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
                 decoration: BoxDecoration(
                   color: riskColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
@@ -392,11 +392,11 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          const AppDivider(height: 1),
-          const SizedBox(height: 16),
+          SizedBox(height: 20),
+          AppDivider(height: 1),
+          SizedBox(height: 16),
           ..._lastResult!.reasons.map((reason) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -413,7 +413,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                               : Colors.white38,
                       size: 14,
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         reason,
@@ -424,7 +424,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                   ],
                 ),
               )),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: LinearProgressIndicator(
@@ -444,13 +444,13 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     if (_isFetchingHistory) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
           child: AppLoadingIndicator(color: DesignTokens.colors.accentGreen),
         ),
       );
     }
     if (_recentChecks.isEmpty) {
-      return const AppEmptyState(
+      return AppEmptyState(
         icon: LucideIcons.history,
         title: 'No recent activity',
         description: 'Your check history will appear here once you start analyzing phone numbers or bank accounts.',
@@ -471,7 +471,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
           final value =
               (scan['target'] ?? scan['value'])?.toString() ?? 'Unknown';
           final dateStr = scan['createdAt']?.toString();
-          if (dateStr == null) return const SizedBox.shrink();
+          if (dateStr == null) return SizedBox.shrink();
           final date = DateTime.parse(dateStr);
           final timeStr = DateFormat('dd MMM yyyy, HH:mm').format(date);
           final riskLevel =
@@ -480,9 +480,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
           return ListTile(
             onTap: () => setState(() => _inputController.text = value),
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.sm),
             leading: Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(DesignTokens.spacing.sm),
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.success : DesignTokens.colors.error)
                     .withOpacity(0.1),
@@ -509,7 +509,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                   color: Colors.white.withOpacity(0.4), fontSize: 12),
             ),
             trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.success : DesignTokens.colors.error)
                     .withOpacity(0.1),

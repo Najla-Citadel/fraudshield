@@ -113,7 +113,7 @@ class _TurnstileWidgetState extends State<TurnstileWidget> {
                   });
                   _controller.reload();
                 },
-                icon: const Icon(Icons.refresh, size: 16),
+                icon: Icon(Icons.refresh, size: 16),
                 label: Text(
                   '$_errorMessage. Tap to retry',
                   style: const TextStyle(fontSize: 12, color: Colors.white70),
@@ -123,7 +123,7 @@ class _TurnstileWidgetState extends State<TurnstileWidget> {
           else ...[
             WebViewWidget(controller: _controller),
             if (_isLoading)
-              const Center(
+              Center(
                 child: AppLoadingIndicator(size: 20),
               ),
           ],

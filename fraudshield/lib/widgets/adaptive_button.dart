@@ -51,13 +51,13 @@ class AdaptiveButton extends StatelessWidget {
         child: CupertinoButton.filled(
           onPressed: handledOnPressed,
           disabledColor: CupertinoColors.quaternarySystemFill,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
           child: icon != null 
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   textWidget,
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   icon!,
                 ],
               )
@@ -73,7 +73,7 @@ class AdaptiveButton extends StatelessWidget {
               icon: icon!,
               label: textWidget,
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
                 backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
@@ -85,7 +85,7 @@ class AdaptiveButton extends StatelessWidget {
           : FilledButton(
               onPressed: handledOnPressed,
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.lg),
                 backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(

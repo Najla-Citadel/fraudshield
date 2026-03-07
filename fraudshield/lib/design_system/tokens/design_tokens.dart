@@ -54,9 +54,9 @@ class DesignColors {
 
   // 🌉 Gradients
   List<Color> get mainGradient => [
-        const Color(0xFF0F172A),
-        const Color(0xFF0B1121),
-        const Color(0xFF1E3A8A),
+        Color(0xFF0F172A),
+        Color(0xFF0B1121),
+        Color(0xFF1E3A8A),
       ];
 }
 

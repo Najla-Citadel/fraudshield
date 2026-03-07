@@ -163,7 +163,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           RefreshIndicator(
             onRefresh: () => _fetchFeed(reset: true),
             color: DesignTokens.colors.accentGreen,
-            backgroundColor: const Color(0xFF1E293B),
+            backgroundColor: Color(0xFF1E293B),
             child: AnimationLimiter(
               child: CustomScrollView(
                 controller: _scrollController,
@@ -172,11 +172,11 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   SliverToBoxAdapter(child: _buildFilters()),
                   _buildFeedList(),
                   if (_isFetchingMore)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 20),
+                        padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.xl),
                         child: Center(
-                            child: const AppLoadingIndicator(size: 20)),
+                            child: AppLoadingIndicator(size: 20)),
                       ),
                     ),
                 ],
@@ -205,7 +205,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -237,7 +237,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             ],
           ),
           if (_isSearchVisible) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildSearchBar(),
           ],
         ],
@@ -253,7 +253,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       },
       borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
         decoration: BoxDecoration(
           color: _isNearMe
               ? DesignTokens.colors.accentGreen.withOpacity(0.15)
@@ -272,7 +272,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               size: 16,
               color: _isNearMe ? DesignTokens.colors.accentGreen : Colors.white,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: 4),
             Text(
               'Near Me',
               style: TextStyle(
@@ -291,7 +291,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     return Container(
       height: 45,
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Slate 800
+        color: Color(0xFF1E293B), // Slate 800
         borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
@@ -301,11 +301,11 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         decoration: InputDecoration(
           hintText: 'Search scams...',
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-          prefixIcon: const Icon(LucideIcons.search,
+          prefixIcon: Icon(LucideIcons.search,
               size: 18, color: Color(0xFF94A3B8)),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(LucideIcons.x,
+                  icon: Icon(LucideIcons.x,
                       size: 16, color: Color(0xFF94A3B8)),
                   onPressed: () {
                     _searchController.clear();
@@ -314,7 +314,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 )
               : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 10),
+          contentPadding: EdgeInsets.symmetric(vertical: 10),
         ),
         onSubmitted: (val) {
           _fetchFeed(reset: true);
@@ -326,10 +326,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   Widget _buildFilters() {
     return Container(
       height: 50,
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
         itemCount: _categories.length + 1,
         itemBuilder: (context, index) {
           final isAll = index == 0;
@@ -343,7 +343,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               : _selectedCategory == categoryName;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: EdgeInsets.only(right: DesignTokens.spacing.sm),
             child: GestureDetector(
               onTap: () {
                 setState(() {
@@ -354,7 +354,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? DesignTokens.colors.accentGreen
@@ -374,7 +374,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                       size: 14,
                       color: isSelected ? Colors.black87 : Colors.white,
                     ),
-                    const SizedBox(width: 6),
+                    SizedBox(width: 6),
                     Text(
                       categoryName,
                       style: TextStyle(
@@ -415,10 +415,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.shieldAlert,
+              Icon(LucideIcons.shieldAlert,
                   size: 64, color: Color(0xFFCBD5E1)),
-              const SizedBox(height: 16),
-              const Text('No reports found',
+              SizedBox(height: 16),
+              Text('No reports found',
                   style: TextStyle(
                       color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
             ],
@@ -428,7 +428,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     }
 
     return SliverPadding(
-      padding: const EdgeInsets.only(bottom: 120),
+      padding: EdgeInsets.only(bottom: 120),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
@@ -468,7 +468,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
 
   Widget _buildFAB() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 100),
+      padding: EdgeInsets.only(bottom: 100),
       child: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -478,8 +478,8 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         },
         backgroundColor: DesignTokens.colors.accentGreen,
         isExtended: _isFabExtended,
-        icon: const Icon(LucideIcons.plusCircle, color: Colors.black87),
-        label: const Text(
+        icon: Icon(LucideIcons.plusCircle, color: Colors.black87),
+        label: Text(
           'Report a Scam',
           style: TextStyle(
               fontWeight: FontWeight.bold,
