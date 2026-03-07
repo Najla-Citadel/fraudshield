@@ -73,12 +73,12 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       ],
       body: _isLoading
           ? AppLoadingIndicator.center(
-              color: DesignTokens.colors.primaryBlue)
+              color: DesignTokens.colors.primary)
           : _alerts.isEmpty
               ? _buildEmptyState()
               : RefreshIndicator(
                   onRefresh: _fetchAlerts,
-                  color: DesignTokens.colors.primaryBlue,
+                  color: DesignTokens.colors.primary,
                   backgroundColor: DesignTokens.colors.surfaceDark,
                   child: ListView(
                     padding:
@@ -493,14 +493,14 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           bgColor = const Color(0xFFF5F3FF);
           icon = LucideIcons.award;
         } else {
-          iconColor = DesignTokens.colors.primaryBlue;
-          bgColor = DesignTokens.colors.primaryBlue.withOpacity(0.1);
+          iconColor = DesignTokens.colors.primary;
+          bgColor = DesignTokens.colors.primary.withOpacity(0.1);
           icon = LucideIcons.users;
         }
         break;
       default:
-        iconColor = DesignTokens.colors.primaryBlue;
-        bgColor = DesignTokens.colors.primaryBlue.withOpacity(0.1);
+        iconColor = DesignTokens.colors.primary;
+        bgColor = DesignTokens.colors.primary.withOpacity(0.1);
         icon = LucideIcons.bell;
     }
 

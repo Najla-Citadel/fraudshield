@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +11,7 @@ class ActivityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -184,8 +184,8 @@ class _ActivityCard extends StatelessWidget {
         iconBg = Colors.orange.withOpacity(0.1);
         break;
       case 'success':
-        iconColor = AppColors.accentGreen;
-        iconBg = AppColors.accentGreen.withOpacity(0.1);
+        iconColor = DesignTokens.colors.accentGreen;
+        iconBg = DesignTokens.colors.accentGreen.withOpacity(0.1);
         break;
       case 'safe':
         iconColor = Colors.blue;

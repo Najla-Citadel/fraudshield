@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
 import '../l10n/app_localizations.dart';
@@ -15,13 +15,13 @@ class ScamReportEntryScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
             Color(0xFF0F172A),
-            AppColors.deepNavy,
+            DesignTokens.colors.backgroundDark,
             Color(0xFF1E3A8A),
           ],
         ),
@@ -60,7 +60,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                 title: 'Report New Scam',
                 subtitle: 'Start the 4-step wizard to report a scammer.',
                 icon: LucideIcons.shieldAlert,
-                color: AppColors.accentGreen,
+                color: DesignTokens.colors.accentGreen,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -73,7 +73,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                 title: 'My Report History',
                 subtitle: 'View and track your previous submissions.',
                 icon: LucideIcons.history,
-                color: AppColors.primaryBlue,
+                color: DesignTokens.colors.primary,
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(

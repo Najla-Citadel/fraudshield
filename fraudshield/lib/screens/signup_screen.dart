@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
-import 'home_screen.dart';
 import 'login_screen.dart';
 import 'email_verification_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -123,30 +122,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Force dark theme for the signup screen to match the Deep Navy aesthetic
     return Theme(
       data: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: AppColors.deepNavy,
-        primaryColor: AppColors.primaryBlue,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primaryBlue,
-          surface: AppColors.deepNavy,
+        scaffoldBackgroundColor: DesignTokens.colors.backgroundDark,
+        primaryColor: DesignTokens.colors.primary,
+        colorScheme: ColorScheme.dark(
+          primary: DesignTokens.colors.primary,
+          surface: DesignTokens.colors.backgroundDark,
           onSurface: Colors.white,
         ),
       ),
       child: Scaffold(
-        backgroundColor: AppColors.deepNavy,
+        backgroundColor: DesignTokens.colors.backgroundDark,
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Background Elements (Matching Login Screen)
             Positioned.fill(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xFF0F172A), // Slate 900
-                      AppColors.deepNavy, // Base
-                      Color(0xFF1E3A8A), // Blue 900
+                      const Color(0xFF0F172A), // Slate 900
+                      DesignTokens.colors.backgroundDark, // Base
+                      const Color(0xFF1E3A8A), // Blue 900
                     ],
                   ),
                 ),
@@ -240,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     value: _agreedToTerms,
                                     onChanged: (val) => setState(
                                         () => _agreedToTerms = val ?? false),
-                                    activeColor: AppColors.primaryBlue,
+                                    activeColor: DesignTokens.colors.primary,
                                     side: const BorderSide(
                                         color: Colors.white54, width: 2),
                                     shape: RoundedRectangleBorder(
@@ -260,8 +259,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         const TextSpan(text: 'I agree to the '),
                                         TextSpan(
                                           text: 'Terms of Service',
-                                          style: const TextStyle(
-                                              color: AppColors.primaryBlue,
+                                          style: TextStyle(
+                                              color: DesignTokens.colors.primary,
                                               fontWeight: FontWeight.bold),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () => Navigator.push(
@@ -273,8 +272,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         const TextSpan(text: ' and '),
                                         TextSpan(
                                           text: 'Privacy Policy',
-                                          style: const TextStyle(
-                                              color: AppColors.primaryBlue,
+                                          style: TextStyle(
+                                              color: DesignTokens.colors.primary,
                                               fontWeight: FontWeight.bold),
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () => Navigator.push(
@@ -334,12 +333,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     builder: (_) => const LoginScreen()),
                               );
                             },
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 'Login',
                                 style: TextStyle(
-                                  color: AppColors.primaryBlue,
+                                  color: DesignTokens.colors.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

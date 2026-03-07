@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
 
 class StatusDetailsScreen extends StatelessWidget {
@@ -34,7 +34,7 @@ class StatusDetailsScreen extends StatelessWidget {
     final tier = _calculateTier(totalPoints);
 
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -216,11 +216,11 @@ class StatusDetailsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.accentGreen.withOpacity(0.1),
+            color: DesignTokens.colors.accentGreen.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+            border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -228,16 +228,16 @@ class StatusDetailsScreen extends StatelessWidget {
               Container(
                 width: 6,
                 height: 6,
-                decoration: const BoxDecoration(
-                  color: AppColors.accentGreen,
+                decoration: BoxDecoration(
+                  color: DesignTokens.colors.accentGreen,
                   shape: BoxShape.circle,
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'ACTIVE STATUS',
                 style: TextStyle(
-                  color: AppColors.accentGreen,
+                  color: DesignTokens.colors.accentGreen,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
@@ -284,8 +284,8 @@ class StatusDetailsScreen extends StatelessWidget {
             ),
             Text(
               '$totalPoints Total PTS',
-              style: const TextStyle(
-                color: AppColors.accentGreen,
+              style: TextStyle(
+                color: DesignTokens.colors.accentGreen,
                 fontSize: 12,
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.bold,
@@ -300,7 +300,7 @@ class StatusDetailsScreen extends StatelessWidget {
             value: progress,
             minHeight: 8,
             backgroundColor: Colors.white.withOpacity(0.05),
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.accentGreen),
+            valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.colors.accentGreen),
           ),
         ),
         const SizedBox(height: 12),
@@ -381,7 +381,7 @@ class StatusDetailsScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: item.isLocked 
                   ? Colors.white.withOpacity(0.05)
-                  : AppColors.accentGreen.withOpacity(0.1),
+                  : DesignTokens.colors.accentGreen.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -389,7 +389,7 @@ class StatusDetailsScreen extends StatelessWidget {
               size: 20,
               color: item.isLocked 
                   ? Colors.white.withOpacity(0.2)
-                  : AppColors.accentGreen,
+                  : DesignTokens.colors.accentGreen,
             ),
           ),
           const SizedBox(width: 16),
@@ -417,7 +417,7 @@ class StatusDetailsScreen extends StatelessWidget {
             ),
           ),
           if (!item.isLocked)
-            const Icon(Icons.check_circle_rounded, color: AppColors.accentGreen, size: 20)
+            Icon(Icons.check_circle_rounded, color: DesignTokens.colors.accentGreen, size: 20)
           else
             Icon(Icons.lock_rounded, color: Colors.white.withOpacity(0.2), size: 18),
         ],
@@ -430,11 +430,11 @@ class StatusDetailsScreen extends StatelessWidget {
       width: double.infinity,
       height: 56,
       decoration: BoxDecoration(
-        color: AppColors.accentGreen,
+        color: DesignTokens.colors.accentGreen,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.accentGreen.withOpacity(0.3),
+            color: DesignTokens.colors.accentGreen.withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -488,7 +488,7 @@ class StatusDetailsScreen extends StatelessWidget {
             Center(
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Got it!', style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold)),
+                child: Text('Got it!', style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -502,12 +502,12 @@ class StatusDetailsScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.accentGreen, size: 24),
+          Icon(icon, color: DesignTokens.colors.accentGreen, size: 24),
           const SizedBox(width: 16),
           Expanded(
             child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
           ),
-          Text(points, style: const TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold)),
+          Text(points, style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold)),
         ],
       ),
     );

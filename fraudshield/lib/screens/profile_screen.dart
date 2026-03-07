@@ -4,7 +4,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../design_system/components/app_button.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import 'email_verification_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Profile' : 'View Profile', style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
@@ -161,7 +161,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isEditing: false, 
                 icon: Icons.email_outlined,
                 trailing: user?.isEmailVerified == true
-                    ? const Icon(Icons.verified, color: AppColors.accentGreen, size: 16)
+                    ? Icon(Icons.verified, color: DesignTokens.colors.accentGreen, size: 16)
                     : GestureDetector(
                         onTap: _isLoading ? null : () => _requestVerification(user?.email ?? ''),
                         child: Container(
@@ -272,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.accentGreen.withOpacity(0.7), size: 20),
+          Icon(icon, color: DesignTokens.colors.accentGreen.withOpacity(0.7), size: 20),
           const SizedBox(width: 16),
           Expanded(
             child: Column(

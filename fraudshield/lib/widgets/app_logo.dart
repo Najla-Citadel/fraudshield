@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class AppLogo extends StatelessWidget {
   final double size;
@@ -19,13 +19,13 @@ class AppLogo extends StatelessWidget {
         // 🛡️ Gradient Shield Icon
         ShaderMask(
           shaderCallback: (Rect bounds) {
-            return const LinearGradient(
+            return LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF60A5FA), // Light Blue
-                AppColors.primaryBlue, // Primary
-                Color(0xFF3B82F6), // Darker Blue
+                const Color(0xFF60A5FA), // Light Blue
+                DesignTokens.colors.primary, // Primary
+                DesignTokens.colors.primary, // Darker Blue
               ],
             ).createShader(bounds);
           },
@@ -36,7 +36,7 @@ class AppLogo extends StatelessWidget {
             color: Colors.white, // Required for ShaderMask
             shadows: [
               BoxShadow(
-                color: AppColors.primaryBlue.withOpacity(0.5),
+                color: DesignTokens.colors.primary.withOpacity(0.5),
                 blurRadius: 20,
                 offset: const Offset(0, 4),
               ),

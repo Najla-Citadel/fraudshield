@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_service_screen.dart';
@@ -48,7 +48,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.black.withOpacity(0.4)),
+              child: Container(color: Colors.black.withValues(alpha: 0.4)),
             ),
           ),
 
@@ -64,8 +64,8 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.security_outlined,
-                          size: 64, color: AppColors.primaryBlue),
+                      Icon(Icons.security_outlined,
+                          size: 64, color: DesignTokens.colors.primary),
                       const SizedBox(height: 24),
                       const Text(
                         'Updates to Privacy & Terms',
@@ -82,7 +82,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 15,
-                          color: Colors.white.withOpacity(0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                           height: 1.5,
                         ),
                       ),
@@ -96,7 +96,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                             value: _agreed,
                             onChanged: (val) =>
                                 setState(() => _agreed = val ?? false),
-                            activeColor: AppColors.primaryBlue,
+                            activeColor: DesignTokens.colors.primary,
                             side: const BorderSide(
                                 color: Colors.white54, width: 2),
                           ),
@@ -106,7 +106,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                               child: RichText(
                                 text: TextSpan(
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.8),
+                                    color: Colors.white.withValues(alpha: 0.8),
                                     fontSize: 13,
                                     height: 1.4,
                                   ),
@@ -114,8 +114,8 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                                     const TextSpan(text: 'I agree to the '),
                                     TextSpan(
                                       text: 'Terms of Service',
-                                      style: const TextStyle(
-                                        color: AppColors.primaryBlue,
+                                      style: TextStyle(
+                                        color: DesignTokens.colors.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       recognizer: TapGestureRecognizer()
@@ -129,8 +129,8 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                                     const TextSpan(text: ' and '),
                                     TextSpan(
                                       text: 'Privacy Policy',
-                                      style: const TextStyle(
-                                        color: AppColors.primaryBlue,
+                                      style: TextStyle(
+                                        color: DesignTokens.colors.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       recognizer: TapGestureRecognizer()

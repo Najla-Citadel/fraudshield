@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
 import '../app_router.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class PostCallSafetyCheck extends StatelessWidget {
   final Map<String, dynamic> data;
@@ -34,7 +34,7 @@ class PostCallSafetyCheck extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.deepNavy.withOpacity(0.9),
+                color: DesignTokens.colors.backgroundDark.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
                   color: Colors.orangeAccent.withOpacity(0.5),

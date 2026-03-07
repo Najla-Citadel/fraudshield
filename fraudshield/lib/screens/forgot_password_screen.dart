@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
@@ -57,14 +57,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           SnackBar(
             content: Text('DEV MODE: Your code is ${response['dev_otp']}'),
             duration: const Duration(seconds: 10),
-            backgroundColor: AppColors.accentGreen,
+            backgroundColor: DesignTokens.colors.accentGreen,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Reset code sent to your email.'),
-            backgroundColor: AppColors.accentGreen,
+          SnackBar(
+            content: const Text('Reset code sent to your email.'),
+            backgroundColor: DesignTokens.colors.accentGreen,
           ),
         );
       }
@@ -102,9 +102,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password reset successfully. You can now log in.'),
-          backgroundColor: AppColors.accentGreen,
+        SnackBar(
+          content: const Text('Password reset successfully. You can now log in.'),
+          backgroundColor: DesignTokens.colors.accentGreen,
         ),
       );
       
@@ -122,16 +122,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Theme(
       data: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: AppColors.deepNavy,
-        primaryColor: AppColors.primaryBlue,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primaryBlue,
-          surface: AppColors.deepNavy,
+        scaffoldBackgroundColor: DesignTokens.colors.backgroundDark,
+        primaryColor: DesignTokens.colors.primary,
+        colorScheme: ColorScheme.dark(
+          primary: DesignTokens.colors.primary,
+          surface: DesignTokens.colors.backgroundDark,
           onSurface: Colors.white,
         ),
       ),
       child: Scaffold(
-        backgroundColor: AppColors.deepNavy,
+        backgroundColor: DesignTokens.colors.backgroundDark,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -143,14 +143,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             // Background Elements matching LoginScreen
             Positioned.fill(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Color(0xFF0F172A), // Slate 900
-                      AppColors.deepNavy, // Base
-                      Color(0xFF1E3A8A), // Blue 900
+                      const Color(0xFF0F172A), // Slate 900
+                      DesignTokens.colors.backgroundDark, // Base
+                      const Color(0xFF1E3A8A), // Blue 900
                     ],
                   ),
                 ),
@@ -170,20 +170,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.deepNavy,
+                            color: DesignTokens.colors.backgroundDark,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryBlue.withOpacity(0.2),
+                                color: DesignTokens.colors.primary.withOpacity(0.2),
                                 blurRadius: 20,
                                 spreadRadius: -5,
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.lock_reset,
                             size: 48,
-                            color: AppColors.primaryBlue,
+                            color: DesignTokens.colors.primary,
                           ),
                         ),
                       ),
@@ -285,9 +285,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     _passwordController.clear();
                                   });
                                 },
-                                child: const Text(
+                                child: Text(
                                   'Use a different email',
-                                  style: TextStyle(color: AppColors.primaryBlue),
+                                  style: TextStyle(color: DesignTokens.colors.primary),
                                 ),
                               ),
                             ],

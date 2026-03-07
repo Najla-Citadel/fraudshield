@@ -67,7 +67,7 @@ class _NewsScreenState extends State<NewsScreen> {
           Expanded(
             child: _isLoading
                 ? AppLoadingIndicator.center(
-                    color: DesignTokens.colors.primaryBlue)
+                    color: DesignTokens.colors.primary)
                 : _error != null
                     ? _buildErrorState()
                     : _items.isEmpty
@@ -108,7 +108,7 @@ class _NewsScreenState extends State<NewsScreen> {
             _loadNews();
           }
         },
-        selectedColor: DesignTokens.colors.primaryBlue,
+        selectedColor: DesignTokens.colors.primary,
         labelStyle: TextStyle(
           color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -126,7 +126,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _buildNewsList() {
     return RefreshIndicator(
       onRefresh: _loadNews,
-      color: DesignTokens.colors.primaryBlue,
+      color: DesignTokens.colors.primary,
       backgroundColor: DesignTokens.colors.surfaceDark,
       child: ListView.separated(
         padding: const EdgeInsets.all(20),
@@ -205,7 +205,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             Text(
                               'Read More',
                               style: TextStyle(
-                                  color: DesignTokens.colors.primaryBlue,
+                                  color: DesignTokens.colors.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12),
                             ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class CommunityMapCard extends StatefulWidget {
@@ -126,15 +126,15 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Row(
+                    Row(
                       children: [
                         Icon(LucideIcons.navigation,
-                            color: AppColors.accentGreen, size: 14),
-                        SizedBox(width: 6),
+                            color: DesignTokens.colors.accentGreen, size: 14),
+                        const SizedBox(width: 6),
                         Text(
                           'Tap to view interactive heat map',
                           style: TextStyle(
-                            color: AppColors.accentGreen,
+                            color: DesignTokens.colors.accentGreen,
                             fontSize: 13,
                           ),
                         ),
@@ -167,7 +167,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.accentGreen
+                  color: DesignTokens.colors.accentGreen
                       .withValues(alpha: 0.5 * (1.0 - _pulseAnimation.value)),
                   width: 2,
                 ),
@@ -182,7 +182,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.accentGreen.withValues(
+                    color: DesignTokens.colors.accentGreen.withValues(
                         alpha: 0.5 * (1.0 - (_pulseAnimation.value - 0.5) * 2)),
                     width: 1,
                   ),
@@ -197,8 +197,8 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
-              child: const Icon(LucideIcons.radar,
-                  color: AppColors.accentGreen, size: 40),
+              child: Icon(LucideIcons.radar,
+                  color: DesignTokens.colors.accentGreen, size: 40),
             ),
           ],
         );

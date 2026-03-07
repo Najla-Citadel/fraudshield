@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class SecurityReportSheet extends StatefulWidget {
   final int score;
@@ -30,8 +30,8 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: AppColors.deepNavy,
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.backgroundDark,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
@@ -121,7 +121,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
             child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accentGreen,
+                backgroundColor: DesignTokens.colors.accentGreen,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -136,38 +136,38 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
   }
 
   Color _getScoreColor(int score) {
-    if (score >= 90) return AppColors.accentGreen;
-    if (score >= 70) return Colors.amber;
-    return Colors.redAccent;
-  }
-
-  Widget _buildCheckItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required bool isSafe,
-    String? actionLabel,
-    VoidCallback? onAction,
-    bool isLocked = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isSafe 
-                ? AppColors.accentGreen.withOpacity(0.1) 
-                : Colors.redAccent.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: isSafe ? AppColors.accentGreen : Colors.redAccent,
-              size: 20,
-            ),
-          ),
+    if (score >= 90) return DesignTokens.colors.accentGreen;
+                if (score >= 70) return Colors.amber;
+                return Colors.redAccent;
+              }
+            
+              Widget _buildCheckItem({
+                required IconData icon,
+                required String title,
+                required String subtitle,
+                required bool isSafe,
+                String? actionLabel,
+                VoidCallback? onAction,
+                bool isLocked = false,
+              }) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: isSafe 
+                            ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
+                            : Colors.redAccent.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          icon,
+                          color: isSafe ? DesignTokens.colors.accentGreen : Colors.redAccent,
+                          size: 20,
+                        ),
+                      ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -212,7 +212,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               ),
             ),
           if (actionLabel == null && isSafe)
-             const Icon(Icons.check_circle, color: AppColors.accentGreen, size: 20),
+             Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen, size: 20),
         ],
       ),
     );

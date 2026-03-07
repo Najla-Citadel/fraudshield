@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/badge_model.dart';
-import '../constants/colors.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_loading_indicator.dart';
@@ -58,9 +57,9 @@ class _BadgesScreenState extends State<BadgesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
-        title: const Text('My Badges', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('My Badges', style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -125,7 +124,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Collection Progress',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
@@ -159,7 +158,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isActive ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
+                color: isActive ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
                 border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
               ),
@@ -393,18 +392,18 @@ class _BadgeDetailSheet extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+                border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.check_circle, color: AppColors.accentGreen, size: 20),
+                children: [
+                  Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen, size: 20),
                   SizedBox(width: 8),
                   Text(
                     'Unlocked',
-                    style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -441,7 +440,7 @@ class _BadgeDetailSheet extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: const Text('Close'),
+              child: Text('Close'),
             ),
           ),
           const SizedBox(height: 20),

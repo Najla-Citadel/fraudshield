@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import '../widgets/skeleton_card.dart';
@@ -69,21 +69,21 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           // Background Gradient
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
+                  const Color(0xFF0F172A), // Slate 900
+                  DesignTokens.colors.backgroundDark, // Deep navy
+                  const Color(0xFF1E3A8A), // Blue 900
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -218,18 +218,18 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                       children: [
                         Text(
                           '$points',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Text(
+                        Text(
                           'PTS',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.accentGreen,
+                            color: DesignTokens.colors.accentGreen,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -281,8 +281,8 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 children: [
                   Text(
                     _calculateTier(totalPoints),
-                    style: const TextStyle(
-                        color: AppColors.accentGreen,
+                    style: TextStyle(
+                        color: DesignTokens.colors.accentGreen,
                         fontSize: 11,
                         fontWeight: FontWeight.bold),
                   ),
@@ -300,8 +300,8 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 child: LinearProgressIndicator(
                   value: _getTierProgress(totalPoints),
                   backgroundColor: Colors.white.withOpacity(0.05),
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.accentGreen),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      DesignTokens.colors.accentGreen),
                   minHeight: 4,
                 ),
               ),
@@ -353,11 +353,11 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.emoji_events_rounded,
-                  color: AppColors.accentGreen, size: 24),
+              child: Icon(Icons.emoji_events_rounded,
+                  color: DesignTokens.colors.accentGreen, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -405,7 +405,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         Text(
           'Filter',
           style: TextStyle(
-            color: AppColors.accentGreen.withOpacity(0.8),
+            color: DesignTokens.colors.accentGreen.withOpacity(0.8),
             fontSize: 13,
             fontWeight: FontWeight.bold,
           ),
@@ -502,7 +502,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             ),
             child: Icon(
               _getIconForDescription(tx['description'] ?? ''),
-              color: isPositive ? AppColors.accentGreen : AppColors.primaryBlue,
+              color: isPositive ? DesignTokens.colors.accentGreen : DesignTokens.colors.primary,
               size: 20,
             ),
           ),
@@ -533,7 +533,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
           Text(
             '${isPositive ? '+' : ''}$amount',
             style: TextStyle(
-              color: isPositive ? AppColors.accentGreen : Colors.white,
+              color: isPositive ? DesignTokens.colors.accentGreen : Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),

@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -30,7 +30,7 @@ class FloatingNavBar extends StatelessWidget {
               offset: const Offset(0, 15),
             ),
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.05),
+              color: DesignTokens.colors.primary.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -133,12 +133,12 @@ class _NavItem extends StatelessWidget {
                   curve: Curves.easeOutCubic,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primaryBlue : Colors.transparent,
+                    color: isSelected ? DesignTokens.colors.primary : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
                     icon,
-                    color: isSelected ? Colors.white : AppColors.greyText,
+                    color: isSelected ? Colors.white : DesignTokens.colors.textGrey,
                     size: 20,
                   ),
                 ),
@@ -147,7 +147,7 @@ class _NavItem extends StatelessWidget {
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 300),
                 style: TextStyle(
-                  color: isSelected ? AppColors.primaryBlue : AppColors.greyText,
+                  color: isSelected ? DesignTokens.colors.primary : DesignTokens.colors.textGrey,
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                   letterSpacing: 0.2,

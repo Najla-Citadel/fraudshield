@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_loading_indicator.dart';
 
 class FacialDetectionScreen extends StatefulWidget {
@@ -31,9 +31,9 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      backgroundColor: DesignTokens.colors.backgroundLight,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor: DesignTokens.colors.primary,
         title: const Text(
           'Facial Detection',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -51,7 +51,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
             Text(
               'Scan and verify faces to detect suspicious users or impersonators.',
               style: TextStyle(
-                color: AppColors.darkText,
+                color: Colors.white,
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
@@ -65,7 +65,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.primaryBlue, width: 2),
+                border: Border.all(color: DesignTokens.colors.primary, width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
@@ -76,13 +76,13 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               ),
               child: Center(
                 child: isScanning
-                    ? const AppLoadingIndicator(
-                        color: AppColors.accentGreen,
+                    ? AppLoadingIndicator(
+                        color: DesignTokens.colors.accentGreen,
                       )
                     : Icon(
                         Icons.face_retouching_natural,
                         size: 120,
-                        color: AppColors.primaryBlue,
+                        color: DesignTokens.colors.primary,
                       ),
               ),
             ),
@@ -100,7 +100,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
                   style: const TextStyle(fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
+                  backgroundColor: DesignTokens.colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -151,7 +151,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
                           ? 'This person may not match the registered identity.'
                           : 'No suspicious or fake face detected.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.greyText),
+                      style: TextStyle(color: Colors.white70),
                     ),
                   ],
                 ),

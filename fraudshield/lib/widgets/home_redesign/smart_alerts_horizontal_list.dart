@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../constants/colors.dart';
+import '../../design_system/tokens/design_tokens.dart';
 
 class SmartAlertsHorizontalList extends StatelessWidget {
   final bool isSubscribed;
@@ -111,13 +111,13 @@ class _SmartAlertCard extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: AppColors.premiumYellow,
+                                    color: DesignTokens.colors.premiumYellow,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
-                                  child: const Text(
+                                  child: Text(
                                     'PRO',
                                     style: TextStyle(
-                                      color: Colors.black, // AppColors.textDark
+                                      color: Colors.black, // DesignTokens.colors.textDark
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -125,9 +125,9 @@ class _SmartAlertCard extends StatelessWidget {
                                 ),
                                 if (!isSubscribed) ...[
                                   const SizedBox(height: 4),
-                                  const Icon(
+                                  Icon(
                                     Icons.lock_outline,
-                                    color: AppColors.premiumYellow,
+                                    color: DesignTokens.colors.premiumYellow,
                                     size: 12,
                                   ),
                                 ]
@@ -138,8 +138,8 @@ class _SmartAlertCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     label,
-                    style: const TextStyle(
-                      color: AppColors.textDark, 
+                    style: TextStyle(
+                      color: DesignTokens.colors.textDark, 
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'dart:ui'; // For ImageFilter if needed
 
@@ -192,7 +192,7 @@ class ScamCard extends StatelessWidget {
                       width: 3,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: AppColors.accentGreen,
+                        color: DesignTokens.colors.accentGreen,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -201,10 +201,10 @@ class ScamCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
                               Icon(Icons.shield_outlined,
-                                  size: 14, color: AppColors.accentGreen),
+                                  size: 14, color: DesignTokens.colors.accentGreen),
                               SizedBox(width: 6),
                               Text(
                                 'Stay Safe:',

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import 'login_screen.dart';
 import '../widgets/app_logo.dart';
 
@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Deep Navy Base
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           // 1. Background Layer
@@ -78,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   end: Alignment.bottomCenter,
                   colors: [
                     const Color(0xFF0F172A), // Dark Navy
-                    const Color(0xFF1E293B), // Slightly lighter Slate
+                    DesignTokens.colors.backgroundDark, // Slightly lighter Slate
                   ],
                 ),
               ),
@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primaryBlue.withOpacity(0.15),
+                      DesignTokens.colors.primary.withOpacity(0.15),
                       Colors.transparent,
                     ],
                     radius: 0.7,

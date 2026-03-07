@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/adaptive_scaffold.dart';
 import '../widgets/settings_group.dart';
 import '../l10n/app_localizations.dart';
@@ -21,7 +21,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
     return AdaptiveScaffold(
       title: l10n.accountPrivacySettings,
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
@@ -75,7 +75,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                       setState(() => _marketingConsent = val);
                       // In a real app, call a service to update this
                     },
-                    activeColor: AppColors.accentGreen,
+                    activeColor: DesignTokens.colors.accentGreen,
                   ),
                 ),
               ],
@@ -102,7 +102,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: DesignTokens.colors.glassDark,
         title: Text(action, style: const TextStyle(color: Colors.white)),
         content: const Text(
           'Your request has been received. Our support team will process this and contact you at your registered email address within 21 days as per PDPA guidelines.',
@@ -111,8 +111,8 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK',
-                style: TextStyle(color: AppColors.primaryBlue)),
+            child: Text('OK',
+                style: TextStyle(color: DesignTokens.colors.primary)),
           ),
         ],
       ),
@@ -122,7 +122,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   void _showDpoInfo(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -159,7 +159,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   Widget _infoRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.primaryBlue, size: 20),
+        Icon(icon, color: DesignTokens.colors.primary, size: 20),
         const SizedBox(width: 16),
         Expanded(
           child: Text(

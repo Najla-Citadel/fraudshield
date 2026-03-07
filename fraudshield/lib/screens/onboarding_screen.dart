@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../models/onboarding_item.dart';
 import '../services/api_service.dart';
 import '../widgets/adaptive_button.dart';
@@ -52,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      backgroundColor: DesignTokens.colors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -128,7 +128,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: _currentIndex == i ? 24 : 8,
                   decoration: BoxDecoration(
                     color: _currentIndex == i
-                        ? AppColors.primaryBlue
+                        ? DesignTokens.colors.primary
                         : Colors.grey,
                     borderRadius: BorderRadius.circular(8),
                   ),

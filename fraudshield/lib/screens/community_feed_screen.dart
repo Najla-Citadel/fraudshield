@@ -3,7 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'dart:async';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/community_map_card.dart';
 import '../screens/scam_report_entry_screen.dart';
@@ -141,7 +141,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           // Background Gradient
@@ -162,7 +162,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
           // Main Content
           RefreshIndicator(
             onRefresh: () => _fetchFeed(reset: true),
-            color: AppColors.accentGreen,
+            color: DesignTokens.colors.accentGreen,
             backgroundColor: const Color(0xFF1E293B),
             child: AnimationLimiter(
               child: CustomScrollView(
@@ -256,12 +256,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: _isNearMe
-              ? AppColors.accentGreen.withOpacity(0.15)
+              ? DesignTokens.colors.accentGreen.withOpacity(0.15)
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isNearMe
-                ? AppColors.accentGreen
+                ? DesignTokens.colors.accentGreen
                 : Colors.white.withOpacity(0.1),
           ),
         ),
@@ -270,13 +270,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             Icon(
               LucideIcons.mapPin,
               size: 16,
-              color: _isNearMe ? AppColors.accentGreen : Colors.white,
+              color: _isNearMe ? DesignTokens.colors.accentGreen : Colors.white,
             ),
             const SizedBox(width: 4),
             Text(
               'Near Me',
               style: TextStyle(
-                color: _isNearMe ? AppColors.accentGreen : Colors.white,
+                color: _isNearMe ? DesignTokens.colors.accentGreen : Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -357,12 +357,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.accentGreen
+                      ? DesignTokens.colors.accentGreen
                       : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isSelected
-                        ? AppColors.accentGreen
+                        ? DesignTokens.colors.accentGreen
                         : Colors.white.withOpacity(0.1),
                   ),
                 ),
@@ -476,7 +476,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             MaterialPageRoute(builder: (_) => const ScamReportEntryScreen()),
           );
         },
-        backgroundColor: AppColors.accentGreen,
+        backgroundColor: DesignTokens.colors.accentGreen,
         isExtended: _isFabExtended,
         icon: const Icon(LucideIcons.plusCircle, color: Colors.black87),
         label: const Text(

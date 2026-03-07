@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../constants/colors.dart';
+import '../../design_system/tokens/design_tokens.dart';
+// Removed legacy colors import
 
 class QuickActionGrid extends StatelessWidget {
   final VoidCallback onPhoneCheck;
@@ -79,7 +80,7 @@ class _QuickActionCard extends StatelessWidget {
         width: (MediaQuery.of(context).size.width - 40 - 16) / 2, // 2 items per row
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
-          color: AppColors.cardWhite,
+          color: DesignTokens.colors.surfaceLight,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -96,16 +97,16 @@ class _QuickActionCard extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: DesignTokens.colors.primary.withOpacity(0.1),
               ),
-              child: Icon(icon, color: AppColors.primaryBlue, size: 28),
+              child: Icon(icon, color: DesignTokens.colors.primary, size: 28),
             ),
             const SizedBox(height: 12),
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textDark,
+              style: TextStyle(
+                color: DesignTokens.colors.textDark,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

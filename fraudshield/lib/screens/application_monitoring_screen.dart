@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class ApplicationMonitoringScreen extends StatefulWidget {
   const ApplicationMonitoringScreen({super.key});
@@ -22,9 +22,9 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.lightBlue,
+      backgroundColor: DesignTokens.colors.backgroundLight,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor: DesignTokens.colors.primary,
         title: const Text(
           'Application Monitoring',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -43,7 +43,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               'Keep your device apps safe from risky applications.',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.darkText,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 24),
@@ -82,7 +82,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                         ? 'No threats detected in installed apps.'
                         : 'Please review the suspicious apps below.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.greyText),
+                    style: TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -92,7 +92,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
+                      backgroundColor: DesignTokens.colors.primary,
                       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -115,7 +115,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.darkText,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 12),
@@ -137,7 +137,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: AppColors.darkText,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 12),
@@ -159,12 +159,12 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                       app['name'],
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.darkText,
+                        color: Colors.white,
                       ),
                     ),
                     subtitle: Text(
                       app['package'],
-                      style: TextStyle(color: AppColors.greyText),
+                      style: TextStyle(color: Colors.white70),
                     ),
                     trailing: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -206,7 +206,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
         ),
         child: Column(
           children: [
-            Icon(icon, color: AppColors.primaryBlue),
+            Icon(icon, color: DesignTokens.colors.primary),
             const SizedBox(height: 8),
             Text(
               value,
@@ -220,7 +220,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               label,
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.greyText,
+                color: Colors.white70,
               ),
             ),
           ],

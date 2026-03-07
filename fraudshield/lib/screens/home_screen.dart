@@ -370,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showCustomizationSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: DesignTokens.colors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -593,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       extendBody: true, // Allows content to flow behind the floating nav bar
-      backgroundColor: DesignTokens.colors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           IndexedStack(
@@ -709,7 +709,7 @@ class _HomeTab extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: DesignTokens.colors.primaryBlue,
+                          color: DesignTokens.colors.primary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(LucideIcons.shieldCheck,

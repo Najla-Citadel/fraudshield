@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/notification_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class MacauInterventionOverlay extends StatelessWidget {
   final Map<String, dynamic> evaluation;
@@ -34,7 +34,7 @@ class MacauInterventionOverlay extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 24),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.deepNavy.withOpacity(0.8),
+                color: DesignTokens.colors.backgroundDark.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
                   color: Colors.redAccent.withOpacity(0.5),

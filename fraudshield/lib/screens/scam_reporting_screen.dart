@@ -258,7 +258,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             proceed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    backgroundColor: DesignTokens.colors.deepNavy,
+                    backgroundColor: DesignTokens.colors.backgroundDark,
                     title: const Text('Confirm Location',
                         style: TextStyle(color: Colors.white)),
                     content: Text(
@@ -458,14 +458,14 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       EdgeInsets.only(right: index == _totalSteps - 1 ? 0 : 8),
                   decoration: BoxDecoration(
                     color: isActive
-                        ? DesignTokens.colors.primaryBlue
+                        ? DesignTokens.colors.primary
                         : Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: isActive
                         ? [
                             BoxShadow(
                               color:
-                                  DesignTokens.colors.primaryBlue.withOpacity(0.3),
+                                  DesignTokens.colors.primary.withOpacity(0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             )
@@ -549,13 +549,13 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   onTap: () => setState(() => _targetType = opt['id']),
                   padding: const EdgeInsets.all(12),
                   borderRadius: 20,
-                  accentColor: isSelected ? DesignTokens.colors.primaryBlue : null,
+                  accentColor: isSelected ? DesignTokens.colors.primary : null,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(opt['icon'],
                           color: isSelected
-                              ? DesignTokens.colors.primaryBlue
+                              ? DesignTokens.colors.primary
                               : Colors.white24),
                       const SizedBox(height: 10),
                       Text(opt['label'],

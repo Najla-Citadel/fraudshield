@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../models/trending_scam.dart';
 
 class TrendingScamsScreen extends StatefulWidget {
@@ -20,18 +19,18 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           // Background Gradient
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
                   Color(0xFF0F172A), // Slate 900
-                  Color(0xFF0A0F1F), // Deep Navy (AppColors.deepNavy)
+                  DesignTokens.colors.backgroundDark,
                   Color(0xFF1E3A8A), // Blue 900
                 ],
                 stops: [0.0, 0.5, 1.0],
@@ -155,15 +154,15 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
+                color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.1),
+                  color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.1),
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.accentGreen.withOpacity(0.3),
+                          color: DesignTokens.colors.accentGreen.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         )
@@ -390,7 +389,7 @@ class _ScamCard extends StatelessWidget {
         if (scam.safetyTips.isNotEmpty) ...[
           Row(
             children: [
-              Icon(LucideIcons.shieldCheck, color: AppColors.accentGreen, size: 20),
+              Icon(LucideIcons.shieldCheck, color: DesignTokens.colors.accentGreen, size: 20),
               const SizedBox(width: 8),
               const Text(
                 'How to Stay Safe',
@@ -412,8 +411,8 @@ class _ScamCard extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 6),
                       width: 4,
                       height: 4,
-                      decoration: const BoxDecoration(
-                        color: AppColors.accentGreen,
+                      decoration: BoxDecoration(
+                        color: DesignTokens.colors.accentGreen,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -448,7 +447,7 @@ class _ScamCard extends StatelessWidget {
               icon: const Icon(LucideIcons.flag, size: 16, color: Colors.black87),
               label: const Text('Report Similar', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accentGreen,
+                backgroundColor: DesignTokens.colors.accentGreen,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 0,

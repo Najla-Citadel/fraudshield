@@ -3,7 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'dart:async';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class LogPaymentSheet extends StatefulWidget {
   final VoidCallback onLogSuccess;
@@ -109,20 +109,20 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.accentGreen.withOpacity(0.1),
+          color: DesignTokens.colors.accentGreen.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border:
-              Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+              Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
         ),
         child: Row(
-          children: const [
+          children: [
             Icon(LucideIcons.checkCircle2,
-                color: AppColors.accentGreen, size: 20),
+                color: DesignTokens.colors.accentGreen, size: 20),
             SizedBox(width: 12),
             Expanded(
                 child: Text('No community reports found. Safe to proceed.',
                     style:
-                        TextStyle(color: AppColors.accentGreen, fontSize: 13))),
+                        TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 13))),
           ],
         ),
       );
@@ -227,8 +227,8 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         left: 20,
         right: 20,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.deepNavy,
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.backgroundDark,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
@@ -307,12 +307,12 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _isIncome
-                            ? AppColors.accentGreen.withOpacity(0.2)
+                            ? DesignTokens.colors.accentGreen.withOpacity(0.2)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                             color: _isIncome
-                                ? AppColors.accentGreen
+                                ? DesignTokens.colors.accentGreen
                                 : Colors.white.withOpacity(0.1)),
                       ),
                       child: Row(
@@ -320,14 +320,14 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                         children: [
                           Icon(LucideIcons.arrowDownLeft,
                               color: _isIncome
-                                  ? AppColors.accentGreen
+                                  ? DesignTokens.colors.accentGreen
                                   : Colors.grey,
                               size: 18),
                           const SizedBox(width: 8),
                           Text('MONEY IN',
                               style: TextStyle(
                                   color: _isIncome
-                                      ? AppColors.accentGreen
+                                      ? DesignTokens.colors.accentGreen
                                       : Colors.grey,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13)),
@@ -466,16 +466,16 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               child: ElevatedButton(
                 onPressed: _isSubmitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGreen,
+                  backgroundColor: DesignTokens.colors.accentGreen,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16)),
                 ),
                 child: _isSubmitting
-                    ? const AppLoadingIndicator(color: AppColors.deepNavy)
-                    : const Text(
+                    ? AppLoadingIndicator(color: DesignTokens.colors.backgroundDark)
+                    : Text(
                         'SAVE TO JOURNAL',
                         style: TextStyle(
-                            color: AppColors.deepNavy,
+                            color: DesignTokens.colors.backgroundDark,
                             fontWeight: FontWeight.bold,
                             fontSize: 16),
                       ),

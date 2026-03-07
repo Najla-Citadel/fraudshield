@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 
 class PointsHistoryScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _PointsHistoryScreenState extends State<PointsHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Points History'),
-        backgroundColor: AppColors.primaryBlue,
+        backgroundColor: DesignTokens.colors.primary,
       ),
       body: _loading
           ? AppLoadingIndicator.center()

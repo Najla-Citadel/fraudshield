@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'glass_surface.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -78,7 +78,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
     if (_isLoading) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: AppLoadingIndicator.center(color: AppColors.accentGreen),
+        child: AppLoadingIndicator.center(color: DesignTokens.colors.accentGreen),
       );
     }
 
@@ -123,10 +123,10 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                     Container(
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                        color: AppColors.accentGreen.withOpacity(0.12),
+                        color: DesignTokens.colors.accentGreen.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Icon(LucideIcons.zap, color: AppColors.accentGreen, size: 14),
+                      child: Icon(LucideIcons.zap, color: DesignTokens.colors.accentGreen, size: 14),
                     ),
                     const SizedBox(width: 10),
                     Text(
@@ -189,8 +189,8 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                       children: [
                         Text(
                           (topTrends[0]['category'] ?? '').toUpperCase(),
-                          style: const TextStyle(
-                            color: AppColors.accentGreen,
+                          style: TextStyle(
+                            color: DesignTokens.colors.accentGreen,
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
@@ -227,7 +227,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(LucideIcons.lightbulb, color: AppColors.accentGreen, size: 20),
+                  Icon(LucideIcons.lightbulb, color: DesignTokens.colors.accentGreen, size: 20),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(

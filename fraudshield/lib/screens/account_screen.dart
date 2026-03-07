@@ -163,6 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
     try {
       await ApiService.instance.updateProfile(avatar: seed);
+      if (!mounted) return;
       await context.read<AuthProvider>().refreshProfile();
     } catch (e) {
       log('Error saving avatar: $e');
@@ -278,7 +279,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               style: TextStyle(
                                 color: context.watch<AuthProvider>().isSubscribed
                                     ? Colors.amber
-                                    : Colors.white.withOpacity(0.5),
+                                    : Colors.white.withValues(alpha: 0.5),
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -286,7 +287,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             const SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               size: 14,
                             ),
                           ],
@@ -301,13 +302,38 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: AppLocalizations.of(context)!.accountNotificationSetting,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const AlertPreferencesScreen()),
                         ),
+                      ),
+                      SettingsTile(
+                        icon: Icons.language_rounded,
+                        title: AppLocalizations.of(context)!.accountLanguage,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              context.watch<LocaleProvider>().locale?.languageCode == 'ms'
+                                  ? 'Bahasa Malaysia'
+                                  : 'English',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5),
+                                fontSize: 13,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white.withValues(alpha: 0.2),
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                        onTap: _showLanguagePicker,
                       ),
                       SettingsTile(
                         icon: Icons.auto_awesome_rounded,
@@ -317,7 +343,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         trailing: Switch(
                           value: _smartCaptureEnabled,
                           onChanged: _toggleSmartCapture,
-                          activeColor: colors.accentGreen,
+                          activeThumbColor: colors.accentGreen,
                         ),
                       ),
                       SettingsTile(
@@ -328,7 +354,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         trailing: Switch(
                           value: _callerIdProtectionEnabled,
                           onChanged: _toggleCallerIdProtection,
-                          activeColor: colors.accentGreen,
+                          activeThumbColor: colors.accentGreen,
                         ),
                       ),
                       if (_smartCaptureEnabled || _callerIdProtectionEnabled) ...[
@@ -371,7 +397,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Log Test Transaction',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () {
@@ -390,7 +416,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Transaction Journal',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () {
@@ -425,7 +451,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               await BiometricService.instance.setEnabled(val);
                               setState(() => _biometricEnabled = val);
                             },
-                            activeColor: colors.accentGreen,
+                            activeThumbColor: colors.accentGreen,
                           ),
                         ),
                     ],
@@ -441,7 +467,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Privacy Policy',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
@@ -451,7 +477,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Terms of Service',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
@@ -461,7 +487,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Manage Consent',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/privacy-settings'),
@@ -477,7 +503,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: Text(
                         'Delete Account',
                         style: TextStyle(
-                          color: Colors.red.withOpacity(0.7),
+                          color: Colors.red.withValues(alpha: 0.7),
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -488,7 +514,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text(
                     'Version 1.1.0',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha: 0.05),
                         ),
                   ),
                 ],
@@ -591,10 +617,10 @@ class _AccountScreenState extends State<AccountScreen> {
 
                             setSheetState(() => isLoading = true);
 
-                            ApiService.instance
+                             ApiService.instance
                                 .changePassword(current, next)
                                 .then((_) {
-                              if (mounted) {
+                              if (mounted && sheetCtx.mounted) {
                                 Navigator.pop(sheetCtx);
                                 _toast('Password updated successfully');
                               }
@@ -696,7 +722,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: Colors.white.withOpacity(0.1), width: 1),
+                        color: Colors.white.withValues(alpha: 0.1), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 50,
@@ -744,7 +770,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                     child: Text(
@@ -776,10 +802,10 @@ class _AccountScreenState extends State<AccountScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -843,7 +869,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: Colors.white.withOpacity(0.05)),
+                          color: Colors.white.withValues(alpha: 0.05)),
                     ),
                     child: Row(
                       children: [
@@ -853,7 +879,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               : Icons.person_outline,
                           color: context.watch<AuthProvider>().isSubscribed
                               ? Colors.amber
-                              : Colors.white.withOpacity(0.4),
+                              : Colors.white.withValues(alpha: 0.4),
                           size: 14,
                         ),
                         const SizedBox(width: 8),
@@ -864,7 +890,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           style: TextStyle(
                             color: context.watch<AuthProvider>().isSubscribed
                                 ? Colors.amber
-                                : Colors.white.withOpacity(0.6),
+                                : Colors.white.withValues(alpha: 0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -888,14 +914,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       Text(
                         'Benefits',
                         style: TextStyle(
-                          color: DesignTokens.colors.accentGreen.withOpacity(0.8),
+                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
-                          color: DesignTokens.colors.accentGreen.withOpacity(0.8),
+                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
                           size: 14),
                     ],
                   ),
@@ -956,6 +982,7 @@ class _AccountScreenState extends State<AccountScreen> {
       // Logout and redirect
       if (!mounted) return;
       await context.read<AuthProvider>().signOut();
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),

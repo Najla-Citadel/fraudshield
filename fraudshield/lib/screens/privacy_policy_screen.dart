@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/adaptive_scaffold.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
@@ -9,7 +9,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AdaptiveScaffold(
       title: 'Privacy Policy',
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(

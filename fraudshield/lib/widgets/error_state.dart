@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class ErrorState extends StatelessWidget {
   final VoidCallback onRetry;
@@ -24,7 +24,7 @@ class ErrorState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.redAccent.withOpacity(0.1),
+                color: Colors.redAccent.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -47,7 +47,7 @@ class ErrorState extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -61,7 +61,7 @@ class ErrorState extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
+                backgroundColor: DesignTokens.colors.primary,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),

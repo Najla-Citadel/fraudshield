@@ -6,7 +6,7 @@ import '../design_system/components/app_loading_indicator.dart';
 import '../providers/auth_provider.dart';
 import '../services/version_service.dart';
 import '../services/security_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class RootScreen extends StatefulWidget {
   const RootScreen({super.key});
@@ -29,7 +29,7 @@ class _RootScreenState extends State<RootScreen> {
     // Initial Loading State
     if (auth.loading) {
       return Scaffold(
-        backgroundColor: AppColors.deepNavy,
+        backgroundColor: DesignTokens.colors.backgroundDark,
         body: AppLoadingIndicator.center(),
       );
     }
@@ -71,7 +71,7 @@ class _RootScreenState extends State<RootScreen> {
 
     // While deciding/navigating, show spinner
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: AppLoadingIndicator.center(),
     );
   }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../design_system/tokens/design_tokens.dart';
 
 class AlertPreferencesScreen extends StatefulWidget {
   const AlertPreferencesScreen({Key? key}) : super(key: key);
@@ -108,15 +107,15 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
-        title: const Text('Alert Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.deepNavy,
+        title: Text('Alert Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: DesignTokens.colors.backgroundDark,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: _isLoading
-          ? AppLoadingIndicator.center(color: AppColors.primaryBlue)
+          ? AppLoadingIndicator.center(color: DesignTokens.colors.primary)
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -136,7 +135,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Proactive Alerts', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('Proactive Alerts', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
                             Text('Receive warnings about trending scams', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
                           ],
@@ -144,7 +143,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                         Switch(
                           value: _isActive,
                           onChanged: (val) => setState(() => _isActive = val),
-                          activeColor: AppColors.primaryBlue,
+                          activeColor: DesignTokens.colors.primary,
                         ),
                       ],
                     ),
@@ -167,7 +166,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Daily Email Digest', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                              Text('Daily Email Digest', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                               const SizedBox(height: 4),
                               Text('Consolidated scam news in your inbox', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13)),
                             ],
@@ -176,7 +175,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                         Switch(
                           value: _emailDigestEnabled,
                           onChanged: (val) => setState(() => _emailDigestEnabled = val),
-                          activeColor: AppColors.accentGreen,
+                          activeColor: DesignTokens.colors.accentGreen,
                         ),
                       ],
                     ),
@@ -190,7 +189,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 32),
-                          const Text('LOCAL THREATS', style: TextStyle(color: AppColors.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                          Text('LOCAL THREATS', style: TextStyle(color: DesignTokens.colors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                           const SizedBox(height: 8),
                           Text('Alert radius for scams reported near you', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
                           const SizedBox(height: 16),
@@ -203,7 +202,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                   min: 5,
                                   max: 50,
                                   divisions: 9,
-                                  activeColor: AppColors.primaryBlue,
+                                  activeColor: DesignTokens.colors.primary,
                                   inactiveColor: Colors.white24,
                                   onChanged: (val) => setState(() => _radiusKm = val),
                                 ),
@@ -212,7 +211,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                           ),
                           
                           const SizedBox(height: 32),
-                          const Text('SCAM CATEGORIES', style: TextStyle(color: AppColors.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                          Text('SCAM CATEGORIES', style: TextStyle(color: DesignTokens.colors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                           const SizedBox(height: 8),
                           Text('Select which type of threats you want to monitor', style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14)),
                           const SizedBox(height: 16),
@@ -227,15 +226,15 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                   decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.primaryBlue.withOpacity(0.1) : Colors.transparent,
+                                    color: isSelected ? DesignTokens.colors.primary.withOpacity(0.1) : Colors.transparent,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: isSelected ? AppColors.primaryBlue : Colors.white.withOpacity(0.1),
+                                      color: isSelected ? DesignTokens.colors.primary : Colors.white.withOpacity(0.1),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(cat['icon'], color: isSelected ? AppColors.primaryBlue : Colors.white54, size: 24),
+                                      Icon(cat['icon'], color: isSelected ? DesignTokens.colors.primary : Colors.white54, size: 24),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Text(
@@ -247,7 +246,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
                                         ),
                                       ),
                                       if (isSelected)
-                                        const Icon(Icons.check_circle_rounded, color: AppColors.primaryBlue, size: 20),
+                                        Icon(Icons.check_circle_rounded, color: DesignTokens.colors.primary, size: 20),
                                     ],
                                   ),
                                 ),
@@ -269,7 +268,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
           child: ElevatedButton(
             onPressed: (_isSaving || !_isActive && _selectedCategories.isEmpty) ? null : _savePreferences,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
+              backgroundColor: DesignTokens.colors.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -277,7 +276,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
             ),
             child: _isSaving 
               ? const SizedBox(height: 20, width: 20, child: AppLoadingIndicator(color: Colors.white, strokeWidth: 2))
-              : const Text('Save Preferences', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              : Text('Save Preferences', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ),
       ),

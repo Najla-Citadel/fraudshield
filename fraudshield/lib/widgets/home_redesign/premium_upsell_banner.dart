@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../constants/colors.dart';
+import '../../design_system/tokens/design_tokens.dart';
 
 class PremiumUpsellBanner extends StatelessWidget {
   final VoidCallback onTap;
@@ -18,7 +18,7 @@ class PremiumUpsellBanner extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.premiumYellow,
+          color: DesignTokens.colors.premiumYellow,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -37,17 +37,17 @@ class PremiumUpsellBanner extends StatelessWidget {
                 color: Colors.white.withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(LucideIcons.lock, color: AppColors.premiumYellowText, size: 24),
+              child: Icon(LucideIcons.lock, color: DesignTokens.colors.premiumYellowText, size: 24),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Unlock AI Protection',
                     style: TextStyle(
-                      color: AppColors.premiumYellowText,
+                      color: DesignTokens.colors.premiumYellowText,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -56,7 +56,7 @@ class PremiumUpsellBanner extends StatelessWidget {
                   Text(
                     'Upgrade to Premium to scan messages, files, APKs & detect scam calls.',
                     style: TextStyle(
-                      color: AppColors.premiumYellowText.withOpacity(0.8),
+                      color: DesignTokens.colors.premiumYellowText.withOpacity(0.8),
                       fontSize: 12,
                       height: 1.4,
                     ),

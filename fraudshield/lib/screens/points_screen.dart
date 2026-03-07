@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_details_screen.dart';
-import 'package:fraudshield/constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -121,16 +121,16 @@ class PointsScreenState extends State<PointsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       body: Stack(
         children: [
           // Background Gradient
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
                   Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
+                  DesignTokens.colors.backgroundDark, // Deep navy
                   Color(0xFF1E3A8A), // Blue 900
                 ],
                 begin: Alignment.topLeft,
@@ -345,8 +345,8 @@ class PointsScreenState extends State<PointsScreen> {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.accentGreen,
+                  decoration: BoxDecoration(
+                    color: DesignTokens.colors.accentGreen,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -370,7 +370,7 @@ class PointsScreenState extends State<PointsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.accentGreen.withOpacity(0.8),
+                      color: DesignTokens.colors.accentGreen.withOpacity(0.8),
                     ),
                   ),
                 ],
@@ -382,21 +382,21 @@ class PointsScreenState extends State<PointsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.1),
+                  color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: AppColors.accentGreen.withOpacity(0.3)),
+                      color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.local_offer_rounded,
-                        size: 14, color: AppColors.accentGreen),
+                    Icon(Icons.local_offer_rounded,
+                        size: 14, color: DesignTokens.colors.accentGreen),
                     const SizedBox(width: 6),
                     Text(
                       '${(_userDiscount * 100).toInt()}% $_userTier Discount Active',
-                      style: const TextStyle(
-                        color: AppColors.accentGreen,
+                      style: TextStyle(
+                        color: DesignTokens.colors.accentGreen,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
@@ -449,7 +449,7 @@ class PointsScreenState extends State<PointsScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive
-              ? AppColors.accentGreen
+              ? DesignTokens.colors.accentGreen
               : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(22),
           border: isActive
@@ -498,7 +498,7 @@ class PointsScreenState extends State<PointsScreen> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: AppColors.accentGreen,
+              color: DesignTokens.colors.accentGreen,
             ),
           ),
         ],
@@ -540,8 +540,8 @@ class PointsScreenState extends State<PointsScreen> {
                         Colors.blue.withOpacity(0.05)
                       ]
                     : [
-                        AppColors.accentGreen.withOpacity(0.1),
-                        AppColors.accentGreen.withOpacity(0.02)
+                        DesignTokens.colors.accentGreen.withOpacity(0.1),
+                        DesignTokens.colors.accentGreen.withOpacity(0.02)
                       ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -561,7 +561,7 @@ class PointsScreenState extends State<PointsScreen> {
                         ? Colors.white24
                         : (isFeatured
                             ? Colors.blue.withOpacity(0.5)
-                            : AppColors.accentGreen.withOpacity(0.5)),
+                            : DesignTokens.colors.accentGreen.withOpacity(0.5)),
                   ),
                 ),
                 Positioned(
@@ -571,7 +571,7 @@ class PointsScreenState extends State<PointsScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isLocked ? Colors.black54 : AppColors.accentGreen,
+                      color: isLocked ? Colors.black54 : DesignTokens.colors.accentGreen,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -626,7 +626,7 @@ class PointsScreenState extends State<PointsScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: (canAfford && !isLocked)
                           ? (isFeatured
-                              ? AppColors.accentGreen
+                              ? DesignTokens.colors.accentGreen
                               : const Color(0xFF2563EB))
                           : Colors.white.withOpacity(0.05),
                       foregroundColor: (canAfford && !isLocked)
@@ -669,11 +669,11 @@ class PointsScreenState extends State<PointsScreen> {
             height: 50,
             decoration: BoxDecoration(
               color:
-                  AppColors.accentGreen.withOpacity(0.2), // Darker teal
+                  DesignTokens.colors.accentGreen.withOpacity(0.2), // Darker teal
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.volunteer_activism,
-                color: AppColors.accentGreen),
+            child: Icon(Icons.volunteer_activism,
+                color: DesignTokens.colors.accentGreen),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -700,17 +700,17 @@ class PointsScreenState extends State<PointsScreen> {
                 GestureDetector(
                   onTap: () {},
                   child: Row(
-                    children: const [
+                    children: [
                       Text(
                         'Donate Now',
                         style: TextStyle(
-                          color: AppColors.accentGreen,
+                          color: DesignTokens.colors.accentGreen,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
                       ),
                       Icon(Icons.arrow_forward,
-                          size: 12, color: AppColors.accentGreen),
+                          size: 12, color: DesignTokens.colors.accentGreen),
                     ],
                   ),
                 )

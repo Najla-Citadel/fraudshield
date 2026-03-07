@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
 import '../providers/auth_provider.dart';
 import '../app_router.dart';
-import '../constants/colors.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class CallerRiskOverlay extends StatefulWidget {
   final Map<String, dynamic>? callerData;
@@ -365,7 +365,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
               child: _ActionBtn(
                 icon: Icons.mic_rounded,
                 label: 'Record & Analyze',
-                color: AppColors.primaryBlue,
+                color: DesignTokens.colors.primary,
                 onTap: () => _handleAction(context, 'record'),
               ),
             ),
@@ -600,8 +600,8 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Got It',
-                  style: TextStyle(color: AppColors.primaryBlue)),
+              child: Text('Got It',
+                  style: TextStyle(color: DesignTokens.colors.primary)),
             ),
           ],
         ),
@@ -621,12 +621,12 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
               height: 22,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.2),
+                color: DesignTokens.colors.primary.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: Text(num,
-                  style: const TextStyle(
-                      color: AppColors.primaryBlue,
+                  style: TextStyle(
+                      color: DesignTokens.colors.primary,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.none)),

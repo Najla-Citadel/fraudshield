@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 
 class LeaderboardScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -54,13 +54,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         title: Text(
           'GLOBAL LEADERBOARD',
           style: theme.textTheme.labelMedium?.copyWith(
-            color: AppColors.textLight.withOpacity(0.7),
+            color: Colors.white.withOpacity(0.7),
             letterSpacing: 2.0,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textLight, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -138,7 +138,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 backgroundColor: Colors.white.withOpacity(0.1),
                 child: Text(
                   (user['name'] ?? '?').substring(0, 1).toUpperCase(),
-                  style: TextStyle(color: AppColors.textLight, fontSize: size * 0.4, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: size * 0.4, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -155,12 +155,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         const SizedBox(height: 8),
         Text(
           user['name'] ?? 'Anonymous',
-          style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 13),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
           overflow: TextOverflow.ellipsis,
         ),
         Text(
           '${user['points']} pts',
-          style: TextStyle(color: AppColors.accentGreen, fontSize: 11, fontWeight: FontWeight.w600),
+          style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 11, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -180,7 +180,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             width: 30,
             child: Text(
               rank.toString(),
-              style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.bold),
             ),
           ),
           CircleAvatar(
@@ -188,7 +188,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             backgroundColor: Colors.white.withOpacity(0.05),
             child: Text(
               (user['name'] ?? '?').substring(0, 1).toUpperCase(),
-              style: const TextStyle(color: AppColors.textLight, fontSize: 14),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
           ),
           const SizedBox(width: 16),
@@ -198,11 +198,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               children: [
                 Text(
                   user['name'] ?? 'Anonymous',
-                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 15),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 Text(
                   'Reputation: ${user['reputation']}',
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 12),
+                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
                 ),
               ],
             ),
@@ -212,7 +212,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             children: [
               Text(
                 '${user['points']}',
-                style: const TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const Text(
                 'POINTS',
@@ -241,19 +241,19 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           boxShadow: [
             BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
           ],
-          border: Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
+          border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'YOUR RANK: #${_myRank!['rank']}',
-                style: const TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold, fontSize: 14),
+                style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
             const Spacer(),
@@ -263,11 +263,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               children: [
                 Text(
                   '${_myRank!['points']} PTS',
-                  style: const TextStyle(color: AppColors.textLight, fontWeight: FontWeight.bold, fontSize: 18),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 Text(
                   'Keep reporting to rank up!',
-                  style: TextStyle(color: AppColors.textLight.withOpacity(0.5), fontSize: 10),
+                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 10),
                 ),
               ],
             ),
@@ -282,11 +282,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.military_tech_rounded, color: AppColors.textLight.withOpacity(0.05), size: 80),
+          Icon(Icons.military_tech_rounded, color: Colors.white.withOpacity(0.05), size: 80),
           const SizedBox(height: 16),
           Text(
             'The race is on!',
-            style: TextStyle(color: AppColors.textLight.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       ),

@@ -5,7 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 
 import '../screens/article_reader_screen.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../models/news_item.dart' as model;
 import '../services/news_service.dart' as news_service;
 import '../constants/news_categories.dart';
@@ -108,7 +108,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
   void showCustomization() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -164,11 +164,11 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? AppColors.accentGreen.withOpacity(0.1) 
+                                ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
                                 : Colors.white.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
+                              color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
                             ),
                           ),
                           child: Row(
@@ -182,7 +182,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                               Text(
                                 cat.label,
                                 style: TextStyle(
-                                  color: isSelected ? AppColors.accentGreen : Colors.white,
+                                  color: isSelected ? DesignTokens.colors.accentGreen : Colors.white,
                                   fontSize: 13,
                                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 ),
@@ -202,7 +202,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                         _loadNews();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentGreen,
+                        backgroundColor: DesignTokens.colors.accentGreen,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -228,7 +228,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: AppLoadingIndicator.center(color: AppColors.accentGreen),
+        child: AppLoadingIndicator.center(color: DesignTokens.colors.accentGreen),
       );
     }
 
@@ -242,7 +242,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                 Expanded(
                   child: Text(
                     'Unable to load insights: $_error',
-                    style: TextStyle(color: AppColors.textDark.withOpacity(0.7)),
+                    style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.7)),
                   ),
                 ),
                 TextButton(onPressed: _loadNews, child: const Text('Retry')),
@@ -267,7 +267,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
           children: [
             Row(
               children: [
-                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: AppColors.textDark.withOpacity(0.5)))),
+                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.5)))),
                 TextButton(onPressed: _loadNews, child: const Text('Refresh')),
               ],
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import 'glass_surface.dart';
 
 class SecurityTipsCard extends StatelessWidget {
@@ -16,7 +16,7 @@ class SecurityTipsCard extends StatelessWidget {
     return GlassSurface(
       borderRadius: 20,
       padding: const EdgeInsets.all(20),
-      accentColor: AppColors.primaryBlue,
+      accentColor: DesignTokens.colors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,8 +41,8 @@ class SecurityTipsCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(LucideIcons.shieldCheck,
-                        color: AppColors.accentGreen, size: 16),
+                    Icon(LucideIcons.shieldCheck,
+                        color: DesignTokens.colors.accentGreen, size: 16),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(

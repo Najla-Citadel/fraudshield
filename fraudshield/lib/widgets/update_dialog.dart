@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class UpdateDialog extends StatelessWidget {
   final bool isForce;
@@ -23,10 +23,10 @@ class UpdateDialog extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.deepNavy.withOpacity(0.8),
+            color: DesignTokens.colors.backgroundDark.withOpacity(0.8),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: AppColors.accentGreen.withOpacity(0.3),
+              color: DesignTokens.colors.accentGreen.withOpacity(0.3),
               width: 1.5,
             ),
           ),
@@ -36,12 +36,12 @@ class UpdateDialog extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.1),
+                  color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isForce ? LucideIcons.shieldAlert : LucideIcons.rocket,
-                  color: AppColors.accentGreen,
+                  color: DesignTokens.colors.accentGreen,
                   size: 48,
                 ),
               ),
@@ -69,7 +69,7 @@ class UpdateDialog extends StatelessWidget {
               ElevatedButton(
                 onPressed: onUpdate,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGreen,
+                  backgroundColor: DesignTokens.colors.accentGreen,
                   foregroundColor: Colors.black,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(

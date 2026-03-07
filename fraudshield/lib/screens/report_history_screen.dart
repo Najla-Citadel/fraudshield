@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -85,7 +85,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+      backgroundColor: DesignTokens.colors.backgroundDark,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -111,16 +111,16 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
         children: [
           // Background Gradient
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
+                  const Color(0xFF0F172A), // Slate 900
+                  DesignTokens.colors.backgroundDark, // Deep navy
+                  const Color(0xFF1E3A8A), // Blue 900
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -192,8 +192,8 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
   Widget _buildReportList() {
     return RefreshIndicator(
       onRefresh: _fetchReports,
-      backgroundColor: AppColors.deepNavy,
-      color: AppColors.accentGreen,
+      backgroundColor: DesignTokens.colors.backgroundDark,
+      color: DesignTokens.colors.accentGreen,
       child: AnimationLimiter(
         child: ListView.builder(
           padding: const EdgeInsets.all(24),
@@ -254,11 +254,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  color: DesignTokens.colors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(LucideIcons.fileText,
-                    color: AppColors.primaryBlue, size: 20),
+                child: Icon(LucideIcons.fileText,
+                    color: DesignTokens.colors.primary, size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -321,13 +321,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               children: [
                 Icon(LucideIcons.users,
                     size: 14,
-                    color: AppColors.accentGreen.withOpacity(0.5)),
+                    color: DesignTokens.colors.accentGreen.withOpacity(0.5)),
                 const SizedBox(width: 8),
                 Text(
                   'Shared with community',
                   style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.accentGreen.withOpacity(0.5),
+                      color: DesignTokens.colors.accentGreen.withOpacity(0.5),
                       fontWeight: FontWeight.w500),
                 ),
               ],
