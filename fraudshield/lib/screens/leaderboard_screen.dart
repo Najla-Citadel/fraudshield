@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
@@ -59,10 +60,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const AppBackButton(color: Colors.white),
       ),
       body: _isLoading
           ? AppLoadingIndicator.center()

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import 'package:provider/provider.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
@@ -38,10 +39,7 @@ class StatusDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const AppBackButton(color: Colors.white),
         title: const Text(
           'Status Details',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),

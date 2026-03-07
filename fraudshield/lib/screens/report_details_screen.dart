@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import 'dart:ui';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
@@ -81,11 +82,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: DesignTokens.colors.textLight, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const AppBackButton(color: Colors.white),
         actions: [
           IconButton(
             icon: Icon(Icons.more_horiz_rounded,

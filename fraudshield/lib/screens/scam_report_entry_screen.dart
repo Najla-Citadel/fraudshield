@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
@@ -31,10 +32,7 @@ class ScamReportEntryScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
+          leading: const AppBackButton(color: Colors.white),
           title: Text(
             l10n.scamReportTitle,
             style: const TextStyle(

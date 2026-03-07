@@ -1,5 +1,6 @@
 // lib/screens/qr_detection_screen.dart
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
@@ -119,10 +120,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
+          AppBackButton(color: Colors.white, onPressed: () => Navigator.pop(context)),
           const Text(
             'QR Security Hub',
             style: TextStyle(

@@ -12,6 +12,9 @@ import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/turnstile_widget.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_snackbar.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -49,32 +52,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill in all fields.")),
-      );
+      AppSnackBar.showError(context, "Please fill in all fields.");
       return;
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match.")),
-      );
+      AppSnackBar.showError(context, "Passwords do not match.");
       return;
     }
 
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                "You must agree to the Terms and Privacy Policy to continue.")),
-      );
+      AppSnackBar.showWarning(context, "You must agree to the Terms and Privacy Policy to continue.");
       return;
     }
 
     if (_captchaToken == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please complete the security check.")),
-      );
+      AppSnackBar.showWarning(context, "Please complete the security check.");
       return;
     }
 
@@ -97,21 +90,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
       } else {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Sign-up failed. Please try again.")),
-        );
+        AppSnackBar.showError(context, "Sign-up failed. Please try again.");
       }
     } catch (e) {
       if (!mounted) return;
-      // Extract the message if it's an Exception
       final message = e.toString().replaceAll('Exception: ', '');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: $message"),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 5),
-        ),
-      );
+      AppSnackBar.showError(context, "Error: $message");
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -119,239 +103,197 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Force dark theme for the signup screen to match the Deep Navy aesthetic
-    return Theme(
-      data: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: DesignTokens.colors.backgroundDark,
-        primaryColor: DesignTokens.colors.primary,
-        colorScheme: ColorScheme.dark(
-          primary: DesignTokens.colors.primary,
-          surface: DesignTokens.colors.backgroundDark,
-          onSurface: Colors.white,
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: DesignTokens.colors.backgroundDark,
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          children: [
-            // Background Elements (Matching Login Screen)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFF0F172A), // Slate 900
-                      DesignTokens.colors.backgroundDark, // Base
-                      const Color(0xFF1E3A8A), // Blue 900
-                    ],
-                  ),
-                ),
+    return ScreenScaffold(
+      showBackButton: true,
+      extendBodyBehindAppBar: true,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🛡️ Logo / Icon
+              const AppLogo(size: 80),
+              const SizedBox(height: 32),
+
+              // 🧭 Title
+              Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                'Join the community to stay protected',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
+              ),
+              const SizedBox(height: 32),
 
-            // Content
-            SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // 🛡️ Logo / Icon
-                      const AppLogo(size: 80),
-                      const SizedBox(height: 32),
+              // 🌫️ Glass Signup Card
+              GlassSurface(
+                padding: const EdgeInsets.all(32),
+                borderRadius: 24,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 👤 Full Name
+                    AdaptiveTextField(
+                      controller: _nameController,
+                      label: 'Full Name',
+                      prefixIcon: LucideIcons.user,
+                    ),
+                    const SizedBox(height: 16),
 
-                      // 🧭 Title
-                      Text(
-                        'Create Account',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Join the community to stay protected',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.7),
-                            ),
-                      ),
-                      const SizedBox(height: 32),
+                    // 📧 Email Field
+                    AdaptiveTextField(
+                      controller: _emailController,
+                      label: 'Email',
+                      prefixIcon: LucideIcons.mail,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
 
-                      // 🌫️ Glass Signup Card
-                      GlassSurface(
-                        padding: const EdgeInsets.all(32),
-                        borderRadius: 24,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // 👤 Full Name
-                            AdaptiveTextField(
-                              controller: _nameController,
-                              label: 'Full Name',
-                              prefixIcon: Icons.person_outline,
-                            ),
-                            const SizedBox(height: 16),
+                    // 🔒 Password Field
+                    AdaptiveTextField(
+                      controller: _passwordController,
+                      label: 'Password',
+                      prefixIcon: LucideIcons.lock,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
 
-                            // 📧 Email Field
-                            AdaptiveTextField(
-                              controller: _emailController,
-                              label: 'Email',
-                              prefixIcon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                            ),
-                            const SizedBox(height: 16),
+                    // 🔒 Confirm Password Field
+                    AdaptiveTextField(
+                      controller: _confirmPasswordController,
+                      label: 'Confirm Password',
+                      prefixIcon: LucideIcons.shieldCheck,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
 
-                            // 🔒 Password Field
-                            AdaptiveTextField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              prefixIcon: Icons.lock_outline,
-                              obscureText: true,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // 🔒 Confirm Password Field
-                            AdaptiveTextField(
-                              controller: _confirmPasswordController,
-                              label: 'Confirm Password',
-                              prefixIcon: Icons.lock_reset_outlined,
-                              obscureText: true,
-                            ),
-                            const SizedBox(height: 16),
-
-                            // 📝 Terms & Conditions Checkbox
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    // 📝 Terms & Conditions Checkbox
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Checkbox(
+                            value: _agreedToTerms,
+                            onChanged: (val) =>
+                                setState(() => _agreedToTerms = val ?? false),
+                            activeColor: DesignTokens.colors.primary,
+                            side: const BorderSide(
+                                color: Colors.white54, width: 2),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                  fontSize: 13,
+                                  height: 1.4),
                               children: [
-                                SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: Checkbox(
-                                    value: _agreedToTerms,
-                                    onChanged: (val) => setState(
-                                        () => _agreedToTerms = val ?? false),
-                                    activeColor: DesignTokens.colors.primary,
-                                    side: const BorderSide(
-                                        color: Colors.white54, width: 2),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(4)),
-                                  ),
+                                const TextSpan(text: 'I agree to the '),
+                                TextSpan(
+                                  text: 'Terms of Service',
+                                  style: TextStyle(
+                                      color: DesignTokens.colors.primary,
+                                      fontWeight: FontWeight.bold),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const TermsOfServiceScreen())),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: RichText(
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                          color: Colors.white
-                                              .withOpacity(0.8),
-                                          fontSize: 13,
-                                          height: 1.4),
-                                      children: [
-                                        const TextSpan(text: 'I agree to the '),
-                                        TextSpan(
-                                          text: 'Terms of Service',
-                                          style: TextStyle(
-                                              color: DesignTokens.colors.primary,
-                                              fontWeight: FontWeight.bold),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const TermsOfServiceScreen())),
-                                        ),
-                                        const TextSpan(text: ' and '),
-                                        TextSpan(
-                                          text: 'Privacy Policy',
-                                          style: TextStyle(
-                                              color: DesignTokens.colors.primary,
-                                              fontWeight: FontWeight.bold),
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () => Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        const PrivacyPolicyScreen())),
-                                        ),
-                                        const TextSpan(
-                                            text:
-                                                ', and consent to data collection as per PDPA 2010.'),
-                                      ],
-                                    ),
-                                  ),
+                                const TextSpan(text: ' and '),
+                                TextSpan(
+                                  text: 'Privacy Policy',
+                                  style: TextStyle(
+                                      color: DesignTokens.colors.primary,
+                                      fontWeight: FontWeight.bold),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const PrivacyPolicyScreen())),
                                 ),
+                                const TextSpan(
+                                    text:
+                                        ', and consent to data collection as per PDPA 2010.'),
                               ],
                             ),
-
-                            const SizedBox(height: 24),
-
-                            // 🛡️ CAPTCHA Security Check
-                            TurnstileWidget(
-                              onTokenReceived: (token) {
-                                setState(() => _captchaToken = token);
-                              },
-                            ),
-
-                            const SizedBox(height: 16),
-
-                            // 🟦 Sign Up Button
-                            AppButton(
-                              label: 'Sign Up',
-                              isLoading: _loading,
-                              onPressed: _signup,
-                              variant: AppButtonVariant.primary,
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
+                    ),
 
-                      const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-                      // 🔁 Already have account
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Already have an account? ",
-                            style: TextStyle(
-                                color: Colors.white.withOpacity(0.7)),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const LoginScreen()),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: DesignTokens.colors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    // 🛡️ CAPTCHA Security Check
+                    TurnstileWidget(
+                      onTokenReceived: (token) {
+                        setState(() => _captchaToken = token);
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // 🟦 Sign Up Button
+                    AppButton(
+                      label: 'Sign Up',
+                      isLoading: _loading,
+                      onPressed: _signup,
+                      variant: AppButtonVariant.primary,
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+
+              const SizedBox(height: 24),
+
+              // 🔁 Already have account
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Already have an account? ",
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: DesignTokens.colors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

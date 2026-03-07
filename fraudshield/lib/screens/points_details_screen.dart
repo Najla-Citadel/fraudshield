@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import '../design_system/components/app_back_button.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -106,11 +107,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new,
-                color: Colors.white, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
+          const AppBackButton(color: Colors.white),
           const Text(
             'Points Details',
             style: TextStyle(
