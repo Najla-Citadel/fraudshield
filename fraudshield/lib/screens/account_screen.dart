@@ -367,8 +367,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         if (_smartCaptureEnabled)
                           SettingsTile(
                             icon: Icons.bug_report_rounded,
-                            title: 'Simulate Banking Alert',
-                            subtitle: 'Test auto-capture logic',
+                            title: AppLocalizations.of(context)!.accountSimulateBankingAlert,
+                            subtitle: AppLocalizations.of(context)!.accountSimulateBankingDesc,
                             onTap: () async {
                               const testText = 'RM 1250.00 transferred to MULE_ACC_123';
                               try {
@@ -390,8 +390,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         if (_callerIdProtectionEnabled)
                           SettingsTile(
                             icon: Icons.phone_callback_rounded,
-                            title: 'Simulate Incoming Call',
-                            subtitle: 'Test Caller ID Overlay',
+                            title: AppLocalizations.of(context)!.accountSimulateIncomingCall,
+                            subtitle: AppLocalizations.of(context)!.accountSimulateIncomingCallDesc,
                             onTap: () async {
                               _toast('Simulating incoming call...');
                               CallStateService.instance.simulateRinging('0123456789');
@@ -400,7 +400,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ],
                       SettingsTile(
                         icon: Icons.add_card_rounded,
-                        title: 'Log Test Transaction',
+                        title: AppLocalizations.of(context)!.accountLogTestTransaction,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: colors.textLight.withValues(alpha: 0.2),
@@ -419,7 +419,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       SettingsTile(
                         icon: Icons.receipt_long_rounded,
-                        title: 'Transaction Journal',
+                        title: AppLocalizations.of(context)!.accountTransactionJournal,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: colors.textLight.withValues(alpha: 0.2),
@@ -518,7 +518,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   SizedBox(height: 24),
                   Text(
-                    'Version 1.1.0',
+                    '${AppLocalizations.of(context)!.accountVersion} 1.1.0',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: colors.textLight.withValues(alpha: 0.05),
                         ),

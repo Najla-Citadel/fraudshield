@@ -90,7 +90,7 @@ class AdaptiveTextField extends StatelessWidget {
                   (isDark
                       ? CupertinoColors.systemGrey6.darkColor
                       : CupertinoColors.systemGrey6),
-              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             style: TextStyle(
               color: textColor ??

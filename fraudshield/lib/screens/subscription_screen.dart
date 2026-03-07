@@ -9,6 +9,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../l10n/app_localizations.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -48,9 +49,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     if (_activeSub == null) return '';
     try {
       final expiry = DateTime.parse(_activeSub!['expiresAt'].toString());
-      return 'Renews on ${expiry.day}/${expiry.month}/${expiry.year}';
+      final dateStr = '${expiry.day}/${expiry.month}/${expiry.year}';
+      return AppLocalizations.of(context)!.subRenewsOn(dateStr);
     } catch (_) {
-      return 'Subscription active';
+      return AppLocalizations.of(context)!.subActive;
     }
   }
 
@@ -104,7 +106,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         expiresAt: DateTime.now().add(duration),
       );
       if (!mounted) return;
-      AppSnackBar.showSuccess(context, '🎉 Welcome to Premium!');
+      AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.subWelcomePremium);
       await _loadActiveSubscription();
     } catch (e) {
       log('Error subscribing: $e');
@@ -118,8 +120,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ScreenScaffold(
-      title: 'Subscription',
+      title: l10n.accountSubscriptionPlan,
       body: Stack(
         children: [
           Positioned(
@@ -194,7 +197,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ),
           SizedBox(height: 8),
           Text(
-            'Next-gen AI protection for your digital wealth.',
+            AppLocalizations.of(context)!.subHeaderNextGen,
             textAlign: TextAlign.center,
             style: TextStyle(color: colors.textLight.withValues(alpha: 0.55), fontSize: 14),
           ),
@@ -249,7 +252,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'You\'re a Premium Member!',
+                  AppLocalizations.of(context)!.subPremiumMember,
                   style: DesignTypography.h3,
                 ),
                 SizedBox(height: 6),
@@ -303,8 +306,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Manage Subscription', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text('Cancel or modify at any time', style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.subManageSubscription, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(AppLocalizations.of(context)!.subCancelModify, style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 12)),
                     ],
                   ),
                 ),
@@ -331,8 +334,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _toggleBtn('Monthly', !_isYearly),
-          _toggleBtn('Yearly', _isYearly, hasBadge: true),
+          _toggleBtn(AppLocalizations.of(context)!.subMonthly, !_isYearly),
+          _toggleBtn(AppLocalizations.of(context)!.subYearly, _isYearly, hasBadge: true),
         ],
       ),
     );
@@ -363,7 +366,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(color: colors.accentGreen, borderRadius: BorderRadius.circular(DesignTokens.radii.xs)),
-                child: Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colors.textDark)),
+                child: Text(AppLocalizations.of(context)!.subSave20, style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colors.textDark)),
               ),
             ],
           ],
@@ -384,8 +387,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     }
     final priceStr = isPremium ? 'RM ${monthlyPrice.toStringAsFixed(2)}' : 'RM 0';
     final billingText = _isYearly && isPremium
-        ? 'Billed RM ${yearlyTotal!.toStringAsFixed(2)} yearly'
-        : 'Billed monthly';
+        ? AppLocalizations.of(context)!.subBilledYearly(yearlyTotal!.toStringAsFixed(2))
+        : AppLocalizations.of(context)!.subBilledMonthly;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.sm, vertical: DesignTokens.spacing.sm),
@@ -421,7 +424,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       color: DesignTokens.colors.accentGreen.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                     ),
-                    child: Text('POPULAR', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text(AppLocalizations.of(context)!.subPopular, style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
             ],
           ),
@@ -447,8 +450,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           SizedBox(height: 12),
           Text(
             isPremium
-                ? 'Complete AI-powered protection with real-time alerts.'
-                : 'Basic protection for everyday use.',
+                ? AppLocalizations.of(context)!.subPremiumDescShort
+                : AppLocalizations.of(context)!.subBasicDescShort,
             style: TextStyle(color: colors.textLight.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
           ),
           Spacer(),
@@ -457,12 +460,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             child: isCurrent
                 ? AppButton(
                     onPressed: null,
-                    label: 'Current Plan',
+                    label: AppLocalizations.of(context)!.subCurrentPlan,
                     variant: AppButtonVariant.ghost,
                   )
                 : AppButton(
                     onPressed: isPremium ? () => _subscribe(plan) : null,
-                    label: isPremium ? 'Get Premium' : 'Current Plan',
+                    label: isPremium ? AppLocalizations.of(context)!.subGetPremium : AppLocalizations.of(context)!.subCurrentPlan,
                     variant: isPremium ? AppButtonVariant.primary : AppButtonVariant.secondary,
                   ),
           ),
@@ -487,7 +490,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('FEATURE COMPARISON',
+          Text(AppLocalizations.of(context)!.subFeatureComparison,
             style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
           SizedBox(height: 16),
           Row(
@@ -498,8 +501,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('FREE', style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('PREMIUM', style: TextStyle(color: colors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text(AppLocalizations.of(context)!.subFree, style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text(AppLocalizations.of(context)!.accountPremium, style: TextStyle(color: colors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -565,7 +568,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           final premium = _plans.firstWhere((p) => (p['price'] as num) > 0, orElse: () => {});
           if (premium.isNotEmpty) _subscribe(premium);
         },
-        label: 'Upgrade to Premium',
+        label: AppLocalizations.of(context)!.subUpgradeToPremium,
         icon: Icons.arrow_forward_rounded,
         width: double.infinity,
       ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_empty_state.dart';
 import 'package:intl/intl.dart';
 
 class ActivityScreen extends StatelessWidget {
@@ -33,6 +34,14 @@ class ActivityScreen extends StatelessWidget {
         builder: (context, notificationService, _) {
           final activities = _getAllActivities(notificationService.alerts);
           final grouped = _groupActivities(activities);
+
+          if (activities.isEmpty) {
+            return const AppEmptyState(
+              icon: LucideIcons.bellOff,
+              title: 'No Activity Yet',
+              description: 'Your security actions will appear here.',
+            );
+          }
 
           return ListView.builder(
             padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, 100),

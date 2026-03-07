@@ -6,6 +6,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_empty_state.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 
@@ -277,26 +278,10 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(LucideIcons.shieldCheck,
-              size: 64, color: Colors.white.withOpacity(0.2)),
-          SizedBox(height: 16),
-          Text(
-            'All Clear!',
-            style: TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'No active security alerts for your account.',
-            style: TextStyle(
-                color: Colors.white.withOpacity(0.5), fontSize: 14),
-          ),
-        ],
-      ),
+    return const AppEmptyState(
+      icon: LucideIcons.shieldCheck,
+      title: 'All Clear!',
+      description: 'No active security alerts for your account.',
     );
   }
 

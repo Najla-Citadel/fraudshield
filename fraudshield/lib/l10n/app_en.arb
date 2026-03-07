@@ -172,5 +172,46 @@
   "accountTermsOfService": "Terms of Service",
   "accountManageConsent": "Manage Consent",
   "accountSelectLanguage": "Select Language",
-  "accountViewProfile": "View Profile"
+  "accountViewProfile": "View Profile",
+  "accountSimulateBankingAlert": "Simulate Banking Alert",
+  "accountSimulateBankingDesc": "Test auto-capture logic",
+  "accountSimulateIncomingCall": "Simulate Incoming Call",
+  "accountSimulateIncomingCallDesc": "Test Caller ID Overlay",
+  "accountLogTestTransaction": "Log Test Transaction",
+  "accountTransactionJournal": "Transaction Journal",
+  "accountVersion": "Version",
+  "subRenewsOn": "Renews on {date}",
+  "@subRenewsOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "subActive": "Subscription active",
+  "subWelcomePremium": "🎉 Welcome to Premium!",
+  "subHeaderNextGen": "Next-gen AI protection for your digital wealth.",
+  "subPremiumMember": "You're a Premium Member!",
+  "subManageSubscription": "Manage Subscription",
+  "subCancelModify": "Cancel or modify at any time",
+  "subMonthly": "Monthly",
+  "subYearly": "Yearly",
+  "subSave20": "SAVE 20%",
+  "subPopular": "POPULAR",
+  "subBilledMonthly": "Billed monthly",
+  "subBilledYearly": "Billed {price} yearly",
+  "@subBilledYearly": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "subPremiumDescShort": "Complete AI-powered protection with real-time alerts.",
+  "subBasicDescShort": "Basic protection for everyday use.",
+  "subCurrentPlan": "Current Plan",
+  "subGetPremium": "Get Premium",
+  "subUpgradeToPremium": "Upgrade to Premium",
+  "subFeatureComparison": "FEATURE COMPARISON",
+  "subFree": "FREE"
 }

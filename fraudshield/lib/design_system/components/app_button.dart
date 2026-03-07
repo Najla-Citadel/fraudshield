@@ -18,6 +18,7 @@ class AppButton extends StatelessWidget {
   final IconData? suffixIcon;
   final double? width;
   final bool hapticFeedback;
+  final String? semanticsLabel;
 
   const AppButton({
     super.key,
@@ -31,6 +32,7 @@ class AppButton extends StatelessWidget {
     this.suffixIcon,
     this.width,
     this.hapticFeedback = true,
+    this.semanticsLabel,
   });
 
   @override
@@ -97,66 +99,71 @@ class AppButton extends StatelessWidget {
 
     final isEnabled = onPressed != null && !isLoading;
 
-    return SizedBox(
-      width: width,
-      height: height,
-      child: Opacity(
-        opacity: isEnabled ? 1.0 : 0.6,
-        child: ElevatedButton(
-          onPressed: isEnabled
-              ? () {
-                  if (hapticFeedback) HapticFeedback.lightImpact();
-                  onPressed?.call();
-                }
-              : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: backgroundColor,
-            foregroundColor: foregroundColor,
-            elevation: 0,
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radii.md),
-              side: border ?? BorderSide.none,
-            ),
-          ).copyWith(
-            overlayColor: WidgetStateProperty.resolveWith((states) {
-              if (states.contains(WidgetState.pressed)) {
-                return foregroundColor.withOpacity(0.1);
-              }
-              return null;
-            }),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isLoading) ...[
-                AppLoadingIndicator(
-                  size: iconSize * 0.8,
-                  strokeWidth: 2,
-                  color: foregroundColor,
-                ),
-                SizedBox(width: spacing.md),
-              ] else if (iconWidget != null) ...[
-                iconWidget!,
-                SizedBox(width: spacing.sm),
-              ] else if (icon != null) ...[
-                Icon(icon, size: iconSize),
-                SizedBox(width: spacing.sm),
-              ],
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
+    return Semantics(
+      label: semanticsLabel ?? label,
+      button: true,
+      enabled: isEnabled,
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Opacity(
+          opacity: isEnabled ? 1.0 : 0.6,
+          child: ElevatedButton(
+            onPressed: isEnabled
+                ? () {
+                    if (hapticFeedback) HapticFeedback.lightImpact();
+                    onPressed?.call();
+                  }
+                : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: backgroundColor,
+              foregroundColor: foregroundColor,
+              elevation: 0,
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radii.md),
+                side: border ?? BorderSide.none,
               ),
-              if (!isLoading && suffixIcon != null) ...[
-                SizedBox(width: spacing.sm),
-                Icon(suffixIcon, size: iconSize),
+            ).copyWith(
+              overlayColor: WidgetStateProperty.resolveWith((states) {
+                if (states.contains(WidgetState.pressed)) {
+                  return foregroundColor.withOpacity(0.1);
+                }
+                return null;
+              }),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isLoading) ...[
+                  AppLoadingIndicator(
+                    size: iconSize * 0.8,
+                    strokeWidth: 2,
+                    color: foregroundColor,
+                  ),
+                  SizedBox(width: spacing.md),
+                ] else if (iconWidget != null) ...[
+                  iconWidget!,
+                  SizedBox(width: spacing.sm),
+                ] else if (icon != null) ...[
+                  Icon(icon, size: iconSize),
+                  SizedBox(width: spacing.sm),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                if (!isLoading && suffixIcon != null) ...[
+                  SizedBox(width: spacing.sm),
+                  Icon(suffixIcon, size: iconSize),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

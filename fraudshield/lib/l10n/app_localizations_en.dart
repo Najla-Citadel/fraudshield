@@ -531,4 +531,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountViewProfile => 'View Profile';
+
+  @override
+  String get accountSimulateBankingAlert => 'Simulate Banking Alert';
+
+  @override
+  String get accountSimulateBankingDesc => 'Test auto-capture logic';
+
+  @override
+  String get accountSimulateIncomingCall => 'Simulate Incoming Call';
+
+  @override
+  String get accountSimulateIncomingCallDesc => 'Test Caller ID Overlay';
+
+  @override
+  String get accountLogTestTransaction => 'Log Test Transaction';
+
+  @override
+  String get accountTransactionJournal => 'Transaction Journal';
+
+  @override
+  String get accountVersion => 'Version';
+
+  @override
+  String subRenewsOn(String date) {
+    return 'Renews on $date';
+  }
+
+  @override
+  String get subActive => 'Subscription active';
+
+  @override
+  String get subWelcomePremium => '🎉 Welcome to Premium!';
+
+  @override
+  String get subHeaderNextGen =>
+      'Next-gen AI protection for your digital wealth.';
+
+  @override
+  String get subPremiumMember => 'You\'re a Premium Member!';
+
+  @override
+  String get subManageSubscription => 'Manage Subscription';
+
+  @override
+  String get subCancelModify => 'Cancel or modify at any time';
+
+  @override
+  String get subMonthly => 'Monthly';
+
+  @override
+  String get subYearly => 'Yearly';
+
+  @override
+  String get subSave20 => 'SAVE 20%';
+
+  @override
+  String get subPopular => 'POPULAR';
+
+  @override
+  String get subBilledMonthly => 'Billed monthly';
+
+  @override
+  String subBilledYearly(String price) {
+    return 'Billed $price yearly';
+  }
+
+  @override
+  String get subPremiumDescShort =>
+      'Complete AI-powered protection with real-time alerts.';
+
+  @override
+  String get subBasicDescShort => 'Basic protection for everyday use.';
+
+  @override
+  String get subCurrentPlan => 'Current Plan';
+
+  @override
+  String get subGetPremium => 'Get Premium';
+
+  @override
+  String get subUpgradeToPremium => 'Upgrade to Premium';
+
+  @override
+  String get subFeatureComparison => 'FEATURE COMPARISON';
+
+  @override
+  String get subFree => 'FREE';
 }

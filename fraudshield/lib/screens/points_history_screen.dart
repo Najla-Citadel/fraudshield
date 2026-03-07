@@ -1,6 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import '../design_system/components/app_loading_indicator.dart';
+ import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_empty_state.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 
@@ -45,7 +47,11 @@ class _PointsHistoryScreenState extends State<PointsHistoryScreen> {
       body: _loading
           ? AppLoadingIndicator.center()
           : _history.isEmpty
-              ? Center(child: Text('No history yet'))
+              ? const AppEmptyState(
+                  icon: LucideIcons.history,
+                  title: 'No history yet',
+                  description: 'Your points transactions will appear here.',
+                )
               : ListView.builder(
                   padding: EdgeInsets.all(DesignTokens.spacing.lg),
                   itemCount: _history.length,

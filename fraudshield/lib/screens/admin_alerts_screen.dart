@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../services/api_service.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_empty_state.dart';
 import '../design_system/tokens/design_tokens.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
@@ -186,7 +188,11 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
       body: _loading
           ? AppLoadingIndicator.center()
           : _alerts.isEmpty
-              ? Center(child: Text('No alerts yet', style: TextStyle(color: Colors.white)))
+              ? const AppEmptyState(
+                  icon: LucideIcons.bellOff,
+                  title: 'No alerts yet',
+                  description: 'All transactions currently appear legitimate.',
+                )
               : RefreshIndicator(
                   onRefresh: _fetchAlerts,
                   child: ListView(

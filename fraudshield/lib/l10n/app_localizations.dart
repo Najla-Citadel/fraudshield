@@ -1129,6 +1129,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Profile'**
   String get accountViewProfile;
+
+  /// No description provided for @accountSimulateBankingAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate Banking Alert'**
+  String get accountSimulateBankingAlert;
+
+  /// No description provided for @accountSimulateBankingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Test auto-capture logic'**
+  String get accountSimulateBankingDesc;
+
+  /// No description provided for @accountSimulateIncomingCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate Incoming Call'**
+  String get accountSimulateIncomingCall;
+
+  /// No description provided for @accountSimulateIncomingCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Caller ID Overlay'**
+  String get accountSimulateIncomingCallDesc;
+
+  /// No description provided for @accountLogTestTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Test Transaction'**
+  String get accountLogTestTransaction;
+
+  /// No description provided for @accountTransactionJournal.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Journal'**
+  String get accountTransactionJournal;
+
+  /// No description provided for @accountVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get accountVersion;
+
+  /// No description provided for @subRenewsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews on {date}'**
+  String subRenewsOn(String date);
+
+  /// No description provided for @subActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription active'**
+  String get subActive;
+
+  /// No description provided for @subWelcomePremium.
+  ///
+  /// In en, this message translates to:
+  /// **'🎉 Welcome to Premium!'**
+  String get subWelcomePremium;
+
+  /// No description provided for @subHeaderNextGen.
+  ///
+  /// In en, this message translates to:
+  /// **'Next-gen AI protection for your digital wealth.'**
+  String get subHeaderNextGen;
+
+  /// No description provided for @subPremiumMember.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re a Premium Member!'**
+  String get subPremiumMember;
+
+  /// No description provided for @subManageSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Subscription'**
+  String get subManageSubscription;
+
+  /// No description provided for @subCancelModify.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel or modify at any time'**
+  String get subCancelModify;
+
+  /// No description provided for @subMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get subMonthly;
+
+  /// No description provided for @subYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get subYearly;
+
+  /// No description provided for @subSave20.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE 20%'**
+  String get subSave20;
+
+  /// No description provided for @subPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'POPULAR'**
+  String get subPopular;
+
+  /// No description provided for @subBilledMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed monthly'**
+  String get subBilledMonthly;
+
+  /// No description provided for @subBilledYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Billed {price} yearly'**
+  String subBilledYearly(String price);
+
+  /// No description provided for @subPremiumDescShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete AI-powered protection with real-time alerts.'**
+  String get subPremiumDescShort;
+
+  /// No description provided for @subBasicDescShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic protection for everyday use.'**
+  String get subBasicDescShort;
+
+  /// No description provided for @subCurrentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Plan'**
+  String get subCurrentPlan;
+
+  /// No description provided for @subGetPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium'**
+  String get subGetPremium;
+
+  /// No description provided for @subUpgradeToPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get subUpgradeToPremium;
+
+  /// No description provided for @subFeatureComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'FEATURE COMPARISON'**
+  String get subFeatureComparison;
+
+  /// No description provided for @subFree.
+  ///
+  /// In en, this message translates to:
+  /// **'FREE'**
+  String get subFree;
 }
 
 class _AppLocalizationsDelegate

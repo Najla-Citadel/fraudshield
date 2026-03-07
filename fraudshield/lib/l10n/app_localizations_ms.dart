@@ -534,4 +534,91 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get accountViewProfile => 'Lihat Profil';
+
+  @override
+  String get accountSimulateBankingAlert => 'Simulasi Amaran Perbankan';
+
+  @override
+  String get accountSimulateBankingDesc => 'Uji logik tangkapan automatik';
+
+  @override
+  String get accountSimulateIncomingCall => 'Simulasi Panggilan Masuk';
+
+  @override
+  String get accountSimulateIncomingCallDesc => 'Uji Lapisan ID Pemanggil';
+
+  @override
+  String get accountLogTestTransaction => 'Log Transaksi Ujian';
+
+  @override
+  String get accountTransactionJournal => 'Jurnal Transaksi';
+
+  @override
+  String get accountVersion => 'Versi';
+
+  @override
+  String subRenewsOn(String date) {
+    return 'Diperbaharui pada $date';
+  }
+
+  @override
+  String get subActive => 'Langganan aktif';
+
+  @override
+  String get subWelcomePremium => '🎉 Selamat Datang ke Premium!';
+
+  @override
+  String get subHeaderNextGen =>
+      'Perlindungan AI generasi akan datang untuk kekayaan digital anda.';
+
+  @override
+  String get subPremiumMember => 'Anda adalah Ahli Premium!';
+
+  @override
+  String get subManageSubscription => 'Urus Langganan';
+
+  @override
+  String get subCancelModify => 'Batal atau ubah pada bila-bila masa';
+
+  @override
+  String get subMonthly => 'Bulanan';
+
+  @override
+  String get subYearly => 'Tahunan';
+
+  @override
+  String get subSave20 => 'JIMAT 20%';
+
+  @override
+  String get subPopular => 'POPULAR';
+
+  @override
+  String get subBilledMonthly => 'Dibilkan setiap bulan';
+
+  @override
+  String subBilledYearly(String price) {
+    return 'Dibilkan $price setahun';
+  }
+
+  @override
+  String get subPremiumDescShort =>
+      'Perlindungan lengkap dikuasakan AI dengan amaran masa nyata.';
+
+  @override
+  String get subBasicDescShort => 'Perlindungan asas untuk kegunaan harian.';
+
+  @override
+  String get subCurrentPlan => 'Pelan Semasa';
+
+  @override
+  String get subGetPremium => 'Dapatkan Premium';
+
+  @override
+  String get subUpgradeToPremium => 'Naik Taraf ke Premium';
+
+  @override
+  String get subFeatureComparison => 'PERBANDINGAN CIRI';
+
+  @override
+  String get subFree => 'PERCUMA';
 }
