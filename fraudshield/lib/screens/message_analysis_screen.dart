@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
 import 'fraud_check_screen.dart';
@@ -54,26 +55,8 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'AI Message Scanner',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 22,
-            letterSpacing: -0.5,
-          ),
-        ),
-        centerTitle: true,
-      ),
+    return ScreenScaffold(
+      title: 'AI MESSAGE SCANNER',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -121,7 +104,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _analyze,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
+                  backgroundColor: DesignTokens.colors.primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -225,8 +208,11 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.healthGradientStart, AppColors.healthGradientEnd],
+        gradient: LinearGradient(
+          colors: [
+            DesignTokens.colors.primary,
+            DesignTokens.colors.primary.withOpacity(0.7)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

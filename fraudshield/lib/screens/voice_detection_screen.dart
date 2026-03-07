@@ -8,7 +8,9 @@ import 'package:record/record.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -179,18 +181,19 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Row(
+        backgroundColor: DesignTokens.colors.backgroundDark,
+        surfaceTintColor: DesignTokens.colors.backgroundDark,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radii.xl)),
+        title: Row(
           children: [
             Icon(LucideIcons.alertTriangle,
-                color: AppColors.primaryBlue, size: 22),
-            SizedBox(width: 12),
-            Text(
+                color: DesignTokens.colors.primary, size: 22),
+            const SizedBox(width: 12),
+            const Text(
               'Before You Start',
               style: TextStyle(
-                  color: AppColors.textDark,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 18),
             ),
@@ -221,11 +224,11 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
                 style: TextStyle(
-                    color: AppColors.textDark.withOpacity(0.5))),
+                    color: Colors.white.withOpacity(0.5))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
+              backgroundColor: DesignTokens.colors.primary,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
@@ -251,12 +254,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon,
-              color: AppColors.primaryBlue.withOpacity(0.6), size: 18),
+              color: DesignTokens.colors.primary.withOpacity(0.6), size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: AppColors.textDark.withOpacity(0.7),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: 13,
                     height: 1.4)),
           ),
@@ -435,13 +438,13 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   Color get _levelColor {
     switch (_result?.level) {
       case 'critical':
-        return Colors.purple;
+        return DesignTokens.colors.error;
       case 'high':
-        return const Color(0xFFEF4444);
+        return DesignTokens.colors.error;
       case 'medium':
-        return const Color(0xFFF59E0B);
+        return DesignTokens.colors.warning;
       default:
-        return const Color(0xFF22C55E);
+        return DesignTokens.colors.accentGreen;
     }
   }
 
@@ -468,23 +471,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         // Release the global lock when leaving this screen
         NotificationService.instance.setVoiceScanActive(false);
       },
-      child: Scaffold(
-        backgroundColor: AppColors.lightBg,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon:
-                const Icon(LucideIcons.chevronLeft, color: AppColors.textDark),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'Call Screen',
-            style: TextStyle(
-                color: AppColors.textDark, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
+      child: ScreenScaffold(
+        title: 'CALL SCREEN',
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -505,29 +493,19 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
   }
 
   Widget _buildInfoCard() {
-    return Container(
+    return GlassSurface(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      borderRadius: 24,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: DesignTokens.colors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(LucideIcons.phoneIncoming,
-                color: AppColors.primaryBlue, size: 24),
+            child: Icon(LucideIcons.phoneIncoming,
+                color: DesignTokens.colors.primary, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -537,14 +515,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 const Text(
                   'Voice Analysis',
                   style: TextStyle(
-                      color: AppColors.textDark,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16),
                 ),
                 Text(
                   'Instantly scan calls for scam patterns and deepfake markers.',
                   style: TextStyle(
-                      color: AppColors.textDark.withOpacity(0.5),
+                      color: Colors.white.withOpacity(0.5),
                       fontSize: 12),
                 ),
               ],
@@ -559,29 +537,36 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     return Column(
       children: [
         GestureDetector(
-          onTap: _toggleRecording,
+          onTap: _isAnalyzing ? null : _toggleRecording,
           child: AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (ctx, _) => Transform.scale(
               scale: _isRecording ? _pulseAnimation.value : 1.0,
               child: Container(
-                width: 140,
-                height: 140,
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: _isAnalyzing
                         ? [Colors.grey.shade300, Colors.grey.shade400]
                         : _isRecording
-                            ? [const Color(0xFFEF4444), const Color(0xFFB91C1C)]
+                            ? [
+                                DesignTokens.colors.error,
+                                DesignTokens.colors.critical
+                              ]
                             : [
-                                AppColors.primaryBlue,
-                                AppColors.primaryBlue.withOpacity(0.8)
+                                DesignTokens.colors.primary,
+                                DesignTokens.colors.primary.withOpacity(0.8)
                               ],
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: (_isRecording ? Colors.red : AppColors.primaryBlue)
+                      color: (_isRecording
+                              ? DesignTokens.colors.error
+                              : DesignTokens.colors.primary)
                           .withOpacity(0.3),
                       blurRadius: _isRecording ? 30 : 20,
                       spreadRadius: _isRecording ? 10 : 2,
@@ -590,8 +575,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 ),
                 child: Center(
                   child: _isAnalyzing
-                      ? const AppLoadingIndicator(
-                          color: AppColors.accentGreen)
+                      ? AppLoadingIndicator(color: DesignTokens.colors.accentGreen)
                       : Icon(
                           _isRecording ? LucideIcons.square : LucideIcons.mic,
                           color: Colors.white,
@@ -607,14 +591,18 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Column(
             children: [
               Text(_analysisStatus,
-                  style: const TextStyle(
-                      color: AppColors.primaryBlue,
+                  style: TextStyle(
+                      color: DesignTokens.colors.primary,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const SizedBox(
-                  width: 100,
-                  child: LinearProgressIndicator(
-                      minHeight: 2, backgroundColor: AppColors.lightBg)),
+              SizedBox(
+                width: 100,
+                child: LinearProgressIndicator(
+                  minHeight: 2,
+                  backgroundColor:
+                      DesignTokens.colors.glassDark.withOpacity(0.4),
+                ),
+              ),
             ],
           )
         else if (_isRecording)
@@ -623,7 +611,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               Text(
                 _formatDuration(_recordingSeconds),
                 style: const TextStyle(
-                  color: AppColors.textDark,
+                  color: Colors.white,
                   fontSize: 42,
                   fontWeight: FontWeight.w900,
                   fontFeatures: [FontFeature.tabularFigures()],
@@ -633,7 +621,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               Text(
                 'Please put call on Speaker for best results',
                 style: TextStyle(
-                    color: AppColors.primaryBlue,
+                    color: DesignTokens.colors.primary,
                     fontSize: 13,
                     fontWeight: FontWeight.bold),
               ),
@@ -641,15 +629,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               Text(
                 'Listening for scam patterns...',
                 style: TextStyle(
-                    color: AppColors.textDark.withOpacity(0.4),
-                    fontSize: 13),
+                    color: Colors.white.withOpacity(0.4), fontSize: 13),
               ),
               const SizedBox(height: 20),
               SizedBox(
                 height: 40,
                 child: CustomPaint(
                   painter: WaveformPainter(
-                      amplitudes: _amplitudes, color: const Color(0xFFEF4444)),
+                      amplitudes: _amplitudes, color: DesignTokens.colors.error),
                   size: const Size(double.infinity, 40),
                 ),
               ),
@@ -659,7 +646,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Text(
             'Tap to start voice analysis',
             style: TextStyle(
-                color: AppColors.textDark.withOpacity(0.4),
+                color: Colors.white.withOpacity(0.4),
                 fontWeight: FontWeight.w500),
           ),
       ],
@@ -695,87 +682,83 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
 
     return Container(
       margin: const EdgeInsets.only(top: 32),
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-        border: Border.all(color: color.withOpacity(0.15), width: 1.5),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+      child: GlassSurface(
+        padding: const EdgeInsets.all(24),
+        borderRadius: 28,
+        borderColor: color.withOpacity(0.15),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                  isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck,
+                  color: color,
+                  size: 40),
             ),
-            child: Icon(
-                isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck,
-                color: color,
-                size: 40),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            _levelLabel,
-            style: TextStyle(
-                color: color, fontSize: 24, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 24),
-          _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: r.riskScore / 100,
-              minHeight: 8,
-              backgroundColor: AppColors.lightBg,
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-            ),
-          ),
-          if (r.transcript.isNotEmpty) ...[
-            const Divider(height: 48),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text('Transcript Analysis',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
-              r.transcript,
+              _levelLabel,
               style: TextStyle(
-                  color: AppColors.textDark.withOpacity(0.6),
-                  height: 1.5,
-                  fontSize: 13),
+                  color: color, fontSize: 24, fontWeight: FontWeight.w900),
             ),
-          ],
-          if (r.contentAnalysis.matchedPatterns.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: r.contentAnalysis.matchedPatterns
-                  .map((p) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.lightBg,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(p,
-                            style: const TextStyle(
-                                fontSize: 11, fontWeight: FontWeight.bold)),
-                      ))
-                  .toList(),
+            const SizedBox(height: 24),
+            _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: r.riskScore / 100,
+                minHeight: 8,
+                backgroundColor: DesignTokens.colors.glassDark.withOpacity(0.4),
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+              ),
             ),
+            if (r.transcript.isNotEmpty) ...[
+              const Divider(height: 48),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Transcript Analysis',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                r.transcript,
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    height: 1.5,
+                    fontSize: 13),
+              ),
+            ],
+            if (r.contentAnalysis.matchedPatterns.isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: r.contentAnalysis.matchedPatterns
+                    .map((p) => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color:
+                                DesignTokens.colors.glassDark.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(p,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold)),
+                        ))
+                    .toList(),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -787,7 +770,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       children: [
         Text(label,
             style: TextStyle(
-                color: AppColors.textDark.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.5),
                 fontSize: 14)),
         Text(value,
             style: TextStyle(
@@ -804,61 +787,60 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text('Recent Analysis',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        ),
+        const Text('Recent Analysis',
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16)),
         const SizedBox(height: 16),
         ..._recentAnalysis.map((item) => Container(
               margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  const Icon(LucideIcons.fileAudio,
-                      color: AppColors.textDark, size: 20),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(item['name'],
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 14)),
-                        Text(item['date'],
-                            style: TextStyle(
-                                color:
-                                    AppColors.textDark.withOpacity(0.4),
-                                fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: (item['score'] >= 55
-                              ? const Color(0xFFEF4444)
-                              : const Color(0xFF22C55E))
-                          .withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      item['result'],
-                      style: TextStyle(
-                        color: item['score'] >= 55
-                            ? const Color(0xFFEF4444)
-                            : const Color(0xFF22C55E),
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+              child: GlassSurface(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(LucideIcons.fileAudio,
+                        color: Colors.white, size: 20),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(item['name'],
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14)),
+                          Text(item['date'],
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(0.4),
+                                  fontSize: 12)),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: (item['score'] >= 55
+                                ? DesignTokens.colors.error
+                                : DesignTokens.colors.accentGreen)
+                            .withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        item['result'],
+                        style: TextStyle(
+                          color: item['score'] >= 55
+                              ? DesignTokens.colors.error
+                              : DesignTokens.colors.accentGreen,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )),
       ],

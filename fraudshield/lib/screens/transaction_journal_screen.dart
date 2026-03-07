@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 import 'transaction_detail_screen.dart';
 import 'log_payment_sheet.dart';
@@ -138,15 +139,15 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
   Color _getColorForStatus(String status) {
     switch (status.toUpperCase()) {
       case 'SAFE':
-        return const Color(0xFF22D483);
+        return DesignTokens.colors.accentGreen;
       case 'SUSPICIOUS':
-        return const Color(0xFFF59E0B);
+        return DesignTokens.colors.warning;
       case 'BLOCKED':
-        return const Color(0xFFEF4444);
+        return DesignTokens.colors.error;
       case 'SCAMMED':
-        return const Color(0xFFDC2626);
+        return DesignTokens.colors.error;
       default:
-        return Colors.grey;
+        return DesignTokens.colors.textGrey;
     }
   }
 
@@ -159,10 +160,10 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
   }
 
   Color _amountColor(dynamic raw) {
-    if (raw == null) return Colors.grey;
+    if (raw == null) return DesignTokens.colors.textGrey;
     final amt = raw is num ? raw.toDouble() : double.tryParse(raw.toString());
-    if (amt == null) return Colors.grey;
-    return amt < 0 ? const Color(0xFFF87171) : const Color(0xFF22D483);
+    if (amt == null) return DesignTokens.colors.textGrey;
+    return amt < 0 ? DesignTokens.colors.error : DesignTokens.colors.accentGreen;
   }
 
   String _formatDate(String isoDate) {
@@ -186,14 +187,8 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        title: const Text('Security Journal',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: AppColors.deepNavy,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+    return ScreenScaffold(
+      title: 'SECURITY JOURNAL',
       body: Column(
         children: [
           // Filter Chips
@@ -217,12 +212,18 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                       });
                       _fetchTransactions();
                     },
-                    backgroundColor: const Color(0xFF1E293B),
-                    selectedColor: AppColors.accentGreen,
+                    backgroundColor: DesignTokens.colors.glassDark.withOpacity(0.4),
+                    selectedColor: DesignTokens.colors.accentGreen,
                     labelStyle: TextStyle(
-                      color: isSelected ? AppColors.deepNavy : Colors.white,
+                      color: isSelected ? DesignTokens.colors.backgroundDark : Colors.white,
                       fontWeight:
                           isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.1),
+                      ),
                     ),
                   ),
                 );
@@ -238,8 +239,8 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showManualLogForm,
-        backgroundColor: AppColors.accentGreen,
-        foregroundColor: AppColors.deepNavy,
+        backgroundColor: DesignTokens.colors.accentGreen,
+        foregroundColor: DesignTokens.colors.backgroundDark,
         icon: const Icon(LucideIcons.plus),
         label: const Text('Log Payment',
             style: TextStyle(fontWeight: FontWeight.bold)),
@@ -288,9 +289,9 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
               Container(
                 padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF111827),
+                  color: DesignTokens.colors.glassDark.withOpacity(0.6),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF1E2D45)),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
                 child: Icon(LucideIcons.list,
                     color: Colors.white.withOpacity(0.2), size: 52),
@@ -354,11 +355,11 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
               ),
             ).then((_) => _fetchTransactions()),
             child: Container(
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: const Color(0xFF111827),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFF1E2D45)),
+                color: DesignTokens.colors.glassDark.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(18),
@@ -406,8 +407,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 7, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: statusColor.withValues(
-                                                alpha: 0.12),
+                                            color: statusColor.withOpacity(0.12),
                                             borderRadius:
                                                 BorderRadius.circular(6),
                                           ),

@@ -3,6 +3,9 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../services/api_service.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../widgets/glass_surface.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -124,33 +127,57 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
     final String alertId = a['id'] ?? '';
     final bool processed = a['processed'] == true;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: GlassSurface(
+        padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('TX: $txId', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text('TX: $txId',
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Decision: ${a['decision']}'),
-          Text('Risk Score: ${a['riskScore']}'),
-          const SizedBox(height: 8),
-
+          Text('Decision: ${a['decision']}',
+              style: TextStyle(color: Colors.white.withOpacity(0.7))),
+          Text('Risk Score: ${a['riskScore']}',
+              style: TextStyle(color: Colors.white.withOpacity(0.7))),
+          const SizedBox(height: 12),
           Row(children: [
-            ElevatedButton(
-              onPressed: () => _viewTransaction(txId),
-              child: const Text('View'),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () => _viewTransaction(txId),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DesignTokens.colors.primary.withOpacity(0.2),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
+                child: const Text('View'),
+              ),
             ),
-            const SizedBox(width: 12),
-            ElevatedButton(
-              onPressed: processed ? null : () => _labelTx(txId, alertId, 'fraud'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-              child: const Text('Fraud'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed:
+                    processed ? null : () => _labelTx(txId, alertId, 'fraud'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DesignTokens.colors.error.withOpacity(0.2),
+                  foregroundColor: DesignTokens.colors.error,
+                  elevation: 0,
+                ),
+                child: const Text('Fraud'),
+              ),
             ),
-            const SizedBox(width: 12),
-            ElevatedButton(
-              onPressed: processed ? null : () => _labelTx(txId, alertId, 'legit'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              child: const Text('Legit'),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed:
+                    processed ? null : () => _labelTx(txId, alertId, 'legit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: DesignTokens.colors.accentGreen.withOpacity(0.2),
+                  foregroundColor: DesignTokens.colors.accentGreen,
+                  elevation: 0,
+                ),
+                child: const Text('Legit'),
+              ),
             ),
           ]),
         ]),
@@ -160,23 +187,22 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Alerts'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _fetchAlerts,
-          )
-        ],
-      ),
+    return ScreenScaffold(
+      title: 'ADMIN ALERTS',
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.white),
+          onPressed: _fetchAlerts,
+        )
+      ],
       body: _loading
           ? AppLoadingIndicator.center()
           : _alerts.isEmpty
-              ? const Center(child: Text('No alerts yet'))
+              ? const Center(child: Text('No alerts yet', style: TextStyle(color: Colors.white)))
               : RefreshIndicator(
                   onRefresh: _fetchAlerts,
                   child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     children: _alerts.map(_alertCard).toList(),
                   ),
                 ),

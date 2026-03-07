@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../widgets/glass_surface.dart';
+import '../design_system/components/app_button.dart';
 
 class RewardsCatalogScreen extends StatefulWidget {
   const RewardsCatalogScreen({super.key});
@@ -130,64 +134,61 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rewards Catalog'),
-        backgroundColor: Colors.blue,
-      ),
-      backgroundColor: Colors.white,
+    return ScreenScaffold(
+      title: 'REWARDS CATALOG',
       body: _loading
           ? AppLoadingIndicator.center()
           : Column(
               children: [
                 // Points Balance Header
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  margin: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.blue[200]!),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.stars,
-                        color: Color(0xFFFFD700),
-                        size: 32,
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Your Points',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
+                  child: GlassSurface(
+                    padding: const EdgeInsets.all(24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.stars_rounded,
+                          color: Color(0xFFFFD700),
+                          size: 32,
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'YOUR POINTS',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: DesignTokens.colors.accentGreen,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
                             ),
-                          ),
-                          Text(
-                            '$_userPoints',
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                            Text(
+                              '$_userPoints',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
                 // Rewards List
                 Expanded(
                   child: _rewards.isEmpty
-                      ? const Center(
-                          child: Text('No rewards available'),
+                      ? Center(
+                          child: Text(
+                            'No rewards available',
+                            style: TextStyle(color: DesignTokens.colors.textGrey),
+                          ),
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -215,32 +216,25 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
     Color iconColor;
     switch (type) {
       case 'subscription':
-        icon = Icons.workspace_premium;
-        iconColor = const Color(0xFFFFD700);
+        icon = Icons.workspace_premium_rounded;
+        iconColor = DesignTokens.colors.premiumYellow;
         break;
       case 'badge':
-        icon = Icons.shield;
-        iconColor = const Color(0xFF4CAF50);
+        icon = Icons.shield_rounded;
+        iconColor = DesignTokens.colors.accentGreen;
         break;
       default:
-        icon = Icons.card_giftcard;
-        iconColor = const Color(0xFF2196F3);
+        icon = Icons.card_giftcard_rounded;
+        iconColor = DesignTokens.colors.primary;
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: DesignTokens.colors.glassDark.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,10 +245,11 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: iconColor.withOpacity(0.2)),
                 ),
-                child: Icon(icon, color: iconColor, size: 32),
+                child: Icon(icon, color: iconColor, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -262,19 +257,21 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
+                      name.toUpperCase(),
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       description,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+                        fontSize: 13,
+                        color: Colors.white.withOpacity(0.6),
+                        height: 1.4,
                       ),
                     ),
                   ],
@@ -283,7 +280,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // Points cost and redeem button
           Row(
@@ -292,40 +289,28 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
               Row(
                 children: [
                   const Icon(
-                    Icons.stars,
+                    Icons.stars_rounded,
                     color: Color(0xFFFFD700),
-                    size: 20,
+                    size: 18,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '$pointsCost points',
+                    '$pointsCost PTS',
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
-              ElevatedButton(
+              AppButton(
+                label: canAfford ? 'REDEEM' : 'INSUFFICIENT',
                 onPressed: canAfford ? () => _redeemReward(reward) : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: canAfford ? Colors.purple : Colors.grey,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: Text(
-                  canAfford ? 'Redeem' : 'Not enough',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                isLoading: false,
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.sm,
+                width: 140,
               ),
             ],
           ),

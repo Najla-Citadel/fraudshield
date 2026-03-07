@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_back_button.dart';
 import '../widgets/error_state.dart';
 import 'dart:math' as math;
 import '../design_system/components/app_loading_indicator.dart';
@@ -68,15 +70,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   Color _statusColor(String status) {
     switch (status.toUpperCase()) {
       case 'SAFE':
-        return const Color(0xFF22D483);
+        return DesignTokens.colors.accentGreen;
       case 'SUSPICIOUS':
-        return const Color(0xFFF59E0B);
+        return DesignTokens.colors.warning;
       case 'BLOCKED':
-        return const Color(0xFFEF4444);
+        return DesignTokens.colors.error;
       case 'SCAMMED':
-        return const Color(0xFFDC2626);
+        return DesignTokens.colors.error;
       default:
-        return Colors.grey;
+        return DesignTokens.colors.textGrey;
     }
   }
 
@@ -96,9 +98,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
   }
 
   Color _scoreColor(int score) {
-    if (score >= 75) return const Color(0xFFEF4444);
-    if (score >= 40) return const Color(0xFFF59E0B);
-    return const Color(0xFF22D483);
+    if (score >= 75) return DesignTokens.colors.error;
+    if (score >= 40) return DesignTokens.colors.warning;
+    return DesignTokens.colors.accentGreen;
   }
 
   String _scoreLabel(int score) {
@@ -168,27 +170,20 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF0B1121),
+    return ScreenScaffold(
+      useSafeArea: false,
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF0B1121),
-        body: Center(
-            child: AppLoadingIndicator.center()),
-      );
+      return Center(child: AppLoadingIndicator.center());
     }
 
     if (_error != null || _transaction == null) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF0B1121),
-        body: ErrorState(
-            onRetry: _fetchDetails, message: _error ?? 'Transaction not found'),
-      );
+      return ErrorState(
+          onRetry: _fetchDetails, message: _error ?? 'Transaction not found');
     }
 
     final status = (_transaction!['status'] ?? 'UNKNOWN') as String;
@@ -208,19 +203,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         SliverAppBar(
           expandedHeight: 280,
           pinned: true,
-          backgroundColor: const Color(0xFF0B1121),
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 18),
-            ),
-          ),
+          backgroundColor: DesignTokens.colors.backgroundDark,
+          leading: const AppBackButton(),
           actions: [
             IconButton(
               icon: const Icon(LucideIcons.copy, color: Colors.white, size: 20),
@@ -434,8 +418,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                             const SizedBox(height: 8),
                             Text(
                               _notesExpanded ? 'Show less' : 'Show more',
-                              style: const TextStyle(
-                                  color: AppColors.accentGreen,
+                              style: TextStyle(
+                                  color: DesignTokens.colors.accentGreen,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600),
                             ),
@@ -478,7 +462,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         gradient: LinearGradient(
           colors: [
             sColor.withOpacity(0.15),
-            const Color(0xFF0B1121),
+            Colors.transparent,
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -560,12 +544,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
   Widget _buildSectionCard({required Widget child}) => Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF111827),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF1E2D45)),
+          color: DesignTokens.colors.glassDark.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           child: child,
         ),
       );

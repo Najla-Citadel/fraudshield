@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import 'subscription_screen.dart';
 
 class SecurityScoreDetailScreen extends StatelessWidget {
@@ -18,54 +19,20 @@ class SecurityScoreDetailScreen extends StatelessWidget {
     final int score = healthData['score'] ?? 0;
     final Map<String, dynamic> breakdown = healthData['breakdown'] ?? {};
 
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Security Health',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  AppColors.deepNavy, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
+    return ScreenScaffold(
+      title: 'SECURITY HEALTH',
+      body: AnimationLimiter(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: AnimationConfiguration.toStaggeredList(
+              duration: const Duration(milliseconds: 375),
+              childAnimationBuilder: (widget) => SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(child: widget),
               ),
-            ),
-          ),
-          SafeArea(
-            child: AnimationLimiter(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: AnimationConfiguration.toStaggeredList(
-                    duration: const Duration(milliseconds: 375),
-                    childAnimationBuilder: (widget) => SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(child: widget),
-                    ),
-                    children: [
+              children: [
                       // 1. Hero Score Section
                       _buildScoreHero(score),
                       const SizedBox(height: 32),
@@ -153,16 +120,12 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                         onAction: () {},
                       ),
 
-                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          );
   }
 
   Widget _buildScoreHero(int score) {
@@ -170,32 +133,26 @@ class SecurityScoreDetailScreen extends StatelessWidget {
     Color statusColor;
     if (score >= 90) {
       status = 'EXCELLENT';
-      statusColor = AppColors.accentGreen;
+      statusColor = DesignTokens.colors.accentGreen;
     } else if (score >= 70) {
       status = 'GOOD';
-      statusColor = Colors.blue;
+      statusColor = DesignTokens.colors.primary;
     } else if (score >= 50) {
       status = 'PROTECTED';
-      statusColor = Colors.orange;
+      statusColor = DesignTokens.colors.warning;
     } else {
       status = 'AT RISK';
-      statusColor = Colors.red;
+      statusColor = DesignTokens.colors.error;
     }
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B), // Dark Slate
-        borderRadius: BorderRadius.circular(32),
+        color: DesignTokens.colors.glassDark.withOpacity(0.6),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: Column(
         children: [
@@ -290,16 +247,16 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: (isCompleted
-                          ? AppColors.accentGreen
-                          : AppColors.primaryBlue)
+                          ? DesignTokens.colors.accentGreen
+                          : DesignTokens.colors.primary)
                       .withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   isCompleted ? LucideIcons.check : icon,
                   color: isCompleted
-                      ? AppColors.accentGreen
-                      : AppColors.primaryBlue,
+                      ? DesignTokens.colors.accentGreen
+                      : DesignTokens.colors.primary,
                   size: 20,
                 ),
               ),
@@ -320,7 +277,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                       isCompleted ? 'Completed' : '$points / $maxPoints points',
                       style: TextStyle(
                         color: isCompleted
-                            ? AppColors.accentGreen
+                            ? DesignTokens.colors.accentGreen
                             : Colors.white.withOpacity(0.5),
                         fontSize: 13,
                         fontWeight:
@@ -334,7 +291,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                 TextButton(
                   onPressed: onAction,
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.accentGreen,
+                    foregroundColor: DesignTokens.colors.accentGreen,
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
                   child: Text(

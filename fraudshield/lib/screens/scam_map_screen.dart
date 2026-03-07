@@ -4,7 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/scam_card.dart';
 import '../widgets/glass_surface.dart';
 import 'scam_report_entry_screen.dart';
@@ -115,8 +116,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
           circleId: const CircleId('search_radius'),
           center: LatLng(lat, lng),
           radius: radiusKm * 1000,
-          fillColor: AppColors.accentGreen.withOpacity(0.05),
-          strokeColor: AppColors.accentGreen.withOpacity(0.2),
+          fillColor: DesignTokens.colors.accentGreen.withOpacity(0.05),
+          strokeColor: DesignTokens.colors.accentGreen.withOpacity(0.2),
           strokeWidth: 1,
         ),
       );
@@ -197,9 +198,9 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
         maxChildSize: 0.8,
         minChildSize: 0.3,
         builder: (context, controller) => Container(
-          decoration: const BoxDecoration(
-            color: AppColors.deepNavy,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: DesignTokens.colors.backgroundDark,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: const EdgeInsets.all(16),
           child: ListView(
@@ -235,8 +236,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.deepNavy,
+    return ScreenScaffold(
+      useSafeArea: false,
       body: Stack(
         children: [
           // 1. MAP
@@ -276,7 +277,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   child: Row(
                     children: [
                       _buildRoundButton(
-                        icon: Icons.arrow_back,
+                        icon: Icons.arrow_back_ios_new_rounded,
                         onTap: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 12),
@@ -328,12 +329,12 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                                 horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.accentGreen
-                                  : AppColors.deepNavy.withOpacity(0.7),
+                                  ? DesignTokens.colors.accentGreen
+                                  : DesignTokens.colors.backgroundDark.withOpacity(0.7),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
-                                    ? AppColors.accentGreen
+                                    ? DesignTokens.colors.accentGreen
                                     : Colors.white24,
                               ),
                             ),
@@ -415,7 +416,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 child: Row(
                   children: [
                     Icon(Icons.touch_app_outlined,
-                        color: AppColors.accentGreen.withOpacity(0.7),
+                        color: DesignTokens.colors.accentGreen.withOpacity(0.7),
                         size: 14),
                     const SizedBox(width: 6),
                     Text(

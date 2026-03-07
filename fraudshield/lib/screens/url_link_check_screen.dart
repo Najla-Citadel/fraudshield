@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../constants/colors.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
@@ -99,87 +100,56 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A),
-            AppColors.deepNavy,
-            Color(0xFF1E3A8A),
-          ],
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'URL Link Check',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SecurityTipsCard(tips: [
-                'Check links from SMS, WhatsApp, or email before opening.',
-                'Avoid clicking links that create a false sense of urgency.',
-                "Always verify the domain name (e.g., 'google.com' vs 'qooqle.com').",
-              ]),
-              const SizedBox(height: 24),
-              _buildInputSection(),
-              const SizedBox(height: 24),
-              if (_lastResult != null) ...[
-                _buildResultCard(),
-                const SizedBox(height: 32),
-              ],
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Recent Activity',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (_recentScans.isNotEmpty)
-                    TextButton(
-                      onPressed: () {
-                        _saveClearedTimestamp();
-                        setState(() => _recentScans = []);
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white.withOpacity(0.4),
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(50, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child:
-                          const Text('Clear', style: TextStyle(fontSize: 12)),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildRecentActivity(),
-              const SizedBox(
-                  height: 100), // Spacing for floating nav bar if needed
+    return ScreenScaffold(
+      title: 'URL LINK CHECK',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SecurityTipsCard(tips: [
+              'Check links from SMS, WhatsApp, or email before opening.',
+              'Avoid clicking links that create a false sense of urgency.',
+              "Always verify the domain name (e.g., 'google.com' vs 'qooqle.com').",
+            ]),
+            const SizedBox(height: 24),
+            _buildInputSection(),
+            const SizedBox(height: 24),
+            if (_lastResult != null) ...[
+              _buildResultCard(),
+              const SizedBox(height: 32),
             ],
-          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Recent Activity',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (_recentScans.isNotEmpty)
+                  TextButton(
+                    onPressed: () {
+                      _saveClearedTimestamp();
+                      setState(() => _recentScans = []);
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white.withOpacity(0.4),
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildRecentActivity(),
+            const SizedBox(height: 100),
+          ],
         ),
       ),
     );
@@ -189,13 +159,13 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
     return GlassSurface(
       padding: const EdgeInsets.all(24),
       borderRadius: 24,
-      accentColor: AppColors.primaryBlue,
+      accentColor: DesignTokens.colors.primary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+           Row(
             children: [
-              Icon(LucideIcons.globe, color: AppColors.primaryBlue, size: 20),
+              Icon(LucideIcons.globe, color: DesignTokens.colors.primary, size: 20),
               SizedBox(width: 8),
               Text(
                 'Enter URL to scan',
@@ -244,12 +214,12 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: AppLoadingIndicator(color: AppColors.accentGreen),
+                    child: AppLoadingIndicator(color: Colors.white),
                   )
                 : ElevatedButton(
                     onPressed: _isLoading ? null : _checkUrl,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
+                      backgroundColor: DesignTokens.colors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
@@ -272,18 +242,18 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
     final isSafe = _lastResult!.score < 30;
     final riskColor = _lastResult!.level == 'critical'
-        ? Colors.red
+        ? DesignTokens.colors.error
         : _lastResult!.level == 'high'
-            ? Colors.orange
+            ? DesignTokens.colors.warning
             : _lastResult!.level == 'medium'
-                ? Colors.yellow[700]!
-                : AppColors.accentGreen;
+                ? const Color(0xFFFBBF24)
+                : DesignTokens.colors.accentGreen;
 
     return GlassSurface(
       padding: const EdgeInsets.all(24),
       borderRadius: 24,
       borderColor: riskColor.withOpacity(0.3),
-      accentColor: AppColors.primaryBlue,
+      accentColor: DesignTokens.colors.primary,
       child: Column(
         children: [
           Icon(
@@ -364,15 +334,15 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
       return GlassSurface(
         padding: const EdgeInsets.all(32),
         borderRadius: 24,
-        accentColor: AppColors.primaryBlue,
+        accentColor: DesignTokens.colors.primary,
         child: Column(
           children: [
             Icon(LucideIcons.history,
-                color: AppColors.greyText.withOpacity(0.3), size: 40),
+                color: DesignTokens.colors.textGrey.withOpacity(0.3), size: 40),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'No recent activity',
-              style: TextStyle(color: AppColors.greyText),
+              style: TextStyle(color: DesignTokens.colors.textGrey),
             ),
           ],
         ),
@@ -382,7 +352,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
     return GlassSurface(
       borderRadius: 24,
       padding: EdgeInsets.zero,
-      accentColor: AppColors.primaryBlue,
+      accentColor: DesignTokens.colors.primary,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -402,13 +372,13 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: (isSafe ? AppColors.accentGreen : Colors.red)
+                color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
                     .withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isSafe ? LucideIcons.shieldCheck : LucideIcons.shieldAlert,
-                color: isSafe ? AppColors.accentGreen : Colors.red,
+                color: isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error,
                 size: 20,
               ),
             ),
@@ -429,14 +399,14 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: (isSafe ? AppColors.accentGreen : Colors.red)
+                color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
                     .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 isSafe ? 'SAFE' : 'RISKY',
                 style: TextStyle(
-                  color: isSafe ? AppColors.accentGreen : Colors.red,
+                  color: isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error,
                   fontWeight: FontWeight.bold,
                   fontSize: 10,
                 ),
