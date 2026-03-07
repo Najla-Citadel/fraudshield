@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class AppDivider extends StatelessWidget {
   final double? height;
@@ -23,7 +24,7 @@ class AppDivider extends StatelessWidget {
       thickness: thickness ?? 1.0,
       indent: indent,
       endIndent: endIndent,
-      color: color ?? Colors.white.withOpacity(0.1),
+      color: color ?? DesignTokens.colors.divider,
     );
   }
 
@@ -39,7 +40,7 @@ class AppDivider extends StatelessWidget {
       thickness: thickness ?? 1.0,
       indent: indent,
       endIndent: endIndent,
-      color: color ?? Colors.white.withOpacity(0.1),
+      color: color ?? DesignTokens.colors.divider,
     );
   }
 }

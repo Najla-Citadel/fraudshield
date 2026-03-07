@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../design_system/components/app_back_button.dart';
 import 'dart:ui';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> report;
@@ -67,29 +67,15 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     final theme = Theme.of(context);
     final isVerified = widget.report['status'] == 'VERIFIED';
 
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'REPORT DETAILS',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: DesignTokens.colors.textLight.withOpacity(0.7),
-            letterSpacing: 1.5,
-            fontWeight: FontWeight.bold,
-          ),
+    return ScreenScaffold(
+      title: 'REPORT DETAILS',
+      actions: [
+        IconButton(
+          icon: Icon(Icons.more_horiz_rounded,
+              color: DesignTokens.colors.textLight),
+          onPressed: () {},
         ),
-        leading: const AppBackButton(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.more_horiz_rounded,
-                color: DesignTokens.colors.textLight),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      ],
       body: SingleChildScrollView(
         padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(

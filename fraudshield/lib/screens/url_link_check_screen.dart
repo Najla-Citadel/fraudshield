@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../services/risk_evaluator.dart';
@@ -282,7 +283,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
           ),
           if (_lastResult!.reasons.isNotEmpty) ...[
             SizedBox(height: 16),
-            Divider(color: Colors.white.withOpacity(0.1)),
+            AppDivider(),
             SizedBox(height: 8),
             ..._lastResult!.reasons.map((reason) => Padding(
                   padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
@@ -340,7 +341,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: _recentScans.length,
         separatorBuilder: (context, index) =>
-            Divider(height: 1, color: Colors.white.withOpacity(0.05)),
+            AppDivider(),
         itemBuilder: (context, index) {
           final scan = _recentScans[index];
           final isSafe = scan['status'] == 'SAFE';

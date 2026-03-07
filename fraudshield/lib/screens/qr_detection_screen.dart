@@ -1,9 +1,9 @@
 // lib/screens/qr_detection_screen.dart
 import 'package:flutter/material.dart';
-import '../design_system/components/app_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
@@ -43,8 +43,38 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
+    return ScreenScaffold(
+      title: 'QR Security Hub', // Changed title to match original AppBar text
+      actions: [ // Added actions to replicate original AppBar functionality
+        IconButton(
+          icon: Icon(LucideIcons.trash2, color: Colors.white38),
+          onPressed: () async {
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: DesignTokens.colors.backgroundDark,
+                title: Text('Clear History?',
+                    style: TextStyle(color: Colors.white)),
+                content: Text('This will remove all recent scans.',
+                    style: TextStyle(color: Colors.white70)),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Cancel')),
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Clear',
+                          style: TextStyle(color: Colors.red))),
+                ],
+              ),
+            );
+            if (confirm == true) {
+              await ScanHistoryService.clearHistory();
+              _loadHistory();
+            }
+          },
+        ),
+      ],
       body: Stack(
         children: [
           // Background Gradient
@@ -54,24 +84,23 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF0F172A),
+                  const Color(0xFF0F172A),
                   DesignTokens.colors.backgroundDark,
-                  Color(0xFF1E3A8A),
+                  const Color(0xFF1E3A8A),
                 ],
-                stops: [0.0, 0.5, 1.0],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
           ),
 
           // Content
-          SafeArea(
+          Padding(
+            padding: EdgeInsets.all(DesignTokens.spacing.xxl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildAppBar(),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -114,53 +143,6 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
     );
   }
 
-  Widget _buildAppBar() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          AppBackButton(color: Colors.white, onPressed: () => Navigator.pop(context)),
-          Text(
-            'QR Security Hub',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          IconButton(
-            icon: Icon(LucideIcons.trash2, color: Colors.white38),
-            onPressed: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: DesignTokens.colors.backgroundDark,
-                  title: Text('Clear History?',
-                      style: TextStyle(color: Colors.white)),
-                  content: Text('This will remove all recent scans.',
-                      style: TextStyle(color: Colors.white70)),
-                  actions: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: Text('Cancel')),
-                    TextButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        child: Text('Clear',
-                            style: TextStyle(color: Colors.red))),
-                  ],
-                ),
-              );
-              if (confirm == true) {
-                await ScanHistoryService.clearHistory();
-                _loadHistory();
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildHeroScanButton() {
     return GestureDetector(

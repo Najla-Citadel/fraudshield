@@ -6,8 +6,8 @@ import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../design_system/components/app_back_button.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -84,57 +84,25 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Report History',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return ScreenScaffold(
+      title: 'Report History',
+      actions: [
+        IconButton(
+          icon: const Icon(LucideIcons.refreshCw, color: Colors.white, size: 20),
+          onPressed: _fetchReports,
+          tooltip: 'Refresh',
         ),
-        leading: const AppBackButton(),
-        actions: [
-          IconButton(
-            icon: Icon(LucideIcons.refreshCw,
-                color: Colors.white, size: 20),
-            onPressed: _fetchReports,
-            tooltip: 'Refresh',
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  DesignTokens.colors.backgroundDark, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
-          ),
-          SafeArea(
-            child: _isLoading
-                ? _buildLoadingState()
-                : _errorMessage != null
-                    ? ErrorState(
-                        onRetry: _fetchReports,
-                        message: _errorMessage!,
-                      )
-                    : _reports.isEmpty
-                        ? _buildEmptyState()
-                        : _buildReportList(),
-          ),
-        ],
-      ),
+      ],
+      body: _isLoading
+          ? _buildLoadingState()
+          : _errorMessage != null
+              ? ErrorState(
+                  onRetry: _fetchReports,
+                  message: _errorMessage!,
+                )
+              : _reports.isEmpty
+                  ? _buildEmptyState()
+                  : _buildReportList(),
     );
   }
 

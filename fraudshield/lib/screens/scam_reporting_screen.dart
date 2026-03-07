@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../widgets/selection_sheet.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 import '../widgets/adaptive_text_field.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -919,7 +920,6 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildReviewCard() {
-    final colors = DesignTokens.colors;
     return GlassSurface(
       borderRadius: 24,
       padding: EdgeInsets.all(DesignTokens.spacing.xxl),
@@ -937,7 +937,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   : 'Multiple details'),
           Padding(
             padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
-            child: Divider(color: colors.textLight.withValues(alpha: 0.1)),
+            child: AppDivider(),
           ),
           _ReviewItem(label: 'Evidence', value: _selectedFileName ?? 'None'),
         ],

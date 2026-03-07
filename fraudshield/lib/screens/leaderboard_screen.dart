@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../design_system/components/app_back_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 
@@ -44,24 +44,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          'GLOBAL LEADERBOARD',
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: Colors.white.withOpacity(0.7),
-            letterSpacing: 2.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: const AppBackButton(color: Colors.white),
-      ),
+    return ScreenScaffold(
+      title: 'Leaderboard',
       body: _isLoading
           ? AppLoadingIndicator.center()
           : Stack(

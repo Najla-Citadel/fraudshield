@@ -11,6 +11,7 @@ import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -707,7 +708,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               ),
             ),
             if (r.transcript.isNotEmpty) ...[
-              Divider(height: 48),
+                AppDivider(),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text('Transcript Analysis',

@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_back_button.dart';
+import '../design_system/components/app_divider.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../widgets/error_state.dart';
 import 'dart:math' as math;
@@ -233,14 +234,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                 child: Column(
                   children: [
                     _buildAmountRow(score, recipient),
-                    Divider(color: Color(0xFF1E2D45), height: 1),
+                    AppDivider(),
                     _buildInfoRow(
                       icon: LucideIcons.calendar,
                       label: 'Date',
                       value: _formatDate(_transaction!['createdAt']),
                     ),
                     if (_transaction!['paymentMethod'] != null) ...[
-                      Divider(color: Color(0xFF1E2D45), height: 1),
+                      AppDivider(),
                       _buildInfoRow(
                         icon: LucideIcons.creditCard,
                         label: 'Method',
@@ -248,14 +249,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                       ),
                     ],
                     if (_transaction!['platform'] != null) ...[
-                      Divider(color: Color(0xFF1E2D45), height: 1),
+                      AppDivider(),
                       _buildInfoRow(
                         icon: _typeIcon(type),
                         label: 'Source',
                         value: _transaction!['platform'].toString(),
                       ),
                     ],
-                    Divider(color: Color(0xFF1E2D45), height: 1),
+                    AppDivider(),
                     _buildInfoRow(
                       icon: LucideIcons.hash,
                       label: 'Check ID',
@@ -338,7 +339,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                     // Optional threat tags
                     if (metadata.containsKey('threats') &&
                         (metadata['threats'] as List).isNotEmpty) ...[
-                      Divider(color: Color(0xFF1E2D45), height: 1),
+                      AppDivider(),
                       Padding(
                         padding: EdgeInsets.all(DesignTokens.spacing.lg),
                         child: Column(
@@ -362,7 +363,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
                     if (metadata.containsKey('communityReports') &&
                         (metadata['communityReports'] as int? ?? 0) > 0) ...[
-                      Divider(color: Color(0xFF1E2D45), height: 1),
+                      AppDivider(),
                       _buildInfoRow(
                         icon: LucideIcons.users,
                         label: 'Community Reports',

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../design_system/components/app_back_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import 'package:provider/provider.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_divider.dart';
 import '../providers/auth_provider.dart';
 
 class StatusDetailsScreen extends StatelessWidget {
@@ -34,50 +35,34 @@ class StatusDetailsScreen extends StatelessWidget {
     final totalPoints = authProvider.user?.profile?.totalPoints ?? 0;
     final tier = _calculateTier(totalPoints);
 
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: const AppBackButton(color: Colors.white),
-        title: Text(
-          'Status Details',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        centerTitle: true,
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
-            child: Column(
-              children: [
-                SizedBox(height: 32),
-                _buildShieldHero(tier),
-                SizedBox(height: 40),
-                _buildTierProgress(totalPoints),
-                SizedBox(height: 48),
-                _buildBenefitSection(
-                  title: 'CURRENT BENEFITS',
-                  benefits: _getBenefitsForTier(tier, true),
-                ),
-                SizedBox(height: 40),
-                if (tier != 'Diamond')
-                  _buildBenefitSection(
-                    title: 'LOCKED AT ${_getNextTierName(tier)}',
-                    benefits: _getBenefitsForTier(_getNextTierName(tier).toLowerCase(), false),
-                  ),
-                SizedBox(height: 120),
-              ],
+    return ScreenScaffold(
+      title: 'Status Details',
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
+        child: Column(
+          children: [
+            const SizedBox(height: 32),
+            _buildShieldHero(tier),
+            const SizedBox(height: 40),
+            _buildTierProgress(totalPoints),
+            const SizedBox(height: 48),
+            _buildBenefitSection(
+              title: 'CURRENT BENEFITS',
+              benefits: _getBenefitsForTier(tier, true),
             ),
-          ),
-          Positioned(
-            left: 24,
-            right: 24,
-            bottom: 32,
-            child: _buildHowToLevelUpButton(context),
-          ),
-        ],
+            const SizedBox(height: 40),
+            if (tier != 'Diamond')
+              _buildBenefitSection(
+                title: 'LOCKED AT ${_getNextTierName(tier)}',
+                benefits: _getBenefitsForTier(_getNextTierName(tier).toLowerCase(), false),
+              ),
+            const SizedBox(height: 120),
+          ],
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: _buildHowToLevelUpButton(context),
       ),
     );
   }
@@ -349,9 +334,7 @@ class StatusDetailsScreen extends StatelessWidget {
                 children: [
                   _buildBenefitTile(item),
                   if (index < benefits.length - 1)
-                    Divider(
-                      height: 1,
-                      color: Colors.white.withOpacity(0.05),
+                    AppDivider(
                       indent: 70,
                     ),
                 ],

@@ -1606,16 +1606,12 @@ class _BigActionButton extends StatefulWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
-  final bool isAlert;
-  final bool isLocked;
 
   const _BigActionButton({
     required this.label,
     required this.icon,
     required this.color,
     required this.onTap,
-    this.isAlert = false,
-    this.isLocked = false,
   });
 
   @override
@@ -1677,7 +1673,7 @@ class _BigActionButtonState extends State<_BigActionButton> {
                     Icon(
                       widget.icon,
                       size: 32,
-                      color: widget.isAlert ? Colors.orange : Colors.white,
+                      color: Colors.white,
                     ),
                     SizedBox(height: 12),
                     Text(
@@ -1694,13 +1690,6 @@ class _BigActionButtonState extends State<_BigActionButton> {
                     ),
                   ],
                 ),
-                if (widget.isLocked)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Icon(Icons.lock,
-                        size: 16, color: Colors.white.withOpacity(0.7)),
-                  ),
               ],
             ),
           ),
@@ -1715,86 +1704,67 @@ class _StatusItem extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isActive;
-  final VoidCallback? onTap;
-  final bool isLocked;
 
   const _StatusItem({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.isActive,
-    this.onTap,
-    this.isLocked = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(DesignTokens.spacing.lg),
-        decoration: BoxDecoration(
-          color: Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
-          border: onTap != null
-              ? Border.all(color: Colors.white.withOpacity(0.05))
-              : null,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.blueAccent),
+    return Container(
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              shape: BoxShape.circle,
             ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+            child: Icon(icon, color: Colors.blueAccent),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isLocked)
-              Padding(
-                padding: EdgeInsets.only(left: DesignTokens.spacing.sm),
-                child: Icon(Icons.lock,
-                    color: Colors.white.withOpacity(0.5), size: 20),
-              )
-            else if (isActive)
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: DesignTokens.colors.accentGreen,
-                  shape: BoxShape.circle,
-                  boxShadow: DesignTokens.shadows.sm,
                 ),
-              )
-            else if (onTap != null)
-              Icon(Icons.arrow_forward_ios,
-                  size: 14, color: Colors.white.withOpacity(0.3)),
-          ],
-        ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isActive)
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: DesignTokens.colors.accentGreen,
+                shape: BoxShape.circle,
+                boxShadow: DesignTokens.shadows.sm,
+              ),
+            ),
+        ],
       ),
     );
   }

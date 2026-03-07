@@ -5,6 +5,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 import '../widgets/glass_surface.dart';
 import '../services/risk_evaluator.dart';
 
@@ -249,7 +250,8 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                 )),
           
           if (res.extractedLinks.isNotEmpty) ...[
-            Divider(height: 32),
+            AppDivider(),
+            SizedBox(height: 16),
             Text('Embedded Links Detected', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             SizedBox(height: 12),
             Container(
@@ -278,7 +280,8 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
           ],
 
           if (res.dangerousPermissions.isNotEmpty) ...[
-            Divider(height: 32),
+            AppDivider(),
+            SizedBox(height: 16),
             Text('Dangerous Permissions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             SizedBox(height: 12),
             Wrap(
@@ -295,7 +298,8 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
             ),
           ],
 
-          Divider(height: 32),
+          AppDivider(),
+          SizedBox(height: 16),
           _detailRow('File Name', _selectedFileName ?? '-'),
           _detailRow('SHA-256', res.sha256 != null ? '${res.sha256!.substring(0, 8)}...${res.sha256!.substring(res.sha256!.length - 8)}' : '-'),
         ],

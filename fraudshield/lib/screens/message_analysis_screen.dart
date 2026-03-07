@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../design_system/components/app_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_divider.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_snackbar.dart';
@@ -157,7 +158,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
           ),
           if (_result!.reasons.isNotEmpty) ...[
             SizedBox(height: 16),
-            Divider(color: Colors.white10),
+            AppDivider(),
             SizedBox(height: 16),
             ..._result!.reasons.map((r) => Padding(
                   padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),

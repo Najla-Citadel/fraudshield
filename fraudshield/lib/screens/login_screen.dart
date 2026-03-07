@@ -264,8 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               Expanded(
-                                  child: Divider(
-                                      color: colors.textLight.withValues(alpha: 0.2))),
+                                  child: AppDivider()),
                             ],
                           ),
                           SizedBox(height: 24),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
+import 'package:fraudshield/design_system/components/app_divider.dart';
 
 class SettingsGroup extends StatelessWidget {
   final String? title;
@@ -15,6 +16,7 @@ class SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = DesignTokens.colors;
     return Container(
       margin: margin ?? EdgeInsets.only(bottom: DesignTokens.spacing.xxl),
       child: Column(
@@ -26,7 +28,7 @@ class SettingsGroup extends StatelessWidget {
               child: Text(
                 title!.toUpperCase(),
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: colors.textLight.withValues(alpha: 0.5),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -35,18 +37,15 @@ class SettingsGroup extends StatelessWidget {
             ),
           Container(
             decoration: BoxDecoration(
-              color: Color(0xFF1E293B),
+              color: colors.glassDark,
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-              border: Border.all(color: Colors.white.withOpacity(0.05)),
+              border: Border.all(color: colors.divider.withValues(alpha: 0.5)),
             ),
             child: Column(
               children: [
                 for (int i = 0; i < items.length; i++) ...[
                   if (i > 0)
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.white.withOpacity(0.05),
+                    AppDivider(
                       indent: 56, // Align with text start
                     ),
                   items[i],
@@ -84,17 +83,17 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = isDestructive ? Colors.redAccent : (iconColor ?? Colors.blueAccent);
+    final colors = DesignTokens.colors;
+    final color = isDestructive ? colors.error : (iconColor ?? colors.info);
     final bgColor = isDestructive 
-        ? Colors.redAccent.withOpacity(0.1) 
-        : (iconBgColor ?? color.withOpacity(0.1));
+        ? colors.error.withValues(alpha: 0.1) 
+        : (iconBgColor ?? color.withValues(alpha: 0.1));
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md), // For ripple effect if needed
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.md),
           child: Row(
@@ -116,7 +115,7 @@ class SettingsTile extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        color: isDestructive ? Colors.redAccent : Colors.white,
+                        color: isDestructive ? colors.error : colors.textLight,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -125,7 +124,7 @@ class SettingsTile extends StatelessWidget {
                       Text(
                         subtitle!,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                          color: colors.textLight.withValues(alpha: 0.5),
                           fontSize: 13,
                         ),
                       ),
@@ -137,7 +136,7 @@ class SettingsTile extends StatelessWidget {
               else
                 Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Colors.white.withOpacity(0.2),
+                  color: colors.textLight.withValues(alpha: 0.2),
                   size: 16,
                 ),
             ],

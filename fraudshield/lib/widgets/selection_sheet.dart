@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import '../design_system/components/app_divider.dart';
 
 class SelectionSheet {
   static Future<T?> show<T>({
@@ -62,7 +63,7 @@ class SelectionSheet {
                 child: ListView.separated(
                   shrinkWrap: true,
                   itemCount: options.length,
-                  separatorBuilder: (_, __) => Divider(height: 1),
+                  separatorBuilder: (_, __) => AppDivider(),
                   itemBuilder: (context, index) {
                     final option = options[index];
                     return ListTile(

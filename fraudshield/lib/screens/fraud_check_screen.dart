@@ -465,7 +465,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
         physics: const NeverScrollableScrollPhysics(),
         itemCount: _recentChecks.length,
         separatorBuilder: (context, index) =>
-            Divider(color: Colors.white.withOpacity(0.05), height: 1),
+            AppDivider(),
         itemBuilder: (context, index) {
           final scan = _recentChecks[index];
           final value =

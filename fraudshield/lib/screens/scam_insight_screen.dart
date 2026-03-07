@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 import 'scam_map_screen.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
@@ -477,7 +478,7 @@ class _LocalActivityCard extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
-            child: Divider(color: Color(0xFFF3F4F6), thickness: 2),
+            child: AppDivider(thickness: 2, color: Color(0xFFF3F4F6)),
           ),
           Text(
             'Loan approval scam on the rise locally.',
@@ -593,9 +594,9 @@ class _RecentFeedList extends StatelessWidget {
       child: Column(
         children: [
           _FeedItem(icon: LucideIcons.messageSquare, title: 'New scam number', subtitle: 'reported', time: '2h ago', color: Colors.orange),
-          Divider(height: 1, color: Color(0xFFF3F4F6)),
+          AppDivider(height: 1, color: Color(0xFFF3F4F6)),
           _FeedItem(icon: LucideIcons.mail, title: 'Fake bank SMS', subtitle: 'alert', time: '5h ago', color: Colors.redAccent),
-          Divider(height: 1, color: Color(0xFFF3F4F6)),
+          AppDivider(height: 1, color: Color(0xFFF3F4F6)),
           _FeedItem(icon: LucideIcons.shoppingBag, title: 'Shopee refund call', subtitle: 'scam', time: '8h ago', color: Colors.orange.shade700),
         ],
       ),

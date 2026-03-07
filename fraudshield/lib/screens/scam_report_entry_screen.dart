@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../design_system/components/app_back_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/tokens/typography.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
 import '../l10n/app_localizations.dart';
@@ -15,73 +15,46 @@ class ScamReportEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = DesignTokens.colors;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A),
-            DesignTokens.colors.backgroundDark,
-            Color(0xFF1E3A8A),
-          ],
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: AppBackButton(color: colors.textLight),
-          title: Text(
-            l10n.scamReportTitle,
-            style: DesignTypography.bodyLg.copyWith(
-              color: colors.textLight,
-              fontWeight: FontWeight.bold,
+    return ScreenScaffold(
+      title: l10n.scamReportTitle,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SecurityTipsCard(tips: [
+              'Provide as much detail as possible to help the community.',
+              'Screenshots of conversations or transactions are valuable evidence.',
+              'Your reports help others avoid similar scams.',
+            ]),
+            SizedBox(height: 32),
+            _buildEntryCard(
+              context,
+              title: 'Report New Scam',
+              subtitle: 'Start the 4-step wizard to report a scammer.',
+              icon: LucideIcons.shieldAlert,
+              color: DesignTokens.colors.accentGreen,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const ScamReportingScreen()),
+              ),
             ),
-          ),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SecurityTipsCard(tips: [
-                'Provide as much detail as possible to help the community.',
-                'Screenshots of conversations or transactions are valuable evidence.',
-                'Your reports help others avoid similar scams.',
-              ]),
-              SizedBox(height: 32),
-              _buildEntryCard(
+            SizedBox(height: 16),
+            _buildEntryCard(
+              context,
+              title: 'My Report History',
+              subtitle: 'View and track your previous submissions.',
+              icon: LucideIcons.history,
+              color: DesignTokens.colors.primary,
+              onTap: () => Navigator.push(
                 context,
-                title: 'Report New Scam',
-                subtitle: 'Start the 4-step wizard to report a scammer.',
-                icon: LucideIcons.shieldAlert,
-                color: DesignTokens.colors.accentGreen,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const ScamReportingScreen()),
-                ),
+                MaterialPageRoute(
+                    builder: (_) => const ReportHistoryScreen()),
               ),
-              SizedBox(height: 16),
-              _buildEntryCard(
-                context,
-                title: 'My Report History',
-                subtitle: 'View and track your previous submissions.',
-                icon: LucideIcons.history,
-                color: DesignTokens.colors.primary,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const ReportHistoryScreen()),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -105,7 +78,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(DesignTokens.spacing.lg),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             child: Icon(icon, color: color, size: 32),
@@ -123,7 +96,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: colors.textLight.withValues(alpha: 0.5),
+                    color: colors.textLight.withOpacity(0.5),
                     fontSize: 13,
                   ),
                 ),
@@ -132,7 +105,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           ),
           Icon(
             LucideIcons.chevronRight,
-            color: colors.textLight.withValues(alpha: 0.3),
+            color: colors.textLight.withOpacity(0.3),
             size: 20,
           ),
         ],

@@ -9,6 +9,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../design_system/components/app_divider.dart';
 import '../l10n/app_localizations.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -261,7 +262,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   style: TextStyle(color: colors.textLight.withValues(alpha: 0.55), fontSize: 13),
                 ),
                 SizedBox(height: 20),
-                Divider(color: colors.textLight.withValues(alpha: 0.1)),
+                AppDivider(),
                 SizedBox(height: 16),
                 ...([
                   'AI Real-time SMS Blocking',
@@ -509,7 +510,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ],
           ),
           SizedBox(height: 12),
-          Divider(color: colors.textLight.withValues(alpha: 0.06)),
+          AppDivider(),
           SizedBox(height: 4),
           ...features.map((f) => _featureRow(f.label, f.basic, f.premium, showActivePlan: showActivePlan)),
         ],

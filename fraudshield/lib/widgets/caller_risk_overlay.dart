@@ -8,6 +8,7 @@ import '../app_router.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_divider.dart';
 
 class CallerRiskOverlay extends StatefulWidget {
   final Map<String, dynamic>? callerData;
@@ -343,7 +344,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
         ],
 
         SizedBox(height: 24),
-        Divider(color: Colors.white10),
+        AppDivider(),
         SizedBox(height: 16),
 
         // Action buttons - Row 1

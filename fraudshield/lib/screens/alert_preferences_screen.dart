@@ -4,6 +4,7 @@ import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class AlertPreferencesScreen extends StatefulWidget {
   const AlertPreferencesScreen({super.key});
@@ -102,14 +103,8 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        title: Text('Alert Settings', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: DesignTokens.colors.backgroundDark,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+    return ScreenScaffold(
+      title: 'Alert Settings',
       body: _isLoading
           ? AppLoadingIndicator.center(color: DesignTokens.colors.primary)
           : SingleChildScrollView(
@@ -259,12 +254,15 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
               ),
             ),
       bottomNavigationBar: _isLoading ? null : SafeArea(
-        child: AppButton(
-          onPressed: (_isSaving || !_isActive && _selectedCategories.isEmpty) ? null : _savePreferences,
-          label: 'Save Preferences',
-          variant: AppButtonVariant.primary,
-          isLoading: _isSaving,
-          width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.all(DesignTokens.spacing.lg),
+          child: AppButton(
+            onPressed: (_isSaving || (!_isActive && _selectedCategories.isEmpty)) ? null : _savePreferences,
+            label: 'Save Preferences',
+            variant: AppButtonVariant.primary,
+            isLoading: _isSaving,
+            width: double.infinity,
+          ),
         ),
       ),
     );

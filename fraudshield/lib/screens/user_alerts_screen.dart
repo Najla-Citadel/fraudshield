@@ -3,28 +3,26 @@ import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
 import '../design_system/components/app_snackbar.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
+import 'package:fraudshield/design_system/layouts/screen_scaffold.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class UserAlertsScreen extends StatelessWidget {
   const UserAlertsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Security Alerts'),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.check_circle_outline, color: Colors.white),
-            tooltip: 'Mark all as read',
-            onPressed: () {
-              NotificationService.instance.clearAlerts();
-              AppSnackBar.showInfo(context, 'All alerts cleared');
-            },
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
+    return ScreenScaffold(
+      title: 'Security Alerts',
+      actions: [
+        IconButton(
+          icon: const Icon(LucideIcons.checkCircle, color: Colors.white),
+          tooltip: 'Mark all as read',
+          onPressed: () {
+            NotificationService.instance.clearAlerts();
+            AppSnackBar.showInfo(context, 'All alerts cleared');
+          },
+        ),
+      ],
       body: Consumer<NotificationService>(
         builder: (context, notificationService, _) {
           final alerts = notificationService.alerts;
@@ -41,7 +39,7 @@ class UserAlertsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: DesignTokens.colors.textLight,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -49,7 +47,7 @@ class UserAlertsScreen extends StatelessWidget {
                     'No new threats detected.',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: DesignTokens.colors.textLight.withOpacity(0.6),
                     ),
                   ),
                 ],
@@ -66,24 +64,24 @@ class UserAlertsScreen extends StatelessWidget {
                 margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
                 padding: EdgeInsets.all(DesignTokens.spacing.lg),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(color: Colors.white.withOpacity(0.1)),
                   boxShadow: DesignTokens.shadows.sm,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.red[50],
+                        color: Colors.red.withOpacity(0.1),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.red[100]!),
+                        border: Border.all(color: Colors.red.withOpacity(0.2)),
                       ),
-                      child: Icon(Icons.warning_amber_rounded, color: Colors.red),
+                      child: const Icon(LucideIcons.alertTriangle, color: Colors.red),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,23 +91,23 @@ class UserAlertsScreen extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             alert['message'] ?? 'Suspicious activity detected.',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[700],
+                              color: Colors.white.withOpacity(0.7),
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             _formatDate(alert['timestamp']),
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[500],
+                              color: Colors.white.withOpacity(0.4),
                             ),
                           ),
                         ],

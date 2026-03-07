@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../design_system/components/app_empty_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 
 class PointsHistoryScreen extends StatefulWidget {
@@ -39,11 +40,8 @@ class _PointsHistoryScreenState extends State<PointsHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Points History'),
-        backgroundColor: DesignTokens.colors.primary,
-      ),
+    return ScreenScaffold(
+      title: 'Points History',
       body: _loading
           ? AppLoadingIndicator.center()
           : _history.isEmpty
