@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
@@ -93,6 +94,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = DesignTokens.colors;
     return ScreenScaffold(
       showBackButton: true,
       extendBodyBehindAppBar: true,
@@ -125,10 +127,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Text(
                       _isCodeSent ? 'Verify' : 'Reset Password',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                      style: DesignTypography.h2.copyWith(
+                        color: colors.textLight,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -136,9 +137,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ? 'Enter the 6-digit code sent to your email'
                           : 'Enter your email to receive a reset code',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
-                        fontSize: 14,
+                      style: DesignTypography.bodySm.copyWith(
+                        color: colors.textLight.withValues(alpha: 0.5),
                         height: 1.5,
                       ),
                     ),

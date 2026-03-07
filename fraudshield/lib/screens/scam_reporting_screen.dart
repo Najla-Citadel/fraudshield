@@ -13,6 +13,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/glass_surface.dart';
 import '../l10n/app_localizations.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
 
 class ScamReportingScreen extends StatefulWidget {
@@ -256,24 +257,26 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           if (mounted) {
             proceed = await showDialog<bool>(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (context) {
+                    return AlertDialog(
                     backgroundColor: DesignTokens.colors.backgroundDark,
-                    title: const Text('Confirm Location',
-                        style: TextStyle(color: Colors.white)),
+                    title: Text('Confirm Location',
+                        style: TextStyle(color: DesignTokens.colors.textLight)),
                     content: Text(
                         'The selected state ($selectedState) is far from your current location. Are you sure you want to report for this area?',
-                        style: const TextStyle(color: Colors.white70)),
+                        style: TextStyle(color: DesignTokens.colors.textLight.withValues(alpha: 0.7))),
                     actions: [
                       TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel')),
+                          child: Text('Cancel', style: TextStyle(color: DesignTokens.colors.textLight.withValues(alpha: 0.5)))),
                       TextButton(
                           onPressed: () => Navigator.pop(context, true),
                           child: Text('Yes, Correct',
                               style: TextStyle(color: DesignTokens.colors.accentGreen))),
                     ],
-                  ),
-                ) ??
+                  );
+                },
+              ) ??
                 false;
           }
         }
@@ -360,18 +363,19 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
 
       // Consolidate 'target' based on type
       String targetVal = '';
-      if (_targetType == 'Phone')
+      if (_targetType == 'Phone') {
         targetVal = _phoneController.text.trim();
-      else if (_targetType == 'Bank')
+      } else if (_targetType == 'Bank') {
         targetVal =
             '${_bankNameController.text.trim()} - ${_bankAccountController.text.trim()}';
-      else if (_targetType == 'Social')
+      } else if (_targetType == 'Social') {
         targetVal =
             '${_socialPlatformController.text.trim()}: ${_socialHandleController.text.trim()}';
-      else if (_targetType == 'Web')
+      } else if (_targetType == 'Web') {
         targetVal = _websiteUrlController.text.trim();
-      else
+      } else {
         targetVal = 'General Report';
+      }
 
       await ApiService.instance.submitScamReport(
         type: _targetType,
@@ -443,6 +447,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildProgressBar() {
+    final colors = DesignTokens.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Column(
@@ -458,13 +463,13 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   decoration: BoxDecoration(
                     color: isActive
                         ? DesignTokens.colors.primary
-                        : Colors.white.withOpacity(0.1),
+                        : colors.textLight.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: isActive
                         ? [
                             BoxShadow(
                               color:
-                                  DesignTokens.colors.primary.withOpacity(0.3),
+                                  DesignTokens.colors.primary.withValues(alpha: 0.3),
                               blurRadius: 4,
                               offset: const Offset(0, 1),
                             )
@@ -481,11 +486,11 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             children: [
               Text('Step ${_currentStep + 1} of $_totalSteps',
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: colors.textLight.withValues(alpha: 0.5),
                       fontSize: 12)),
               Text(_getStepTitle(),
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: colors.textLight,
                       fontWeight: FontWeight.bold,
                       fontSize: 12)),
             ],
@@ -511,6 +516,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildStep1Identity() {
+    final colors = DesignTokens.colors;
     return AnimationLimiter(
       child: ListView(
         padding: const EdgeInsets.all(24),
@@ -522,14 +528,11 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           ),
           children: [
             Text(AppLocalizations.of(context)!.reportIdentityTitle,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold)),
+                style: DesignTypography.h3),
             const SizedBox(height: 8),
             Text(AppLocalizations.of(context)!.reportIdentityDesc,
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.6), fontSize: 14)),
+                    color: colors.textLight.withValues(alpha: 0.6), fontSize: 14)),
             const SizedBox(height: 24),
             GridView.builder(
               shrinkWrap: true,
@@ -560,8 +563,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       Text(opt['label'],
                           style: TextStyle(
                             color: isSelected
-                                ? Colors.white
-                                : Colors.white.withOpacity(0.5),
+                                ? colors.textLight
+                                : colors.textLight.withValues(alpha: 0.5),
                             fontSize: 13,
                             fontWeight: isSelected
                                 ? FontWeight.bold
@@ -581,6 +584,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildIdentityFields() {
+    final colors = DesignTokens.colors;
     if (_targetType == 'Phone') {
       return AdaptiveTextField(
         controller: _phoneController,
@@ -588,8 +592,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
         keyboardType: TextInputType.phone,
         prefixIcon: LucideIcons.phone,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
-        textColor: Colors.white,
+        fillColor: colors.textLight.withValues(alpha: 0.05),
+        textColor: colors.textLight,
       );
     }
     if (_targetType == 'Bank') {
@@ -600,8 +604,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             label: 'Bank Name',
             prefixIcon: LucideIcons.landmark,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            textColor: Colors.white,
+            fillColor: colors.textLight.withValues(alpha: 0.05),
+            textColor: colors.textLight,
           ),
           const SizedBox(height: 16),
           AdaptiveTextField(
@@ -610,8 +614,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             keyboardType: TextInputType.number,
             prefixIcon: LucideIcons.creditCard,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            textColor: Colors.white,
+            fillColor: colors.textLight.withValues(alpha: 0.05),
+            textColor: colors.textLight,
           ),
         ],
       );
@@ -624,8 +628,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             label: 'Platform (e.g. FB, Telegram)',
             prefixIcon: LucideIcons.globe,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            textColor: Colors.white,
+            fillColor: colors.textLight.withValues(alpha: 0.05),
+            textColor: colors.textLight,
           ),
           const SizedBox(height: 16),
           AdaptiveTextField(
@@ -633,8 +637,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             label: 'Handle / Username',
             prefixIcon: LucideIcons.atSign,
             filled: true,
-            fillColor: Colors.white.withOpacity(0.05),
-            textColor: Colors.white,
+            fillColor: colors.textLight.withValues(alpha: 0.05),
+            textColor: colors.textLight,
           ),
         ],
       );
@@ -645,14 +649,15 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
         label: 'Website URL / App Link',
         prefixIcon: LucideIcons.globe,
         filled: true,
-        fillColor: Colors.white.withOpacity(0.05),
-        textColor: Colors.white,
+        fillColor: colors.textLight.withValues(alpha: 0.05),
+        textColor: colors.textLight,
       );
     }
     return const SizedBox();
   }
 
   Widget _buildStep2Category() {
+    final colors = DesignTokens.colors;
     final categories = [
       {
         'label': 'Investment Scam',
@@ -692,11 +697,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             child: FadeInAnimation(child: widget),
           ),
           children: [
-            const Text('Select Category',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Text('Select Category',
+                style: DesignTypography.h3),
             const SizedBox(height: 24),
             ...categories.map((cat) {
               final isSelected = _selectedCategory == cat['label'];
@@ -714,7 +716,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.1),
+                          color: color.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(cat['icon'] as IconData,
@@ -722,8 +724,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       ),
                       const SizedBox(width: 16),
                       Text(cat['label'] as String,
-                          style: const TextStyle(
-                              color: Colors.white,
+                          style: TextStyle(
+                              color: colors.textLight,
                               fontWeight: FontWeight.bold)),
                       const Spacer(),
                       if (isSelected)
@@ -732,7 +734,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   ),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -740,6 +742,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildStep3Details() {
+    final colors = DesignTokens.colors;
     return AnimationLimiter(
       child: ListView(
         padding: const EdgeInsets.all(24),
@@ -750,19 +753,16 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             child: FadeInAnimation(child: widget),
           ),
           children: [
-            const Text('Tell us the story',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Text('Tell us the story',
+                style: DesignTypography.h3),
             const SizedBox(height: 24),
             AdaptiveTextField(
               controller: _descController,
               label: 'Describe what happened...',
               maxLines: 5,
               filled: true,
-              fillColor: Colors.white.withOpacity(0.05),
-              textColor: Colors.white,
+              fillColor: colors.textLight.withValues(alpha: 0.05),
+              textColor: colors.textLight,
             ),
             const SizedBox(height: 24),
             GestureDetector(
@@ -774,8 +774,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   placeholder: 'Tap to select state',
                   prefixIcon: LucideIcons.mapPin,
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.05),
-                  textColor: Colors.white,
+                  fillColor: colors.textLight.withValues(alpha: 0.05),
+                  textColor: colors.textLight,
                   suffixIcon: LucideIcons.chevronDown,
                 ),
               ),
@@ -789,6 +789,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildFileUpload() {
+    final colors = DesignTokens.colors;
     return GlassSurface(
       onTap: _pickFile,
       padding: const EdgeInsets.all(32),
@@ -802,7 +803,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               color: (_selectedFileName != null
                       ? DesignTokens.colors.accentGreen
                       : Colors.white)
-                  .withOpacity(0.05),
+                  .withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -810,8 +811,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   ? LucideIcons.checkCircle
                   : LucideIcons.uploadCloud,
               color: _selectedFileName != null
-                  ? DesignTokens.colors.accentGreen
-                  : Colors.white38,
+                  ? colors.accentGreen
+                  : colors.textLight.withValues(alpha: 0.38),
               size: 32,
             ),
           ),
@@ -820,8 +821,8 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             _selectedFileName ?? 'Upload Screenshot or Evidence',
             style: TextStyle(
               color: _selectedFileName != null
-                  ? DesignTokens.colors.accentGreen
-                  : Colors.white70,
+                  ? colors.accentGreen
+                  : colors.textLight.withValues(alpha: 0.7),
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
@@ -831,7 +832,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               padding: const EdgeInsets.only(top: 8),
               child: Text('JPG, PNG or PDF (Max 5MB)',
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.2),
+                      color: colors.textLight.withValues(alpha: 0.2),
                       fontSize: 11)),
             ),
         ],
@@ -840,6 +841,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildStep4Review() {
+    final colors = DesignTokens.colors;
     return AnimationLimiter(
       child: ListView(
         padding: const EdgeInsets.all(24),
@@ -850,16 +852,13 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
             child: FadeInAnimation(child: widget),
           ),
           children: [
-            const Text('Final Review',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Text('Final Review',
+                style: DesignTypography.h3),
             const SizedBox(height: 24),
             Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: DesignTokens.colors.primary.withOpacity(0.1),
+                  color: DesignTokens.colors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -871,7 +870,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       child: Text(
                         'This report will be analyzed by our AI system and shared with the community.',
                         style: TextStyle(
-                            color: DesignTokens.colors.primary.withOpacity(0.8),
+                            color: DesignTokens.colors.primary.withValues(alpha: 0.8),
                             fontSize: 13),
                       ),
                     ),
@@ -887,29 +886,29 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      DesignTokens.colors.primary.withOpacity(0.15),
-                      DesignTokens.colors.primary.withOpacity(0.05),
+                      DesignTokens.colors.primary.withValues(alpha: 0.15),
+                      DesignTokens.colors.primary.withValues(alpha: 0.05),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: DesignTokens.colors.primary.withOpacity(0.2),
+                    color: DesignTokens.colors.primary.withValues(alpha: 0.2),
                   ),
                 ),
               child: SwitchListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                title: const Text('Share with Community',
+                title: Text('Share with Community',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: colors.textLight,
                         fontWeight: FontWeight.bold,
                         fontSize: 14)),
                 subtitle: Text('Hide your identity while helping others.',
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: colors.textLight.withValues(alpha: 0.5),
                         fontSize: 12)),
                 value: _isPublic,
-                activeColor: DesignTokens.colors.success,
+                activeThumbColor: DesignTokens.colors.success,
                 onChanged: (val) => setState(() => _isPublic = val),
               ),
             ),
@@ -920,6 +919,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildReviewCard() {
+    final colors = DesignTokens.colors;
     return GlassSurface(
       borderRadius: 24,
       padding: const EdgeInsets.all(24),
@@ -935,9 +935,9 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               value: _phoneController.text.isNotEmpty
                   ? _phoneController.text
                   : 'Multiple details'),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(color: Colors.white10),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Divider(color: colors.textLight.withValues(alpha: 0.1)),
           ),
           _ReviewItem(label: 'Evidence', value: _selectedFileName ?? 'None'),
         ],
@@ -946,12 +946,13 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildBottomNav() {
+    final colors = DesignTokens.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.transparent,
         border: Border(
-            top: BorderSide(color: Colors.white.withOpacity(0.05))),
+            top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
       ),
       child: Row(
         children: [
@@ -964,9 +965,9 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Back',
+                child: Text('Back',
                     style: TextStyle(
-                        color: Colors.white70, fontWeight: FontWeight.bold)),
+                        color: colors.textLight.withValues(alpha: 0.7), fontWeight: FontWeight.bold)),
               ),
             ),
           if (_currentStep > 0) const SizedBox(width: 16),
@@ -987,6 +988,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   Widget _buildSuccessScreen() {
+    final colors = DesignTokens.colors;
     return ScreenScaffold(
       showBackButton: false,
       body: Center(
@@ -998,7 +1000,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: DesignTokens.colors.success.withOpacity(0.1),
+                  color: DesignTokens.colors.success.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(LucideIcons.checkCircle,
@@ -1006,15 +1008,12 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               ),
               const SizedBox(height: 32),
               Text(AppLocalizations.of(context)!.reportSubmitted,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold)),
+                  style: DesignTypography.h2),
               const SizedBox(height: 12),
               Text(AppLocalizations.of(context)!.reportSuccessDesc,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
+                      color: colors.textLight.withValues(alpha: 0.7),
                       fontSize: 15,
                       height: 1.5)),
               const SizedBox(height: 48),
@@ -1049,7 +1048,7 @@ class _ReviewItem extends StatelessWidget {
         children: [
           Text(label,
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.4), fontSize: 13)),
+                  color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
           Text(value,
               style: const TextStyle(
                   color: Colors.white,

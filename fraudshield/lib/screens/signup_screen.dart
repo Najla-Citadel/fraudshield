@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/typography.dart';
 import '../providers/auth_provider.dart';
 import 'email_verification_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -102,6 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = DesignTokens.colors;
     return ScreenScaffold(
       showBackButton: true,
       extendBodyBehindAppBar: true,
@@ -117,18 +119,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Text(
                 'Create Account',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                style: DesignTypography.h2.copyWith(
+                  color: colors.textLight,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Join the community to stay protected',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.5),
-                    ),
+                style: DesignTypography.bodyMd.copyWith(
+                  color: colors.textLight.withValues(alpha: 0.5),
+                ),
               ),
               const SizedBox(height: 32),
 
@@ -189,7 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 setState(() => _agreedToTerms = val ?? false),
                             activeColor: DesignTokens.colors.primary,
                             side: BorderSide(
-                                color: Colors.white.withValues(alpha: 0.3), width: 1.5),
+                                color: colors.textLight.withValues(alpha: 0.3), width: 1.5),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
                           ),
@@ -199,7 +200,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.6),
+                                  color: colors.textLight.withValues(alpha: 0.6),
                                   fontSize: 12,
                                   height: 1.5),
                               children: [
@@ -259,7 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   Text(
                     "Already have an account? ",
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                    style: TextStyle(color: colors.textLight.withValues(alpha: 0.5)),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),

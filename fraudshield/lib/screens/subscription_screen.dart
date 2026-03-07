@@ -7,6 +7,7 @@ import '../design_system/components/app_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
 
 class SubscriptionScreen extends StatefulWidget {
@@ -129,7 +130,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 width: 280, height: 280,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: DesignTokens.colors.accentGreen.withOpacity(0.08),
+                  color: DesignTokens.colors.accentGreen.withValues(alpha: 0.08),
                 ),
               ),
             ),
@@ -183,10 +184,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('FraudShield',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
+                    style: DesignTypography.h2),
                   Text('PREMIUM',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    style: DesignTypography.bodyXs.copyWith(
                       color: colors.accentGreen, fontWeight: FontWeight.bold, letterSpacing: 2.0)),
                 ],
               ),
@@ -196,7 +196,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           Text(
             'Next-gen AI protection for your digital wealth.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 14),
+            style: TextStyle(color: colors.textLight.withValues(alpha: 0.55), fontSize: 14),
           ),
         ],
       ),
@@ -233,32 +233,32 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: colors.accentGreen.withOpacity(0.1),
+              color: colors.accentGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: colors.accentGreen.withOpacity(0.4), width: 1.5),
+              border: Border.all(color: colors.accentGreen.withValues(alpha: 0.4), width: 1.5),
             ),
             child: Column(
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: colors.accentGreen.withOpacity(0.15),
+                    color: colors.accentGreen.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(LucideIcons.badgeCheck, color: colors.accentGreen, size: 44),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'You\'re a Premium Member!',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                  style: DesignTypography.h3,
                 ),
                 const SizedBox(height: 6),
                 Text(
                   _expiryText,
-                  style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13),
+                  style: TextStyle(color: colors.textLight.withValues(alpha: 0.55), fontSize: 13),
                 ),
                 const SizedBox(height: 20),
-                Divider(color: Colors.white.withOpacity(0.1)),
+                Divider(color: colors.textLight.withValues(alpha: 0.1)),
                 const SizedBox(height: 16),
                 ...([
                   'AI Real-time SMS Blocking',
@@ -271,7 +271,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     children: [
                       Icon(LucideIcons.checkCircle, color: colors.accentGreen, size: 18),
                       const SizedBox(width: 10),
-                      Text(f, style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 14)),
+                      Text(f, style: TextStyle(color: colors.textLight.withValues(alpha: 0.75), fontSize: 14)),
                     ],
                   ),
                 ))),
@@ -293,10 +293,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.05),
+                    color: colors.textLight.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.settings_outlined, color: Colors.white70, size: 20),
+                  child: Icon(Icons.settings_outlined, color: colors.textLight.withValues(alpha: 0.7), size: 20),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -304,11 +304,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Manage Subscription', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                      Text('Cancel or modify at any time', style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 12)),
+                      Text('Cancel or modify at any time', style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 12)),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: Colors.white38),
+                Icon(Icons.chevron_right_rounded, color: colors.textLight.withValues(alpha: 0.38)),
               ],
             ),
           ),
@@ -320,12 +320,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildToggle() {
+    final colors = DesignTokens.colors;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: colors.textLight.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -338,6 +339,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _toggleBtn(String text, bool isActive, {bool hasBadge = false}) {
+    final colors = DesignTokens.colors;
     return GestureDetector(
       onTap: () => setState(() => _isYearly = text == 'Yearly'),
       child: AnimatedContainer(
@@ -352,7 +354,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             Text(
               text,
               style: TextStyle(
-                color: isActive ? Colors.black : Colors.white,
+                color: isActive ? colors.textDark : colors.textLight,
                 fontWeight: FontWeight.bold, fontSize: 14,
               ),
             ),
@@ -360,8 +362,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(color: DesignTokens.colors.accentGreen, borderRadius: BorderRadius.circular(8)),
-                child: const Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black)),
+                decoration: BoxDecoration(color: colors.accentGreen, borderRadius: BorderRadius.circular(8)),
+                child: Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colors.textDark)),
               ),
             ],
           ],
@@ -371,6 +373,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildPlanCard(Map<String, dynamic> plan) {
+    final colors = DesignTokens.colors;
     final bool isPremium = (plan['price'] as num) > 0;
     final bool isCurrent = hasActiveSub && _activeSub!['planId'] == plan['id'];
     double monthlyPrice = (plan['price'] as num).toDouble();
@@ -391,12 +394,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         color: const Color(0xFF162032),
         borderRadius: BorderRadius.circular(28),
         border: isPremium
-            ? Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.5), width: 1.5)
-            : Border.all(color: Colors.white.withOpacity(0.06)),
+            ? Border.all(color: colors.accentGreen.withValues(alpha: 0.5), width: 1.5)
+            : Border.all(color: colors.textLight.withValues(alpha: 0.06)),
         gradient: isPremium
             ? LinearGradient(
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
-                colors: [DesignTokens.colors.accentGreen.withOpacity(0.07), Colors.transparent])
+                colors: [DesignTokens.colors.accentGreen.withValues(alpha: 0.07), Colors.transparent])
             : null,
       ),
       child: Column(
@@ -408,14 +411,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 Text(
                   plan['name'].toString().toUpperCase(),
                   style: TextStyle(
-                    color: isPremium ? DesignTokens.colors.accentGreen : Colors.white54,
+                    color: isPremium ? colors.accentGreen : colors.textLight.withValues(alpha: 0.54),
                     fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
                 ),
                 if (isPremium)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: DesignTokens.colors.accentGreen.withOpacity(0.15),
+                      color: DesignTokens.colors.accentGreen.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text('POPULAR', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
@@ -428,25 +431,25 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               children: [
                 TextSpan(
                   text: priceStr,
-                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0),
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colors.textLight, height: 1.0),
                 ),
                 TextSpan(
                   text: isPremium ? '/mo' : '',
-                  style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 16),
+                  style: TextStyle(color: colors.textLight.withValues(alpha: 0.4), fontSize: 16),
                 ),
               ],
             ),
           ),
           if (isPremium) ...[
             const SizedBox(height: 4),
-            Text(billingText, style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+            Text(billingText, style: TextStyle(color: colors.textLight.withValues(alpha: 0.4), fontSize: 12)),
           ],
           const SizedBox(height: 12),
           Text(
             isPremium
                 ? 'Complete AI-powered protection with real-time alerts.'
                 : 'Basic protection for everyday use.',
-            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13, height: 1.4),
+            style: TextStyle(color: colors.textLight.withValues(alpha: 0.6), fontSize: 13, height: 1.4),
           ),
           const Spacer(),
           SizedBox(
@@ -469,6 +472,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _buildFeatureComparison({bool showActivePlan = false}) {
+    final colors = DesignTokens.colors;
     final features = [
       _Feature('Community Reports', true, true),
       _Feature('AI Real-time SMS Blocking', true, true),
@@ -494,15 +498,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text('FREE', style: TextStyle(color: Colors.white.withOpacity(0.45), fontSize: 11, fontWeight: FontWeight.bold)),
-                    Text('PREMIUM', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text('FREE', style: TextStyle(color: colors.textLight.withValues(alpha: 0.45), fontSize: 11, fontWeight: FontWeight.bold)),
+                    Text('PREMIUM', style: TextStyle(color: colors.accentGreen, fontSize: 11, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Divider(color: Colors.white.withOpacity(0.06)),
+          Divider(color: colors.textLight.withValues(alpha: 0.06)),
           const SizedBox(height: 4),
           ...features.map((f) => _featureRow(f.label, f.basic, f.premium, showActivePlan: showActivePlan)),
         ],
@@ -511,13 +515,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _featureRow(String label, bool basic, bool premium, {bool showActivePlan = false}) {
+    final colors = DesignTokens.colors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
           Expanded(
             child: Text(label,
-              style: TextStyle(color: Colors.white.withOpacity(0.75), fontSize: 14)),
+              style: TextStyle(color: colors.textLight.withValues(alpha: 0.75), fontSize: 14)),
           ),
           SizedBox(
             width: 100,
@@ -535,7 +540,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   }
 
   Widget _checkIcon(bool enabled, {bool isPremium = false, bool isHighlighted = false}) {
-    if (!enabled) return Container(width: 20, height: 2, color: Colors.white.withOpacity(0.15));
+    final colors = DesignTokens.colors;
+    if (!enabled) return Container(width: 20, height: 2, color: colors.textLight.withValues(alpha: 0.15));
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
@@ -544,7 +550,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       ),
       child: Icon(Icons.check,
           size: 14,
-          color: (isPremium || isHighlighted) ? Colors.black : Colors.white54),
+          color: (isPremium || isHighlighted) ? colors.textDark : colors.textLight.withValues(alpha: 0.54)),
     );
   }
 
@@ -552,7 +558,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(color: DesignTokens.colors.accentGreen.withOpacity(0.35), blurRadius: 24, offset: const Offset(0, 6)),
+          BoxShadow(color: DesignTokens.colors.accentGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 6)),
         ],
       ),
       child: AppButton(

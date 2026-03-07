@@ -10,6 +10,7 @@ import 'forgot_password_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
@@ -157,6 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = DesignTokens.colors;
     return ScreenScaffold(
       showBackButton: false,
       extendBodyBehindAppBar: true,
@@ -183,24 +185,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           Text(
                             AppLocalizations.of(context)!.loginWelcomeBack,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                            style: DesignTypography.h2.copyWith(
+                              color: colors.textLight,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             AppLocalizations.of(context)!.loginSignInDesc,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.5),
-                                ),
+                            style: DesignTypography.bodyMd.copyWith(
+                              color: colors.textLight.withValues(alpha: 0.5),
+                            ),
                           ),
                           const SizedBox(height: 32),
                           AdaptiveTextField(
@@ -262,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     child: Text(
                                   AppLocalizations.of(context)!.loginOr,
                                   style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.4),
+                                    color: colors.textLight.withValues(alpha: 0.4),
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -270,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               Expanded(
                                   child: Divider(
-                                      color: Colors.white.withValues(alpha: 0.2))),
+                                      color: colors.textLight.withValues(alpha: 0.2))),
                             ],
                           ),
                           const SizedBox(height: 24),
@@ -292,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Text(
                     "Don’t have an account? ",
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                    style: TextStyle(color: colors.textLight.withValues(alpha: 0.7)),
                   ),
                   TextButton(
                     onPressed: () {

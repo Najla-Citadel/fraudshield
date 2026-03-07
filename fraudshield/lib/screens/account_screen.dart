@@ -12,6 +12,7 @@ import '../widgets/adaptive_text_field.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/tokens/typography.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate;
 import '../design_system/components/app_loading_indicator.dart';
@@ -284,7 +285,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               style: TextStyle(
                                 color: context.watch<AuthProvider>().isSubscribed
                                     ? Colors.amber
-                                    : Colors.white.withValues(alpha: 0.5),
+                                    : colors.textLight.withValues(alpha: 0.5),
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -292,7 +293,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             const SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: colors.textLight.withValues(alpha: 0.2),
                               size: 14,
                             ),
                           ],
@@ -307,7 +308,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: AppLocalizations.of(context)!.accountNotificationSetting,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.push(
@@ -326,14 +327,14 @@ class _AccountScreenState extends State<AccountScreen> {
                                   ? 'Bahasa Malaysia'
                                   : 'English',
                               style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.5),
+                                color: colors.textLight.withValues(alpha: 0.5),
                                 fontSize: 13,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Icon(
                               Icons.arrow_forward_ios,
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: colors.textLight.withValues(alpha: 0.2),
                               size: 14,
                             ),
                           ],
@@ -402,7 +403,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Log Test Transaction',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () {
@@ -421,7 +422,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: 'Transaction Journal',
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () {
@@ -472,7 +473,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: AppLocalizations.of(context)!.accountPrivacyPolicy,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
@@ -482,7 +483,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: AppLocalizations.of(context)!.accountTermsOfService,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
@@ -492,7 +493,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         title: AppLocalizations.of(context)!.accountManageConsent,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/privacy-settings'),
@@ -508,7 +509,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       child: Text(
                         AppLocalizations.of(context)!.accountDeleteAccount,
                         style: TextStyle(
-                          color: Colors.red.withValues(alpha: 0.7),
+                          color: colors.error.withValues(alpha: 0.7),
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
                         ),
@@ -519,7 +520,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   Text(
                     'Version 1.1.0',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: colors.textLight.withValues(alpha: 0.05),
                         ),
                   ),
                 ],
@@ -549,6 +550,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final colors = DesignTokens.colors;
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 24,
@@ -561,13 +563,13 @@ class _AccountScreenState extends State<AccountScreen> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.accountChangePasswordTitle,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: DesignTypography.h3,
                   ),
                   if (errorMessage != null) ...[
                     const SizedBox(height: 12),
                     Text(
                       errorMessage!,
-                      style: const TextStyle(color: Colors.red, fontSize: 13),
+                      style: TextStyle(color: colors.error, fontSize: 13),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -671,10 +673,7 @@ class _AccountScreenState extends State<AccountScreen> {
             children: [
               Text(
                 AppLocalizations.of(context)!.accountSelectLanguage,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                style: DesignTypography.h3,
               ),
               const SizedBox(height: 24),
               _buildLanguageItem('English', 'en', currentLocale == 'en', () {
@@ -696,11 +695,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Widget _buildLanguageItem(
       String name, String code, bool isSelected, VoidCallback onTap) {
+    final colors = DesignTokens.colors;
     return ListTile(
       onTap: onTap,
       leading: Text(code == 'en' ? '🇺🇸' : '🇲🇾',
           style: const TextStyle(fontSize: 24)),
-      title: Text(name, style: const TextStyle(color: Colors.white)),
+      title: Text(name, style: TextStyle(color: colors.textLight)),
       trailing: isSelected
           ? Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen)
           : null,
@@ -710,6 +710,7 @@ class _AccountScreenState extends State<AccountScreen> {
   // ================= COMPONENTS =================
 
   Widget _premiumProfileHeader() {
+    final colors = DesignTokens.colors;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
 
@@ -727,7 +728,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1), width: 1),
+                        color: colors.textLight.withValues(alpha: 0.1), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 50,
@@ -746,8 +747,8 @@ class _AccountScreenState extends State<AccountScreen> {
                     color: DesignTokens.colors.accentGreen,
                     shape: BoxShape.circle,
                   ),
-                    child: const Icon(Icons.camera_alt_rounded,
-                        color: Colors.white, size: 14),
+                    child: Icon(Icons.camera_alt_rounded,
+                        color: colors.textLight, size: 14),
                   ),
                 ),
               ],
@@ -759,11 +760,7 @@ class _AccountScreenState extends State<AccountScreen> {
             children: [
               Text(
                 user?.fullName ?? 'Alexander Wright',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: DesignTypography.h2,
               ),
               const SizedBox(height: 8),
               GestureDetector(
@@ -775,7 +772,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: colors.textLight.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                     child: Text(
@@ -797,6 +794,7 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _statisticsCard() {
+    final colors = DesignTokens.colors;
     final authProvider = context.watch<AuthProvider>();
     final profile = authProvider.user?.profile;
 
@@ -807,7 +805,7 @@ class _AccountScreenState extends State<AccountScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: colors.textLight.withValues(alpha: 0.05)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
@@ -832,7 +830,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: colors.textLight,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -843,8 +841,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         const SizedBox(width: 8),
                         Text(
                           _calculateTierName(profile?.totalPoints ?? 0),
-                          style: const TextStyle(
-                            color: Colors.black,
+                          style: TextStyle(
+                            color: colors.textDark,
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
                           ),
@@ -871,7 +869,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                           color: Colors.white.withValues(alpha: 0.05)),
@@ -884,7 +882,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               : Icons.person_outline,
                           color: context.watch<AuthProvider>().isSubscribed
                               ? Colors.amber
-                              : Colors.white.withValues(alpha: 0.4),
+                              : colors.textLight.withValues(alpha: 0.4),
                           size: 14,
                         ),
                         const SizedBox(width: 8),
@@ -895,7 +893,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           style: TextStyle(
                             color: context.watch<AuthProvider>().isSubscribed
                                 ? Colors.amber
-                                : Colors.white.withValues(alpha: 0.6),
+                                : colors.textLight.withValues(alpha: 0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -926,7 +924,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
-                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
+                          color: colors.accentGreen.withValues(alpha: 0.8),
                           size: 14),
                     ],
                   ),
@@ -952,24 +950,25 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _confirmDeleteAccount() async {
+    final colors = DesignTokens.colors;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Delete Account?',
-            style: TextStyle(color: Colors.white)),
-        content: const Text(
+        title: Text('Delete Account?',
+            style: TextStyle(color: colors.textLight)),
+        content: Text(
           'This action cannot be undone. Your profile and personal data will be permanently removed. Your reports will remain anonymized.',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: colors.textLight.withValues(alpha: 0.7)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: Text('Cancel', style: TextStyle(color: colors.textLight)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: colors.error)),
           ),
         ],
       ),

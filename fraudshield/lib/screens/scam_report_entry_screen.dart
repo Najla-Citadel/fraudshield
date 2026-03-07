@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../design_system/components/app_back_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/typography.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
 import '../l10n/app_localizations.dart';
@@ -14,6 +15,7 @@ class ScamReportEntryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = DesignTokens.colors;
 
     return Container(
       decoration: BoxDecoration(
@@ -32,11 +34,11 @@ class ScamReportEntryScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: const AppBackButton(color: Colors.white),
+          leading: AppBackButton(color: colors.textLight),
           title: Text(
             l10n.scamReportTitle,
-            style: const TextStyle(
-              color: Colors.white,
+            style: DesignTypography.bodyLg.copyWith(
+              color: colors.textLight,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -93,6 +95,7 @@ class ScamReportEntryScreen extends StatelessWidget {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final colors = DesignTokens.colors;
     return GlassSurface(
       borderRadius: 24,
       onTap: onTap,
@@ -102,7 +105,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: color, size: 32),
@@ -114,17 +117,13 @@ class ScamReportEntryScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: DesignTypography.h3,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: colors.textLight.withValues(alpha: 0.5),
                     fontSize: 13,
                   ),
                 ),
@@ -133,7 +132,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           ),
           Icon(
             LucideIcons.chevronRight,
-            color: Colors.white.withOpacity(0.3),
+            color: colors.textLight.withValues(alpha: 0.3),
             size: 20,
           ),
         ],
