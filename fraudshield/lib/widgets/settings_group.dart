@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 import 'package:fraudshield/design_system/components/app_divider.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class SettingsGroup extends StatelessWidget {
   final String? title;
@@ -135,7 +136,7 @@ class SettingsTile extends StatelessWidget {
                 trailing!
               else
                 Icon(
-                  Icons.arrow_forward_ios_rounded,
+                  LucideIcons.chevronRight,
                   color: colors.textLight.withValues(alpha: 0.2),
                   size: 16,
                 ),

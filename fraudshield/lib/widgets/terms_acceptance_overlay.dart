@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
@@ -61,7 +62,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.security_outlined,
+                      Icon(LucideIcons.shield,
                           size: 64, color: DesignTokens.colors.primary),
                       SizedBox(height: 24),
                       Text(

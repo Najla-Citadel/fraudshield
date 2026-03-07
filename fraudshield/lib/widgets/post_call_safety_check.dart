@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../services/notification_service.dart';
 import '../app_router.dart';
 import '../design_system/tokens/design_tokens.dart';
@@ -53,7 +54,7 @@ class PostCallSafetyCheck extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.health_and_safety_rounded,
+                      LucideIcons.shieldAlert,
                       color: Colors.orangeAccent,
                       size: 48,
                     ),
@@ -86,7 +87,7 @@ class PostCallSafetyCheck extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _ActionBtn(
-                          icon: Icons.thumb_up_alt_outlined,
+                          icon: LucideIcons.check,
                           label: 'No, I\'m Safe',
                           color: Colors.greenAccent,
                           onTap: () {
@@ -97,7 +98,7 @@ class PostCallSafetyCheck extends StatelessWidget {
                       SizedBox(width: 12),
                       Expanded(
                         child: _ActionBtn(
-                          icon: Icons.flag_rounded,
+                          icon: LucideIcons.flag,
                           label: 'Yes, Report',
                           color: Colors.redAccent,
                           onTap: () {

@@ -3,146 +3,114 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../services/security_service.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
-import 'package:fraudshield/design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../widgets/glass_surface.dart';
 
 class SecurityAlertScreen extends StatelessWidget {
   const SecurityAlertScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [Color(0xFF0F172A), Color(0xFF1E293B)]
-                : [Color(0xFFF1F5F9), Color(0xFFE2E8F0)],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    LucideIcons.shieldAlert,
-                    color: Colors.red,
-                    size: 80,
-                  ),
+    return ScreenScaffold(
+      title: 'Security Alert',
+      showBackButton: false, // Critical alert screen, usually shouldn't just go back
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xxl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(DesignTokens.spacing.xxl),
+                decoration: BoxDecoration(
+                  color: DesignTokens.colors.error.withOpacity(0.1),
+                  shape: BoxShape.circle,
                 ),
-                SizedBox(height: 32),
-                Text(
-                  'Security Alert',
-                  style: theme.textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Color(0xFF0F172A),
-                  ),
-                  textAlign: TextAlign.center,
+                child: Icon(
+                  LucideIcons.shieldAlert,
+                  color: DesignTokens.colors.error,
+                  size: 80,
                 ),
-                SizedBox(height: 16),
-                Text(
-                  'Your device security integrity has been compromised.',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24),
-                _buildInfoCard(
-                  context,
-                  title: 'Why am I seeing this?',
-                  description:
-                      'FraudShield detected that your device is rooted or jailbroken. To protect your financial data and prevent unauthorized access, FraudShield cannot run on modified devices.',
-                ),
-                SizedBox(height: 32),
-                AppButton(
-                  onPressed: () async {
-                    final isSecure =
-                        await SecurityService.instance.checkSecurity();
-                    if (isSecure) {
-                      if (context.mounted) {
-                        Navigator.pushReplacementNamed(context, '/');
-                      }
-                    } else {
-                      if (context.mounted) {
-                        AppSnackBar.showError(context, 'Security threat still detected.');
-                      }
-                    }
-                  },
-                  label: 'Re-verify Security',
-                  variant: AppButtonVariant.primary,
-                  width: double.infinity,
-                ),
-                SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    // In a real app, you might provide a help link
-                  },
-                  child: Text(
-                    'Learn more about device security',
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(BuildContext context,
-      {required String title, required String description}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      padding: EdgeInsets.all(DesignTokens.spacing.xl),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withOpacity(0.1)
-              : Colors.black.withOpacity(0.05),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              ),
+              const SizedBox(height: 32),
+              const Text(
+                'Security Compromised',
+                style: TextStyle(
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white : Color(0xFF0F172A),
+                  color: Colors.white,
                 ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isDark ? Colors.white70 : Colors.black87,
-                  height: 1.5,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Your device security integrity has been compromised.',
+                style: TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                 ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              const GlassSurface(
+                padding: EdgeInsets.all(20),
+                borderRadius: 16,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Why am I seeing this?',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'FraudShield detected that your device is rooted or jailbroken. To protect your financial data and prevent unauthorized access, FraudShield cannot run on modified devices.',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        height: 1.5,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 48),
+              AppButton(
+                onPressed: () async {
+                  final isSecure = await SecurityService.instance.checkSecurity();
+                  if (isSecure) {
+                    if (context.mounted) {
+                      Navigator.pushReplacementNamed(context, '/');
+                    }
+                  } else {
+                    if (context.mounted) {
+                      AppSnackBar.showError(context, 'Security threat still detected.');
+                    }
+                  }
+                },
+                label: 'Re-verify Security',
+                variant: AppButtonVariant.primary,
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'Learn more about device security',
+                  style: TextStyle(
+                    color: DesignTokens.colors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

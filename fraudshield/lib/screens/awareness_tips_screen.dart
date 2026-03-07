@@ -1,16 +1,15 @@
 // lib/screens/awareness_tips_screen.dart
 import 'package:flutter/material.dart';
-import '../widgets/adaptive_scaffold.dart';
 import '../widgets/glass_surface.dart';
-import '../widgets/animated_background.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 
 class AwarenessTipsScreen extends StatelessWidget {
   const AwarenessTipsScreen({super.key});
 
   // 🧠 Tips data
-  final List<Map<String, String>> tips = [
+  final List<Map<String, String>> tips = const [
     {
       'image': 'assets/images/tip1.png',
       'title': 'Never share your OTP',
@@ -39,126 +38,125 @@ class AwarenessTipsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return AnimatedBackground(
-      child: AdaptiveScaffold(
-        title: 'Awareness & Tips',
-        backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            // 🔷 HEADER SECTION
-            GlassSurface(
-              borderRadius: 0, // Header style
-              padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xxl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.lightbulb_outline, color: theme.colorScheme.primary, size: 28),
-                      SizedBox(width: 8),
-                      Text(
-                        'Must-Know Security Tips',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
+    return ScreenScaffold(
+      title: 'Awareness & Tips',
+      body: Column(
+        children: [
+          // 🔷 HEADER SECTION
+          Padding(
+            padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.xl, DesignTokens.spacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: DesignTokens.colors.primary, size: 28),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Must-Know Security Tips',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: DesignTokens.colors.textLight,
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Learn how to protect yourself from scams and fraud.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
                     ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Learn how to protect yourself from scams and fraud.',
+                  style: TextStyle(
+                    color: DesignTokens.colors.textLight.withValues(alpha: 0.7),
+                    fontSize: 14,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
   
-            // 🔽 CONTENT
-            Expanded(
-              child: AnimationLimiter(
-                child: ListView.builder(
-                  padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xl, DesignTokens.spacing.lg, DesignTokens.spacing.xxl),
-                  itemCount: tips.length,
-                  itemBuilder: (context, index) {
-                    final tip = tips[index];
-                    return AnimationConfiguration.staggeredList(
-                      position: index,
-                      duration: const Duration(milliseconds: 375),
-                      child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 18),
-                            child: GlassSurface(
-                              padding: EdgeInsets.zero,
-                              borderRadius: 22,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // 🖼 IMAGE
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(22),
-                                    ),
-                                    child: Image.asset(
-                                      tip['image']!,
-                                      width: double.infinity,
-                                      height: 160,
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return Container(
-                                          height: 160,
-                                          color: theme.colorScheme.surfaceContainerHighest,
-                                          child: Center(
-                                            child: Icon(Icons.image_not_supported, 
-                                              color: theme.colorScheme.onSurfaceVariant, size: 40),
-                                          ),
-                                        );
-                                      },
-                                    ),
+          // 🔽 CONTENT
+          Expanded(
+            child: AnimationLimiter(
+              child: ListView.builder(
+                padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.md, DesignTokens.spacing.lg, DesignTokens.spacing.xxl),
+                itemCount: tips.length,
+                itemBuilder: (context, index) {
+                  final tip = tips[index];
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 18),
+                          child: GlassSurface(
+                            padding: EdgeInsets.zero,
+                            borderRadius: DesignTokens.radii.lg,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // 🖼 IMAGE
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(DesignTokens.radii.lg),
                                   ),
-                        
-                                  // 📄 CONTENT
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.lg, DesignTokens.spacing.lg, 18),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          tip['title']!,
-                                          style: theme.textTheme.titleLarge?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  child: Image.asset(
+                                    tip['image']!,
+                                    width: double.infinity,
+                                    height: 160,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        height: 160,
+                                        color: DesignTokens.colors.surfaceDark,
+                                        child: Center(
+                                          child: Icon(Icons.image_not_supported, 
+                                            color: DesignTokens.colors.textLight.withValues(alpha: 0.3), size: 40),
                                         ),
-                                        SizedBox(height: 8),
-                                        Text(
-                                          tip['desc']!,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: theme.colorScheme.onSurfaceVariant,
-                                            height: 1.4,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      );
+                                    },
                                   ),
-                                ],
-                              ),
+                                ),
+                      
+                                // 📄 CONTENT
+                                Padding(
+                                  padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.lg, DesignTokens.spacing.lg, 18),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        tip['title']!,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        tip['desc']!,
+                                        style: TextStyle(
+                                          color: DesignTokens.colors.textLight.withValues(alpha: 0.7),
+                                          height: 1.4,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

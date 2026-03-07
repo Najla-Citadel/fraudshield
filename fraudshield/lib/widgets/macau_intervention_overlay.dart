@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/notification_service.dart';
 import '../design_system/tokens/design_tokens.dart';
@@ -53,7 +54,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.warning_rounded,
+                      LucideIcons.alertTriangle,
                       color: Colors.redAccent,
                       size: 48,
                     ),
@@ -98,7 +99,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _ActionBtn(
-                          icon: Icons.shield_outlined,
+                          icon: LucideIcons.shield,
                           label: 'Call NSRC 997',
                           color: Colors.blueAccent,
                           onTap: () => _launchCaller('997'),
@@ -107,7 +108,7 @@ class MacauInterventionOverlay extends StatelessWidget {
                       SizedBox(width: 12),
                       Expanded(
                         child: _ActionBtn(
-                          icon: Icons.phone_in_talk,
+                          icon: LucideIcons.phone,
                           label: 'Call Police',
                           color: Colors.redAccent,
                           onTap: () => _launchCaller('03-26101559'),

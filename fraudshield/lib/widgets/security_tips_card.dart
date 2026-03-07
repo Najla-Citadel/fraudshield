@@ -22,7 +22,7 @@ class SecurityTipsCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb_outline_rounded,
+              Icon(LucideIcons.lightbulb,
                   color: Colors.amber, size: 18),
               SizedBox(width: 8),
               Text(

@@ -1,5 +1,5 @@
-// lib/widgets/latest_news_widget.dart
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../design_system/components/app_skeleton.dart';
 import '../design_system/components/app_button.dart';
@@ -133,7 +133,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.close, color: Colors.white54),
+                        icon: Icon(LucideIcons.x, color: Colors.white54),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
@@ -177,7 +177,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                               if (isSelected) 
                                 Padding(
                                   padding: EdgeInsets.only(right: 6),
-                                  child: Icon(Icons.check, color: Colors.blueAccent, size: 14),
+                                  child: Icon(LucideIcons.check, color: Colors.blueAccent, size: 14),
                                 ),
                               Text(
                                 cat.label,
@@ -254,7 +254,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
             SizedBox(height: 8),
             TextButton.icon(
               onPressed: showCustomization,
-              icon: Icon(Icons.tune, size: 16),
+              icon: Icon(LucideIcons.sliders, size: 16),
               label: Text('Change Categories'),
               style: TextButton.styleFrom(foregroundColor: Colors.blueAccent),
             ),
@@ -277,7 +277,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
             SizedBox(height: 8),
             TextButton.icon(
               onPressed: showCustomization,
-              icon: Icon(Icons.tune, size: 16),
+              icon: Icon(LucideIcons.sliders, size: 16),
               label: Text('Change Categories'),
               style: TextButton.styleFrom(foregroundColor: Colors.blueAccent),
             ),

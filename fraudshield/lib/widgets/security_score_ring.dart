@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../design_system/components/app_loading_indicator.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SecurityScoreRing extends StatefulWidget {
@@ -70,7 +71,6 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
             AnimatedBuilder(
               animation: _scanController,
               builder: (context, child) {
-                double pulse = widget.isScanning ? (0.1 + 0.1 * math.sin(_scanController.value * 2 * math.pi)) : 0.1;
                 return Container(
                   width: 200,
                   height: 200,
@@ -139,7 +139,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.shield, color: _getStatusColor(widget.score), size: 16),
+                      Icon(LucideIcons.shield, color: _getStatusColor(widget.score), size: 16),
                       SizedBox(width: 6),
                       Text(
                         widget.status.toUpperCase(),
@@ -161,7 +161,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                           double opacity = 0.3 + 0.7 * (0.5 * (1 + math.sin(_scanController.value * 4 * math.pi)));
                           return Opacity(
                             opacity: opacity,
-                            child: Text(
+                            child: const Text(
                               '...',
                               style: TextStyle(
                                 color: Colors.white,
@@ -198,7 +198,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               right: 20,
               child: IconButton(
                 icon: Icon(
-                  Icons.info_outline,
+                  LucideIcons.info,
                   color: Colors.white.withOpacity(0.5),
                   size: 20,
                 ),

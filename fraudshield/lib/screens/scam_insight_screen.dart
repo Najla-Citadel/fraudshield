@@ -3,8 +3,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_divider.dart';
+import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import 'scam_map_screen.dart';
-import 'package:fraudshield/design_system/tokens/design_tokens.dart';
+import '../widgets/glass_surface.dart';
 
 class ScamInsightScreen extends StatefulWidget {
   const ScamInsightScreen({super.key});
@@ -14,65 +16,50 @@ class ScamInsightScreen extends StatefulWidget {
 }
 
 class _ScamInsightScreenState extends State<ScamInsightScreen> {
-  // We'll keep the scaffold background slightly off-white as per the mockup
-  final Color _bgColor = Color(0xFFF3F4F6);
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bgColor,
-      appBar: AppBar(
-        title: Text(
-          'Scam Insights',
-          style: TextStyle(
-            color: Color(0xFF1E3A8A), // Deep blue matching the text
-            fontWeight: FontWeight.bold,
+    return ScreenScaffold(
+      title: 'Scam Insights',
+      actions: [
+        TextButton.icon(
+          onPressed: () {},
+          icon: const Icon(LucideIcons.filter, color: Colors.white, size: 18),
+          label: const Text(
+            'Filter',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1E3A8A)),
-        actions: [
-          TextButton.icon(
-            onPressed: () {},
-            icon: Text(
-              'Filter',
-              style: TextStyle(
-                color: Color(0xFF1E3A8A),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            label: Icon(LucideIcons.chevronDown, color: Color(0xFF1E3A8A), size: 18),
-          ),
-          SizedBox(width: 8),
-        ],
-      ),
+        const SizedBox(width: 8),
+      ],
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.xl),
         children: [
           const _RiskLevelCard(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           const _TrendingHeroCard(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           const _DistributionChartCard(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           const _AIPatternBanner(),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           const _LocalActivityCard(),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             'Learn to Stay Safe',
             style: TextStyle(
-              color: Color(0xFF1E3A8A),
+              color: DesignTokens.colors.textLight,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           const _EducationCarousel(),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           const _RecentFeedList(),
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -84,40 +71,36 @@ class _RiskLevelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassSurface(
       padding: EdgeInsets.all(DesignTokens.spacing.lg),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-        boxShadow: DesignTokens.shadows.sm,
-      ),
+      borderRadius: DesignTokens.radii.lg,
       child: Row(
         children: [
           Container(
             width: 4,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.orange.shade400,
+              color: DesignTokens.colors.primary,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               RichText(
-                text: const TextSpan(
-                  style: TextStyle(color: Color(0xFF1E3A8A), fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Inter'),
-                  children: [
+                text: TextSpan(
+                  style: TextStyle(color: DesignTokens.colors.textLight, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Inter'),
+                  children: const [
                     TextSpan(text: 'Today\'s Risk Level: '),
-                    TextSpan(text: '🔴 Elevated', style: TextStyle(color: Colors.black87)),
+                    TextSpan(text: '🔴 Elevated', style: TextStyle(color: Colors.white70)),
                   ],
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Scam reports up 18% in the last 24 hours',
-                style: TextStyle(color: Colors.grey, fontSize: 13),
+                style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.5), fontSize: 13),
               ),
             ],
           ),
@@ -134,9 +117,9 @@ class _TrendingHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         gradient: LinearGradient(
-          colors: [Color(0xFFF97316), Color(0xFFDC2626)], // Orange to Red
+          colors: [DesignTokens.colors.primary.withOpacity(0.8), DesignTokens.colors.primary.withOpacity(0.4)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -144,13 +127,12 @@ class _TrendingHeroCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Content
           Padding(
             padding: EdgeInsets.all(DesignTokens.spacing.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
                     Text(
                       '🔥 #1 Trending Scam',
@@ -162,8 +144,8 @@ class _TrendingHeroCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-                Text(
+                const SizedBox(height: 12),
+                const Text(
                   'Parcel Delivery Fee Scam',
                   style: TextStyle(
                     color: Colors.white,
@@ -171,16 +153,16 @@ class _TrendingHeroCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 16),
-                _MetricRow(icon: LucideIcons.trendingUp, text: '34% This Week', iconColor: Colors.yellow),
-                SizedBox(height: 8),
+                const SizedBox(height: 16),
+                const _MetricRow(icon: LucideIcons.trendingUp, text: '34% This Week', iconColor: Colors.yellow),
+                const SizedBox(height: 8),
                 const _MetricRow(icon: LucideIcons.mail, text: '412 Reports'),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 const _MetricRow(icon: LucideIcons.coins, text: 'Avg Loss: RM1,200', iconColor: Colors.amber),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 const _MetricRow(icon: LucideIcons.mapPin, text: 'Klang Valley Targeted', iconColor: Colors.orangeAccent),
                 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
@@ -190,7 +172,7 @@ class _TrendingHeroCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
                       padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('Learn How It Works', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
@@ -203,7 +185,6 @@ class _TrendingHeroCard extends StatelessWidget {
               ],
             ),
           ),
-          // Illustration mock (using a box icon since we don't have the 3D asset)
           Positioned(
             right: -20,
             top: 20,
@@ -212,7 +193,7 @@ class _TrendingHeroCard extends StatelessWidget {
               child: Icon(
                 LucideIcons.package,
                 size: 140,
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withOpacity(0.1),
               ),
             ),
           ),
@@ -234,7 +215,7 @@ class _MetricRow extends StatelessWidget {
     return Row(
       children: [
         Icon(icon, color: iconColor, size: 16),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           text,
           style: const TextStyle(
@@ -253,40 +234,36 @@ class _DistributionChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassSurface(
       padding: EdgeInsets.all(DesignTokens.spacing.xl),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-        boxShadow: DesignTokens.shadows.sm,
-      ),
+      borderRadius: DesignTokens.radii.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Scam Type Distribution',
             style: TextStyle(
-              color: Color(0xFF1E3A8A),
+              color: DesignTokens.colors.textLight,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             children: [
               Expanded(
                 flex: 1,
                 child: Column(
                   children: [
-                    _LegendItem(color: Colors.orange.shade600, label: 'Loan Scam', value: '32%', icon: '📦'),
-                    SizedBox(height: 12),
-                    const _LegendItem(color: Colors.redAccent, label: 'Love Scam', value: '25%', icon: '❤️'),
-                    SizedBox(height: 12),
-                    _LegendItem(color: Colors.orange.shade300, label: 'Parcel Scam', value: '18%', icon: '📦'),
-                    SizedBox(height: 12),
-                    const _LegendItem(color: Colors.indigo, label: 'Investment Scam', value: '15%', icon: '📈'),
-                    SizedBox(height: 12),
-                    const _LegendItem(color: Colors.blue, label: 'QR Scams', value: '10%', icon: '📍'),
+                    _LegendItem(color: DesignTokens.colors.primary, label: 'Loan Scam', value: '32%', icon: '💰'),
+                    const SizedBox(height: 12),
+                    _LegendItem(color: DesignTokens.colors.accentGreen, label: 'Love Scam', value: '25%', icon: '❤️'),
+                    const SizedBox(height: 12),
+                    _LegendItem(color: DesignTokens.colors.surfaceDark, label: 'Parcel Scam', value: '18%', icon: '📦'),
+                    const SizedBox(height: 12),
+                    _LegendItem(color: Colors.indigo, label: 'Investment Scam', value: '15%', icon: '📈'),
+                    const SizedBox(height: 12),
+                    _LegendItem(color: Colors.blue, label: 'QR Scams', value: '10%', icon: '📍'),
                   ],
                 ),
               ),
@@ -300,40 +277,39 @@ class _DistributionChartCard extends StatelessWidget {
                       centerSpaceRadius: 40,
                       sections: [
                         PieChartSectionData(
-                          color: Colors.blue,
+                          color: Colors.blue.withOpacity(0.7),
                           value: 10,
                           title: '',
                           radius: 30,
                         ),
                         PieChartSectionData(
-                          color: Colors.indigo,
+                          color: Colors.indigo.withOpacity(0.7),
                           value: 15,
                           title: '15%',
                           radius: 30,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         PieChartSectionData(
-                          color: Colors.blue.shade600, // Replacing orange.shade300 for varied color as in mockup
+                          color: DesignTokens.colors.surfaceDark.withOpacity(0.7),
                           value: 18,
                           title: '18%',
                           radius: 30,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         PieChartSectionData(
-                          color: Colors.orange.shade400, // Replacing redAccent
+                          color: DesignTokens.colors.accentGreen.withOpacity(0.7),
                           value: 25,
                           title: '25%',
                           radius: 30,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         PieChartSectionData(
-                          color: Colors.orange.shade700, // Replacing orange.shade600
+                          color: DesignTokens.colors.primary.withOpacity(0.7),
                           value: 32,
                           title: '32%',
                           radius: 30,
-                          titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                          titleStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
-                        
                       ],
                     ),
                   ),
@@ -365,15 +341,18 @@ class _LegendItem extends StatelessWidget {
     return Row(
       children: [
         Text(icon, style: const TextStyle(fontSize: 14)),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           value,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: DesignTokens.colors.textLight),
         ),
-        SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.5), fontSize: 11),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
@@ -388,16 +367,11 @@ class _AIPatternBanner extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(DesignTokens.spacing.xl),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         gradient: LinearGradient(
-          colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)], // Deep blue to sky blue
+          colors: [DesignTokens.colors.primary, DesignTokens.colors.primary.withOpacity(0.6)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-        ),
-        image: const DecorationImage(
-          image: NetworkImage('https://www.transparenttextures.com/patterns/stardust.png'), // Mock starry effect
-          fit: BoxFit.cover,
-          opacity: 0.3,
         ),
       ),
       child: Column(
@@ -405,9 +379,9 @@ class _AIPatternBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(LucideIcons.bot, color: Colors.cyanAccent, size: 20),
-              SizedBox(width: 8),
-              Text(
+              Icon(LucideIcons.bot, color: DesignTokens.colors.accentGreen, size: 20),
+              const SizedBox(width: 8),
+              const Text(
                 'AI Detected New Pattern',
                 style: TextStyle(
                   color: Colors.white,
@@ -417,15 +391,15 @@ class _AIPatternBanner extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 12),
-          Text(
+          const SizedBox(height: 12),
+          const Text(
             'Fake TNG QR codes with courier logos found!',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.white70,
               fontSize: 14,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           TextButton(
             onPressed: () {},
             style: TextButton.styleFrom(
@@ -433,7 +407,7 @@ class _AIPatternBanner extends StatelessWidget {
               minimumSize: const Size(0, 0),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('View Details ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
@@ -452,24 +426,20 @@ class _LocalActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return GlassSurface(
       padding: EdgeInsets.all(DesignTokens.spacing.xl),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-        boxShadow: DesignTokens.shadows.sm,
-      ),
+      borderRadius: DesignTokens.radii.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(LucideIcons.mapPin, color: Colors.redAccent, size: 20),
-              SizedBox(width: 8),
+              Icon(LucideIcons.mapPin, color: DesignTokens.colors.primary, size: 20),
+              const SizedBox(width: 8),
               Text(
                 'Your Area: High Scam Activity',
                 style: TextStyle(
-                  color: Color(0xFF1E3A8A),
+                  color: DesignTokens.colors.textLight,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -478,16 +448,16 @@ class _LocalActivityCard extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: DesignTokens.spacing.md),
-            child: AppDivider(thickness: 2, color: Color(0xFFF3F4F6)),
+            child: AppDivider(thickness: 1, color: Colors.white.withOpacity(0.1)),
           ),
           Text(
             'Loan approval scam on the rise locally.',
             style: TextStyle(
-              color: Colors.black87,
+              color: DesignTokens.colors.textLight.withOpacity(0.7),
               fontSize: 14,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           AppButton(
             onPressed: () {
               Navigator.push(
@@ -515,12 +485,12 @@ class _EducationCarousel extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         clipBehavior: Clip.none,
-        children: [
-          _EduCard(title: 'How Macau Scams\nWork', color: Colors.blueGrey.shade800),
+        children: const [
+          _EduCard(title: 'How Macau Scams\nWork', color: Color(0xFF1E293B)),
           SizedBox(width: 12),
-          _EduCard(title: 'QR Code Scam\nTricks', color: Colors.blueGrey.shade700, hasQr: true),
+          _EduCard(title: 'QR Code Scam\nTricks', color: Color(0xFF334155), hasQr: true),
           SizedBox(width: 12),
-          _EduCard(title: 'Signs of a Scam Call', color: Colors.brown.shade800),
+          _EduCard(title: 'Signs of a Scam Call', color: Color(0xFF475569)),
         ],
       ),
     );
@@ -540,39 +510,37 @@ class _EduCard extends StatelessWidget {
       width: 150,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-        image: const DecorationImage(
-          image: NetworkImage('https://www.transparenttextures.com/patterns/cubes.png'), // Subtle texture
-          opacity: 0.1,
-          fit: BoxFit.cover,
-        ),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Stack(
         children: [
           Padding(
             padding: EdgeInsets.all(DesignTokens.spacing.md),
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                height: 1.2,
+            child: Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
           if (hasQr)
             Positioned(
               bottom: 8,
               right: 8,
-              child: Icon(LucideIcons.qrCode, color: Colors.white.withOpacity(0.8), size: 24),
+              child: Icon(LucideIcons.qrCode, color: Colors.white.withOpacity(0.3), size: 20),
             )
           else
             Positioned(
               bottom: 8,
               left: 8,
-              child: Icon(LucideIcons.user, color: Colors.white.withOpacity(0.5), size: 30),
+              child: Icon(LucideIcons.user, color: Colors.white.withOpacity(0.2), size: 24),
             )
         ],
       ),
@@ -585,18 +553,15 @@ class _RecentFeedList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-        boxShadow: DesignTokens.shadows.sm,
-      ),
+    return GlassSurface(
+      padding: EdgeInsets.zero,
+      borderRadius: DesignTokens.radii.lg,
       child: Column(
         children: [
           _FeedItem(icon: LucideIcons.messageSquare, title: 'New scam number', subtitle: 'reported', time: '2h ago', color: Colors.orange),
-          AppDivider(height: 1, color: Color(0xFFF3F4F6)),
-          _FeedItem(icon: LucideIcons.mail, title: 'Fake bank SMS', subtitle: 'alert', time: '5h ago', color: Colors.redAccent),
-          AppDivider(height: 1, color: Color(0xFFF3F4F6)),
+          const AppDivider(height: 1, color: Colors.white10),
+          _FeedItem(icon: LucideIcons.mail, title: 'Fake bank SMS', subtitle: 'alert', time: '5h ago', color: DesignTokens.colors.primary),
+          const AppDivider(height: 1, color: Colors.white10),
           _FeedItem(icon: LucideIcons.shoppingBag, title: 'Shopee refund call', subtitle: 'scam', time: '8h ago', color: Colors.orange.shade700),
         ],
       ),
@@ -626,21 +591,21 @@ class _FeedItem extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, color: color, size: 20),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: RichText(
               text: TextSpan(
                 style: const TextStyle(fontFamily: 'Inter', fontSize: 14),
                 children: [
-                  TextSpan(text: '$title ', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
-                  TextSpan(text: subtitle, style: TextStyle(color: Colors.grey.shade600)),
+                  TextSpan(text: '$title ', style: TextStyle(fontWeight: FontWeight.bold, color: DesignTokens.colors.textLight)),
+                  TextSpan(text: subtitle, style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.5))),
                 ],
               ),
             ),
           ),
           Text(
             time,
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+            style: TextStyle(color: DesignTokens.colors.textLight.withOpacity(0.3), fontSize: 13),
           ),
         ],
       ),

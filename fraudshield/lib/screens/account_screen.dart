@@ -30,6 +30,7 @@ import 'package:notification_listener_service/notification_listener_service.dart
 import 'package:permission_handler/permission_handler.dart';
 import 'log_payment_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -273,7 +274,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
-                        icon: Icons.card_membership,
+                        icon: LucideIcons.award,
                         title: AppLocalizations.of(context)!.accountSubscriptionPlan,
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -292,7 +293,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                             SizedBox(width: 8),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              LucideIcons.chevronRight,
                               color: colors.textLight.withValues(alpha: 0.2),
                               size: 14,
                             ),
@@ -304,10 +305,10 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                       ),
                       SettingsTile(
-                        icon: Icons.notifications_active_outlined,
+                        icon: LucideIcons.bellRing,
                         title: AppLocalizations.of(context)!.accountNotificationSetting,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
@@ -317,7 +318,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                       ),
                       SettingsTile(
-                        icon: Icons.language_rounded,
+                        icon: LucideIcons.globe,
                         title: AppLocalizations.of(context)!.accountLanguage,
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -333,7 +334,7 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                             SizedBox(width: 8),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              LucideIcons.chevronRight,
                               color: colors.textLight.withValues(alpha: 0.2),
                               size: 14,
                             ),
@@ -342,7 +343,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         onTap: _showLanguagePicker,
                       ),
                       SettingsTile(
-                        icon: Icons.auto_awesome_rounded,
+                        icon: LucideIcons.sparkles,
                         title: AppLocalizations.of(context)!.accountSmartCapture,
                         subtitle: AppLocalizations.of(context)!.accountSmartCaptureDesc,
                         onTap: () {},
@@ -353,7 +354,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         ),
                       ),
                       SettingsTile(
-                        icon: Icons.shield_rounded,
+                        icon: LucideIcons.shield,
                         title: AppLocalizations.of(context)!.accountCallerId,
                         subtitle: AppLocalizations.of(context)!.accountCallerIdDesc,
                         onTap: () {},
@@ -366,7 +367,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       if (_smartCaptureEnabled || _callerIdProtectionEnabled) ...[
                         if (_smartCaptureEnabled)
                           SettingsTile(
-                            icon: Icons.bug_report_rounded,
+                            icon: LucideIcons.bug,
                             title: AppLocalizations.of(context)!.accountSimulateBankingAlert,
                             subtitle: AppLocalizations.of(context)!.accountSimulateBankingDesc,
                             onTap: () async {
@@ -389,7 +390,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                         if (_callerIdProtectionEnabled)
                           SettingsTile(
-                            icon: Icons.phone_callback_rounded,
+                            icon: LucideIcons.phoneIncoming,
                             title: AppLocalizations.of(context)!.accountSimulateIncomingCall,
                             subtitle: AppLocalizations.of(context)!.accountSimulateIncomingCallDesc,
                             onTap: () async {
@@ -399,10 +400,10 @@ class _AccountScreenState extends State<AccountScreen> {
                           ),
                       ],
                       SettingsTile(
-                        icon: Icons.add_card_rounded,
+                        icon: LucideIcons.plusCircle,
                         title: AppLocalizations.of(context)!.accountLogTestTransaction,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
@@ -418,10 +419,10 @@ class _AccountScreenState extends State<AccountScreen> {
                         },
                       ),
                       SettingsTile(
-                        icon: Icons.receipt_long_rounded,
+                        icon: LucideIcons.fileText,
                         title: AppLocalizations.of(context)!.accountTransactionJournal,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
@@ -441,13 +442,13 @@ class _AccountScreenState extends State<AccountScreen> {
                     margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
-                        icon: Icons.lock_rounded,
+                        icon: LucideIcons.lock,
                         title: AppLocalizations.of(context)!.accountChangePassword,
                         onTap: _openChangePassword,
                       ),
                       if (_isBiometricAvailable)
                         SettingsTile(
-                          icon: Icons.fingerprint_rounded,
+                          icon: LucideIcons.fingerprint,
                           title: AppLocalizations.of(context)!.accountBiometricAuth,
                           subtitle: 'Extra security for sensitive actions',
                           onTap: () {},
@@ -469,30 +470,30 @@ class _AccountScreenState extends State<AccountScreen> {
                     margin: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.md),
                     items: [
                       SettingsTile(
-                        icon: Icons.policy_rounded,
+                        icon: LucideIcons.shieldQuestion,
                         title: AppLocalizations.of(context)!.accountPrivacyPolicy,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
                       ),
                       SettingsTile(
-                        icon: Icons.description_rounded,
+                        icon: LucideIcons.fileText,
                         title: AppLocalizations.of(context)!.accountTermsOfService,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
                         onTap: () => Navigator.pushNamed(context, '/terms-of-service'),
                       ),
                       SettingsTile(
-                        icon: Icons.gavel_rounded,
+                        icon: LucideIcons.gavel,
                         title: AppLocalizations.of(context)!.accountManageConsent,
                         trailing: Icon(
-                          Icons.arrow_forward_ios,
+                          LucideIcons.chevronRight,
                           color: colors.textLight.withValues(alpha: 0.2),
                           size: 14,
                         ),
@@ -698,7 +699,7 @@ class _AccountScreenState extends State<AccountScreen> {
           style: const TextStyle(fontSize: 24)),
       title: Text(name, style: TextStyle(color: colors.textLight)),
       trailing: isSelected
-          ? Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen)
+          ? Icon(LucideIcons.checkCircle2, color: DesignTokens.colors.accentGreen)
           : null,
     );
   }
@@ -743,7 +744,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     color: DesignTokens.colors.accentGreen,
                     shape: BoxShape.circle,
                   ),
-                    child: Icon(Icons.camera_alt_rounded,
+                    child: Icon(LucideIcons.camera,
                         color: colors.textLight, size: 14),
                   ),
                 ),

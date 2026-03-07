@@ -1,7 +1,9 @@
+// lib/screens/facial_detection_screen.dart
 import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class FacialDetectionScreen extends StatefulWidget {
   const FacialDetectionScreen({super.key});
@@ -11,137 +13,116 @@ class FacialDetectionScreen extends StatefulWidget {
 }
 
 class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
-  bool isScanning = false;
-  bool? isSuspicious; // null = no result yet
+  bool _isProcessing = false;
+  String? _statusMessage;
+  bool _isSuccess = false;
 
-  void _startScan() {
+  void _startDetection() async {
     setState(() {
-      isScanning = true;
-      isSuspicious = null;
+      _isProcessing = true;
+      _statusMessage = 'Analyzing facial features...';
     });
 
-    Future.delayed(const Duration(seconds: 2), () {
+    // Simulate detection
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (mounted) {
       setState(() {
-        isScanning = false;
-        // Mock random result
-        isSuspicious = DateTime.now().millisecond % 2 == 0;
+        _isProcessing = false;
+        _isSuccess = true;
+        _statusMessage = 'Identity Verified Successfully';
       });
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: DesignTokens.colors.primary,
-        title: Text(
-          'Facial Detection',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 20),
-
-            // 🧠 Info
-            Text(
-              'Scan and verify faces to detect suspicious users or impersonators.',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 30),
-
-            // 📷 Face placeholder / camera frame
-            Container(
-              height: 250,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-                border: Border.all(color: DesignTokens.colors.primary, width: 2),
-                boxShadow: DesignTokens.shadows.sm,
-              ),
-              child: Center(
-                child: isScanning
-                    ? AppLoadingIndicator(
-                        color: DesignTokens.colors.accentGreen,
-                      )
-                    : Icon(
-                        Icons.face_retouching_natural,
-                        size: 120,
-                        color: DesignTokens.colors.primary,
+    return ScreenScaffold(
+      title: 'Facial Verification',
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // 🔳 SCANNER FRAME
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 280,
+                    height: 280,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _isSuccess 
+                          ? DesignTokens.colors.success 
+                          : Colors.white.withOpacity(0.2),
+                        width: 4,
                       ),
-              ),
-            ),
-
-            SizedBox(height: 30),
-
-            // 🟦 Scan Button
-            AppButton(
-              onPressed: isScanning ? null : _startScan,
-              icon: Icons.camera_alt,
-              label: isScanning ? 'Scanning...' : 'Scan Now',
-              variant: AppButtonVariant.primary,
-              isLoading: isScanning,
-              width: double.infinity,
-            ),
-
-            SizedBox(height: 40),
-
-            // 🧾 Result Section
-            if (isSuspicious != null)
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(DesignTokens.spacing.xl),
-                decoration: BoxDecoration(
-                  color: isSuspicious! ? Colors.red[50] : Colors.green[50],
-                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-                  border: Border.all(
-                    color: isSuspicious! ? Colors.redAccent : Colors.green,
-                    width: 1.5,
+                    ),
+                    child: ClipOval(
+                      child: Container(
+                        color: Colors.black26,
+                        child: Icon(
+                          _isSuccess ? Icons.face_retouching_natural : Icons.face_outlined,
+                          size: 120,
+                          color: _isSuccess 
+                            ? DesignTokens.colors.success 
+                            : Colors.white.withOpacity(0.3),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Icon(
-                      isSuspicious!
-                          ? Icons.warning_amber_rounded
-                          : Icons.verified_user,
-                      color: isSuspicious! ? Colors.redAccent : Colors.green,
-                      size: 70,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      isSuspicious!
-                          ? 'Suspicious Face Detected!'
-                          : 'Face Verified Safely!',
-                      style: TextStyle(
-                        color:
-                            isSuspicious! ? Colors.redAccent : Colors.green[800],
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  if (_isProcessing)
+                    const SizedBox(
+                      width: 280,
+                      height: 280,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
-                    SizedBox(height: 6),
-                    Text(
-                      isSuspicious!
-                          ? 'This person may not match the registered identity.'
-                          : 'No suspicious or fake face detected.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                  ],
+                ],
+              ),
+              const SizedBox(height: 48),
+              
+              // 📄 STATUS
+              Text(
+                _statusMessage ?? 'Align your face within the circle',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: _isSuccess ? DesignTokens.colors.success : Colors.white,
                 ),
               ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                'Used for high-security actions and account recovery.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 14,
+                ),
+              ),
+              
+              const SizedBox(height: 60),
+              
+              // 🔘 ACTION
+              if (!_isProcessing && !_isSuccess)
+                AppButton(
+                  label: 'Start Verification',
+                  onPressed: _startDetection,
+                )
+              else if (_isSuccess)
+                AppButton(
+                  label: 'Back to Safety',
+                  onPressed: () => Navigator.pop(context),
+                  icon: LucideIcons.chevronLeft,
+                ),
+            ],
+          ),
         ),
       ),
     );

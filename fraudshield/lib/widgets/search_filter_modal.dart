@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/tokens/design_tokens.dart';
 
@@ -128,7 +129,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: Icon(LucideIcons.x),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],

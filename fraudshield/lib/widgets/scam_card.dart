@@ -147,7 +147,7 @@ class ScamCard extends StatelessWidget {
               // --- Location (Mocked for now if not in API) ---
               Row(
                 children: [
-                  Icon(Icons.location_on,
+                  Icon(LucideIcons.mapPin,
                       size: 16, color: Colors.white.withOpacity(0.5)),
                   SizedBox(width: 4),
                   Expanded(
@@ -197,7 +197,7 @@ class ScamCard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.shield_outlined,
+                              Icon(LucideIcons.shield,
                                   size: 14, color: DesignTokens.colors.accentGreen),
                               SizedBox(width: 6),
                               Text(
@@ -333,7 +333,7 @@ class ScamCard extends StatelessWidget {
                     fontSize: 8,
                     fontWeight: FontWeight.bold,
                     color: Colors.white))
-            : Icon(Icons.person,
+            : const Icon(LucideIcons.user,
                 size: 14,
                 color: Colors.white), // Using white icon on colorful bg
       ),
@@ -355,15 +355,15 @@ class ScamCard extends StatelessWidget {
 
   IconData _getCategoryIcon(String? category) {
     if (category?.toLowerCase().contains('phishing') == true) {
-      return Icons.account_balance_wallet_outlined;
+      return LucideIcons.wallet;
     }
     if (category?.toLowerCase().contains('investment') == true) {
-      return Icons.trending_up_rounded;
+      return LucideIcons.trendingUp;
     }
     if (category?.toLowerCase().contains('courier') == true) {
-      return Icons.local_shipping_outlined;
+      return LucideIcons.truck;
     }
-    return Icons.warning_amber_rounded;
+    return LucideIcons.alertTriangle;
   }
 
   String _getStaySafeTip(String? category) {

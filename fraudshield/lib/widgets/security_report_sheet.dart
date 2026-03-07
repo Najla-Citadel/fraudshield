@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class SecurityReportSheet extends StatefulWidget {
   final int score;
@@ -84,7 +85,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
 
           // 1. Profile Security
           _buildCheckItem(
-            icon: Icons.person,
+            icon: LucideIcons.user,
             title: AppLocalizations.of(context)!.homeProfileSecurity,
             subtitle: widget.profileComplete 
               ? AppLocalizations.of(context)!.homeProfileSafeDesc
@@ -96,7 +97,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
           
           // 2. Active Defenses
           _buildCheckItem(
-            icon: Icons.shield,
+            icon: LucideIcons.shield,
             title: AppLocalizations.of(context)!.homeActiveDefenses,
             subtitle: '${widget.activeDefensesCount} ${AppLocalizations.of(context)!.homeActiveDefensesDesc}',
             isSafe: widget.activeDefensesCount > 0,
@@ -106,7 +107,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
 
           // 3. Premium Protection
           _buildCheckItem(
-            icon: Icons.diamond,
+            icon: LucideIcons.award,
             title: AppLocalizations.of(context)!.homePremiumProtection,
             subtitle: widget.isSubscribed 
               ? AppLocalizations.of(context)!.homePremiumAdvancedDesc 
@@ -202,13 +203,13 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                   ),
                   if (isLocked) ...[
                     SizedBox(width: 4),
-                    Icon(Icons.lock, size: 14, color: Colors.amber),
+                    Icon(LucideIcons.lock, size: 14, color: Colors.amber),
                   ],
                 ],
               ),
             ),
           if (actionLabel == null && isSafe)
-             Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen, size: 20),
+             Icon(LucideIcons.checkCircle2, color: DesignTokens.colors.accentGreen, size: 20),
         ],
       ),
     );

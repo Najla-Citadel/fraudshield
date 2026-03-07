@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../services/recent_checks_service.dart';
 import 'package:intl/intl.dart';
 import 'package:fraudshield/design_system/tokens/design_tokens.dart';
@@ -98,23 +99,23 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
       case 'Phone No':
       case 'Phone':
       case 'Bank Acc':
-        icon = Icons.payment_rounded;
+        icon = LucideIcons.creditCard;
         color = Colors.blueAccent;
         break;
       case 'URL':
-        icon = Icons.link_rounded;
+        icon = LucideIcons.link;
         color = Colors.purpleAccent;
         break;
       case 'Message':
-        icon = Icons.chat_bubble_outline_rounded;
+        icon = LucideIcons.messageSquare;
         color = Colors.greenAccent;
         break;
       case 'Document':
-        icon = Icons.description_outlined;
+        icon = LucideIcons.fileText;
         color = Colors.amber;
         break;
       default:
-        icon = Icons.search;
+        icon = LucideIcons.search;
         color = Colors.grey;
     }
 
@@ -188,7 +189,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
               ),
               SizedBox(width: 8),
               Icon(
-                Icons.restore, 
+                LucideIcons.history, 
                 color: Colors.white.withOpacity(0.2), 
                 size: 16
               ),

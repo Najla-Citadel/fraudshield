@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../design_system/components/app_loading_indicator.dart';
 
@@ -113,7 +114,7 @@ class _TurnstileWidgetState extends State<TurnstileWidget> {
                   });
                   _controller.reload();
                 },
-                icon: Icon(Icons.refresh, size: 16),
+                icon: Icon(LucideIcons.refreshCw, size: 16),
                 label: Text(
                   '$_errorMessage. Tap to retry',
                   style: const TextStyle(fontSize: 12, color: Colors.white70),
