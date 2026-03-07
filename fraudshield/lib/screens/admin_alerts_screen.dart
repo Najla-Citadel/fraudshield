@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../services/api_service.dart';
-import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../design_system/components/app_button.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -104,9 +104,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
               Text('Decision: ${tx['decision']}'),
               Text('Risk Score: ${tx['riskScore']}'),
               const SizedBox(height: 12),
-              ElevatedButton(
+              AppButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+                label: 'Close',
+                variant: AppButtonVariant.primary,
               ),
             ],
           ),
@@ -140,40 +141,29 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
           const SizedBox(height: 12),
           Row(children: [
             Expanded(
-              child: ElevatedButton(
+              child: AppButton(
                 onPressed: () => _viewTransaction(txId),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.primary.withOpacity(0.2),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                child: const Text('View'),
+                label: 'View',
+                variant: AppButtonVariant.secondary,
+                size: AppButtonSize.sm,
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: ElevatedButton(
-                onPressed:
-                    processed ? null : () => _labelTx(txId, alertId, 'fraud'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.error.withOpacity(0.2),
-                  foregroundColor: DesignTokens.colors.error,
-                  elevation: 0,
-                ),
-                child: const Text('Fraud'),
+              child: AppButton(
+                onPressed: processed ? null : () => _labelTx(txId, alertId, 'fraud'),
+                label: 'Fraud',
+                variant: AppButtonVariant.destructive,
+                size: AppButtonSize.sm,
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: ElevatedButton(
-                onPressed:
-                    processed ? null : () => _labelTx(txId, alertId, 'legit'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.accentGreen.withOpacity(0.2),
-                  foregroundColor: DesignTokens.colors.accentGreen,
-                  elevation: 0,
-                ),
-                child: const Text('Legit'),
+              child: AppButton(
+                onPressed: processed ? null : () => _labelTx(txId, alertId, 'legit'),
+                label: 'Legit',
+                variant: AppButtonVariant.primary,
+                size: AppButtonSize.sm,
               ),
             ),
           ]),

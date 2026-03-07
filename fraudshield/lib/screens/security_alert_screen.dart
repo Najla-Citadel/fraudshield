@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/security_service.dart';
+import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 
 class SecurityAlertScreen extends StatelessWidget {
@@ -67,33 +68,23 @@ class SecurityAlertScreen extends StatelessWidget {
                       'FraudShield detected that your device is rooted or jailbroken. To protect your financial data and prevent unauthorized access, FraudShield cannot run on modified devices.',
                 ),
                 const SizedBox(height: 32),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final isSecure =
-                          await SecurityService.instance.checkSecurity();
-                      if (isSecure) {
-                        if (context.mounted) {
-                          Navigator.pushReplacementNamed(context, '/');
-                        }
-                      } else {
-                        if (context.mounted) {
-                          AppSnackBar.showError(context, 'Security threat still detected.');
-                        }
+                AppButton(
+                  onPressed: () async {
+                    final isSecure =
+                        await SecurityService.instance.checkSecurity();
+                    if (isSecure) {
+                      if (context.mounted) {
+                        Navigator.pushReplacementNamed(context, '/');
                       }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Text('Re-verify Security'),
-                  ),
+                    } else {
+                      if (context.mounted) {
+                        AppSnackBar.showError(context, 'Security threat still detected.');
+                      }
+                    }
+                  },
+                  label: 'Re-verify Security',
+                  variant: AppButtonVariant.primary,
+                  width: double.infinity,
                 ),
                 const SizedBox(height: 16),
                 TextButton(

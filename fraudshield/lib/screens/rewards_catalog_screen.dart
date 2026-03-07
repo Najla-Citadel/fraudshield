@@ -81,10 +81,11 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
-          ElevatedButton(
+          AppButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Redeem', style: TextStyle(color: Colors.white)),
+            label: 'Redeem',
+            variant: AppButtonVariant.destructive,
+            size: AppButtonSize.sm,
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
@@ -457,26 +458,12 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
               ),
             ),
             const SizedBox(height: 32),
-            SizedBox(
+            AppButton(
+              onPressed: _isSubmitting ? null : _submit,
+              label: 'SAVE TO JOURNAL',
+              variant: AppButtonVariant.primary,
+              isLoading: _isSubmitting,
               width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submit,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.accentGreen,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                ),
-                child: _isSubmitting
-                    ? AppLoadingIndicator(color: DesignTokens.colors.backgroundDark)
-                    : Text(
-                        'SAVE TO JOURNAL',
-                        style: TextStyle(
-                            color: DesignTokens.colors.backgroundDark,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-              ),
             ),
             const SizedBox(height: 32),
           ],

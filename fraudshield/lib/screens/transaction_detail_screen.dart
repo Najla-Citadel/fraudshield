@@ -9,6 +9,7 @@ import '../design_system/components/app_snackbar.dart';
 import '../widgets/error_state.dart';
 import 'dart:math' as math;
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -668,25 +669,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         ),
       );
 
-  Widget _buildReportButton() => SizedBox(
+  Widget _buildReportButton() => AppButton(
+        onPressed: _showReportDialog,
+        icon: LucideIcons.megaphone,
+        label: 'Report This Transaction',
+        variant: AppButtonVariant.destructive,
         width: double.infinity,
-        height: 56,
-        child: ElevatedButton.icon(
-          onPressed: _showReportDialog,
-          icon: const Icon(LucideIcons.megaphone, size: 18),
-          label: const Text(
-            'Report This Transaction',
-            style: TextStyle(
-                fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.3),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFEF4444),
-            foregroundColor: Colors.white,
-            elevation: 0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          ),
-        ),
       );
 
   Widget _buildReportedBanner() => Container(
@@ -844,25 +832,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
               ),
 
               const SizedBox(height: 24),
-              SizedBox(
+              AppButton(
+                onPressed: () =>
+                    _convertToReport(descCtrl.text, selectedCategory),
+                label: 'Submit Scam Report',
+                variant: AppButtonVariant.destructive,
                 width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () =>
-                      _convertToReport(descCtrl.text, selectedCategory),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEF4444),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text(
-                    'Submit Scam Report',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
-                ),
               ),
             ],
           ),

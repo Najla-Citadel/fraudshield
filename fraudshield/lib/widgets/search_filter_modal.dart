@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_button.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class SearchFilterModal extends StatefulWidget {
   final DateTime? initialDateFrom;
@@ -253,31 +255,19 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
             child: Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: AppButton(
                     onPressed: _clearFilters,
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(color: Colors.red),
-                    ),
-                    child: const Text(
-                      'Clear All',
-                      style: TextStyle(color: Colors.red),
-                    ),
+                    label: 'Clear All',
+                    variant: AppButtonVariant.destructive,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
-                  child: ElevatedButton(
+                  child: AppButton(
                     onPressed: _applyFilters,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    child: const Text(
-                      'Apply Filters',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    label: 'Apply Filters',
+                    variant: AppButtonVariant.primary,
                   ),
                 ),
               ],

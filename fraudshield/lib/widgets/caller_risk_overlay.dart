@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../app_router.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 
 class CallerRiskOverlay extends StatefulWidget {
   final Map<String, dynamic>? callerData;
@@ -536,20 +537,11 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
               actionsOverflowAlignment: OverflowBarAlignment.center,
               actionsOverflowDirection: VerticalDirection.down,
               actions: [
-                SizedBox(
+                AppButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  label: 'Keep Hanging Up',
+                  variant: AppButtonVariant.primary,
                   width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF22C55E),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: () => Navigator.pop(ctx, false),
-                    child: const Text('Keep Hanging Up',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
                 ),
                 const SizedBox(height: 8),
                 SizedBox(

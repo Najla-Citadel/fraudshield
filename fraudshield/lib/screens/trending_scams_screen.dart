@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 import '../models/trending_scam.dart';
 
 class TrendingScamsScreen extends StatefulWidget {
@@ -442,30 +443,21 @@ class _ScamCard extends StatelessWidget {
         children: [
           Expanded(
             flex: 4,
-            child: ElevatedButton.icon(
+            child: AppButton(
               onPressed: () {},
-              icon: const Icon(LucideIcons.flag, size: 16, color: Colors.black87),
-              label: const Text('Report Similar', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.colors.accentGreen,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
+              icon: LucideIcons.flag,
+              label: 'Report Similar',
+              variant: AppButtonVariant.primary,
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             flex: 1,
-            child: ElevatedButton(
+            child: AppButton(
               onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: const Icon(LucideIcons.share2, color: Colors.white, size: 20),
+              label: '',
+              icon: LucideIcons.share2,
+              variant: AppButtonVariant.secondary,
             ),
           ),
         ],
@@ -476,30 +468,21 @@ class _ScamCard extends StatelessWidget {
         children: [
           Expanded(
             flex: 4,
-            child: ElevatedButton.icon(
+            child: AppButton(
               onPressed: onToggleExpand,
-              icon: const Icon(LucideIcons.eye, size: 16, color: Colors.white),
-              label: const Text('View Details', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
+              label: 'View Details',
+              icon: LucideIcons.eye,
+              variant: AppButtonVariant.secondary,
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             flex: 1,
-            child: ElevatedButton(
+            child: AppButton(
               onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.1),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: const Icon(LucideIcons.share2, color: Colors.white, size: 20),
+              label: '',
+              icon: LucideIcons.share2,
+              variant: AppButtonVariant.secondary,
             ),
           ),
         ],

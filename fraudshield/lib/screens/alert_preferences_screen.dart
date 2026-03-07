@@ -3,6 +3,7 @@ import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_snackbar.dart';
+import '../design_system/components/app_button.dart';
 
 class AlertPreferencesScreen extends StatefulWidget {
   const AlertPreferencesScreen({Key? key}) : super(key: key);
@@ -258,21 +259,12 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
               ),
             ),
       bottomNavigationBar: _isLoading ? null : SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: ElevatedButton(
-            onPressed: (_isSaving || !_isActive && _selectedCategories.isEmpty) ? null : _savePreferences,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DesignTokens.colors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
-            ),
-            child: _isSaving 
-              ? const SizedBox(height: 20, width: 20, child: AppLoadingIndicator(color: Colors.white, strokeWidth: 2))
-              : Text('Save Preferences', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
+        child: AppButton(
+          onPressed: (_isSaving || !_isActive && _selectedCategories.isEmpty) ? null : _savePreferences,
+          label: 'Save Preferences',
+          variant: AppButtonVariant.primary,
+          isLoading: _isSaving,
+          width: double.infinity,
         ),
       ),
     );

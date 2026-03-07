@@ -1885,19 +1885,11 @@ class _DailyRewardDialog extends StatelessWidget {
                   fontSize: 12, color: Colors.white.withOpacity(0.4)),
             ),
             const SizedBox(height: 24),
-            SizedBox(
+            AppButton(
+              onPressed: () => Navigator.pop(context),
+              label: 'Awesome!',
+              variant: AppButtonVariant.primary,
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.accentGreen,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text('Awesome!'),
-              ),
             ),
           ],
         ),

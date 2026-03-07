@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../design_system/components/app_skeleton.dart';
+import '../design_system/components/app_button.dart';
 
 import '../screens/article_reader_screen.dart';
 import '../design_system/tokens/design_tokens.dart';
@@ -193,21 +194,14 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                     }).toList(),
                   ),
                   const SizedBox(height: 32),
-                  SizedBox(
+                  AppButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _loadNews();
+                    },
+                    label: 'Update Feed',
+                    variant: AppButtonVariant.primary,
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _loadNews();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignTokens.colors.accentGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: const Text('Update Feed'),
-                    ),
                   ),
                   const SizedBox(height: 20),
                 ],

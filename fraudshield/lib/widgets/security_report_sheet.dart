@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 
 class SecurityReportSheet extends StatefulWidget {
   final int score;
@@ -118,18 +119,11 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
 
           const SizedBox(height: 32),
           
-          SizedBox(
+          AppButton(
+            onPressed: () => Navigator.pop(context),
+            label: AppLocalizations.of(context)!.btnDone,
+            variant: AppButtonVariant.primary,
             width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.colors.accentGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text(AppLocalizations.of(context)!.btnDone),
-            ),
           ),
           const SizedBox(height: 12),
         ],

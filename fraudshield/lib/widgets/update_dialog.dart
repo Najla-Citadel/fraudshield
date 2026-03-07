@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 
 class UpdateDialog extends StatelessWidget {
   final bool isForce;
@@ -66,21 +67,12 @@ class UpdateDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              ElevatedButton(
+              AppButton(
                 onPressed: onUpdate,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.accentGreen,
-                  foregroundColor: Colors.black,
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Update Now',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                label: 'Update Now',
+                variant: AppButtonVariant.primary,
+                width: double.infinity,
+                size: AppButtonSize.lg,
               ),
               if (!isForce) ...[
                 const SizedBox(height: 12),

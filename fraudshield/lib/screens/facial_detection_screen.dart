@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 
 class FacialDetectionScreen extends StatefulWidget {
   const FacialDetectionScreen({super.key});
@@ -90,23 +91,13 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
             const SizedBox(height: 30),
 
             // 🟦 Scan Button
-            SizedBox(
+            AppButton(
+              onPressed: isScanning ? null : _startScan,
+              icon: Icons.camera_alt,
+              label: isScanning ? 'Scanning...' : 'Scan Now',
+              variant: AppButtonVariant.primary,
+              isLoading: isScanning,
               width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: isScanning ? null : _startScan,
-                icon: const Icon(Icons.camera_alt),
-                label: Text(
-                  isScanning ? 'Scanning...' : 'Scan Now',
-                  style: const TextStyle(fontSize: 18),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-              ),
             ),
 
             const SizedBox(height: 40),

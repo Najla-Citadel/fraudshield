@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../services/risk_evaluator.dart';
@@ -206,30 +207,12 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             style: const TextStyle(fontSize: 15, color: Colors.white),
           ),
           const SizedBox(height: 20),
-          SizedBox(
+          AppButton(
+            onPressed: _isLoading ? null : _checkUrl,
+            label: 'Check Link',
+            isLoading: _isLoading,
+            variant: AppButtonVariant.primary,
             width: double.infinity,
-            height: 50,
-            child: _isLoading
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: AppLoadingIndicator(color: Colors.white),
-                  )
-                : ElevatedButton(
-                    onPressed: _isLoading ? null : _checkUrl,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DesignTokens.colors.primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      'Check Link',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-            ),
           ),
         ],
       ),

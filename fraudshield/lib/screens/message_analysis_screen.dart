@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
-import 'fraud_check_screen.dart';
 
 class MessageAnalysisScreen extends StatefulWidget {
   const MessageAnalysisScreen({super.key});
@@ -95,32 +94,12 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
+            AppButton(
+              onPressed: _isLoading ? null : _analyze,
+              label: 'Analyze Message',
+              variant: AppButtonVariant.primary,
+              isLoading: _isLoading,
               width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _analyze,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DesignTokens.colors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: _isLoading
-                    ? const AppLoadingIndicator(
-                        color: Colors.white,
-                        size: 20,
-                      )
-                    : const Text(
-                        'Analyze Message',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-              ),
             ),
             const SizedBox(height: 40),
             _featureRow(

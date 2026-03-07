@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 
 class ErrorState extends StatelessWidget {
   final VoidCallback onRetry;
@@ -53,21 +54,11 @@ class ErrorState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            ElevatedButton.icon(
+            AppButton(
               onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-              label: const Text(
-                'Try Again',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DesignTokens.colors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
-              ),
+              icon: Icons.refresh_rounded,
+              label: 'Try Again',
+              variant: AppButtonVariant.primary,
             ),
           ],
         ),

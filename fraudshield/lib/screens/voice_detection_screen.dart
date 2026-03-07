@@ -11,6 +11,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
+import '../design_system/components/app_button.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_snackbar.dart';
 import 'package:flutter/services.dart';
@@ -227,17 +228,11 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 style: TextStyle(
                     color: Colors.white.withOpacity(0.5))),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: DesignTokens.colors.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
+          AppButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('I Understand',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            label: 'I Understand',
+            variant: AppButtonVariant.primary,
+            size: AppButtonSize.sm,
           ),
         ],
       ),

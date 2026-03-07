@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../services/api_service.dart';
-import '../constants/colors.dart';
+import '../design_system/components/app_button.dart';
 import 'scam_map_screen.dart';
 
 class ScamInsightScreen extends StatefulWidget {
@@ -511,27 +510,16 @@ class _LocalActivityCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
+          AppButton(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ScamMapScreen()),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1E40AF),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('View Malaysia Heatmap', style: TextStyle(fontWeight: FontWeight.bold)),
-                SizedBox(width: 4),
-                Icon(LucideIcons.chevronRight, size: 18),
-              ],
-            ),
+            label: 'View Malaysia Heatmap',
+            icon: LucideIcons.chevronRight,
+            variant: AppButtonVariant.primary,
           ),
         ],
       ),

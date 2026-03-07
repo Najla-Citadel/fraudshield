@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_button.dart';
 
 class ApplicationMonitoringScreen extends StatefulWidget {
   const ApplicationMonitoringScreen({super.key});
@@ -85,23 +86,14 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                     style: TextStyle(color: Colors.white70),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  AppButton(
                     onPressed: () {
                       setState(() {
                         allSafe = !allSafe;
                       });
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DesignTokens.colors.primary,
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      allSafe ? 'Simulate Threat' : 'Mark All Safe',
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                    label: allSafe ? 'Simulate Threat' : 'Mark All Safe',
+                    variant: AppButtonVariant.primary,
                   ),
                 ],
               ),

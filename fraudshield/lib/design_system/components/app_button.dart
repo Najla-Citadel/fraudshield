@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../tokens/design_tokens.dart';
+import 'app_loading_indicator.dart';
 
 enum AppButtonVariant { primary, secondary, outline, ghost, destructive }
 
@@ -128,13 +129,10 @@ class AppButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (isLoading) ...[
-                SizedBox(
-                  height: iconSize * 0.8,
-                  width: iconSize * 0.8,
-                  child: CircularProgressIndicator.adaptive(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
-                  ),
+                AppLoadingIndicator(
+                  size: iconSize * 0.8,
+                  strokeWidth: 2,
+                  color: foregroundColor,
                 ),
                 SizedBox(width: spacing.md),
               ] else if (icon != null) ...[
