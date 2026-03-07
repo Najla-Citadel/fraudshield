@@ -14,6 +14,8 @@ import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../l10n/app_localizations.dart';
+import '../design_system/components/app_divider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -179,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Welcome Back',
+                            AppLocalizations.of(context)!.loginWelcomeBack,
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
                                 .textTheme
@@ -191,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Sign in to continue to FraudShield',
+                            AppLocalizations.of(context)!.loginSignInDesc,
                             textAlign: TextAlign.center,
                             style: Theme.of(context)
                                 .textTheme
@@ -227,8 +229,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 );
                               },
+                              style: TextButton.styleFrom(
+                                minimumSize: const Size(44, 44),
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
                               child: Text(
-                                'Forgot password?',
+                                AppLocalizations.of(context)!.loginForgotPassword,
                                 style: TextStyle(
                                     color: DesignTokens.colors.accentGreen,
                                     fontWeight: FontWeight.w600),
@@ -246,13 +255,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             children: [
                               Expanded(
-                                  child: Divider(
-                                      color: Colors.white.withValues(alpha: 0.2))),
+                                  child: const AppDivider()),
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),
-                                child: Text(
-                                  'OR',
+                                    child: Text(
+                                  AppLocalizations.of(context)!.loginOr,
                                   style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.4),
                                     fontSize: 12,
@@ -286,21 +294,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Don’t have an account? ",
                     style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   ),
-                  GestureDetector(
-                    onTap: () {
+                  TextButton(
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const SignUpScreen()),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: DesignTokens.colors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(44, 44),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      AppLocalizations.of(context)!.loginSignUp,
+                      style: TextStyle(
+                        color: DesignTokens.colors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

@@ -184,13 +184,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get fraudStayProtected => 'Kekal Dilindungi';
 
   @override
-  String get fraudTipOtp => 'Never share your OTP or banking details';
+  String get fraudTipOtp => 'Jangan berkongsi OTP atau butiran perbankan anda';
 
   @override
-  String get fraudTipVerify => 'Always verify official website URLs';
+  String get fraudTipVerify => 'Sentiasa sahkan URL laman web rasmi';
 
   @override
-  String get fraudTipReport => 'Report suspicious activity immediately';
+  String get fraudTipReport => 'Laporkan aktiviti mencurigakan dengan segera';
 
   @override
   String get fraudCheckResult => 'Keputusan Semakan';
@@ -350,34 +350,188 @@ class AppLocalizationsMs extends AppLocalizations {
   String get homeServices => 'PERKHIDMATAN';
 
   @override
-  String get accountPrivacySettings => 'Privacy Settings';
+  String get accountPrivacySettings => 'Tetapan Privasi';
 
   @override
-  String get privacyManageConsent => 'Manage Consent';
+  String get privacyManageConsent => 'Urus Keizinan';
 
   @override
-  String get privacyDataManagement => 'Data Management';
+  String get privacyDataManagement => 'Pengurusan Data';
 
   @override
-  String get privacyRequestDataExport => 'Request Data Export';
+  String get privacyRequestDataExport => 'Minta Eksport Data';
 
   @override
-  String get privacyUpdateInfo => 'Update/Correct Information';
+  String get privacyUpdateInfo => 'Kemas Kini/Betulkan Maklumat';
 
   @override
-  String get privacyWithdrawConsent => 'Withdraw Consent';
+  String get privacyWithdrawConsent => 'Tarik Balik Keizinan';
 
   @override
-  String get privacyConsentMarketing => 'Marketing & Newsletters';
+  String get privacyConsentMarketing => 'Pemasaran & Surat Berita';
 
   @override
-  String get privacyDpoContact => 'Contact DPO';
+  String get privacyDpoContact => 'Hubungi DPO';
 
   @override
   String get privacyControlDesc =>
-      'Take control of your personal data in compliance with PDPA 2010.';
+      'Kawal data peribadi anda selaras dengan PDPA 2010.';
 
   @override
   String get privacyWithdrawDesc =>
-      'Retract consent for non-essential services.';
+      'Tarik semula keizinan untuk perkhidmatan tidak penting.';
+
+  @override
+  String get loginWelcomeBack => 'Selamat Kembali';
+
+  @override
+  String get loginSignInDesc => 'Log masuk untuk menyambung ke FraudShield';
+
+  @override
+  String get loginForgotPassword => 'Lupa kata laluan?';
+
+  @override
+  String get loginSignUp => 'Daftar';
+
+  @override
+  String get navBoard => 'Trend';
+
+  @override
+  String get homeCustomizeServices => 'Sesuaikan Perkhidmatan';
+
+  @override
+  String get homeSelectActionsDesc =>
+      'Pilih tindakan untuk dipaparkan pada papan pemuka anda.';
+
+  @override
+  String get btnDone => 'Selesai';
+
+  @override
+  String get btnLogNow => 'Log Sekarang';
+
+  @override
+  String get homeQuickProtection => 'Perlindungan Pantas';
+
+  @override
+  String get homeSecurityHealthScore => 'SKOR KESIHATAN KESELAMATAN';
+
+  @override
+  String get homeEnvironmentProtected => 'Persekitaran Dilindungi';
+
+  @override
+  String get homeSecurityNews => 'Berita Keselamatan';
+
+  @override
+  String get homeMyReports => 'Laporan Saya';
+
+  @override
+  String get homeSeeAll => 'Lihat Semua';
+
+  @override
+  String get fraudAiAnalysisResult => 'Keputusan Analisis AI';
+
+  @override
+  String get fraudEnterContentPrompt => 'Sila masukkan kandungan untuk disemak';
+
+  @override
+  String get fraudRecentActivity => 'Aktiviti Terkini';
+
+  @override
+  String get btnClear => 'Kosongkan';
+
+  @override
+  String get homePremiumProtection => 'Perlindungan Premium';
+
+  @override
+  String get loginOr => 'ATAU';
+
+  @override
+  String get homeSecurityReport => 'Laporan Keselamatan';
+
+  @override
+  String get homeProfileSecurity => 'Keselamatan Profil';
+
+  @override
+  String get homeProfileSafeDesc => 'Maklumat profil adalah terkini.';
+
+  @override
+  String get homeProfileAtRiskDesc =>
+      'Lengkapkan profil anda untuk meningkatkan keselamatan.';
+
+  @override
+  String get btnUpdate => 'KEMASKINI';
+
+  @override
+  String get homeActiveDefenses => 'Pertahanan Aktif';
+
+  @override
+  String get homeActiveDefensesDesc => 'lapisan perlindungan aktif.';
+
+  @override
+  String get btnEnable => 'AKTIFKAN';
+
+  @override
+  String get homePremiumAdvancedDesc => 'Perisai AI canggih sedang aktif.';
+
+  @override
+  String get homePremiumUpgradeDesc =>
+      'Naik taraf untuk membuka perlindungan penuh.';
+
+  @override
+  String get btnUnlock => 'BUKA';
+
+  @override
+  String get newsTitle => 'Risikan Penipuan';
+
+  @override
+  String get newsReadMore => 'Baca Lagi';
+
+  @override
+  String get newsLatestUpdate => 'Kemas Kini Terkini';
+
+  @override
+  String get accountSmartCapture => 'Tangkapan Pintar (Beta)';
+
+  @override
+  String get accountSmartCaptureDesc => 'Autolog transaksi perbankan';
+
+  @override
+  String get accountCallerId => 'Perlindungan ID Pemanggil';
+
+  @override
+  String get accountCallerIdDesc =>
+      'Pengesanan penipuan masa nyata dalam panggilan';
+
+  @override
+  String get accountDeleteAccount => 'Padam Akaun';
+
+  @override
+  String get accountChangePasswordTitle => 'Tukar Kata Laluan';
+
+  @override
+  String get accountCurrentPassword => 'Kata Laluan Semasa';
+
+  @override
+  String get accountNewPassword => 'Kata Laluan Baru';
+
+  @override
+  String get btnUpdatePassword => 'Kemas Kini Kata Laluan';
+
+  @override
+  String get accountBiometricAuth => 'Pengesahan Biometrik';
+
+  @override
+  String get accountLegalTitle => 'Undang-undang';
+
+  @override
+  String get accountTermsOfService => 'Syarat Perkhidmatan';
+
+  @override
+  String get accountManageConsent => 'Urus Keizinan';
+
+  @override
+  String get accountSelectLanguage => 'Pilih Bahasa';
+
+  @override
+  String get accountViewProfile => 'Lihat Profil';
 }

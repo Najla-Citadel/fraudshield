@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../design_system/tokens/design_tokens.dart';
 
 class SecurityReportSheet extends StatefulWidget {
@@ -52,9 +53,9 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Security Report',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.homeSecurityReport,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -82,34 +83,34 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
           // 1. Profile Security
           _buildCheckItem(
             icon: Icons.person,
-            title: 'Profile Security',
+            title: AppLocalizations.of(context)!.homeProfileSecurity,
             subtitle: widget.profileComplete 
-              ? 'Profile information is up to date.'
-              : 'Complete your profile to improve security.',
+              ? AppLocalizations.of(context)!.homeProfileSafeDesc
+              : AppLocalizations.of(context)!.homeProfileAtRiskDesc,
             isSafe: widget.profileComplete,
-            actionLabel: widget.profileComplete ? null : 'UPDATE',
+            actionLabel: widget.profileComplete ? null : AppLocalizations.of(context)!.btnUpdate,
             onAction: widget.onUpdateProfile,
           ),
           
           // 2. Active Defenses
           _buildCheckItem(
             icon: Icons.shield,
-            title: 'Active Defenses',
-            subtitle: '${widget.activeDefensesCount} protection layers active.',
+            title: AppLocalizations.of(context)!.homeActiveDefenses,
+            subtitle: '${widget.activeDefensesCount} ${AppLocalizations.of(context)!.homeActiveDefensesDesc}',
             isSafe: widget.activeDefensesCount > 0,
-            actionLabel: widget.activeDefensesCount > 0 ? null : 'ENABLE',
+            actionLabel: widget.activeDefensesCount > 0 ? null : AppLocalizations.of(context)!.btnEnable,
             onAction: widget.onEnableDefenses,
           ),
 
           // 3. Premium Protection
           _buildCheckItem(
             icon: Icons.diamond,
-            title: 'Premium Protection',
+            title: AppLocalizations.of(context)!.homePremiumProtection,
             subtitle: widget.isSubscribed 
-              ? 'Advanced AI shields are active.' 
-              : 'Upgrade to unlock full protection.',
+              ? AppLocalizations.of(context)!.homePremiumAdvancedDesc 
+              : AppLocalizations.of(context)!.homePremiumUpgradeDesc,
             isSafe: widget.isSubscribed,
-            actionLabel: widget.isSubscribed ? null : 'UNLOCK',
+            actionLabel: widget.isSubscribed ? null : AppLocalizations.of(context)!.btnUnlock,
             onAction: widget.onFixPremium,
             isLocked: !widget.isSubscribed,
           ),
@@ -126,7 +127,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text('Done'),
+              child: Text(AppLocalizations.of(context)!.btnDone),
             ),
           ),
           const SizedBox(height: 12),

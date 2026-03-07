@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../models/news_item.dart';
 import '../services/news_service.dart';
@@ -8,7 +9,7 @@ import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_loading_indicator.dart';
-import '../design_system/components/app_button.dart';
+import '../design_system/components/app_empty_state.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -60,7 +61,7 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'Fraud Intelligence',
+      title: AppLocalizations.of(context)!.newsTitle,
       body: Column(
         children: [
           _buildFilters(),
@@ -196,14 +197,14 @@ class _NewsScreenState extends State<NewsScreen> {
                                 size: 14, color: Colors.white24),
                             const SizedBox(width: 6),
                             Text(
-                              'Latest Update',
+                              AppLocalizations.of(context)!.newsLatestUpdate,
                               style: TextStyle(
                                   color: Colors.white.withOpacity(0.4),
                                   fontSize: 11),
                             ),
                             const Spacer(),
                             Text(
-                              'Read More',
+                              AppLocalizations.of(context)!.newsReadMore,
                               style: TextStyle(
                                   color: DesignTokens.colors.primary,
                                   fontWeight: FontWeight.bold,
@@ -238,43 +239,20 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(LucideIcons.searchX,
-              size: 48, color: Colors.white.withOpacity(0.2)),
-          const SizedBox(height: 16),
-          const Text('No news found',
-              style:
-                  TextStyle(color: Colors.white54, fontWeight: FontWeight.bold)),
-        ],
-      ),
+    return const AppEmptyState(
+      icon: LucideIcons.searchX,
+      title: 'No news found',
+      description: 'We couldn\'t find any news articles matching your current filter.',
     );
   }
 
   Widget _buildErrorState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(LucideIcons.wifiOff, size: 48, color: Colors.redAccent),
-            const SizedBox(height: 16),
-            Text('Failed to load news: $_error',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.redAccent)),
-            const SizedBox(height: 24),
-            AppButton(
-              onPressed: _loadNews,
-              label: 'Try Again',
-              variant: AppButtonVariant.secondary,
-              width: 150,
-            ),
-          ],
-        ),
-      ),
+    return AppEmptyState(
+      icon: LucideIcons.wifiOff,
+      title: 'Failed to load news',
+      description: _error ?? 'An unexpected error occurred while fetching news.',
+      actionLabel: 'Try Again',
+      onActionPressed: _loadNews,
     );
   }
 }

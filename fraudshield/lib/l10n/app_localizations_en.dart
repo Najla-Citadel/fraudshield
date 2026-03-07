@@ -379,4 +379,156 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get privacyWithdrawDesc =>
       'Retract consent for non-essential services.';
+
+  @override
+  String get loginWelcomeBack => 'Welcome Back';
+
+  @override
+  String get loginSignInDesc => 'Sign in to continue to FraudShield';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginSignUp => 'Sign Up';
+
+  @override
+  String get navBoard => 'Trends';
+
+  @override
+  String get homeCustomizeServices => 'Customize Services';
+
+  @override
+  String get homeSelectActionsDesc =>
+      'Select which actions to display on your dashboard.';
+
+  @override
+  String get btnDone => 'Done';
+
+  @override
+  String get btnLogNow => 'Log Now';
+
+  @override
+  String get homeQuickProtection => 'Quick Protection';
+
+  @override
+  String get homeSecurityHealthScore => 'SECURITY HEALTH SCORE';
+
+  @override
+  String get homeEnvironmentProtected => 'Environment Protected';
+
+  @override
+  String get homeSecurityNews => 'Security News';
+
+  @override
+  String get homeMyReports => 'My Reports';
+
+  @override
+  String get homeSeeAll => 'See All';
+
+  @override
+  String get fraudAiAnalysisResult => 'AI Analysis Result';
+
+  @override
+  String get fraudEnterContentPrompt => 'Please enter content to check';
+
+  @override
+  String get fraudRecentActivity => 'Recent Activity';
+
+  @override
+  String get btnClear => 'Clear';
+
+  @override
+  String get homePremiumProtection => 'Premium Protection';
+
+  @override
+  String get loginOr => 'OR';
+
+  @override
+  String get homeSecurityReport => 'Security Report';
+
+  @override
+  String get homeProfileSecurity => 'Profile Security';
+
+  @override
+  String get homeProfileSafeDesc => 'Profile information is up to date.';
+
+  @override
+  String get homeProfileAtRiskDesc =>
+      'Complete your profile to improve security.';
+
+  @override
+  String get btnUpdate => 'UPDATE';
+
+  @override
+  String get homeActiveDefenses => 'Active Defenses';
+
+  @override
+  String get homeActiveDefensesDesc => 'protection layers active.';
+
+  @override
+  String get btnEnable => 'ENABLE';
+
+  @override
+  String get homePremiumAdvancedDesc => 'Advanced AI shields are active.';
+
+  @override
+  String get homePremiumUpgradeDesc => 'Upgrade to unlock full protection.';
+
+  @override
+  String get btnUnlock => 'UNLOCK';
+
+  @override
+  String get newsTitle => 'Fraud Intelligence';
+
+  @override
+  String get newsReadMore => 'Read More';
+
+  @override
+  String get newsLatestUpdate => 'Latest Update';
+
+  @override
+  String get accountSmartCapture => 'Smart Capture (Beta)';
+
+  @override
+  String get accountSmartCaptureDesc => 'Auto-log banking transactions';
+
+  @override
+  String get accountCallerId => 'Caller ID Protection';
+
+  @override
+  String get accountCallerIdDesc => 'Real-time scam detection in calls';
+
+  @override
+  String get accountDeleteAccount => 'Delete Account';
+
+  @override
+  String get accountChangePasswordTitle => 'Change Password';
+
+  @override
+  String get accountCurrentPassword => 'Current Password';
+
+  @override
+  String get accountNewPassword => 'New Password';
+
+  @override
+  String get btnUpdatePassword => 'Update Password';
+
+  @override
+  String get accountBiometricAuth => 'Biometric Authentication';
+
+  @override
+  String get accountLegalTitle => 'Legal';
+
+  @override
+  String get accountTermsOfService => 'Terms of Service';
+
+  @override
+  String get accountManageConsent => 'Manage Consent';
+
+  @override
+  String get accountSelectLanguage => 'Select Language';
+
+  @override
+  String get accountViewProfile => 'View Profile';
 }

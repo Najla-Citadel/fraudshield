@@ -829,6 +829,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retract consent for non-essential services.'**
   String get privacyWithdrawDesc;
+
+  /// No description provided for @loginWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get loginWelcomeBack;
+
+  /// No description provided for @loginSignInDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to continue to FraudShield'**
+  String get loginSignInDesc;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @loginSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get loginSignUp;
+
+  /// No description provided for @navBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Trends'**
+  String get navBoard;
+
+  /// No description provided for @homeCustomizeServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize Services'**
+  String get homeCustomizeServices;
+
+  /// No description provided for @homeSelectActionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select which actions to display on your dashboard.'**
+  String get homeSelectActionsDesc;
+
+  /// No description provided for @btnDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get btnDone;
+
+  /// No description provided for @btnLogNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Now'**
+  String get btnLogNow;
+
+  /// No description provided for @homeQuickProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Protection'**
+  String get homeQuickProtection;
+
+  /// No description provided for @homeSecurityHealthScore.
+  ///
+  /// In en, this message translates to:
+  /// **'SECURITY HEALTH SCORE'**
+  String get homeSecurityHealthScore;
+
+  /// No description provided for @homeEnvironmentProtected.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment Protected'**
+  String get homeEnvironmentProtected;
+
+  /// No description provided for @homeSecurityNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Security News'**
+  String get homeSecurityNews;
+
+  /// No description provided for @homeMyReports.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reports'**
+  String get homeMyReports;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get homeSeeAll;
+
+  /// No description provided for @fraudAiAnalysisResult.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Analysis Result'**
+  String get fraudAiAnalysisResult;
+
+  /// No description provided for @fraudEnterContentPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter content to check'**
+  String get fraudEnterContentPrompt;
+
+  /// No description provided for @fraudRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get fraudRecentActivity;
+
+  /// No description provided for @btnClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get btnClear;
+
+  /// No description provided for @homePremiumProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Protection'**
+  String get homePremiumProtection;
+
+  /// No description provided for @loginOr.
+  ///
+  /// In en, this message translates to:
+  /// **'OR'**
+  String get loginOr;
+
+  /// No description provided for @homeSecurityReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Report'**
+  String get homeSecurityReport;
+
+  /// No description provided for @homeProfileSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Security'**
+  String get homeProfileSecurity;
+
+  /// No description provided for @homeProfileSafeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile information is up to date.'**
+  String get homeProfileSafeDesc;
+
+  /// No description provided for @homeProfileAtRiskDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to improve security.'**
+  String get homeProfileAtRiskDesc;
+
+  /// No description provided for @btnUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'UPDATE'**
+  String get btnUpdate;
+
+  /// No description provided for @homeActiveDefenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Defenses'**
+  String get homeActiveDefenses;
+
+  /// No description provided for @homeActiveDefensesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'protection layers active.'**
+  String get homeActiveDefensesDesc;
+
+  /// No description provided for @btnEnable.
+  ///
+  /// In en, this message translates to:
+  /// **'ENABLE'**
+  String get btnEnable;
+
+  /// No description provided for @homePremiumAdvancedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced AI shields are active.'**
+  String get homePremiumAdvancedDesc;
+
+  /// No description provided for @homePremiumUpgradeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to unlock full protection.'**
+  String get homePremiumUpgradeDesc;
+
+  /// No description provided for @btnUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'UNLOCK'**
+  String get btnUnlock;
+
+  /// No description provided for @newsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fraud Intelligence'**
+  String get newsTitle;
+
+  /// No description provided for @newsReadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read More'**
+  String get newsReadMore;
+
+  /// No description provided for @newsLatestUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Update'**
+  String get newsLatestUpdate;
+
+  /// No description provided for @accountSmartCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Capture (Beta)'**
+  String get accountSmartCapture;
+
+  /// No description provided for @accountSmartCaptureDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-log banking transactions'**
+  String get accountSmartCaptureDesc;
+
+  /// No description provided for @accountCallerId.
+  ///
+  /// In en, this message translates to:
+  /// **'Caller ID Protection'**
+  String get accountCallerId;
+
+  /// No description provided for @accountCallerIdDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time scam detection in calls'**
+  String get accountCallerIdDesc;
+
+  /// No description provided for @accountDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get accountDeleteAccount;
+
+  /// No description provided for @accountChangePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get accountChangePasswordTitle;
+
+  /// No description provided for @accountCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get accountCurrentPassword;
+
+  /// No description provided for @accountNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get accountNewPassword;
+
+  /// No description provided for @btnUpdatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get btnUpdatePassword;
+
+  /// No description provided for @accountBiometricAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Authentication'**
+  String get accountBiometricAuth;
+
+  /// No description provided for @accountLegalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get accountLegalTitle;
+
+  /// No description provided for @accountTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get accountTermsOfService;
+
+  /// No description provided for @accountManageConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Consent'**
+  String get accountManageConsent;
+
+  /// No description provided for @accountSelectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get accountSelectLanguage;
+
+  /// No description provided for @accountViewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get accountViewProfile;
 }
 
 class _AppLocalizationsDelegate

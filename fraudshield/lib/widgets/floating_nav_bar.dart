@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../l10n/app_localizations.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
@@ -55,31 +56,31 @@ class FloatingNavBar extends StatelessWidget {
                 children: [
                   _NavItem(
                     icon: LucideIcons.home,
-                    label: 'Home',
+                    label: AppLocalizations.of(context)!.navHome,
                     isSelected: currentIndex == 0,
                     onTap: () => onTap(0),
                   ),
                   _NavItem(
                     icon: LucideIcons.trendingUp,
-                    label: 'Trends',
+                    label: AppLocalizations.of(context)!.navBoard,
                     isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),
                   _NavItem(
                     icon: LucideIcons.users,
-                    label: 'Social',
+                    label: AppLocalizations.of(context)!.navCommunity,
                     isSelected: currentIndex == 2,
                     onTap: () => onTap(2),
                   ),
                   _NavItem(
                     icon: LucideIcons.gift,
-                    label: 'Rewards',
+                    label: AppLocalizations.of(context)!.navRewards,
                     isSelected: currentIndex == 3,
                     onTap: () => onTap(3),
                   ),
                   _NavItem(
                     icon: LucideIcons.user,
-                    label: 'Profile',
+                    label: AppLocalizations.of(context)!.navProfile,
                     isSelected: currentIndex == 4,
                     onTap: () => onTap(4),
                   ),
@@ -153,7 +154,7 @@ class _NavItem extends StatelessWidget {
                   color: isSelected
                       ? DesignTokens.colors.primary
                       : DesignTokens.colors.textGrey,
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                   letterSpacing: 0.2,
                 ),

@@ -337,8 +337,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       SettingsTile(
                         icon: Icons.auto_awesome_rounded,
-                        title: 'Smart Capture (Beta)',
-                        subtitle: 'Auto-log banking transactions',
+                        title: AppLocalizations.of(context)!.accountSmartCapture,
+                        subtitle: AppLocalizations.of(context)!.accountSmartCaptureDesc,
                         onTap: () {},
                         trailing: Switch(
                           value: _smartCaptureEnabled,
@@ -348,8 +348,8 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       SettingsTile(
                         icon: Icons.shield_rounded,
-                        title: 'Caller ID Protection',
-                        subtitle: 'Real-time scam detection in calls',
+                        title: AppLocalizations.of(context)!.accountCallerId,
+                        subtitle: AppLocalizations.of(context)!.accountCallerIdDesc,
                         onTap: () {},
                         trailing: Switch(
                           value: _callerIdProtectionEnabled,
@@ -442,7 +442,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       if (_isBiometricAvailable)
                         SettingsTile(
                           icon: Icons.fingerprint_rounded,
-                          title: 'Biometric Authentication',
+                          title: AppLocalizations.of(context)!.accountBiometricAuth,
                           subtitle: 'Extra security for sensitive actions',
                           onTap: () {},
                           trailing: Switch(
@@ -459,12 +459,12 @@ class _AccountScreenState extends State<AccountScreen> {
 
                   // Legal
                   SettingsGroup(
-                    title: 'Legal',
+                    title: AppLocalizations.of(context)!.accountLegalTitle,
                     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     items: [
                       SettingsTile(
                         icon: Icons.policy_rounded,
-                        title: 'Privacy Policy',
+                        title: AppLocalizations.of(context)!.accountPrivacyPolicy,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.white.withValues(alpha: 0.2),
@@ -474,7 +474,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       SettingsTile(
                         icon: Icons.description_rounded,
-                        title: 'Terms of Service',
+                        title: AppLocalizations.of(context)!.accountTermsOfService,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.white.withValues(alpha: 0.2),
@@ -484,7 +484,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       SettingsTile(
                         icon: Icons.gavel_rounded,
-                        title: 'Manage Consent',
+                        title: AppLocalizations.of(context)!.accountManageConsent,
                         trailing: Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.white.withValues(alpha: 0.2),
@@ -501,7 +501,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: TextButton(
                       onPressed: _confirmDeleteAccount,
                       child: Text(
-                        'Delete Account',
+                        AppLocalizations.of(context)!.accountDeleteAccount,
                         style: TextStyle(
                           color: Colors.red.withValues(alpha: 0.7),
                           fontSize: 13,
@@ -554,8 +554,8 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Change Password',
+                  Text(
+                    AppLocalizations.of(context)!.accountChangePasswordTitle,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   if (errorMessage != null) ...[
@@ -569,13 +569,13 @@ class _AccountScreenState extends State<AccountScreen> {
                   const SizedBox(height: 16),
                   AdaptiveTextField(
                     controller: currentCtrl,
-                    label: 'Current Password',
+                    label: AppLocalizations.of(context)!.accountCurrentPassword,
                     obscureText: true,
                   ),
                   const SizedBox(height: 12),
                   AdaptiveTextField(
                     controller: newCtrl,
-                    label: 'New Password',
+                    label: AppLocalizations.of(context)!.accountNewPassword,
                     obscureText: true,
                   ),
                   SizedBox(height: DesignTokens.spacing.xxl),
@@ -635,7 +635,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               }
                             });
                           },
-                    label: 'Update Password',
+                    label: AppLocalizations.of(context)!.btnUpdatePassword,
                     variant: AppButtonVariant.primary,
                   ),
                 ],
@@ -664,8 +664,8 @@ class _AccountScreenState extends State<AccountScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Select Language',
+              Text(
+                AppLocalizations.of(context)!.accountSelectLanguage,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -774,7 +774,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                     child: Text(
-                      'View Profile',
+                      AppLocalizations.of(context)!.accountViewProfile,
                       style: TextStyle(
                         color: DesignTokens.colors.accentGreen,
                         fontSize: 13,

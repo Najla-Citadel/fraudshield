@@ -9,9 +9,11 @@ import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_empty_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
+import '../design_system/components/app_divider.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   final String? initialType;
@@ -144,7 +146,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     if (_inputController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please enter content to check'),
+          content: Text(AppLocalizations.of(context)!.fraudEnterContentPrompt),
           backgroundColor: Colors.red.shade700,
         ),
       );
@@ -281,9 +283,9 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Recent Activity',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.fraudRecentActivity,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -301,7 +303,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                       minimumSize: const Size(50, 30),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text('Clear', style: TextStyle(fontSize: 12)),
+                    child: Text(AppLocalizations.of(context)!.btnClear, style: const TextStyle(fontSize: 12)),
                   ),
               ],
             ),
@@ -334,12 +336,12 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                 ? Icons.gpp_maybe_rounded
                 : Icons.gpp_good_rounded;
     final String riskLabel = isCritical
-        ? 'Critical Threat'
+        ? AppLocalizations.of(context)!.fraudCriticalThreat
         : isHigh
-            ? 'High Risk'
+            ? AppLocalizations.of(context)!.fraudHighRisk
             : isMedium
-                ? 'Suspicious'
-                : 'Looks Safe';
+                ? AppLocalizations.of(context)!.riskLevelSuspicious
+                : AppLocalizations.of(context)!.fraudLooksSafe;
 
     return GlassSurface(
       borderRadius: 24,
@@ -370,7 +372,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'AI Analysis Result',
+                      AppLocalizations.of(context)!.fraudAiAnalysisResult,
                       style: TextStyle(
                           color: Colors.white.withOpacity(0.4), fontSize: 12),
                     ),
@@ -395,7 +397,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
             ],
           ),
           const SizedBox(height: 20),
-          const Divider(color: Colors.white10, height: 1),
+          const AppDivider(height: 1),
           const SizedBox(height: 16),
           ..._lastResult!.reasons.map((reason) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -452,20 +454,11 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
       );
     }
     if (_recentChecks.isEmpty) {
-      return GlassSurface(
-        padding: const EdgeInsets.all(32),
-        borderRadius: 24,
-        child: Column(
-          children: [
-            Icon(LucideIcons.history,
-                color: Colors.white.withOpacity(0.3), size: 40),
-            const SizedBox(height: 12),
-            const Text(
-              'No recent activity',
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
+      return const AppEmptyState(
+        icon: LucideIcons.history,
+        title: 'No recent activity',
+        description: 'Your check history will appear here once you start analyzing phone numbers or bank accounts.',
+        iconSize: 48,
       );
     }
     return GlassSurface(

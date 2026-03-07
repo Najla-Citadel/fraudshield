@@ -385,9 +385,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Customize Services',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.homeCustomizeServices,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -395,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Select which actions to display on your dashboard.',
+                      AppLocalizations.of(context)!.homeSelectActionsDesc,
                       style:
                           TextStyle(color: Colors.white.withOpacity(0.6)),
                     ),
@@ -482,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 24),
                     AppButton(
                       onPressed: () => Navigator.pop(context),
-                      label: 'Done',
+                      label: AppLocalizations.of(context)!.btnDone,
                       variant: AppButtonVariant.primary,
                     ),
                     const SizedBox(height: 20),
@@ -910,7 +910,7 @@ class _HomeTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SECURITY HEALTH SCORE',
+                  AppLocalizations.of(context)!.homeSecurityHealthScore,
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 11,
@@ -957,7 +957,7 @@ class _HomeTab extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Environment Protected',
+                        AppLocalizations.of(context)!.homeEnvironmentProtected,
                         style: TextStyle(
                           color: DesignTokens.colors.accentGreen,
                           fontSize: 13,
@@ -979,9 +979,9 @@ class _HomeTab extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Protection',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context)!.homeQuickProtection,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -1075,9 +1075,9 @@ class _HomeTab extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
-              'Premium Protection',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.homePremiumProtection,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -1408,7 +1408,7 @@ class _HomeTab extends StatelessWidget {
                     color: DesignTokens.colors.accentGreen, size: 24),
                 const SizedBox(width: 10),
                 Text(
-                  'PAYMENT JOURNAL',
+                  AppLocalizations.of(context)!.homePaymentJournal.toUpperCase(),
                   style: TextStyle(
                     color: DesignTokens.colors.accentGreen,
                     fontSize: 14,
@@ -1439,8 +1439,8 @@ class _HomeTab extends StatelessWidget {
                     );
                   }
                 },
-                icon: const Text('Log Now',
-                    style: TextStyle(
+                icon: Text(AppLocalizations.of(context)!.btnLogNow,
+                    style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold)),
                 label: const Icon(Icons.arrow_forward_rounded,
                     color: Colors.white, size: 18),
@@ -1466,9 +1466,9 @@ class _HomeTab extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'Security News',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.homeSecurityNews,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -1516,9 +1516,9 @@ class _HomeTab extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'My Reports',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.homeMyReports,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
