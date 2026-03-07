@@ -9,6 +9,7 @@ import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class PointsDetailsScreen extends StatefulWidget {
   const PointsDetailsScreen({super.key});
@@ -51,12 +52,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
             _hasError =
                 false; // We can still show cached points from ApiService query
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text(
-                    'Note: Please verify your email to sync latest status.'),
-                duration: Duration(seconds: 2)),
-          );
+          AppSnackBar.showInfo(context, 'Note: Please verify your email to sync latest status.');
         }
       } else if (mounted) {
         setState(() {

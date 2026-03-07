@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class ScamAlertsScreen extends StatefulWidget {
   const ScamAlertsScreen({super.key});
@@ -37,9 +38,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load alerts: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed to load alerts: $e');
       }
     }
   }
@@ -604,11 +603,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
       await ApiService.instance.resolveAlert(alertId, action);
       _fetchAlerts(); // Refresh
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text('Alert ${action == 'BLOCK' ? 'blocked' : 'dismissed'}')),
-        );
+        AppSnackBar.showInfo(context, 'Alert ${action == 'BLOCK' ? 'blocked' : 'dismissed'}');
       }
     } catch (e) {
       debugPrint('Error resolving alert: $e');

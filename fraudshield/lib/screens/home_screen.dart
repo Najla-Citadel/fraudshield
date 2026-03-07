@@ -38,6 +38,7 @@ import 'report_history_screen.dart';
 import '../widgets/terms_acceptance_overlay.dart';
 import '../services/biometric_service.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -257,32 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final alerts = NotificationService.instance.alerts;
     if (alerts.isNotEmpty) {
       final latest = alerts.first;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(latest['title'] ?? 'Fraud Warning',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(latest['message'] ?? 'Suspicious activity detected'),
-            ],
-          ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
-          duration: const Duration(seconds: 5),
-          action: SnackBarAction(
-              label: 'VIEW',
-              textColor: Colors.white,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ScamAlertsScreen()),
-                );
-              }),
-        ),
-      );
+      AppSnackBar.showWarning(context, '${latest['title'] ?? 'Warning'}: ${latest['message'] ?? 'Suspicious activity'}');
     }
   }
 
@@ -878,13 +854,7 @@ class _HomeTab extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
               color: Colors.white.withOpacity(0.1), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.lg,
           gradient: LinearGradient(
             colors: [
               const Color(0xFF1E293B).withOpacity(0.8),
@@ -1049,6 +1019,7 @@ class _HomeTab extends StatelessWidget {
           color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1187,6 +1158,7 @@ class _HomeTab extends StatelessWidget {
           border: Border.all(
               color: Colors.white
                   .withOpacity(0.1)), // Slightly more visible border
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1273,15 +1245,7 @@ class _HomeTab extends StatelessWidget {
                     : Colors.transparent,
                 width: 1,
               ),
-              boxShadow: hasAlerts
-                  ? [
-                      BoxShadow(
-                        color: iconColor.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : [],
+              boxShadow: hasAlerts ? DesignTokens.shadows.md : [],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1391,13 +1355,7 @@ class _HomeTab extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

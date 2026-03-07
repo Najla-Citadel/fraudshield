@@ -34,6 +34,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
       decoration: BoxDecoration(
         color: DesignTokens.colors.backgroundDark,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: DesignTokens.shadows.lg,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

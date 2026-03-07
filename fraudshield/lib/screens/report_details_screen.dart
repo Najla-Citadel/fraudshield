@@ -4,6 +4,7 @@ import 'dart:ui';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> report;
@@ -55,9 +56,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       _commentController.clear();
       await _fetchComments();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to post comment: $e')),
-      );
+      AppSnackBar.showError(context, 'Failed to post comment: $e');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

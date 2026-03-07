@@ -6,6 +6,8 @@ import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_back_button.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -51,9 +53,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           if (isInitialLoad) {
             _errorMessage = e.toString();
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to refresh: $e')),
-            );
+            AppSnackBar.showError(context, 'Failed to refresh: $e');
           }
         });
       }
@@ -94,10 +94,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
           'Report History',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(LucideIcons.chevronLeft, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: const AppBackButton(),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.refreshCw,

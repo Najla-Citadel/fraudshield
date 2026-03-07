@@ -4,6 +4,7 @@ import '../design_system/components/app_loading_indicator.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class LogPaymentSheet extends StatefulWidget {
   final VoidCallback onLogSuccess;
@@ -179,9 +180,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
 
   Future<void> _submit() async {
     if (_merchantController.text.isEmpty || _amountController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in required fields')),
-      );
+      AppSnackBar.showWarning(context, 'Please fill in required fields');
       return;
     }
 
@@ -211,9 +210,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        AppSnackBar.showError(context, 'Error: $e');
       }
     }
   }

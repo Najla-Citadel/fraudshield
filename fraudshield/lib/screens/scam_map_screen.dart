@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_back_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -277,9 +277,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      _buildRoundButton(
-                        icon: LucideIcons.chevronLeft,
-                        onTap: () => Navigator.pop(context),
+                      AppBackButton(
+                        onPressed: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 12),
                       Expanded(

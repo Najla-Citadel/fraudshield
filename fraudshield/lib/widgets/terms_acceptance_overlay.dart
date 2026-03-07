@@ -8,6 +8,7 @@ import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_service_screen.dart';
 import 'glass_surface.dart';
 import 'adaptive_button.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class TermsAcceptanceOverlay extends StatefulWidget {
   const TermsAcceptanceOverlay({super.key});
@@ -28,11 +29,7 @@ class _TermsAcceptanceOverlayState extends State<TermsAcceptanceOverlay> {
       await context.read<AuthProvider>().acceptTerms('v1.0');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content:
-                Text('Error: ${e.toString().replaceAll('Exception: ', '')}')),
-      );
+      AppSnackBar.showError(context, 'Error: ${e.toString().replaceAll('Exception: ', '')}');
     } finally {
       if (mounted) setState(() => _loading = false);
     }

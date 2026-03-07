@@ -15,6 +15,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate;
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_snackbar.dart';
 import 'status_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -167,7 +168,7 @@ class _AccountScreenState extends State<AccountScreen> {
       await context.read<AuthProvider>().refreshProfile();
     } catch (e) {
       log('Error saving avatar: $e');
-      _toast('Failed to update avatar');
+      _toast('Failed to update avatar', isError: true);
     }
   }
 
@@ -196,8 +197,12 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  void _toast(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  void _toast(String msg, {bool isError = false}) {
+    if (isError) {
+      AppSnackBar.showError(context, msg);
+    } else {
+      AppSnackBar.showInfo(context, msg);
+    }
   }
 
   // ================= UI =================
@@ -377,7 +382,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 await SmartCaptureService().simulateCapture(testText);
                                 if (mounted) _toast('Simulation complete!');
                               } catch (e) {
-                                if (mounted) _toast('Capture failed.');
+                                if (mounted) _toast('Capture failed.', isError: true);
                               }
                             },
                           ),
@@ -992,7 +997,7 @@ class _AccountScreenState extends State<AccountScreen> {
     } catch (e) {
       log('Error deleting account: $e');
       if (mounted) setState(() => _loading = false);
-      _toast('Failed to delete account: $e');
+      _toast('Failed to delete account: $e', isError: true);
     }
   }
 

@@ -12,6 +12,7 @@ import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
+import '../design_system/components/app_snackbar.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/notification_service.dart';
@@ -284,13 +285,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content:
-                Text('Microphone permission is required for voice analysis.'),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+        AppSnackBar.showError(context, 'Microphone permission is required for voice analysis.');
       }
       return;
     }

@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_back_button.dart';
+import '../design_system/components/app_snackbar.dart';
 import '../widgets/error_state.dart';
 import 'dart:math' as math;
 import '../design_system/components/app_loading_indicator.dart';
@@ -212,13 +213,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
               onPressed: () {
                 Clipboard.setData(
                     ClipboardData(text: _transaction!['id'].toString()));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Transaction ID copied'),
-                    duration: Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                AppSnackBar.showInfo(context, 'Transaction ID copied');
               },
             ),
           ],
@@ -890,22 +885,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
       _fetchDetails();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✅ Scam report submitted. Thank you!'),
-            backgroundColor: Color(0xFF22D483),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12))),
-          ),
-        );
+        AppSnackBar.showSuccess(context, '✅ Scam report submitted. Thank you!');
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed: $e');
       }
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../services/security_service.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class SecurityAlertScreen extends StatelessWidget {
   const SecurityAlertScreen({super.key});
@@ -78,12 +79,7 @@ class SecurityAlertScreen extends StatelessWidget {
                         }
                       } else {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Security threat still detected.'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          AppSnackBar.showError(context, 'Security threat still detected.');
                         }
                       }
                     },

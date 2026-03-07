@@ -7,6 +7,7 @@ import '../design_system/components/app_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({super.key});
@@ -102,19 +103,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         expiresAt: DateTime.now().add(duration),
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('🎉 Welcome to Premium!'),
-          backgroundColor: DesignTokens.colors.accentGreen,
-        ),
-      );
+      AppSnackBar.showSuccess(context, '🎉 Welcome to Premium!');
       await _loadActiveSubscription();
     } catch (e) {
       log('Error subscribing: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to activate: $e'), backgroundColor: Colors.red),
-        );
+        AppSnackBar.showError(context, 'Failed to activate: $e');
       }
     } finally {
       if (mounted) setState(() => _isSubscribing = false);

@@ -5,6 +5,7 @@ import '../widgets/adaptive_scaffold.dart';
 import '../widgets/animated_background.dart';
 import '../widgets/glass_surface.dart';
 import '../constants/colors.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class UserAlertsScreen extends StatelessWidget {
   const UserAlertsScreen({super.key});
@@ -21,9 +22,7 @@ class UserAlertsScreen extends StatelessWidget {
             tooltip: 'Mark all as read',
             onPressed: () {
               NotificationService.instance.clearAlerts();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All alerts cleared')),
-              );
+              AppSnackBar.showInfo(context, 'All alerts cleared');
             },
           ),
         ],

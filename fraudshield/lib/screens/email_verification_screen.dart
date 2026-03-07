@@ -5,6 +5,7 @@ import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
@@ -48,12 +49,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       
       if (!mounted) return;
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Email verified successfully!'),
-          backgroundColor: DesignTokens.colors.accentGreen,
-        ),
-      );
+      AppSnackBar.showSuccess(context, 'Email verified successfully!');
       
       // Navigate to Home Screen on success
       Navigator.pushReplacement(

@@ -3,6 +3,7 @@ import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_snackbar.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
 import 'fraud_check_screen.dart';
@@ -28,9 +29,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
   Future<void> _analyze() async {
     final text = _controller.text.trim();
     if (text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please paste a message to analyze')),
-      );
+      AppSnackBar.showWarning(context, 'Please paste a message to analyze');
       return;
     }
 
@@ -47,9 +46,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Analysis failed: $e')),
-      );
+      AppSnackBar.showError(context, 'Analysis failed: $e');
     }
   }
 

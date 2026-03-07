@@ -13,6 +13,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/glass_surface.dart';
 import '../l10n/app_localizations.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class ScamReportingScreen extends StatefulWidget {
   final double? prefilledLat;
@@ -185,9 +186,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: Colors.redAccent),
-    );
+    AppSnackBar.showError(context, msg);
   }
 
   Future<void> _pickFile() async {

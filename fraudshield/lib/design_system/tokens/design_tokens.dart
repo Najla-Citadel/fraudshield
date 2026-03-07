@@ -103,6 +103,14 @@ class AppShadows {
         ),
       ];
 
+  List<BoxShadow> get lg => [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 32,
+          offset: const Offset(0, 12),
+        ),
+      ];
+
   List<BoxShadow> get glass => [
         BoxShadow(
           color: Colors.black.withOpacity(0.2),

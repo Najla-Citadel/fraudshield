@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
   const AdminAlertsScreen({super.key});
@@ -75,13 +76,10 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
       });
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Marked as $label')));
+      AppSnackBar.showSuccess(context, 'Marked as $label');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed: $e');
       }
     }
   }
@@ -116,8 +114,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        AppSnackBar.showError(context, 'Error: $e');
       }
     }
   }

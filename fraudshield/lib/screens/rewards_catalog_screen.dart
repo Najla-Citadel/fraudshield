@@ -5,6 +5,7 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../widgets/glass_surface.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class RewardsCatalogScreen extends StatefulWidget {
   const RewardsCatalogScreen({super.key});
@@ -43,9 +44,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading rewards: $e')),
-        );
+        AppSnackBar.showError(context, 'Error loading rewards: $e');
       }
     }
   }
@@ -54,15 +53,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
     final pointsCost = reward['pointsCost'] as int;
 
     // Check if user has enough points
-    if (_userPoints < pointsCost) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Insufficient points! You need $pointsCost points.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
+      AppSnackBar.showWarning(context, 'Insufficient points! You need $pointsCost points.');
 
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
@@ -110,24 +101,14 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
             _userPoints -= pointsCost; // Optimistic update
           });
           
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✅ Successfully redeemed ${reward['name']}!'),
-              backgroundColor: Colors.green,
-            ),
-          );
+          AppSnackBar.showSuccess(context, 'Successfully redeemed ${reward['name']}!');
 
           // Background reload to ensure sync with server
           _loadData(showLoader: false);
         }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        AppSnackBar.showError(context, 'Error: $e');
       }
     }
   }

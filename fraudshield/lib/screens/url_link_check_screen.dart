@@ -9,6 +9,7 @@ import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class UrlLinkCheckScreen extends StatefulWidget {
   const UrlLinkCheckScreen({super.key});
@@ -91,9 +92,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
       debugPrint('Error checking URL: $e');
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to check URL: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed to check URL: $e');
       }
     }
   }

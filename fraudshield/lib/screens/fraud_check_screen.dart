@@ -14,6 +14,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_divider.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   final String? initialType;
@@ -144,12 +145,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
   Future<void> _check() async {
     if (_inputController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.fraudEnterContentPrompt),
-          backgroundColor: Colors.red.shade700,
-        ),
-      );
+      AppSnackBar.showError(context, AppLocalizations.of(context)!.fraudEnterContentPrompt);
       return;
     }
 

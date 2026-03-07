@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_snackbar.dart';
 
 class AlertPreferencesScreen extends StatefulWidget {
   const AlertPreferencesScreen({Key? key}) : super(key: key);
@@ -61,9 +62,7 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load preferences: $e'), backgroundColor: Colors.red),
-        );
+        AppSnackBar.showError(context, 'Failed to load preferences: $e');
       }
     }
   }
@@ -78,16 +77,12 @@ class _AlertPreferencesScreenState extends State<AlertPreferencesScreen> {
         emailDigestEnabled: _emailDigestEnabled,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Preferences saved successfully'), backgroundColor: Colors.green),
-        );
+        AppSnackBar.showSuccess(context, 'Preferences saved successfully');
         Navigator.pop(context, true); // Return true to indicate change
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save preferences: $e'), backgroundColor: Colors.red),
-        );
+        AppSnackBar.showError(context, 'Failed to save preferences: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
