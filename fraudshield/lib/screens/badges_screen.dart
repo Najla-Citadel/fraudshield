@@ -1,9 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../services/api_service.dart';
 import '../models/badge_model.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../widgets/glass_surface.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
 
 class BadgesScreen extends StatefulWidget {
@@ -51,18 +53,15 @@ class _BadgesScreenState extends State<BadgesScreen> {
 
   List<BadgeModel> get _filteredBadges {
     if (_selectedTier == 'All') return _allBadges;
-    return _allBadges.where((b) => b.tier.toLowerCase() == _selectedTier.toLowerCase()).toList();
+    return _allBadges
+        .where((b) => b.tier.toLowerCase() == _selectedTier.toLowerCase())
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        title: Text('My Badges', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+    return ScreenScaffold(
+      title: 'My Badges',
       body: _loading
           ? AppLoadingIndicator.center()
           : RefreshIndicator(
@@ -87,8 +86,13 @@ class _BadgesScreenState extends State<BadgesScreen> {
   }
 
   Widget _buildSummaryCard() {
-    return GlassSurface(
+    return Container(
       padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.glassDark,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
       child: Row(
         children: [
           Stack(
@@ -98,9 +102,11 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 width: 80,
                 height: 80,
                 child: AppLoadingIndicator(
-                  value: _allBadges.isEmpty ? 0 : _earned.length / _allBadges.length,
+                  value: _allBadges.isEmpty
+                      ? 0
+                      : _earned.length / _allBadges.length,
                   strokeWidth: 8,
-                  backgroundColor: Colors.white.withOpacity(0.05),
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
                   color: DesignTokens.colors.accentGreen,
                 ),
               ),
@@ -109,11 +115,16 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 children: [
                   Text(
                     '${_earned.length}',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                   ),
                   Text(
                     '/${_allBadges.length}',
-                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.5)),
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white.withValues(alpha: 0.5)),
                   ),
                 ],
               ),
@@ -124,14 +135,18 @@ class _BadgesScreenState extends State<BadgesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Collection Progress',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'You\'ve unlocked ${(_allBadges.isEmpty ? 0 : (_earned.length / _allBadges.length * 100).toInt())}% of all security badges.',
-                  style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.6)),
+                  style: TextStyle(
+                      fontSize: 14, color: Colors.white.withValues(alpha: 0.6)),
                 ),
               ],
             ),
@@ -158,9 +173,13 @@ class _BadgesScreenState extends State<BadgesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isActive ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
+                color: isActive
+                    ? DesignTokens.colors.accentGreen
+                    : Colors.white.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: isActive ? null : Border.all(color: Colors.white.withOpacity(0.1)),
+                border: isActive
+                    ? null
+                    : Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: Text(
                 tier,
@@ -184,7 +203,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
           padding: const EdgeInsets.only(top: 40),
           child: Text(
             'No $_selectedTier badges yet.',
-            style: TextStyle(color: Colors.white.withOpacity(0.4)),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
           ),
         ),
       );
@@ -210,11 +229,19 @@ class _BadgesScreenState extends State<BadgesScreen> {
   Widget _buildBadgeCard(BadgeModel badge) {
     Color tierColor;
     switch (badge.tier.toLowerCase()) {
-      case 'platinum': tierColor = Colors.cyanAccent; break;
-      case 'gold': tierColor = Colors.amber; break;
-      case 'silver': tierColor = Colors.blueGrey.shade200; break;
-      case 'bronze': 
-      default: tierColor = Colors.orangeAccent.shade100; break;
+      case 'platinum':
+        tierColor = Colors.cyanAccent;
+        break;
+      case 'gold':
+        tierColor = Colors.amber;
+        break;
+      case 'silver':
+        tierColor = Colors.blueGrey.shade200;
+        break;
+      case 'bronze':
+      default:
+        tierColor = Colors.orangeAccent.shade100;
+        break;
     }
 
     return GestureDetector(
@@ -225,17 +252,20 @@ class _BadgesScreenState extends State<BadgesScreen> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: badge.isEarned ? tierColor.withOpacity(0.1) : Colors.white.withOpacity(0.03),
+                color: badge.isEarned
+                    ? tierColor.withValues(alpha: 0.1)
+                    : Colors.white.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: badge.isEarned ? tierColor.withOpacity(0.3) : Colors.white.withOpacity(0.05),
+                  color: badge.isEarned
+                      ? tierColor.withValues(alpha: 0.3)
+                      : Colors.white.withValues(alpha: 0.05),
                   width: 1.5,
                 ),
               ),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Glow for earned badges
                   if (badge.isEarned)
                     Container(
                       width: 40,
@@ -244,29 +274,28 @@ class _BadgesScreenState extends State<BadgesScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: tierColor.withOpacity(0.4),
+                            color: tierColor.withValues(alpha: 0.4),
                             blurRadius: 20,
                             spreadRadius: 5,
                           ),
                         ],
                       ),
                     ),
-                  
-                  // Icon
                   Text(
                     badge.icon,
                     style: TextStyle(
                       fontSize: 32,
-                      color: badge.isEarned ? null : Colors.white.withOpacity(0.1),
+                      color: badge.isEarned
+                          ? null
+                          : Colors.white.withValues(alpha: 0.1),
                     ),
                   ),
-
-                  // Lock overlay
                   if (!badge.isEarned)
                     Positioned(
                       bottom: 8,
                       right: 8,
-                      child: Icon(Icons.lock, size: 14, color: Colors.white.withOpacity(0.2)),
+                      child: Icon(LucideIcons.lock,
+                          size: 14, color: Colors.white.withValues(alpha: 0.2)),
                     ),
                 ],
               ),
@@ -281,7 +310,9 @@ class _BadgesScreenState extends State<BadgesScreen> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: badge.isEarned ? FontWeight.bold : FontWeight.normal,
-              color: badge.isEarned ? Colors.white : Colors.white.withOpacity(0.4),
+              color: badge.isEarned
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.4),
             ),
           ),
         ],
@@ -307,11 +338,19 @@ class _BadgeDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     Color tierColor;
     switch (badge.tier.toLowerCase()) {
-      case 'platinum': tierColor = Colors.cyanAccent; break;
-      case 'gold': tierColor = Colors.amber; break;
-      case 'silver': tierColor = Colors.blueGrey.shade200; break;
-      case 'bronze': 
-      default: tierColor = Colors.orangeAccent.shade100; break;
+      case 'platinum':
+        tierColor = Colors.cyanAccent;
+        break;
+      case 'gold':
+        tierColor = Colors.amber;
+        break;
+      case 'silver':
+        tierColor = Colors.blueGrey.shade200;
+        break;
+      case 'bronze':
+      default:
+        tierColor = Colors.orangeAccent.shade100;
+        break;
     }
 
     return Container(
@@ -327,22 +366,24 @@ class _BadgeDetailSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(height: 32),
-          
-          // Large Badge Icon
           Container(
             width: 100,
             height: 100,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: badge.isEarned ? tierColor.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+              color: badge.isEarned
+                  ? tierColor.withValues(alpha: 0.1)
+                  : Colors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
               border: Border.all(
-                color: badge.isEarned ? tierColor.withOpacity(0.5) : Colors.white.withOpacity(0.1),
+                color: badge.isEarned
+                    ? tierColor.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.1),
                 width: 2,
               ),
             ),
@@ -350,22 +391,22 @@ class _BadgeDetailSheet extends StatelessWidget {
               badge.icon,
               style: TextStyle(
                 fontSize: 48,
-                color: badge.isEarned ? null : Colors.white.withOpacity(0.2),
+                color:
+                    badge.isEarned ? null : Colors.white.withValues(alpha: 0.2),
               ),
             ),
           ),
           const SizedBox(height: 24),
-          
           Text(
             badge.name,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(height: 8),
-          
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: tierColor.withOpacity(0.2),
+              color: tierColor.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -378,32 +419,37 @@ class _BadgeDetailSheet extends StatelessWidget {
               ),
             ),
           ),
-          
           const SizedBox(height: 24),
           Text(
             badge.description,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.7), height: 1.5),
+            style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.7),
+                height: 1.5),
           ),
-          
           const SizedBox(height: 32),
-          
           if (badge.isEarned)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
-                color: DesignTokens.colors.accentGreen.withOpacity(0.1),
+                color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
+                border: Border.all(
+                    color:
+                        DesignTokens.colors.accentGreen.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.check_circle, color: DesignTokens.colors.accentGreen, size: 20),
-                  SizedBox(width: 8),
+                  Icon(LucideIcons.checkCircle2,
+                      color: DesignTokens.colors.accentGreen, size: 20),
+                  const SizedBox(width: 8),
                   Text(
                     'Unlocked',
-                    style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: DesignTokens.colors.accentGreen,
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -416,7 +462,7 @@ class _BadgeDetailSheet extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     letterSpacing: 1.0,
                   ),
                 ),
@@ -424,24 +470,16 @@ class _BadgeDetailSheet extends StatelessWidget {
                 Text(
                   _getEarningInstruction(badge),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-          
           const SizedBox(height: 40),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withOpacity(0.05),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text('Close'),
-            ),
+          AppButton(
+            onPressed: () => Navigator.pop(context),
+            label: 'Close',
+            variant: AppButtonVariant.outline,
           ),
           const SizedBox(height: 20),
         ],

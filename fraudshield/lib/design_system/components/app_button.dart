@@ -103,7 +103,7 @@ class AppButton extends StatelessWidget {
           onPressed: isEnabled
               ? () {
                   if (hapticFeedback) HapticFeedback.lightImpact();
-                  onPressed!();
+                  onPressed?.call();
                 }
               : null,
           style: ElevatedButton.styleFrom(
@@ -123,37 +123,38 @@ class AppButton extends StatelessWidget {
               return null;
             }),
           ),
-          child: isLoading
-              ? SizedBox(
-                  height: iconSize,
-                  width: iconSize,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isLoading) ...[
+                SizedBox(
+                  height: iconSize * 0.8,
+                  width: iconSize * 0.8,
                   child: CircularProgressIndicator.adaptive(
                     strokeWidth: 2,
                     valueColor: AlwaysStoppedAnimation<Color>(foregroundColor),
                   ),
-                )
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, size: iconSize),
-                      SizedBox(width: spacing.sm),
-                    ],
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    if (suffixIcon != null) ...[
-                      SizedBox(width: spacing.sm),
-                      Icon(suffixIcon, size: iconSize),
-                    ],
-                  ],
                 ),
+                SizedBox(width: spacing.md),
+              ] else if (icon != null) ...[
+                Icon(icon, size: iconSize),
+                SizedBox(width: spacing.sm),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              if (!isLoading && suffixIcon != null) ...[
+                SizedBox(width: spacing.sm),
+                Icon(suffixIcon, size: iconSize),
+              ],
+            ],
+          ),
         ),
       ),
     );

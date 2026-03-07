@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
@@ -22,7 +22,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   
   bool _isLoading = false;
   bool _isCodeSent = false;
-  String? _errorMessage;
+  
+  String? _emailError;
+  String? _otpError;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -35,73 +38,56 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _handleRequestCode() async {
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
-      setState(() => _errorMessage = 'Please enter a valid email address.');
+      setState(() => _emailError = 'Please enter a valid email');
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final response = await ApiService.instance.requestPasswordReset(email);
+      setState(() => _isCodeSent = true);
       
-      setState(() {
-        _isCodeSent = true;
-        _isLoading = false;
-      });
-
       if (!mounted) return;
-      
-      // In development mode, the backend returns the OTP for easy testing
       if (response.containsKey('dev_otp')) {
-        AppSnackBar.showInfo(context, 'DEV MODE: Your code is ${response['dev_otp']}');
+        AppSnackBar.showInfo(context, 'DEV: Code is ${response['dev_otp']}');
       } else {
         AppSnackBar.showSuccess(context, 'Reset code sent to your email.');
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-      });
+      if (!mounted) return;
+      AppSnackBar.showError(context, e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _handleResetPassword() async {
     final email = _emailController.text.trim();
     final otp = _otpController.text.trim();
-    final newPassword = _passwordController.text.trim();
+    final newPassword = _passwordController.text;
 
     if (otp.length < 6) {
-      setState(() => _errorMessage = 'Please enter the 6-digit code.');
+      setState(() => _otpError = 'Enter 6-digit code');
       return;
     }
-
     if (newPassword.length < 8) {
-      setState(() => _errorMessage = 'Password must be at least 8 characters.');
+      setState(() => _passwordError = 'At least 8 characters');
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    setState(() => _isLoading = true);
 
     try {
       await ApiService.instance.resetPassword(email, otp, newPassword);
-      
       if (!mounted) return;
-      
-      AppSnackBar.showSuccess(context, 'Password reset successfully. You can now log in.');
-      
-      // Pop back to login screen
+      AppSnackBar.showSuccess(context, 'Password updated. Please log in.');
       Navigator.pop(context);
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-      });
+      if (!mounted) return;
+      AppSnackBar.showError(context, e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -112,30 +98,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       extendBodyBehindAppBar: true,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Header Icon
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: DesignTokens.colors.backgroundDark,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: DesignTokens.colors.primary.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        spreadRadius: -5,
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    LucideIcons.refreshCw,
-                    size: 40,
-                    color: DesignTokens.colors.primary,
-                  ),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: DesignTokens.colors.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  LucideIcons.key,
+                  size: 40,
+                  color: DesignTokens.colors.primary,
                 ),
               ),
               const SizedBox(height: 32),
@@ -147,69 +123,50 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      _isCodeSent ? 'Check Your Email' : 'Forgot Password?',
+                      _isCodeSent ? 'Verify' : 'Reset Password',
                       textAlign: TextAlign.center,
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _isCodeSent
-                          ? 'Enter the 6-digit code we sent to\n${_emailController.text}'
-                          : 'Enter the email address associated with your account and we\'ll send you a link to reset your password.',
+                          ? 'Enter the 6-digit code sent to your email'
+                          : 'Enter your email to receive a reset code',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            height: 1.5,
-                          ),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
                     ),
                     const SizedBox(height: 32),
-                    if (_errorMessage != null)
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 24),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.red, size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _errorMessage!,
-                                style: const TextStyle(color: Colors.red),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    
                     if (!_isCodeSent) ...[
                       AdaptiveTextField(
                         controller: _emailController,
-                        label: 'Email Address',
+                        label: 'Email',
                         prefixIcon: LucideIcons.mail,
                         keyboardType: TextInputType.emailAddress,
+                        errorText: _emailError,
+                        onChanged: (_) => setState(() => _emailError = null),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       AppButton(
-                        label: 'Send Reset Code',
-                        onPressed: _isLoading ? null : _handleRequestCode,
+                        label: 'Send Code',
+                        onPressed: _handleRequestCode,
                         isLoading: _isLoading,
-                        variant: AppButtonVariant.primary,
                       ),
                     ] else ...[
                       AdaptiveTextField(
                         controller: _otpController,
-                        label: '6-Digit Code',
+                        label: 'Verification Code',
                         prefixIcon: LucideIcons.hash,
                         keyboardType: TextInputType.number,
+                        errorText: _otpError,
+                        onChanged: (_) => setState(() => _otpError = null),
                       ),
                       const SizedBox(height: 16),
                       AdaptiveTextField(
@@ -217,27 +174,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         label: 'New Password',
                         prefixIcon: LucideIcons.lock,
                         obscureText: true,
+                        errorText: _passwordError,
+                        onChanged: (_) => setState(() => _passwordError = null),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       AppButton(
                         label: 'Reset Password',
-                        onPressed: _isLoading ? null : _handleResetPassword,
+                        onPressed: _handleResetPassword,
                         isLoading: _isLoading,
-                        variant: AppButtonVariant.primary,
                       ),
                       const SizedBox(height: 16),
                       TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _isCodeSent = false;
-                            _errorMessage = null;
-                            _otpController.clear();
-                            _passwordController.clear();
-                          });
-                        },
+                        onPressed: () => setState(() => _isCodeSent = false),
                         child: Text(
-                          'Use a different email',
-                          style: TextStyle(color: DesignTokens.colors.primary),
+                          'Try another email',
+                          style: TextStyle(
+                            color: DesignTokens.colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

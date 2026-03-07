@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_snackbar.dart';
 import 'email_verification_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -52,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final auth = context.read<AuthProvider>();
       final currentUser = auth.user;
-      
+
       await ApiService.instance.updateProfile(
         fullName: _nameController.text.trim(),
         metadata: {
@@ -63,18 +66,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
       await auth.refreshProfile();
-      
+
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully')),
-        );
+        AppSnackBar.showSuccess(context, 'Profile updated successfully');
         setState(() => _isEditing = false);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update profile: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed to update profile: $e');
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -95,9 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to request verification: $e')),
-        );
+        AppSnackBar.showError(context, 'Failed to request verification: $e');
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -108,26 +105,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
 
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Profile' : 'View Profile', style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          if (!_isLoading)
-            IconButton(
-              icon: Icon(_isEditing ? Icons.close : Icons.edit, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  if (_isEditing) _resetControllers();
-                  _isEditing = !_isEditing;
-                });
-              },
-            ),
-        ],
-      ),
+    return ScreenScaffold(
+      title: _isEditing ? 'Edit Profile' : 'View Profile',
+      actions: [
+        if (!_isLoading)
+          IconButton(
+            icon: Icon(_isEditing ? LucideIcons.x : LucideIcons.edit3,
+                color: Colors.white),
+            onPressed: () {
+              setState(() {
+                if (_isEditing) _resetControllers();
+                _isEditing = !_isEditing;
+              });
+            },
+          ),
+      ],
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -146,30 +138,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
               _item(
                 label: 'Full Name',
                 controller: _nameController,
                 isEditing: _isEditing,
-                icon: Icons.person_outline,
+                icon: LucideIcons.user,
               ),
               const SizedBox(height: 16),
-              
               _item(
                 label: 'Email Address',
                 value: user?.email ?? 'N/A',
-                isEditing: false, 
-                icon: Icons.email_outlined,
+                isEditing: false,
+                icon: LucideIcons.mail,
                 trailing: user?.isEmailVerified == true
-                    ? Icon(Icons.verified, color: DesignTokens.colors.accentGreen, size: 16)
+                    ? Icon(LucideIcons.checkCircle2,
+                        color: DesignTokens.colors.accentGreen, size: 16)
                     : GestureDetector(
-                        onTap: _isLoading ? null : () => _requestVerification(user?.email ?? ''),
+                        onTap: _isLoading
+                            ? null
+                            : () => _requestVerification(user?.email ?? ''),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Colors.orange.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                            border: Border.all(
+                                color: Colors.orange.withValues(alpha: 0.3)),
                           ),
                           child: const Text(
                             'Verify Now',
@@ -183,24 +178,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
               ),
               const SizedBox(height: 16),
-              
               _item(
                 label: 'Phone Number',
                 controller: _phoneController,
                 isEditing: _isEditing,
-                icon: Icons.phone_android_outlined,
+                icon: LucideIcons.smartphone,
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
-              
               _item(
                 label: 'Address',
                 controller: _addressController,
                 isEditing: _isEditing,
-                icon: Icons.location_on_outlined,
+                icon: LucideIcons.mapPin,
                 maxLines: 3,
               ),
-              
               if (_isEditing) ...[
                 const SizedBox(height: 40),
                 AppButton(
@@ -224,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.white.withOpacity(0.1),
+            backgroundColor: Colors.white.withValues(alpha: 0.1),
             backgroundImage: NetworkImage(
               'https://api.dicebear.com/7.x/avataaars/png?seed=${user?.profile?.avatar ?? "Felix"}',
             ),
@@ -266,13 +258,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: DesignTokens.colors.accentGreen.withOpacity(0.7), size: 20),
+          Icon(icon,
+              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.7),
+              size: 20),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -281,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     fontSize: 12,
                   ),
                 ),

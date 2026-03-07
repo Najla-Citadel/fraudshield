@@ -6,9 +6,9 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_details_screen.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../widgets/glass_surface.dart';
-import '../widgets/skeleton_card.dart';
-import '../widgets/error_state.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_button.dart';
+import '../design_system/components/app_snackbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class PointsScreen extends StatefulWidget {
@@ -59,12 +59,10 @@ class PointsScreenState extends State<PointsScreen> {
           _userDiscount = (rewardsRes['userDiscount'] ?? 0).toDouble();
         });
       }
-      // Sync auth provider to get latest balance/profile
       await context.read<AuthProvider>().refreshProfile();
     } catch (e) {
       log('Error loading points/rewards: $e');
       if (e.toString().contains('403')) {
-        // likely email not verified, profiles sync failed but we let it pass
         if (mounted) {
           setState(() => _hasError = false);
         }
@@ -78,24 +76,29 @@ class PointsScreenState extends State<PointsScreen> {
     final points = context.read<AuthProvider>().user?.profile?.points ?? 0;
     final pointsCost = reward['pointsCost'] as int;
     if (points < pointsCost) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Insufficient points!'), backgroundColor: Colors.red));
+      AppSnackBar.showError(context, 'Insufficient points!');
       return;
     }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Redeem ${reward['name']}?'),
+        backgroundColor: DesignTokens.colors.backgroundDark,
+        title: Text('Redeem ${reward['name']}?',
+            style: const TextStyle(color: Colors.white)),
         content: Text(
-            'Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points'),
+          'Cost: $pointsCost points\nYour balance after: ${points - pointsCost} points',
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+        ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
-          ElevatedButton(
+              child:
+                  const Text('Cancel', style: TextStyle(color: Colors.white))),
+          AppButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Redeem'),
+            label: 'Redeem',
+            variant: AppButtonVariant.primary,
+            size: AppButtonSize.sm,
           ),
         ],
       ),
@@ -104,104 +107,79 @@ class PointsScreenState extends State<PointsScreen> {
     try {
       await _api.redeemReward(reward['id']);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('✅ Redeemed ${reward['name']}!'),
-            backgroundColor: Colors.green));
-        // Refresh local rewards AND global balance
+        AppSnackBar.showSuccess(context, '✅ Redeemed ${reward['name']}!');
         await context.read<AuthProvider>().refreshProfile();
         refreshData();
       }
     } catch (e) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      if (mounted) {
+        AppSnackBar.showError(context, 'Error: $e');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF0F172A), // Slate 900
-                  DesignTokens.colors.backgroundDark, // Deep navy
-                  Color(0xFF1E3A8A), // Blue 900
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.5, 1.0],
-              ),
-            ),
+    return ScreenScaffold(
+      title: 'Rewards',
+      actions: [
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-          SafeArea(
-            child: Column(
-              children: [
-                _buildAppBar(context),
-                Expanded(child: _buildBody()),
-              ],
-            ),
+          child: IconButton(
+            icon:
+                const Icon(LucideIcons.history, size: 20, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PointsDetailsScreen()),
+              );
+            },
+            tooltip: 'Points History',
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text('Rewards',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 24)),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.history_rounded,
-                  size: 20, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => const PointsDetailsScreen()),
-                );
-              },
-              tooltip: 'Points History',
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
+      body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     if (_hasError) {
-      return ErrorState(onRetry: refreshData);
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(LucideIcons.alertCircle, size: 48, color: Colors.white24),
+            const SizedBox(height: 16),
+            const Text('Failed to load rewards',
+                style: TextStyle(color: Colors.white70)),
+            const SizedBox(height: 24),
+            AppButton(
+              onPressed: refreshData,
+              label: 'Retry',
+              variant: AppButtonVariant.outline,
+            ),
+          ],
+        ),
+      );
     }
 
     if (_loading) {
       return SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
-          children: [
-            const SkeletonCard(height: 180, margin: EdgeInsets.zero),
-            const SizedBox(height: 24),
-            const SkeletonCard(height: 100, margin: EdgeInsets.zero),
-            const SizedBox(height: 24),
-            const SkeletonCard(height: 250, margin: EdgeInsets.zero),
+          children: const [
+            SizedBox(height: 20),
+            // Mock skeletons
+            _Skeleton(height: 180),
+            SizedBox(height: 24),
+            _Skeleton(height: 60),
+            SizedBox(height: 24),
+            _Skeleton(height: 250),
           ],
         ),
       );
@@ -219,15 +197,10 @@ class PointsScreenState extends State<PointsScreen> {
               child: FadeInAnimation(child: widget),
             ),
             children: [
-              // 1. Balance Card
               _buildBalanceCard(),
               const SizedBox(height: 16),
-
-              // 2. Category Selector
               _buildCategorySelector(),
               const SizedBox(height: 16),
-
-              // 3. Sections
               if (_selectedCategory == 'All' ||
                   _selectedCategory == 'Security') ...[
                 _buildSectionHeader('Security Upgrades'),
@@ -247,7 +220,6 @@ class PointsScreenState extends State<PointsScreen> {
                       'No security upgrades available'),
                 const SizedBox(height: 32),
               ],
-
               if (_selectedCategory == 'All' ||
                   _selectedCategory == 'Vouchers') ...[
                 _buildSectionHeader('Store Items & Vouchers'),
@@ -259,7 +231,7 @@ class PointsScreenState extends State<PointsScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    mainAxisExtent: 260, // Fixed height for consistency
+                    mainAxisExtent: 260,
                   ),
                   itemCount: _rewards
                       .where((r) =>
@@ -282,10 +254,8 @@ class PointsScreenState extends State<PointsScreen> {
                       LucideIcons.packageOpen, 'No store items available'),
                 const SizedBox(height: 32),
               ],
-
               _buildDonationCard(),
-
-              const SizedBox(height: 100), // Bottom padding for FAB
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -307,25 +277,9 @@ class PointsScreenState extends State<PointsScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A), // Slate 900
+          color: DesignTokens.colors.glassDark,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-              color: Colors.white.withOpacity(0.1), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-          gradient: LinearGradient(
-            colors: [
-              const Color(0xFF1E293B).withOpacity(0.8),
-              const Color(0xFF0F172A).withOpacity(0.8)
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,7 +289,7 @@ class PointsScreenState extends State<PointsScreen> {
                 Text(
                   'AVAILABLE BALANCE',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -370,7 +324,8 @@ class PointsScreenState extends State<PointsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: DesignTokens.colors.accentGreen.withOpacity(0.8),
+                      color: DesignTokens.colors.accentGreen
+                          .withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -382,15 +337,16 @@ class PointsScreenState extends State<PointsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: DesignTokens.colors.accentGreen.withOpacity(0.1),
+                  color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                      color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
+                      color: DesignTokens.colors.accentGreen
+                          .withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.local_offer_rounded,
+                    Icon(LucideIcons.tag,
                         size: 14, color: DesignTokens.colors.accentGreen),
                     const SizedBox(width: 6),
                     Text(
@@ -409,7 +365,7 @@ class PointsScreenState extends State<PointsScreen> {
             Text(
               'You\'ve reached ${_calculateTierName(context.read<AuthProvider>().user?.profile?.totalPoints ?? 0)} status. Keep it up!',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
                 fontSize: 14,
                 height: 1.4,
               ),
@@ -445,16 +401,16 @@ class PointsScreenState extends State<PointsScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive
               ? DesignTokens.colors.accentGreen
-              : Colors.white.withOpacity(0.05),
+              : Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(22),
           border: isActive
               ? null
-              : Border.all(color: Colors.white.withOpacity(0.1)),
+              : Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -521,14 +477,13 @@ class PointsScreenState extends State<PointsScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: DesignTokens.colors.glassDark,
         borderRadius: BorderRadius.circular(isFeatured ? 24 : 20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Visual Area
           Container(
             height: isFeatured ? 140 : 100,
             width: double.infinity,
@@ -536,12 +491,12 @@ class PointsScreenState extends State<PointsScreen> {
               gradient: LinearGradient(
                 colors: isFeatured
                     ? [
-                        Colors.blue.withOpacity(0.2),
-                        Colors.blue.withOpacity(0.05)
+                        Colors.blue.withValues(alpha: 0.2),
+                        Colors.blue.withValues(alpha: 0.05)
                       ]
                     : [
-                        DesignTokens.colors.accentGreen.withOpacity(0.1),
-                        DesignTokens.colors.accentGreen.withOpacity(0.02)
+                        DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
+                        DesignTokens.colors.accentGreen.withValues(alpha: 0.02)
                       ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -554,14 +509,15 @@ class PointsScreenState extends State<PointsScreen> {
                 Center(
                   child: Icon(
                     isLocked
-                        ? Icons.lock_outline_rounded
-                        : (isFeatured ? Icons.security : Icons.card_giftcard),
+                        ? LucideIcons.lock
+                        : (isFeatured ? LucideIcons.shield : LucideIcons.gift),
                     size: isFeatured ? 64 : 40,
                     color: isLocked
                         ? Colors.white24
                         : (isFeatured
-                            ? Colors.blue.withOpacity(0.5)
-                            : DesignTokens.colors.accentGreen.withOpacity(0.5)),
+                            ? Colors.blue.withValues(alpha: 0.5)
+                            : DesignTokens.colors.accentGreen
+                                .withValues(alpha: 0.5)),
                   ),
                 ),
                 Positioned(
@@ -571,7 +527,9 @@ class PointsScreenState extends State<PointsScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isLocked ? Colors.black54 : DesignTokens.colors.accentGreen,
+                      color: isLocked
+                          ? Colors.black54
+                          : DesignTokens.colors.accentGreen,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -587,8 +545,6 @@ class PointsScreenState extends State<PointsScreen> {
               ],
             ),
           ),
-
-          // Content Area
           Padding(
             padding: EdgeInsets.all(isFeatured ? 16 : 12),
             child: Column(
@@ -612,43 +568,26 @@ class PointsScreenState extends State<PointsScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: isFeatured ? 14 : 12,
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: AppButton(
                     onPressed: (canAfford && !isLocked)
                         ? () => _redeemReward(reward)
                         : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: (canAfford && !isLocked)
-                          ? (isFeatured
-                              ? DesignTokens.colors.accentGreen
-                              : const Color(0xFF2563EB))
-                          : Colors.white.withOpacity(0.05),
-                      foregroundColor: (canAfford && !isLocked)
-                          ? (isFeatured ? Colors.black87 : Colors.white)
-                          : Colors.white.withOpacity(0.4),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: isFeatured ? 12 : 8),
-                    ),
-                    child: Text(
-                        isLocked
-                            ? 'Unlock at $requiredTier'
-                            : (canAfford
-                                ? (isFeatured ? 'Redeem Now' : 'Redeem')
-                                : 'Not Enough'),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        )),
+                    label: isLocked
+                        ? 'Unlock at $requiredTier'
+                        : (canAfford
+                            ? (isFeatured ? 'Redeem Now' : 'Redeem')
+                            : 'Not Enough'),
+                    variant: (canAfford && !isLocked)
+                        ? AppButtonVariant.primary
+                        : AppButtonVariant.outline,
+                    size: isFeatured ? AppButtonSize.md : AppButtonSize.sm,
                   ),
                 ),
               ],
@@ -660,19 +599,23 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildDonationCard() {
-    return GlassSurface(
+    return Container(
       padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: DesignTokens.colors.glassDark,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
       child: Row(
         children: [
           Container(
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color:
-                  DesignTokens.colors.accentGreen.withOpacity(0.2), // Darker teal
+              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.volunteer_activism,
+            child: Icon(LucideIcons.heart,
                 color: DesignTokens.colors.accentGreen),
           ),
           const SizedBox(width: 16),
@@ -692,7 +635,7 @@ class PointsScreenState extends State<PointsScreen> {
                 Text(
                   'Donate 200 pts to provide legal aid to victims.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 12,
                   ),
                 ),
@@ -709,7 +652,7 @@ class PointsScreenState extends State<PointsScreen> {
                           fontSize: 12,
                         ),
                       ),
-                      Icon(Icons.arrow_forward,
+                      Icon(LucideIcons.arrowRight,
                           size: 12, color: DesignTokens.colors.accentGreen),
                     ],
                   ),
@@ -734,9 +677,9 @@ class PointsScreenState extends State<PointsScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 40),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.02),
+        color: Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -753,3 +696,21 @@ class PointsScreenState extends State<PointsScreen> {
     );
   }
 }
+
+class _Skeleton extends StatelessWidget {
+  final double height;
+  const _Skeleton({required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+  }
+}
+

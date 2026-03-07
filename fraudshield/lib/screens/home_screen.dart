@@ -760,27 +760,97 @@ class _HomeTab extends StatelessWidget {
               const SizedBox(height: 24),
 
               // 2. SECURITY HEALTH SCORE (Gradient Card)
-              _buildSecurityHealthCard(context),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildSecurityHealthCard(context),
+              ),
 
               const SizedBox(height: 32),
 
               // 3. SERVICES ROW
-              _buildQuickActions(context),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 40 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildQuickActions(context),
+              ),
 
               const SizedBox(height: 24),
 
               // 4. PREMIUM PROTECTION
-              _buildPremiumProtectionSection(context),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 60 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildPremiumProtectionSection(context),
+              ),
 
               const SizedBox(height: 24),
 
               // 5. SECURITY NEWS & INSIGHTS
-              _buildSecurityNewsSection(context),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 80 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildSecurityNewsSection(context),
+              ),
 
               const SizedBox(height: 24),
 
               // 6. SUBMITTED REPORTS
-              _buildSubmittedReportsSection(context),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 100 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildSubmittedReportsSection(context),
+              ),
 
               const SizedBox(height: 40), // Bottom padding
             ],

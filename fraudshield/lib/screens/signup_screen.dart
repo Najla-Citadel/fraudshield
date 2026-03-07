@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../providers/auth_provider.dart';
-import 'login_screen.dart';
 import 'email_verification_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
@@ -14,7 +14,6 @@ import '../widgets/turnstile_widget.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -32,6 +31,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _loading = false;
   bool _agreedToTerms = false;
   String? _captchaToken;
+  
+  String? _nameError;
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmError;
 
   @override
   void dispose() {
@@ -42,27 +46,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
+  bool _validate() {
+    setState(() {
+      _nameError = _nameController.text.isEmpty ? 'Please enter your name' : null;
+      _emailError = _emailController.text.isEmpty || !_emailController.text.contains('@') 
+          ? 'Enter a valid email' : null;
+      _passwordError = _passwordController.text.length < 8 
+          ? 'Password must be at least 8 characters' : null;
+      _confirmError = _confirmPasswordController.text != _passwordController.text 
+          ? 'Passwords do not match' : null;
+    });
+
+    return _nameError == null && _emailError == null && 
+           _passwordError == null && _confirmError == null;
+  }
+
   Future<void> _signup() async {
-    final fullName = _nameController.text.trim();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-    final confirmPassword = _confirmPasswordController.text;
-
-    if (fullName.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty) {
-      AppSnackBar.showError(context, "Please fill in all fields.");
-      return;
-    }
-
-    if (password != confirmPassword) {
-      AppSnackBar.showError(context, "Passwords do not match.");
-      return;
-    }
+    if (!_validate()) return;
 
     if (!_agreedToTerms) {
-      AppSnackBar.showWarning(context, "You must agree to the Terms and Privacy Policy to continue.");
+      AppSnackBar.showWarning(context, "You must agree to the Terms and Privacy Policy.");
       return;
     }
 
@@ -75,9 +78,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       final success = await context.read<AuthProvider>().signUp(
-            email: email,
-            password: password,
-            fullName: fullName,
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+            fullName: _nameController.text.trim(),
             captchaToken: _captchaToken,
           );
 
@@ -86,16 +89,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (_) => EmailVerificationScreen(email: email)),
+              builder: (_) => EmailVerificationScreen(email: _emailController.text.trim())),
         );
-      } else {
-        if (!mounted) return;
-        AppSnackBar.showError(context, "Sign-up failed. Please try again.");
       }
     } catch (e) {
       if (!mounted) return;
-      final message = e.toString().replaceAll('Exception: ', '');
-      AppSnackBar.showError(context, "Error: $message");
+      AppSnackBar.showError(context, e.toString().replaceAll('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -112,11 +111,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 🛡️ Logo / Icon
               const AppLogo(size: 80),
               const SizedBox(height: 32),
-
-              // 🧭 Title
+              
               Text(
                 'Create Account',
                 textAlign: TextAlign.center,
@@ -135,62 +132,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 32),
 
-              // 🌫️ Glass Signup Card
               GlassSurface(
                 padding: const EdgeInsets.all(32),
                 borderRadius: 24,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // 👤 Full Name
                     AdaptiveTextField(
                       controller: _nameController,
                       label: 'Full Name',
                       prefixIcon: LucideIcons.user,
+                      errorText: _nameError,
+                      onChanged: (_) => setState(() => _nameError = null),
                     ),
                     const SizedBox(height: 16),
 
-                    // 📧 Email Field
                     AdaptiveTextField(
                       controller: _emailController,
                       label: 'Email',
                       prefixIcon: LucideIcons.mail,
                       keyboardType: TextInputType.emailAddress,
+                      errorText: _emailError,
+                      onChanged: (_) => setState(() => _emailError = null),
                     ),
                     const SizedBox(height: 16),
 
-                    // 🔒 Password Field
                     AdaptiveTextField(
                       controller: _passwordController,
                       label: 'Password',
                       prefixIcon: LucideIcons.lock,
                       obscureText: true,
+                      errorText: _passwordError,
+                      onChanged: (_) => setState(() => _passwordError = null),
                     ),
                     const SizedBox(height: 16),
 
-                    // 🔒 Confirm Password Field
                     AdaptiveTextField(
                       controller: _confirmPasswordController,
                       label: 'Confirm Password',
                       prefixIcon: LucideIcons.shieldCheck,
                       obscureText: true,
+                      errorText: _confirmError,
+                      onChanged: (_) => setState(() => _confirmError = null),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-                    // 📝 Terms & Conditions Checkbox
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          width: 24,
-                          height: 24,
+                          width: 20,
+                          height: 20,
                           child: Checkbox(
                             value: _agreedToTerms,
                             onChanged: (val) =>
                                 setState(() => _agreedToTerms = val ?? false),
                             activeColor: DesignTokens.colors.primary,
-                            side: const BorderSide(
-                                color: Colors.white54, width: 2),
+                            side: BorderSide(
+                                color: Colors.white.withValues(alpha: 0.3), width: 1.5),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
                           ),
@@ -200,9 +199,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                  fontSize: 13,
-                                  height: 1.4),
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                  fontSize: 12,
+                                  height: 1.5),
                               children: [
                                 const TextSpan(text: 'I agree to the '),
                                 TextSpan(
@@ -230,9 +229,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             builder: (_) =>
                                                 const PrivacyPolicyScreen())),
                                 ),
-                                const TextSpan(
-                                    text:
-                                        ', and consent to data collection as per PDPA 2010.'),
+                                const TextSpan(text: ', and consent to AI monitoring.'),
                               ],
                             ),
                           ),
@@ -241,52 +238,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
 
                     const SizedBox(height: 24),
-
-                    // 🛡️ CAPTCHA Security Check
                     TurnstileWidget(
                       onTokenReceived: (token) {
                         setState(() => _captchaToken = token);
                       },
                     ),
-
-                    const SizedBox(height: 16),
-
-                    // 🟦 Sign Up Button
+                    const SizedBox(height: 20),
                     AppButton(
                       label: 'Sign Up',
                       isLoading: _loading,
                       onPressed: _signup,
-                      variant: AppButtonVariant.primary,
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 24),
-
-              // 🔁 Already have account
+              const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Already have an account? ",
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          color: DesignTokens.colors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    onTap: () => Navigator.pop(context),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        color: DesignTokens.colors.primary,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

@@ -1,8 +1,7 @@
 // lib/widgets/latest_news_widget.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_skeleton.dart';
 
 import '../screens/article_reader_screen.dart';
 import '../design_system/tokens/design_tokens.dart';
@@ -228,7 +227,17 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: AppLoadingIndicator.center(color: DesignTokens.colors.accentGreen),
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          separatorBuilder: (_, __) => const SizedBox(width: 16),
+          itemBuilder: (_, __) => AppSkeleton.card(
+            width: 280,
+            height: containerHeight,
+            borderRadius: 20,
+          ),
+        ),
       );
     }
 

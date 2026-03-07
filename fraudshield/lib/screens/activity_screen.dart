@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../services/notification_service.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../widgets/glass_surface.dart';
+import '../design_system/layouts/screen_scaffold.dart';
 import 'package:intl/intl.dart';
 
 class ActivityScreen extends StatelessWidget {
@@ -10,37 +11,26 @@ class ActivityScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: const Text(
-          'Activity Log',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        centerTitle: true,
-        actions: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.tune, size: 20, color: Colors.white),
-              onPressed: () {
-                // Filter action
-              },
-            ),
+    return ScreenScaffold(
+      title: 'Activity Log',
+      actions: [
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
-        ],
-      ),
+          child: IconButton(
+            icon: const Icon(LucideIcons.sliders, size: 20, color: Colors.white),
+            onPressed: () {
+              // Filter action
+            },
+          ),
+        ),
+      ],
       body: Consumer<NotificationService>(
         builder: (context, notificationService, _) {
-          // Combine real alerts with mock data for demonstration
           final activities = _getAllActivities(notificationService.alerts);
           final grouped = _groupActivities(activities);
 
@@ -59,7 +49,7 @@ class ActivityScreen extends StatelessWidget {
                     child: Text(
                       group.toUpperCase(),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.5),
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
@@ -77,7 +67,6 @@ class ActivityScreen extends StatelessWidget {
   }
 
   List<Map<String, dynamic>> _getAllActivities(List<dynamic> realAlerts) {
-    // Mock data based on design
     final mockData = [
       {
         'title': 'SMS Phishing Blocked',
@@ -86,7 +75,7 @@ class ActivityScreen extends StatelessWidget {
         'timestamp':
             DateTime.now().subtract(const Duration(hours: 2)).toString(),
         'type': 'danger',
-        'icon': Icons.block,
+        'icon': LucideIcons.shieldAlert,
       },
       {
         'title': 'System Scan Completed',
@@ -95,7 +84,7 @@ class ActivityScreen extends StatelessWidget {
         'timestamp':
             DateTime.now().subtract(const Duration(hours: 5)).toString(),
         'type': 'success',
-        'icon': Icons.check_circle,
+        'icon': LucideIcons.checkCircle,
       },
       {
         'title': 'Safe Link Verified',
@@ -104,7 +93,7 @@ class ActivityScreen extends StatelessWidget {
         'timestamp':
             DateTime.now().subtract(const Duration(hours: 7)).toString(),
         'type': 'safe',
-        'icon': Icons.verified_user,
+        'icon': LucideIcons.shieldCheck,
       },
       {
         'title': 'Identity Guard Active',
@@ -114,7 +103,7 @@ class ActivityScreen extends StatelessWidget {
             .subtract(const Duration(days: 1, hours: 3))
             .toString(),
         'type': 'info',
-        'icon': Icons.fingerprint,
+        'icon': LucideIcons.fingerprint,
       },
       {
         'title': 'Payment Monitor',
@@ -123,7 +112,7 @@ class ActivityScreen extends StatelessWidget {
             .subtract(const Duration(days: 1, hours: 5))
             .toString(),
         'type': 'success',
-        'icon': Icons.payment,
+        'icon': LucideIcons.creditCard,
       },
     ];
 
@@ -136,8 +125,7 @@ class ActivityScreen extends StatelessWidget {
 
     for (var activity in activities) {
       final timestampStr = activity['timestamp']?.toString();
-      if (timestampStr == null || timestampStr.isEmpty)
-        continue; // Skip invalid dates
+      if (timestampStr == null || timestampStr.isEmpty) continue;
 
       try {
         final date = DateTime.parse(timestampStr);
@@ -181,33 +169,32 @@ class _ActivityCard extends StatelessWidget {
     switch (item['type']) {
       case 'danger':
         iconColor = Colors.orange;
-        iconBg = Colors.orange.withOpacity(0.1);
+        iconBg = Colors.orange.withValues(alpha: 0.1);
         break;
       case 'success':
         iconColor = DesignTokens.colors.accentGreen;
-        iconBg = DesignTokens.colors.accentGreen.withOpacity(0.1);
+        iconBg = DesignTokens.colors.accentGreen.withValues(alpha: 0.1);
         break;
       case 'safe':
         iconColor = Colors.blue;
-        iconBg = Colors.blue.withOpacity(0.1);
+        iconBg = Colors.blue.withValues(alpha: 0.1);
         break;
       case 'info':
       default:
         iconColor = Colors.blueAccent;
-        iconBg = Colors.blueAccent.withOpacity(0.1);
+        iconBg = Colors.blueAccent.withValues(alpha: 0.1);
         break;
     }
 
-    // Override icon if provided in mock data, else default
-    final IconData icon = item['icon'] ?? Icons.notifications;
+    final IconData icon = item['icon'] ?? LucideIcons.bell;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: DesignTokens.colors.glassDark,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,8 +203,7 @@ class _ActivityCard extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(
-                  12), // Slightly rounded square like design
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 24),
           ),
@@ -242,7 +228,7 @@ class _ActivityCard extends StatelessWidget {
                     Text(
                       _formatTime(item['timestamp']),
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 12,
                       ),
                     ),
@@ -252,7 +238,7 @@ class _ActivityCard extends StatelessWidget {
                 Text(
                   item['message'] ?? '',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 13,
                     height: 1.4,
                   ),

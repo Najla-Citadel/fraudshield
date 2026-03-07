@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../design_system/tokens/design_tokens.dart';
 
 class AdaptiveTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -16,6 +17,9 @@ class AdaptiveTextField extends StatelessWidget {
   final bool readOnly;
   final bool enabled;
   final IconData? suffixIcon;
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onEditingComplete;
 
   const AdaptiveTextField({
     super.key,
@@ -33,6 +37,9 @@ class AdaptiveTextField extends StatelessWidget {
     this.readOnly = false,
     this.enabled = true,
     this.suffixIcon,
+    this.errorText,
+    this.onChanged,
+    this.onEditingComplete,
   });
 
   @override
@@ -101,29 +108,61 @@ class AdaptiveTextField extends StatelessWidget {
         autofocus: autofocus,
         readOnly: readOnly,
         enabled: enabled,
+        onChanged: onChanged,
+        onEditingComplete: onEditingComplete,
         style: TextStyle(
-            color: textColor ?? (isDark ? Colors.white : Colors.black)),
+          color: textColor ?? (isDark ? Colors.white : Colors.black),
+          fontSize: 15,
+        ),
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: TextStyle(
+            color: errorText != null
+                ? DesignTokens.colors.error
+                : Colors.white.withValues(alpha: 0.5),
+          ),
           hintText: placeholder,
-          prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-          suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
-          filled: filled ?? true,
-          fillColor: fillColor ?? (isDark ? Colors.grey[900] : Colors.white),
+          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+          prefixIcon: prefixIcon != null
+              ? Icon(prefixIcon,
+                  color: errorText != null
+                      ? DesignTokens.colors.error
+                      : DesignTokens.colors.primary,
+                  size: 20)
+              : null,
+          suffixIcon: suffixIcon != null
+              ? Icon(suffixIcon, color: Colors.white.withValues(alpha: 0.3), size: 20)
+              : null,
+          errorText: errorText,
+          errorStyle: TextStyle(color: DesignTokens.colors.error),
+          filled: true,
+          fillColor: fillColor ?? Colors.white.withValues(alpha: 0.05),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none, // Modern "filled" look
+            borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+            borderSide: BorderSide(
+              color: errorText != null
+                  ? DesignTokens.colors.error
+                  : Colors.white.withValues(alpha: 0.05),
+              width: 1,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide(
-              color: Theme.of(context).primaryColor,
-              width: 2,
+              color: errorText != null
+                  ? DesignTokens.colors.error
+                  : DesignTokens.colors.primary,
+              width: 1.5,
             ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: DesignTokens.colors.error, width: 1),
           ),
         ),
       );

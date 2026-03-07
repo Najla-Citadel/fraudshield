@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../widgets/adaptive_scaffold.dart';
+import '../design_system/layouts/screen_scaffold.dart';
+import '../design_system/components/app_button.dart';
 import '../widgets/settings_group.dart';
 import '../l10n/app_localizations.dart';
 import 'profile_screen.dart';
@@ -13,15 +15,14 @@ class PrivacySettingsScreen extends StatefulWidget {
 }
 
 class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
-  bool _marketingConsent = true; // Placeholder for actual user preference
+  bool _marketingConsent = true;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return AdaptiveScaffold(
+    return ScreenScaffold(
       title: l10n.accountPrivacySettings,
-      backgroundColor: DesignTokens.colors.backgroundDark,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
@@ -31,7 +32,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               child: Text(
                 l10n.privacyControlDesc,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14,
                   height: 1.5,
                 ),
@@ -43,14 +44,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               items: [
                 SettingsTile(
-                  icon: Icons.file_download_outlined,
+                  icon: LucideIcons.download,
                   title: l10n.privacyRequestDataExport,
                   subtitle: 'Receive a copy of your personal data via email',
                   onTap: () => _showRequestConfirmation(
                       context, l10n.privacyRequestDataExport),
                 ),
                 SettingsTile(
-                  icon: Icons.edit_note_outlined,
+                  icon: LucideIcons.fileText,
                   title: l10n.privacyUpdateInfo,
                   subtitle: l10n.navProfile,
                   onTap: () => Navigator.push(
@@ -65,15 +66,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               items: [
                 SettingsTile(
-                  icon: Icons.notifications_none_outlined,
+                  icon: LucideIcons.bell,
                   title: l10n.privacyConsentMarketing,
                   subtitle: l10n.privacyWithdrawDesc,
-                  onTap: () {}, // Handled by Switch but onTap is required
+                  onTap: () {},
                   trailing: Switch(
                     value: _marketingConsent,
                     onChanged: (val) {
                       setState(() => _marketingConsent = val);
-                      // In a real app, call a service to update this
                     },
                     activeColor: DesignTokens.colors.accentGreen,
                   ),
@@ -85,7 +85,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               items: [
                 SettingsTile(
-                  icon: Icons.contact_support_outlined,
+                  icon: LucideIcons.helpCircle,
                   title: l10n.privacyDpoContact,
                   subtitle: 'Contact our Data Protection Officer',
                   onTap: () => _showDpoInfo(context),
@@ -102,17 +102,18 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: DesignTokens.colors.glassDark,
+        backgroundColor: DesignTokens.colors.backgroundDark,
         title: Text(action, style: const TextStyle(color: Colors.white)),
-        content: const Text(
+        content: Text(
           'Your request has been received. Our support team will process this and contact you at your registered email address within 21 days as per PDPA guidelines.',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
         ),
         actions: [
-          TextButton(
+          AppButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK',
-                style: TextStyle(color: DesignTokens.colors.primary)),
+            label: 'OK',
+            variant: AppButtonVariant.primary,
+            size: AppButtonSize.sm,
           ),
         ],
       ),
@@ -122,12 +123,13 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   void _showDpoInfo(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: DesignTokens.colors.backgroundDark,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => Padding(
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
         padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: DesignTokens.colors.backgroundDark,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,14 +142,15 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                   fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            _infoRow(Icons.email_outlined, 'dpo@fraudshield.com'),
+            _infoRow(LucideIcons.mail, 'dpo@fraudshield.com'),
             const SizedBox(height: 16),
-            _infoRow(Icons.location_on_outlined,
+            _infoRow(LucideIcons.mapPin,
                 'FraudShield HQ, Kuala Lumpur, Malaysia'),
             const SizedBox(height: 32),
-            const Text(
+            Text(
               'Business Hours: 9:00 AM - 6:00 PM (Mon-Fri)',
-              style: TextStyle(color: Colors.white54, fontSize: 13),
+              style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
             ),
             const SizedBox(height: 16),
           ],
@@ -159,7 +162,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   Widget _infoRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, color: DesignTokens.colors.primary, size: 20),
+        Icon(icon, color: DesignTokens.colors.accentGreen, size: 20),
         const SizedBox(width: 16),
         Expanded(
           child: Text(

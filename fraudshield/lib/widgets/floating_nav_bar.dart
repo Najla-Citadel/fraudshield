@@ -24,13 +24,13 @@ class FloatingNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(36),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 30,
               spreadRadius: -5,
               offset: const Offset(0, 15),
             ),
             BoxShadow(
-              color: DesignTokens.colors.primary.withOpacity(0.05),
+              color: DesignTokens.colors.primary.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -43,17 +43,17 @@ class FloatingNavBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(36),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   width: 1.0,
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                   _NavItem(
+                  _NavItem(
                     icon: LucideIcons.home,
                     label: 'Home',
                     isSelected: currentIndex == 0,
@@ -133,12 +133,15 @@ class _NavItem extends StatelessWidget {
                   curve: Curves.easeOutCubic,
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isSelected ? DesignTokens.colors.primary : Colors.transparent,
+                    color: isSelected
+                        ? DesignTokens.colors.primary
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
                     icon,
-                    color: isSelected ? Colors.white : DesignTokens.colors.textGrey,
+                    color:
+                        isSelected ? Colors.white : DesignTokens.colors.textGrey,
                     size: 20,
                   ),
                 ),
@@ -147,7 +150,9 @@ class _NavItem extends StatelessWidget {
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 300),
                 style: TextStyle(
-                  color: isSelected ? DesignTokens.colors.primary : DesignTokens.colors.textGrey,
+                  color: isSelected
+                      ? DesignTokens.colors.primary
+                      : DesignTokens.colors.textGrey,
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                   letterSpacing: 0.2,
