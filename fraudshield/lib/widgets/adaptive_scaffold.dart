@@ -11,7 +11,7 @@ class AdaptiveScaffold extends StatelessWidget {
   const AdaptiveScaffold({
     super.key,
     required this.title,
-    this.slivers = [],
+    this.slivers = const [],
     this.body,
     this.actions,
     this.floatingActionButton,

@@ -265,7 +265,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
         child: ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
           itemCount: 5,
-          itemBuilder: (context, index) => const SkeletonCard(
+          itemBuilder: (context, index) => SkeletonCard(
               height: 80, margin: EdgeInsets.only(bottom: DesignTokens.spacing.md)),
         ),
       );

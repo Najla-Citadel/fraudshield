@@ -1614,6 +1614,8 @@ class _BigActionButton extends StatefulWidget {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.isAlert = false,
+    this.isLocked = false,
   });
 
   @override
@@ -1721,6 +1723,8 @@ class _StatusItem extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.isActive,
+    this.onTap,
+    this.isLocked = false,
   });
 
   @override

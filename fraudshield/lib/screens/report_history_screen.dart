@@ -142,7 +142,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
     return ListView.builder(
       padding: EdgeInsets.all(DesignTokens.spacing.xxl),
       itemCount: 5,
-      itemBuilder: (context, index) => const SkeletonCard(
+      itemBuilder: (context, index) => SkeletonCard(
         height: 120,
         margin: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
       ),
