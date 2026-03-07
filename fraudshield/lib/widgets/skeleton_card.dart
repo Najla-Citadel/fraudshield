@@ -20,7 +20,7 @@ class SkeletonCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Shimmer.fromColors(
         baseColor: const Color(0xFF1E293B),
@@ -39,7 +39,7 @@ class SkeletonCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
@@ -53,12 +53,12 @@ class SkeletonCard extends StatelessWidget {
                         Container(
                             width: 150,
                             height: 16,
-                            color: Colors.white.withValues(alpha: 0.1)),
+                            color: Colors.white.withOpacity(0.1)),
                         const SizedBox(height: 8),
                         Container(
                             width: 100,
                             height: 12,
-                            color: Colors.white.withValues(alpha: 0.1)),
+                            color: Colors.white.withOpacity(0.1)),
                       ],
                     ),
                   ),
@@ -68,12 +68,12 @@ class SkeletonCard extends StatelessWidget {
               Container(
                   width: double.infinity,
                   height: 12,
-                  color: Colors.white.withValues(alpha: 0.1)),
+                  color: Colors.white.withOpacity(0.1)),
               const SizedBox(height: 8),
               Container(
                   width: 200,
                   height: 12,
-                  color: Colors.white.withValues(alpha: 0.1)),
+                  color: Colors.white.withOpacity(0.1)),
             ],
           ),
         ),

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
@@ -89,7 +90,9 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
                           const Center(
                             child: Padding(
                               padding: EdgeInsets.all(40),
-                              child: CircularProgressIndicator(
+                              child: AppLoadingIndicator(
+                                  size: 40,
+                                  strokeWidth: 4,
                                   color: AppColors.accentGreen),
                             ),
                           )
@@ -483,7 +486,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(color: AppColors.accentGreen),
+              const AppLoadingIndicator(color: AppColors.accentGreen),
               const SizedBox(height: 24),
               const Text('Analyzing QR Content...',
                   style: TextStyle(

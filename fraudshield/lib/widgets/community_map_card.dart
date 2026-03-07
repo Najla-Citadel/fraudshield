@@ -49,10 +49,10 @@ class _CommunityMapCardState extends State<CommunityMapCard>
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -73,8 +73,8 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        const Color(0xFF1E293B).withValues(alpha: 0.2),
-                        const Color(0xFF1E293B).withValues(alpha: 0.9),
+                        const Color(0xFF1E293B).withOpacity(0.2),
+                        const Color(0xFF1E293B).withOpacity(0.9),
                       ],
                     ),
                   ),
@@ -96,7 +96,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
+                            color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(LucideIcons.maximize,
@@ -110,7 +110,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                     Text(
                       'Live Threat Scanner',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: Colors.white.withOpacity(0.7),
                         fontSize: 12,
                         letterSpacing: 1.2,
                         fontWeight: FontWeight.bold,
@@ -193,9 +193,9 @@ class _CommunityMapCardState extends State<CommunityMapCard>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
               child: const Icon(LucideIcons.radar,
                   color: AppColors.accentGreen, size: 40),
@@ -220,10 +220,10 @@ class _CommunityMapCardState extends State<CommunityMapCard>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+        color: const Color(0xFFEF4444).withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
         border:
-            Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.5)),
+            Border.all(color: const Color(0xFFEF4444).withOpacity(0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -289,7 +289,7 @@ class RadarGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.1) // Subtle white lines
+      ..color = Colors.white.withOpacity(0.1) // Subtle white lines
       ..strokeWidth = 1.0;
 
     final center = Offset(size.width / 2, size.height / 2);

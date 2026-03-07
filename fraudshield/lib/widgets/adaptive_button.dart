@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
@@ -25,7 +26,7 @@ class AdaptiveButton extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return AppLoadingIndicator.center();
     }
 
     final VoidCallback? handledOnPressed = onPressed == null 

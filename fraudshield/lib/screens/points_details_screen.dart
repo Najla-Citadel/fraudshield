@@ -193,7 +193,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Match regular cards
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         children: [
@@ -207,7 +207,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     Text(
                       'SPENDABLE POINTS',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -241,7 +241,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               Container(
                 width: 1,
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Colors.white.withOpacity(0.1),
                 child: const SizedBox(height: 36), // Minimum height for divider
               ),
               Flexible(
@@ -251,7 +251,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                     Text(
                       'LIFETIME EARNINGS',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -289,7 +289,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                   Text(
                     'Next level at ${_getNextTierTarget(totalPoints)}',
                     style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
+                        color: Colors.white.withOpacity(0.4),
                         fontSize: 10),
                   ),
                 ],
@@ -299,7 +299,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: _getTierProgress(totalPoints),
-                  backgroundColor: Colors.white.withValues(alpha: 0.05),
+                  backgroundColor: Colors.white.withOpacity(0.05),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                       AppColors.accentGreen),
                   minHeight: 4,
@@ -344,16 +344,16 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
+          color: Colors.white.withOpacity(0.03),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withValues(alpha: 0.1),
+                color: AppColors.accentGreen.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.emoji_events_rounded,
@@ -375,14 +375,14 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                   Text(
                     'See how you rank against other protectors.',
                     style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 13),
                   ),
                 ],
               ),
             ),
             Icon(Icons.arrow_forward_ios,
-                color: Colors.white.withValues(alpha: 0.2), size: 14),
+                color: Colors.white.withOpacity(0.2), size: 14),
           ],
         ),
       ),
@@ -405,7 +405,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         Text(
           'Filter',
           style: TextStyle(
-            color: AppColors.accentGreen.withValues(alpha: 0.8),
+            color: AppColors.accentGreen.withOpacity(0.8),
             fontSize: 13,
             fontWeight: FontWeight.bold,
           ),
@@ -421,7 +421,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
           padding: const EdgeInsets.all(40.0),
           child: Text(
             'No transaction history yet.',
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+            style: TextStyle(color: Colors.white.withOpacity(0.3)),
           ),
         ),
       );
@@ -474,7 +474,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
         child: Text(
           title,
           style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.4),
+            color: Colors.white.withOpacity(0.4),
             fontSize: 11,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.8,
@@ -523,7 +523,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
                 Text(
                   formattedDate,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 12,
                   ),
                 ),

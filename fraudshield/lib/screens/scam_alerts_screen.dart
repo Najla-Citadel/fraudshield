@@ -5,6 +5,8 @@ import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../widgets/glass_surface.dart';
+import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 
 class ScamAlertsScreen extends StatefulWidget {
   const ScamAlertsScreen({super.key});
@@ -70,9 +72,8 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
         const SizedBox(width: 20),
       ],
       body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                  color: DesignTokens.colors.primaryBlue))
+          ? AppLoadingIndicator.center(
+              color: DesignTokens.colors.primaryBlue)
           : _alerts.isEmpty
               ? _buildEmptyState()
               : RefreshIndicator(
@@ -375,7 +376,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
               Text(
                 alert['title'] ?? 'Suspicious activity detected',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: isRead ? 0.7 : 1.0),
+                  color: Colors.white.withOpacity(isRead ? 0.7 : 1.0),
                   fontSize: 18,
                   fontWeight: isRead ? FontWeight.w500 : FontWeight.w700,
                 ),
@@ -433,40 +434,18 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE11D48), // Deep Rose
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text('Block & Report Sender',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                ),
+              AppButton(
+                onPressed: () => _resolveAlert(alert['id'], 'BLOCK'),
+                label: 'Block & Report Sender',
+                variant: AppButtonVariant.destructive,
+                size: AppButtonSize.lg,
               ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: ElevatedButton(
-                  onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.1),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: const Text('Not a Scam',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                ),
+              AppButton(
+                onPressed: () => _resolveAlert(alert['id'], 'DISMISS'),
+                label: 'Not a Scam',
+                variant: AppButtonVariant.secondary,
+                size: AppButtonSize.lg,
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../constants/colors.dart';
 import 'subscription_screen.dart';
 
@@ -187,10 +188,10 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Dark Slate
         borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -204,13 +205,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
               SizedBox(
                 width: 140,
                 height: 140,
-                child: CircularProgressIndicator(
-                  value: score / 100,
-                  strokeWidth: 12,
-                  backgroundColor: Colors.white.withValues(alpha: 0.05),
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.accentGreen),
-                ),
+                child: AppLoadingIndicator.center(),
               ),
               Column(
                 mainAxisSize: MainAxisSize.min,
@@ -226,7 +221,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                   Text(
                     'OF 100',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -257,7 +252,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
             'Your security environment is currently $status',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
               fontSize: 14,
             ),
           ),
@@ -282,9 +277,9 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +292,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                   color: (isCompleted
                           ? AppColors.accentGreen
                           : AppColors.primaryBlue)
-                      .withValues(alpha: 0.1),
+                      .withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -326,7 +321,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         color: isCompleted
                             ? AppColors.accentGreen
-                            : Colors.white.withValues(alpha: 0.5),
+                            : Colors.white.withOpacity(0.5),
                         fontSize: 13,
                         fontWeight:
                             isCompleted ? FontWeight.bold : FontWeight.normal,
@@ -353,7 +348,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
           Text(
             description,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.white.withOpacity(0.6),
               fontSize: 13,
               height: 1.4,
             ),

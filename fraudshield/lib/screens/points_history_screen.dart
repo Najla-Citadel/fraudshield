@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 
@@ -42,7 +43,7 @@ class _PointsHistoryScreenState extends State<PointsHistoryScreen> {
         backgroundColor: AppColors.primaryBlue,
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? AppLoadingIndicator.center()
           : _history.isEmpty
               ? const Center(child: Text('No history yet'))
               : ListView.builder(

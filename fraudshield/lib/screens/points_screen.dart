@@ -6,7 +6,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'points_details_screen.dart';
 import 'package:fraudshield/constants/colors.dart';
-import '../widgets/glass_card.dart';
+import '../widgets/glass_surface.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -660,7 +660,7 @@ class PointsScreenState extends State<PointsScreen> {
   }
 
   Widget _buildDonationCard() {
-    return GlassCard(
+    return GlassSurface(
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [

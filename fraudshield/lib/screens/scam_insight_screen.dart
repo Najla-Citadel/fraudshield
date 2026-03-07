@@ -90,7 +90,7 @@ class _RiskLevelCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -147,7 +147,7 @@ class _TrendingHeroCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withValues(alpha: 0.3),
+            color: Colors.red.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -197,7 +197,7 @@ class _TrendingHeroCard extends StatelessWidget {
                   child: TextButton(
                     onPressed: () {},
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.black.withValues(alpha: 0.2),
+                      backgroundColor: Colors.black.withOpacity(0.2),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     ),
@@ -223,7 +223,7 @@ class _TrendingHeroCard extends StatelessWidget {
               child: Icon(
                 LucideIcons.package,
                 size: 140,
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withOpacity(0.2),
               ),
             ),
           ),
@@ -271,7 +271,7 @@ class _DistributionChartCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -476,7 +476,7 @@ class _LocalActivityCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -600,13 +600,13 @@ class _EduCard extends StatelessWidget {
             Positioned(
               bottom: 8,
               right: 8,
-              child: Icon(LucideIcons.qrCode, color: Colors.white.withValues(alpha: 0.8), size: 24),
+              child: Icon(LucideIcons.qrCode, color: Colors.white.withOpacity(0.8), size: 24),
             )
           else
             Positioned(
               bottom: 8,
               left: 8,
-              child: Icon(LucideIcons.user, color: Colors.white.withValues(alpha: 0.5), size: 30),
+              child: Icon(LucideIcons.user, color: Colors.white.withOpacity(0.5), size: 30),
             )
         ],
       ),
@@ -625,7 +625,7 @@ class _RecentFeedList extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

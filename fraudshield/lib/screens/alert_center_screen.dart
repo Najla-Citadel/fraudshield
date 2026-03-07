@@ -32,12 +32,12 @@ class AlertCenterScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(LucideIcons.bellOff,
-                      size: 64, color: Colors.white.withValues(alpha: 0.1)),
+                      size: 64, color: Colors.white.withOpacity(0.1)),
                   const SizedBox(height: 16),
                   Text(
                     'No new alerts',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.4),
+                      color: Colors.white.withOpacity(0.4),
                       fontSize: 16,
                     ),
                   ),
@@ -100,7 +100,7 @@ class _AlertCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
+                        color: color.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(icon, color: color, size: 20),
@@ -126,7 +126,7 @@ class _AlertCard extends StatelessWidget {
                                   _formatTimestamp(alert['timestamp']),
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.white.withValues(alpha: 0.4),
+                                    color: Colors.white.withOpacity(0.4),
                                   ),
                                 ),
                             ],
@@ -136,7 +136,7 @@ class _AlertCard extends StatelessWidget {
                             alert['message'] ?? '',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white.withValues(alpha: 0.6),
+                              color: Colors.white.withOpacity(0.6),
                               height: 1.4,
                             ),
                           ),
@@ -165,7 +165,7 @@ class _AlertCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: DesignTokens.colors.primaryBlue.withValues(alpha: 0.1),
+          color: DesignTokens.colors.primaryBlue.withOpacity(0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

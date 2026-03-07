@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -114,8 +115,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
           circleId: const CircleId('search_radius'),
           center: LatLng(lat, lng),
           radius: radiusKm * 1000,
-          fillColor: AppColors.accentGreen.withValues(alpha: 0.05),
-          strokeColor: AppColors.accentGreen.withValues(alpha: 0.2),
+          fillColor: AppColors.accentGreen.withOpacity(0.05),
+          strokeColor: AppColors.accentGreen.withOpacity(0.2),
           strokeWidth: 1,
         ),
       );
@@ -292,7 +293,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                               Text(
                                 'Search areas...',
                                 style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.5)),
+                                    color: Colors.white.withOpacity(0.5)),
                               ),
                             ],
                           ),
@@ -328,7 +329,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColors.accentGreen
-                                  : AppColors.deepNavy.withValues(alpha: 0.7),
+                                  : AppColors.deepNavy.withOpacity(0.7),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: isSelected
@@ -414,13 +415,13 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                 child: Row(
                   children: [
                     Icon(Icons.touch_app_outlined,
-                        color: AppColors.accentGreen.withValues(alpha: 0.7),
+                        color: AppColors.accentGreen.withOpacity(0.7),
                         size: 14),
                     const SizedBox(width: 6),
                     Text(
                       'Long press to report a scam at a location',
                       style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
+                          color: Colors.white.withOpacity(0.6),
                           fontSize: 10),
                     ),
                   ],
@@ -451,8 +452,8 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
           ),
 
           if (_isLoading)
-            const Center(
-              child: CircularProgressIndicator(color: AppColors.accentGreen),
+            Center(
+              child: AppLoadingIndicator.center(),
             ),
         ],
       ),

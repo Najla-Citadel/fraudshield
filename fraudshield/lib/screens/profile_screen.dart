@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/adaptive_text_field.dart';
-import '../widgets/adaptive_button.dart';
+import '../design_system/components/app_button.dart';
 import '../constants/colors.dart';
 import 'email_verification_screen.dart';
 
@@ -167,9 +167,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.orange.withValues(alpha: 0.1),
+                            color: Colors.orange.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                            border: Border.all(color: Colors.orange.withOpacity(0.3)),
                           ),
                           child: const Text(
                             'Verify Now',
@@ -203,10 +203,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               if (_isEditing) ...[
                 const SizedBox(height: 40),
-                AdaptiveButton(
+                AppButton(
                   onPressed: _isLoading ? null : _saveProfile,
-                  text: 'Save Changes',
+                  label: 'Save Changes',
                   isLoading: _isLoading,
+                  variant: AppButtonVariant.primary,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -223,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.white.withValues(alpha: 0.1),
+            backgroundColor: Colors.white.withOpacity(0.1),
             backgroundImage: NetworkImage(
               'https://api.dicebear.com/7.x/avataaars/png?seed=${user?.profile?.avatar ?? "Felix"}',
             ),
@@ -265,13 +266,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: Colors.white.withOpacity(0.03),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.accentGreen.withValues(alpha: 0.7), size: 20),
+          Icon(icon, color: AppColors.accentGreen.withOpacity(0.7), size: 20),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -280,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.4),
+                    color: Colors.white.withOpacity(0.4),
                     fontSize: 12,
                   ),
                 ),

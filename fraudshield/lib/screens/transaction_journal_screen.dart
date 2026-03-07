@@ -7,6 +7,8 @@ import 'transaction_detail_screen.dart';
 import 'log_payment_sheet.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
+// import '../widgets/glass_surface.dart'; // This import is unused and can be removed.
+import '../design_system/components/app_loading_indicator.dart';
 
 class TransactionJournalScreen extends StatefulWidget {
   const TransactionJournalScreen({super.key});
@@ -291,7 +293,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                   border: Border.all(color: const Color(0xFF1E2D45)),
                 ),
                 child: Icon(LucideIcons.list,
-                    color: Colors.white.withValues(alpha: 0.2), size: 52),
+                    color: Colors.white.withOpacity(0.2), size: 52),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -322,10 +324,10 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
         itemCount: _transactions.length + (_hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _transactions.length) {
-            return const Padding(
-              padding: EdgeInsets.all(16.0),
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Center(
-                child: CircularProgressIndicator(color: AppColors.accentGreen),
+                child: AppLoadingIndicator.center(),
               ),
             );
           }
@@ -376,7 +378,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                 width: 44,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: statusColor.withValues(alpha: 0.1),
+                                  color: statusColor.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(icon, color: statusColor, size: 20),

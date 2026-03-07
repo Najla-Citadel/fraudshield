@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_button.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
@@ -443,10 +444,10 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
   Widget _buildRecentActivity() {
     if (_isFetchingHistory) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
-          child: CircularProgressIndicator(strokeWidth: 2),
+          padding: const EdgeInsets.all(32),
+          child: AppLoadingIndicator(color: DesignTokens.colors.accentGreen),
         ),
       );
     }

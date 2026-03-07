@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'dart:async';
 import '../services/api_service.dart';
 import '../constants/colors.dart';
@@ -82,7 +83,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.blueAccent.withValues(alpha: 0.1),
+          color: Colors.blueAccent.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -90,7 +91,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
             SizedBox(
                 width: 16,
                 height: 16,
-                child: CircularProgressIndicator(
+                child: AppLoadingIndicator(
                     color: Colors.blueAccent, strokeWidth: 2)),
             SizedBox(width: 12),
             Text('Checking community database...',
@@ -108,10 +109,10 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         margin: const EdgeInsets.only(top: 8, bottom: 16),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.accentGreen.withValues(alpha: 0.1),
+          color: AppColors.accentGreen.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border:
-              Border.all(color: AppColors.accentGreen.withValues(alpha: 0.3)),
+              Border.all(color: AppColors.accentGreen.withOpacity(0.3)),
         ),
         child: Row(
           children: const [
@@ -142,9 +143,9 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
       margin: const EdgeInsets.only(top: 8, bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
+        color: badgeColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
+        border: Border.all(color: badgeColor.withOpacity(0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,7 +165,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 Text(
                   rec,
                   style: TextStyle(
-                      color: badgeColor.withValues(alpha: 0.8),
+                      color: badgeColor.withOpacity(0.8),
                       fontSize: 12,
                       height: 1.3),
                 ),
@@ -306,13 +307,13 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: _isIncome
-                            ? AppColors.accentGreen.withValues(alpha: 0.2)
+                            ? AppColors.accentGreen.withOpacity(0.2)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                             color: _isIncome
                                 ? AppColors.accentGreen
-                                : Colors.white.withValues(alpha: 0.1)),
+                                : Colors.white.withOpacity(0.1)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -343,13 +344,13 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: !_isIncome
-                            ? Colors.redAccent.withValues(alpha: 0.2)
+                            ? Colors.redAccent.withOpacity(0.2)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                             color: !_isIncome
                                 ? Colors.redAccent
-                                : Colors.white.withValues(alpha: 0.1)),
+                                : Colors.white.withOpacity(0.1)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -470,7 +471,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                       borderRadius: BorderRadius.circular(16)),
                 ),
                 child: _isSubmitting
-                    ? const CircularProgressIndicator(color: AppColors.deepNavy)
+                    ? const AppLoadingIndicator(color: AppColors.deepNavy)
                     : const Text(
                         'SAVE TO JOURNAL',
                         style: TextStyle(

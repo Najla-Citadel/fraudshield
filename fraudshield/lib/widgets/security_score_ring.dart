@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'dart:math' as math;
+import '../design_system/components/app_loading_indicator.dart';
 
 class SecurityScoreRing extends StatefulWidget {
   final int score;
@@ -68,7 +69,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
             AnimatedBuilder(
               animation: _scanController,
               builder: (context, child) {
-                double pulse = widget.isScanning ? (0.1 + 0.1 * sin(_scanController.value * 2 * pi)) : 0.1;
+                double pulse = widget.isScanning ? (0.1 + 0.1 * math.sin(_scanController.value * 2 * math.pi)) : 0.1;
                 return Container(
                   width: 200,
                   height: 200,
@@ -90,12 +91,9 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
             SizedBox(
               width: 160,
               height: 160,
-              child: CircularProgressIndicator(
-                value: 1.0,
-                strokeWidth: 16,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Colors.white.withOpacity(05),
-                ),
+              child: AppLoadingIndicator(
+                color: Colors.white.withOpacity(0.05),
+                strokeWidth: 6,
               ),
             ),
 
@@ -104,7 +102,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               animation: _scanController,
               builder: (context, child) {
                 return Transform.rotate(
-                  angle: widget.isScanning ? _scanController.value * 2 * pi : 0,
+                  angle: widget.isScanning ? _scanController.value * 2 * math.pi : 0,
                   child: child,
                 );
               },
@@ -118,7 +116,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                     gradient: LinearGradient(
                       colors: [
                         _getStatusColor(widget.score),
-                        _getStatusColor(widget.score).withOpacity(8),
+                        _getStatusColor(widget.score).withOpacity(0.8),
                       ],
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
@@ -165,7 +163,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                         animation: _scanController,
                         builder: (context, child) {
                           // Simple pulsing opacity based on scan cycle
-                          double opacity = 0.3 + 0.7 * (0.5 * (1 + sin(_scanController.value * 4 * pi)));
+                          double opacity = 0.3 + 0.7 * (0.5 * (1 + math.sin(_scanController.value * 4 * math.pi)));
                           return Opacity(
                             opacity: opacity,
                             child: const Text(
@@ -193,7 +191,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                 Text(
                   widget.isScanning ? 'Checking System...' : 'Security Score: ${widget.status}',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(7),
+                    color: Colors.white.withOpacity(0.7),
                     fontSize: 14,
                   ),
                 ),
@@ -206,7 +204,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
               child: IconButton(
                 icon: Icon(
                   Icons.info_outline,
-                  color: Colors.white.withOpacity(5),
+                  color: Colors.white.withOpacity(0.5),
                   size: 20,
                 ),
                 onPressed: widget.onInfoTap,
@@ -241,8 +239,8 @@ class _GradientArcPainter extends CustomPainter {
 
     // Start from top (-pi/2)
     // Draw arc based on percentage
-    final startAngle = -pi / 2;
-    final sweepAngle = 2 * pi * percent;
+    final startAngle = -math.pi / 2;
+    final sweepAngle = 2 * math.pi * percent;
 
     canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
   }

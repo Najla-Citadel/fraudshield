@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
@@ -19,7 +20,7 @@ class ArticleReaderScreen extends StatefulWidget {
 
 class _ArticleReaderScreenState extends State<ArticleReaderScreen> {
   late final WebViewController _controller;
-  bool _loading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -29,7 +30,7 @@ class _ArticleReaderScreenState extends State<ArticleReaderScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (_) => setState(() => _loading = false),
+          onPageFinished: (_) => setState(() => _isLoading = false),
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
@@ -42,10 +43,10 @@ class _ArticleReaderScreenState extends State<ArticleReaderScreen> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          if (_loading)
+          if (_isLoading)
             Center(
-                child: CircularProgressIndicator(
-                    color: DesignTokens.colors.primaryBlue)),
+              child: AppLoadingIndicator(color: DesignTokens.colors.primaryBlue),
+            ),
         ],
       ),
     );

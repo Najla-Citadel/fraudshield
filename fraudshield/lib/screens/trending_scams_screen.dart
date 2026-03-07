@@ -100,9 +100,9 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
+              color: Colors.white.withOpacity(0.1),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: const Icon(LucideIcons.slidersHorizontal, size: 20, color: Colors.white),
           ),
@@ -119,7 +119,7 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: const TextField(
           style: TextStyle(color: Colors.white),
@@ -155,15 +155,15 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.05),
+                color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.1),
+                  color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.1),
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.accentGreen.withValues(alpha: 0.3),
+                          color: AppColors.accentGreen.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         )
@@ -204,10 +204,10 @@ class _ScamCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -250,7 +250,7 @@ class _ScamCard extends StatelessWidget {
               scam.description,
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.white.withValues(alpha: 0.7), // slate-300
+                color: Colors.white.withOpacity(0.7), // slate-300
                 height: 1.5,
               ),
             ),
@@ -280,7 +280,7 @@ class _ScamCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -317,7 +317,7 @@ class _ScamCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF0F172A), // Slate 900
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,7 +328,7 @@ class _ScamCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: Colors.white.withOpacity(0.5),
                       letterSpacing: 1,
                     ),
                   ),
@@ -338,7 +338,7 @@ class _ScamCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.white.withValues(alpha: 0.1),
+                      backgroundColor: Colors.white.withOpacity(0.1),
                       radius: 16,
                       child: const Icon(LucideIcons.user, size: 18, color: Colors.white),
                     ),
@@ -364,7 +364,7 @@ class _ScamCard extends StatelessWidget {
                             const SizedBox(height: 4),
                             RichText(
                               text: TextSpan(
-                                style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13, height: 1.4, fontFamily: 'Inter'),
+                                style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13, height: 1.4, fontFamily: 'Inter'),
                                 children: [
                                   TextSpan(text: scam.example!.message),
                                   TextSpan(
@@ -422,7 +422,7 @@ class _ScamCard extends StatelessWidget {
                       child: Text(
                         tip,
                         style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.7),
+                          color: Colors.white.withOpacity(0.7),
                           fontSize: 14,
                           height: 1.4,
                         ),
@@ -461,7 +461,7 @@ class _ScamCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                backgroundColor: Colors.white.withOpacity(0.1),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
@@ -482,7 +482,7 @@ class _ScamCard extends StatelessWidget {
               icon: const Icon(LucideIcons.eye, size: 16, color: Colors.white),
               label: const Text('View Details', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                backgroundColor: Colors.white.withOpacity(0.1),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
@@ -495,7 +495,7 @@ class _ScamCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                backgroundColor: Colors.white.withOpacity(0.1),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 elevation: 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 class RewardsCatalogScreen extends StatefulWidget {
   const RewardsCatalogScreen({super.key});
@@ -136,7 +137,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
       ),
       backgroundColor: Colors.white,
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? AppLoadingIndicator.center()
           : Column(
               children: [
                 // Points Balance Header
@@ -235,7 +236,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -250,7 +251,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
+                  color: iconColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor, size: 32),

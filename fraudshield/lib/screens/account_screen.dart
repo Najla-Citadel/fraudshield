@@ -14,6 +14,7 @@ import '../design_system/components/app_button.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/settings_group.dart';
 import 'subscription_screen.dart' as crate;
+import '../design_system/components/app_loading_indicator.dart';
 import 'status_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../widgets/error_state.dart';
@@ -695,7 +696,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.1), width: 1),
+                        color: Colors.white.withOpacity(0.1), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 50,
@@ -743,7 +744,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: Colors.white.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                     child: Text(
@@ -775,10 +776,10 @@ class _AccountScreenState extends State<AccountScreen> {
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -839,10 +840,10 @@ class _AccountScreenState extends State<AccountScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.05),
+                      color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.05)),
+                          color: Colors.white.withOpacity(0.05)),
                     ),
                     child: Row(
                       children: [
@@ -852,7 +853,7 @@ class _AccountScreenState extends State<AccountScreen> {
                               : Icons.person_outline,
                           color: context.watch<AuthProvider>().isSubscribed
                               ? Colors.amber
-                              : Colors.white.withValues(alpha: 0.4),
+                              : Colors.white.withOpacity(0.4),
                           size: 14,
                         ),
                         const SizedBox(width: 8),
@@ -863,7 +864,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           style: TextStyle(
                             color: context.watch<AuthProvider>().isSubscribed
                                 ? Colors.amber
-                                : Colors.white.withValues(alpha: 0.6),
+                                : Colors.white.withOpacity(0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -887,14 +888,14 @@ class _AccountScreenState extends State<AccountScreen> {
                       Text(
                         'Benefits',
                         style: TextStyle(
-                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
+                          color: DesignTokens.colors.accentGreen.withOpacity(0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
-                          color: DesignTokens.colors.accentGreen.withValues(alpha: 0.8),
+                          color: DesignTokens.colors.accentGreen.withOpacity(0.8),
                           size: 14),
                     ],
                   ),
@@ -1029,7 +1030,8 @@ class _AvatarPicker extends StatelessWidget {
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return Center(
-                        child: CircularProgressIndicator(strokeWidth: 2));
+                        child: AppLoadingIndicator(
+                            color: DesignTokens.colors.primary, size: 20));
                   },
                 ),
               ),

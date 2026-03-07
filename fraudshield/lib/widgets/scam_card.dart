@@ -28,10 +28,10 @@ class ScamCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -52,7 +52,7 @@ class ScamCard extends StatelessWidget {
                     height: 48,
                     decoration: BoxDecoration(
                       color: _getCategoryColor(report['category'])
-                          .withValues(alpha: 0.2),
+                          .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -91,17 +91,17 @@ class ScamCard extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: isVerified
                                     ? const Color(0xFF10B981)
-                                        .withValues(alpha: 0.15)
+                                        .withOpacity(0.15)
                                     : const Color(0xFFF59E0B)
-                                        .withValues(alpha: 0.15),
+                                        .withOpacity(0.15),
                                 borderRadius:
                                     BorderRadius.circular(20), // Pill shape
                                 border: Border.all(
                                   color: isVerified
                                       ? const Color(0xFF10B981)
-                                          .withValues(alpha: 0.5)
+                                          .withOpacity(0.5)
                                       : const Color(0xFFF59E0B)
-                                          .withValues(alpha: 0.5),
+                                          .withOpacity(0.5),
                                   width: 1.5,
                                 ),
                               ),
@@ -138,7 +138,7 @@ class ScamCard extends StatelessWidget {
                         Text(
                           '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'Anonymous'}',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.6),
+                            color: Colors.white.withOpacity(0.6),
                             fontSize: 12,
                           ),
                         ),
@@ -154,7 +154,7 @@ class ScamCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(Icons.location_on,
-                      size: 16, color: Colors.white.withValues(alpha: 0.5)),
+                      size: 16, color: Colors.white.withOpacity(0.5)),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -162,7 +162,7 @@ class ScamCard extends StatelessWidget {
                           report['description']?.toString().split('\n').first ??
                           'General Threat',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: Colors.white.withOpacity(0.8),
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -180,10 +180,10 @@ class ScamCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(16),
                   border:
-                      Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                      Border.all(color: Colors.white.withOpacity(0.1)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,7 +220,7 @@ class ScamCard extends StatelessWidget {
                           Text(
                             _getStaySafeTip(report['category']),
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.9),
+                              color: Colors.white.withOpacity(0.9),
                               fontSize: 12,
                               height: 1.4,
                             ),
@@ -247,7 +247,7 @@ class ScamCard extends StatelessWidget {
                         Text(
                           '$verificationCount ${verificationCount == 1 ? "person" : "people"} flagged this',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.6),
+                            color: Colors.white.withOpacity(0.6),
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -258,7 +258,7 @@ class ScamCard extends StatelessWidget {
                     Text(
                       'Be the first to flag this',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.5),
+                        color: Colors.white.withOpacity(0.5),
                         fontSize: 12,
                         fontStyle: FontStyle.italic,
                       ),
@@ -274,7 +274,7 @@ class ScamCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: Colors.white.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Row(

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 import '../screens/article_reader_screen.dart';
 import '../constants/colors.dart';
@@ -163,11 +164,11 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected 
-                                ? AppColors.accentGreen.withValues(alpha: 0.1) 
-                                : Colors.white.withValues(alpha: 0.05),
+                                ? AppColors.accentGreen.withOpacity(0.1) 
+                                : Colors.white.withOpacity(0.05),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected ? AppColors.accentGreen : Colors.white.withValues(alpha: 0.05),
+                              color: isSelected ? AppColors.accentGreen : Colors.white.withOpacity(0.05),
                             ),
                           ),
                           child: Row(
@@ -227,7 +228,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
     if (_loading) {
       return SizedBox(
         height: containerHeight,
-        child: Center(child: CircularProgressIndicator(color: AppColors.accentGreen)),
+        child: AppLoadingIndicator.center(color: AppColors.accentGreen),
       );
     }
 
@@ -241,7 +242,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                 Expanded(
                   child: Text(
                     'Unable to load insights: $_error',
-                    style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.7)),
+                    style: TextStyle(color: AppColors.textDark.withOpacity(0.7)),
                   ),
                 ),
                 TextButton(onPressed: _loadNews, child: const Text('Retry')),
@@ -266,7 +267,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
           children: [
             Row(
               children: [
-                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5)))),
+                Expanded(child: Text('No recent threat insights for selected categories.', style: TextStyle(color: AppColors.textDark.withOpacity(0.5)))),
                 TextButton(onPressed: _loadNews, child: const Text('Refresh')),
               ],
             ),
@@ -296,9 +297,9 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
             child: Container(
               width: 280,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,7 +324,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.2),
+                              color: Colors.red.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),

@@ -9,6 +9,7 @@ import '../widgets/community_map_card.dart';
 import '../screens/scam_report_entry_screen.dart';
 import '../screens/report_details_screen.dart';
 import '../widgets/skeleton_card.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../widgets/error_state.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -175,7 +176,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Center(
-                            child: CircularProgressIndicator(strokeWidth: 2)),
+                            child: const AppLoadingIndicator(size: 20)),
                       ),
                     ),
                 ],
@@ -255,13 +256,13 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: _isNearMe
-              ? AppColors.accentGreen.withValues(alpha: 0.15)
-              : Colors.white.withValues(alpha: 0.05),
+              ? AppColors.accentGreen.withOpacity(0.15)
+              : Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: _isNearMe
                 ? AppColors.accentGreen
-                : Colors.white.withValues(alpha: 0.1),
+                : Colors.white.withOpacity(0.1),
           ),
         ),
         child: Row(
@@ -292,7 +293,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Slate 800
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: TextField(
         controller: _searchController,
@@ -357,12 +358,12 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.accentGreen
-                      : Colors.white.withValues(alpha: 0.05),
+                      : Colors.white.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.accentGreen
-                        : Colors.white.withValues(alpha: 0.1),
+                        : Colors.white.withOpacity(0.1),
                   ),
                 ),
                 child: Row(

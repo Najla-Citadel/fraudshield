@@ -31,7 +31,7 @@ class SecurityHealthCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.healthGradientEnd.withValues(alpha: 0.25),
+            color: AppColors.healthGradientEnd.withOpacity(0.25),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -78,7 +78,7 @@ class SecurityHealthCard extends StatelessWidget {
                   Text(
                     '/100',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
                     ),
@@ -90,7 +90,7 @@ class SecurityHealthCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(

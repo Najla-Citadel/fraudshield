@@ -60,8 +60,8 @@ class FloatingNavBar extends StatelessWidget {
                     onTap: () => onTap(0),
                   ),
                   _NavItem(
-                    icon: LucideIcons.layoutGrid,
-                    label: 'Board',
+                    icon: LucideIcons.trendingUp,
+                    label: 'Trends',
                     isSelected: currentIndex == 1,
                     onTap: () => onTap(1),
                   ),

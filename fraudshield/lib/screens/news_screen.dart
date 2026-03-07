@@ -7,6 +7,8 @@ import '../constants/news_categories.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/glass_surface.dart';
+import '../design_system/components/app_loading_indicator.dart';
+import '../design_system/components/app_button.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -64,9 +66,8 @@ class _NewsScreenState extends State<NewsScreen> {
           _buildFilters(),
           Expanded(
             child: _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                        color: DesignTokens.colors.primaryBlue))
+                ? AppLoadingIndicator.center(
+                    color: DesignTokens.colors.primaryBlue)
                 : _error != null
                     ? _buildErrorState()
                     : _items.isEmpty
@@ -109,11 +110,11 @@ class _NewsScreenState extends State<NewsScreen> {
         },
         selectedColor: DesignTokens.colors.primaryBlue,
         labelStyle: TextStyle(
-          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.6),
+          color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           fontSize: 12,
         ),
-        backgroundColor: Colors.white.withValues(alpha: 0.05),
+        backgroundColor: Colors.white.withOpacity(0.05),
         elevation: 0,
         pressElevation: 0,
         side: BorderSide.none,
@@ -182,7 +183,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.5),
+                              color: Colors.white.withOpacity(0.5),
                               fontSize: 13,
                               height: 1.4,
                             ),
@@ -197,7 +198,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             Text(
                               'Latest Update',
                               style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.4),
+                                  color: Colors.white.withOpacity(0.4),
                                   fontSize: 11),
                             ),
                             const Spacer(),
@@ -227,7 +228,7 @@ class _NewsScreenState extends State<NewsScreen> {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: isTop
             ? const BorderRadius.vertical(top: Radius.circular(24))
             : BorderRadius.circular(24),
@@ -242,7 +243,7 @@ class _NewsScreenState extends State<NewsScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(LucideIcons.searchX,
-              size: 48, color: Colors.white.withValues(alpha: 0.2)),
+              size: 48, color: Colors.white.withOpacity(0.2)),
           const SizedBox(height: 16),
           const Text('No news found',
               style:
@@ -265,7 +266,12 @@ class _NewsScreenState extends State<NewsScreen> {
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.redAccent)),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _loadNews, child: const Text('Try Again')),
+            AppButton(
+              onPressed: _loadNews,
+              label: 'Try Again',
+              variant: AppButtonVariant.secondary,
+              width: 150,
+            ),
           ],
         ),
       ),

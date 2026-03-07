@@ -37,6 +37,7 @@ import 'report_details_screen.dart';
 import 'report_history_screen.dart';
 import '../widgets/terms_acceptance_overlay.dart';
 import '../services/biometric_service.dart';
+import '../design_system/components/app_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -133,22 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await prefs.setBool('score_guide_seen', true);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignTokens.colors.accentGreen,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                      child: Text(AppLocalizations.of(context)!.homeWelcomeBtn),
-                    ),
+                  AppButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      await prefs.setBool('score_guide_seen', true);
+                    },
+                    label: AppLocalizations.of(context)!.homeWelcomeBtn,
+                    variant: AppButtonVariant.primary,
                   ),
                 ],
               ),
@@ -488,19 +480,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     const SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: DesignTokens.colors.accentGreen,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: const Text('Done'),
-                      ),
+                    AppButton(
+                      onPressed: () => Navigator.pop(context),
+                      label: 'Done',
+                      variant: AppButtonVariant.primary,
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -824,18 +807,18 @@ class _HomeTab extends StatelessWidget {
           color: const Color(0xFF0F172A), // Slate 900
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-              color: Colors.white.withValues(alpha: 0.1), width: 1.5),
+              color: Colors.white.withOpacity(0.1), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.black.withOpacity(0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
           ],
           gradient: LinearGradient(
             colors: [
-              const Color(0xFF1E293B).withValues(alpha: 0.8),
-              const Color(0xFF0F172A).withValues(alpha: 0.8)
+              const Color(0xFF1E293B).withOpacity(0.8),
+              const Color(0xFF0F172A).withOpacity(0.8)
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -850,7 +833,7 @@ class _HomeTab extends StatelessWidget {
               child: Icon(
                 LucideIcons.shieldCheck,
                 size: 120,
-                color: Colors.white.withValues(alpha: 0.15),
+                color: Colors.white.withOpacity(0.15),
               ),
             ),
             Column(
@@ -859,7 +842,7 @@ class _HomeTab extends StatelessWidget {
                 Text(
                   'SECURITY HEALTH SCORE',
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: Colors.white.withOpacity(0.5),
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.0,
@@ -895,10 +878,10 @@ class _HomeTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
+                    color: DesignTokens.colors.accentGreen.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: DesignTokens.colors.accentGreen.withValues(alpha: 0.2)),
+                        color: DesignTokens.colors.accentGreen.withOpacity(0.2)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -993,9 +976,9 @@ class _HomeTab extends StatelessWidget {
       child: Container(
         height: 100,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1037,7 +1020,7 @@ class _HomeTab extends StatelessWidget {
                 color: const Color(0xFFFFF7E6), // Light yellow tint
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                    color: const Color(0xFFFFCC00).withValues(alpha: 0.5)),
+                    color: const Color(0xFFFFCC00).withOpacity(0.5)),
               ),
               child: const Text(
                 'GOLD TIER',
@@ -1129,11 +1112,11 @@ class _HomeTab extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
           color: Colors.white
-              .withValues(alpha: 0.08), // Increased opacity for consistency
+              .withOpacity(0.08), // Increased opacity for consistency
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
               color: Colors.white
-                  .withValues(alpha: 0.1)), // Slightly more visible border
+                  .withOpacity(0.1)), // Slightly more visible border
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1142,7 +1125,7 @@ class _HomeTab extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Icon(icon,
-                    color: Colors.white.withValues(alpha: 0.8), size: 28),
+                    color: Colors.white.withOpacity(0.8), size: 28),
                 Positioned(
                   bottom: -4,
                   right: -4,
@@ -1216,14 +1199,14 @@ class _HomeTab extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: hasAlerts
-                    ? iconColor.withValues(alpha: 0.3)
+                    ? iconColor.withOpacity(0.3)
                     : Colors.transparent,
                 width: 1,
               ),
               boxShadow: hasAlerts
                   ? [
                       BoxShadow(
-                        color: iconColor.withValues(alpha: 0.05),
+                        color: iconColor.withOpacity(0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -1248,7 +1231,7 @@ class _HomeTab extends StatelessWidget {
                     ),
                     const Spacer(),
                     Icon(Icons.arrow_forward_ios,
-                        color: Colors.white.withValues(alpha: 0.5), size: 14),
+                        color: Colors.white.withOpacity(0.5), size: 14),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1281,11 +1264,11 @@ class _HomeTab extends StatelessWidget {
             color: const Color(0xFF1E293B), // Dark Slate
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.3 * value),
+              color: DesignTokens.colors.accentGreen.withOpacity(0.3 * value),
             ),
             boxShadow: [
               BoxShadow(
-                color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1 * value),
+                color: DesignTokens.colors.accentGreen.withOpacity(0.1 * value),
                 blurRadius: 8 * value,
                 spreadRadius: 2,
               ),
@@ -1337,10 +1320,10 @@ class _HomeTab extends StatelessWidget {
           color: const Color(0xFF1E293B), // Match trending alerts style
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.3), width: 1),
+              color: DesignTokens.colors.accentGreen.withOpacity(0.3), width: 1),
           boxShadow: [
             BoxShadow(
-              color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
+              color: DesignTokens.colors.accentGreen.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -1369,7 +1352,7 @@ class _HomeTab extends StatelessWidget {
             Text(
               'Unsure about a seller? Log the payment here before you transfer money.',
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8), height: 1.4),
+                  color: Colors.white.withOpacity(0.8), height: 1.4),
             ),
             const SizedBox(height: 16),
             Align(
@@ -1427,7 +1410,7 @@ class _HomeTab extends StatelessWidget {
               icon: Icon(
                 LucideIcons.slidersHorizontal,
                 size: 18,
-                color: Colors.white.withValues(alpha: 0.6),
+                color: Colors.white.withOpacity(0.6),
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
@@ -1516,16 +1499,16 @@ class _HomeTab extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
+          color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
               child: const Icon(LucideIcons.fileText,
@@ -1548,7 +1531,7 @@ class _HomeTab extends StatelessWidget {
                   Text(
                     date,
                     style: TextStyle(
-                        color: DesignTokens.colors.textDark.withValues(alpha: 0.5),
+                        color: DesignTokens.colors.textDark.withOpacity(0.5),
                         fontSize: 12),
                   ),
                 ],
@@ -1557,7 +1540,7 @@ class _HomeTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.1),
+                color: statusColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -1694,7 +1677,7 @@ class _BigActionButtonState extends State<_BigActionButton> {
                     top: 0,
                     right: 0,
                     child: Icon(Icons.lock,
-                        size: 16, color: Colors.white.withValues(alpha: 0.7)),
+                        size: 16, color: Colors.white.withOpacity(0.7)),
                   ),
               ],
             ),
@@ -1732,7 +1715,7 @@ class _StatusItem extends StatelessWidget {
           color: const Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(20),
           border: onTap != null
-              ? Border.all(color: Colors.white.withValues(alpha: 0.05))
+              ? Border.all(color: Colors.white.withOpacity(0.05))
               : null,
         ),
         child: Row(
@@ -1740,7 +1723,7 @@ class _StatusItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: Colors.blueAccent),
@@ -1762,7 +1745,7 @@ class _StatusItem extends StatelessWidget {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.5),
+                      color: Colors.white.withOpacity(0.5),
                       fontSize: 13,
                     ),
                   ),
@@ -1773,7 +1756,7 @@ class _StatusItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: Icon(Icons.lock,
-                    color: Colors.white.withValues(alpha: 0.5), size: 20),
+                    color: Colors.white.withOpacity(0.5), size: 20),
               )
             else if (isActive)
               Container(
@@ -1784,14 +1767,14 @@ class _StatusItem extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                        color: DesignTokens.colors.accentGreen.withValues(alpha: 0.5),
+                        color: DesignTokens.colors.accentGreen.withOpacity(0.5),
                         blurRadius: 6)
                   ],
                 ),
               )
             else if (onTap != null)
               Icon(Icons.arrow_forward_ios,
-                  size: 14, color: Colors.white.withValues(alpha: 0.3)),
+                  size: 14, color: Colors.white.withOpacity(0.3)),
           ],
         ),
       ),
@@ -1845,13 +1828,13 @@ class _DailyRewardDialog extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+              style: TextStyle(color: Colors.white.withOpacity(0.7)),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -1871,7 +1854,7 @@ class _DailyRewardDialog extends StatelessWidget {
             Text(
               'Tomorrow\'s Reward: $nextReward Points',
               style: TextStyle(
-                  fontSize: 12, color: Colors.white.withValues(alpha: 0.4)),
+                  fontSize: 12, color: Colors.white.withOpacity(0.4)),
             ),
             const SizedBox(height: 24),
             SizedBox(

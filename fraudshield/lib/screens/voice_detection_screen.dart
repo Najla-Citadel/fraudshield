@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
@@ -220,7 +221,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
                 style: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.5))),
+                    color: AppColors.textDark.withOpacity(0.5))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -250,12 +251,12 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon,
-              color: AppColors.primaryBlue.withValues(alpha: 0.6), size: 18),
+              color: AppColors.primaryBlue.withOpacity(0.6), size: 18),
           const SizedBox(width: 12),
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.7),
+                    color: AppColors.textDark.withOpacity(0.7),
                     fontSize: 13,
                     height: 1.4)),
           ),
@@ -511,7 +512,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -522,7 +523,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.1),
+              color: AppColors.primaryBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(LucideIcons.phoneIncoming,
@@ -543,7 +544,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 Text(
                   'Instantly scan calls for scam patterns and deepfake markers.',
                   style: TextStyle(
-                      color: AppColors.textDark.withValues(alpha: 0.5),
+                      color: AppColors.textDark.withOpacity(0.5),
                       fontSize: 12),
                 ),
               ],
@@ -574,14 +575,14 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                             ? [const Color(0xFFEF4444), const Color(0xFFB91C1C)]
                             : [
                                 AppColors.primaryBlue,
-                                AppColors.primaryBlue.withValues(alpha: 0.8)
+                                AppColors.primaryBlue.withOpacity(0.8)
                               ],
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
                       color: (_isRecording ? Colors.red : AppColors.primaryBlue)
-                          .withValues(alpha: 0.3),
+                          .withOpacity(0.3),
                       blurRadius: _isRecording ? 30 : 20,
                       spreadRadius: _isRecording ? 10 : 2,
                     ),
@@ -589,8 +590,8 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                 ),
                 child: Center(
                   child: _isAnalyzing
-                      ? const CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 3)
+                      ? const AppLoadingIndicator(
+                          color: AppColors.accentGreen)
                       : Icon(
                           _isRecording ? LucideIcons.square : LucideIcons.mic,
                           color: Colors.white,
@@ -640,7 +641,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
               Text(
                 'Listening for scam patterns...',
                 style: TextStyle(
-                    color: AppColors.textDark.withValues(alpha: 0.4),
+                    color: AppColors.textDark.withOpacity(0.4),
                     fontSize: 13),
               ),
               const SizedBox(height: 20),
@@ -658,7 +659,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
           Text(
             'Tap to start voice analysis',
             style: TextStyle(
-                color: AppColors.textDark.withValues(alpha: 0.4),
+                color: AppColors.textDark.withOpacity(0.4),
                 fontWeight: FontWeight.w500),
           ),
       ],
@@ -670,9 +671,9 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       margin: const EdgeInsets.only(top: 24),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.05),
+        color: Colors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Row(
         children: [
@@ -700,19 +701,19 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: color.withValues(alpha: 0.15), width: 1.5),
+        border: Border.all(color: color.withOpacity(0.15), width: 1.5),
       ),
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -749,7 +750,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             Text(
               r.transcript,
               style: TextStyle(
-                  color: AppColors.textDark.withValues(alpha: 0.6),
+                  color: AppColors.textDark.withOpacity(0.6),
                   height: 1.5,
                   fontSize: 13),
             ),
@@ -786,7 +787,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       children: [
         Text(label,
             style: TextStyle(
-                color: AppColors.textDark.withValues(alpha: 0.5),
+                color: AppColors.textDark.withOpacity(0.5),
                 fontSize: 14)),
         Text(value,
             style: TextStyle(
@@ -831,7 +832,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                         Text(item['date'],
                             style: TextStyle(
                                 color:
-                                    AppColors.textDark.withValues(alpha: 0.4),
+                                    AppColors.textDark.withOpacity(0.4),
                                 fontSize: 12)),
                       ],
                     ),
@@ -843,7 +844,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                       color: (item['score'] >= 55
                               ? const Color(0xFFEF4444)
                               : const Color(0xFF22C55E))
-                          .withValues(alpha: 0.1),
+                          .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

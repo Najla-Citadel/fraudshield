@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../services/api_service.dart';
 
 class AdminAlertsScreen extends StatefulWidget {
@@ -170,7 +171,7 @@ class _AdminAlertsScreenState extends State<AdminAlertsScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? AppLoadingIndicator.center()
           : _alerts.isEmpty
               ? const Center(child: Text('No alerts yet'))
               : RefreshIndicator(

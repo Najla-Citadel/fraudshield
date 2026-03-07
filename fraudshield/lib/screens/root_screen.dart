@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../providers/auth_provider.dart';
 import '../services/version_service.dart';
 import '../services/security_service.dart';
@@ -27,9 +28,9 @@ class _RootScreenState extends State<RootScreen> {
 
     // Initial Loading State
     if (auth.loading) {
-      return const Scaffold(
+      return Scaffold(
         backgroundColor: AppColors.deepNavy,
-        body: Center(child: CircularProgressIndicator()),
+        body: AppLoadingIndicator.center(),
       );
     }
 
@@ -69,13 +70,9 @@ class _RootScreenState extends State<RootScreen> {
     });
 
     // While deciding/navigating, show spinner
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.deepNavy,
-      body: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        ),
-      ),
+      body: AppLoadingIndicator.center(),
     );
   }
 }

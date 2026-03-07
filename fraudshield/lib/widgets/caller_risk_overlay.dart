@@ -6,6 +6,7 @@ import '../services/notification_service.dart';
 import '../providers/auth_provider.dart';
 import '../app_router.dart';
 import '../constants/colors.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 class CallerRiskOverlay extends StatefulWidget {
   final Map<String, dynamic>? callerData;
@@ -167,7 +168,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
   Widget _buildLoading() {
     return const Column(
       children: [
-        CircularProgressIndicator(color: Colors.white38),
+        const AppLoadingIndicator(color: Colors.white38),
         SizedBox(height: 16),
         Text(
           'Checking caller database...',

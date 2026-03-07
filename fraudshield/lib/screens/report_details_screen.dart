@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> report;
@@ -386,8 +387,8 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: AppColors.accentGreen))
+                        child: AppLoadingIndicator(
+                            color: AppColors.accentGreen, size: 20))
                     : const Icon(Icons.send_rounded,
                         color: AppColors.accentGreen, size: 20),
                 onPressed: _isSubmitting ? null : _submitComment,
@@ -399,11 +400,11 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
         // Comments List
         if (_isLoadingComments)
-          const Center(
+          Center(
               child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child:
-                      CircularProgressIndicator(color: AppColors.accentGreen)))
+                      AppLoadingIndicator.center(color: AppColors.accentGreen)))
         else if (_comments.isEmpty)
           Padding(
             padding: const EdgeInsets.all(24),

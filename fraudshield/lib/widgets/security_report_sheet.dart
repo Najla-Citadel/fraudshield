@@ -43,7 +43,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: Colors.white.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -63,7 +63,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _getScoreColor(widget.score).withValues(alpha: 0.2),
+                  color: _getScoreColor(widget.score).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: _getScoreColor(widget.score)),
                 ),
@@ -158,8 +158,8 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isSafe 
-                ? AppColors.accentGreen.withValues(alpha: 0.1) 
-                : Colors.redAccent.withValues(alpha: 0.1),
+                ? AppColors.accentGreen.withOpacity(0.1) 
+                : Colors.redAccent.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -184,7 +184,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
                   ),
                 ),

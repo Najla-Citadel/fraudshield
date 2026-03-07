@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../constants/colors.dart';
 import '../widgets/error_state.dart';
 import 'dart:math' as math;
+import '../design_system/components/app_loading_indicator.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   final String transactionId;
@@ -175,10 +176,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF0B1121),
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B1121),
         body: Center(
-            child: CircularProgressIndicator(color: AppColors.accentGreen)),
+            child: AppLoadingIndicator.center()),
       );
     }
 

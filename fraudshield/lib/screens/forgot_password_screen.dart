@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
-import '../widgets/adaptive_button.dart';
+import '../design_system/components/app_button.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
@@ -174,7 +174,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryBlue.withValues(alpha: 0.2),
+                                color: AppColors.primaryBlue.withOpacity(0.2),
                                 blurRadius: 20,
                                 spreadRadius: -5,
                               ),
@@ -211,7 +211,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   : 'Enter the email address associated with your account and we\'ll send you a link to reset your password.',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withValues(alpha: 0.7),
+                                color: Colors.white.withOpacity(0.7),
                                 height: 1.5,
                               ),
                             ),
@@ -222,9 +222,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 padding: const EdgeInsets.all(12),
                                 margin: const EdgeInsets.only(bottom: 24),
                                 decoration: BoxDecoration(
-                                  color: Colors.red.withValues(alpha: 0.1),
+                                  color: Colors.red.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                                  border: Border.all(color: Colors.red.withOpacity(0.3)),
                                 ),
                                 child: Row(
                                   children: [
@@ -248,10 +248,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 32),
-                              AdaptiveButton(
-                                text: 'Send Reset Code',
-                                onPressed: _isLoading ? () {} : _handleRequestCode,
+                              AppButton(
+                                label: 'Send Reset Code',
+                                onPressed: _isLoading ? null : _handleRequestCode,
                                 isLoading: _isLoading,
+                                variant: AppButtonVariant.primary,
                               ),
                             ] else ...[
                               AdaptiveTextField(
@@ -268,10 +269,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 obscureText: true,
                               ),
                               const SizedBox(height: 32),
-                              AdaptiveButton(
-                                text: 'Reset Password',
-                                onPressed: _isLoading ? () {} : _handleResetPassword,
+                              AppButton(
+                                label: 'Reset Password',
+                                onPressed: _isLoading ? null : _handleResetPassword,
                                 isLoading: _isLoading,
+                                variant: AppButtonVariant.primary,
                               ),
                               const SizedBox(height: 16),
                               TextButton(

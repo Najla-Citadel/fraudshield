@@ -55,7 +55,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
             Text(
               'Recent Checks',
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.5),
+                color: Colors.white.withOpacity(0.5),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.0,
@@ -64,7 +64,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
             TextButton(
               onPressed: _clearHistory,
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white.withValues(alpha: 0.4),
+                foregroundColor: Colors.white.withOpacity(0.4),
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(50, 30),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -141,14 +141,14 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 16),
@@ -172,7 +172,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                     Text(
                       item.type,
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
+                        color: Colors.white.withOpacity(0.4),
                         fontSize: 11,
                       ),
                     ),
@@ -182,14 +182,14 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
               Text(
                 timeAgo,
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Colors.white.withOpacity(0.3),
                   fontSize: 11,
                 ),
               ),
               const SizedBox(width: 8),
               Icon(
                 Icons.restore, 
-                color: Colors.white.withValues(alpha: 0.2), 
+                color: Colors.white.withOpacity(0.2), 
                 size: 16
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
@@ -128,13 +129,9 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
                   elevation: 0,
                 ),
                 child: _isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
+                    ? const AppLoadingIndicator(
+                        color: Colors.white,
+                        size: 20,
                       )
                     : const Text(
                         'Analyze Message',

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/colors.dart';
 import '../services/risk_evaluator.dart';
@@ -124,7 +125,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -135,7 +136,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withValues(alpha: 0.1),
+              color: AppColors.primaryBlue.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(LucideIcons.fileSearch, color: AppColors.primaryBlue, size: 32),
@@ -149,7 +150,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
           Text(
             'Upload suspicious files to detect hidden phishing links, malware markers, and dangerous permissions.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.5), fontSize: 13, height: 1.5),
+            style: TextStyle(color: AppColors.textDark.withOpacity(0.5), fontSize: 13, height: 1.5),
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -175,7 +176,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
   Widget _buildLoadingState() {
     return Column(
       children: [
-        const CircularProgressIndicator(color: AppColors.primaryBlue),
+        AppLoadingIndicator.center(color: AppColors.primaryBlue),
         const SizedBox(height: 16),
         Text(
           'Deep scanning $_selectedFileName...',
@@ -189,9 +190,9 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.red.withValues(alpha: 0.05),
+        color: Colors.red.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.red.withValues(alpha: 0.1)),
+        border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Row(
         children: [
@@ -216,12 +217,12 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: color.withValues(alpha: 0.1), width: 1.5),
+        border: Border.all(color: color.withOpacity(0.1), width: 1.5),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -232,7 +233,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
+                  color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(isRisky ? LucideIcons.shieldAlert : LucideIcons.shieldCheck, color: color, size: 28),
@@ -245,7 +246,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                     res.level.toUpperCase(),
                     style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1),
                   ),
-                  Text('Security Analysis Complete', style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 12)),
+                  Text('Security Analysis Complete', style: TextStyle(color: AppColors.textDark.withOpacity(0.4), fontSize: 12)),
                 ],
               ),
               const Spacer(),
@@ -263,9 +264,9 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(LucideIcons.checkCircle2, color: isRisky ? Colors.red.withValues(alpha: 0.5) : Colors.green, size: 14),
+                Icon(LucideIcons.checkCircle2, color: isRisky ? Colors.red.withOpacity(0.5) : Colors.green, size: 14),
                 const SizedBox(width: 10),
-                Expanded(child: Text(r, style: TextStyle(fontSize: 13, color: AppColors.textDark.withValues(alpha: 0.7)))),
+                Expanded(child: Text(r, style: TextStyle(fontSize: 13, color: AppColors.textDark.withOpacity(0.7)))),
               ],
             ),
           )),
@@ -303,7 +304,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
               children: res.dangerousPermissions.map((p) => Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.05),
+                  color: Colors.red.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(p.split('.').last, style: const TextStyle(fontSize: 10, color: Colors.red, fontWeight: FontWeight.bold)),
@@ -325,7 +326,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: AppColors.textDark.withValues(alpha: 0.4), fontSize: 12)),
+          Text(label, style: TextStyle(color: AppColors.textDark.withOpacity(0.4), fontSize: 12)),
           Text(value, style: const TextStyle(color: AppColors.textDark, fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),

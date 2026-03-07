@@ -47,7 +47,7 @@ class AppButton extends StatelessWidget {
         foregroundColor = Colors.white;
         break;
       case AppButtonVariant.secondary:
-        backgroundColor = colors.primary.withValues(alpha: 0.1);
+        backgroundColor = colors.primary.withOpacity(0.1);
         foregroundColor = colors.primary;
         break;
       case AppButtonVariant.outline:
@@ -118,7 +118,7 @@ class AppButton extends StatelessWidget {
           ).copyWith(
             overlayColor: MaterialStateProperty.resolveWith((states) {
               if (states.contains(MaterialState.pressed)) {
-                return foregroundColor.withValues(alpha: 0.1);
+                return foregroundColor.withOpacity(0.1);
               }
               return null;
             }),

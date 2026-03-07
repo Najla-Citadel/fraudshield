@@ -226,7 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .textTheme
                                   .bodyMedium
                                   ?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.7),
+                                    color: Colors.white.withOpacity(0.7),
                                   ),
                             ),
                             const SizedBox(height: 32),
@@ -277,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Expanded(
                                     child: Divider(
                                         color: Colors.white
-                                            .withValues(alpha: 0.2))),
+                                            .withOpacity(0.2))),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16),
@@ -285,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'OR',
                                     style: TextStyle(
                                       color: Colors.white
-                                          .withValues(alpha: 0.4),
+                                          .withOpacity(0.4),
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -294,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Expanded(
                                     child: Divider(
                                         color: Colors.white
-                                            .withValues(alpha: 0.2))),
+                                            .withOpacity(0.2))),
                               ],
                             ),
                             const SizedBox(height: 24),
@@ -309,17 +309,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                IconButton(
-                  icon: Icon(Icons.fingerprint,
-                      size: 48, color: DesignTokens.colors.accentGreen),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Biometric Login coming soon!')),
-                    );
-                  },
                 ),
                 const SizedBox(height: 24),
                 Row(

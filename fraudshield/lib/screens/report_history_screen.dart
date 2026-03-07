@@ -162,11 +162,11 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(LucideIcons.inbox,
-                  size: 64, color: Colors.white.withValues(alpha: 0.2)),
+                  size: 64, color: Colors.white.withOpacity(0.2)),
             ),
             const SizedBox(height: 24),
             const Text(
@@ -181,7 +181,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
             Text(
               'Your submitted scam reports will appear here',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+              style: TextStyle(color: Colors.white.withOpacity(0.5)),
             ),
           ],
         ),
@@ -235,12 +235,12 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withOpacity(0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -254,7 +254,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withValues(alpha: 0.1),
+                  color: AppColors.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(LucideIcons.fileText,
@@ -278,7 +278,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                       date,
                       style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.4)),
+                          color: Colors.white.withOpacity(0.4)),
                     ),
                   ],
                 ),
@@ -287,9 +287,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
+                  color: statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: statusColor.withValues(alpha: 0.2)),
+                  border: Border.all(color: statusColor.withOpacity(0.2)),
                 ),
                 child: Text(
                   status.toUpperCase(),
@@ -309,7 +309,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               description,
               style: TextStyle(
                   fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withOpacity(0.7),
                   height: 1.5),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
@@ -321,13 +321,13 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               children: [
                 Icon(LucideIcons.users,
                     size: 14,
-                    color: AppColors.accentGreen.withValues(alpha: 0.5)),
+                    color: AppColors.accentGreen.withOpacity(0.5)),
                 const SizedBox(width: 8),
                 Text(
                   'Shared with community',
                   style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.accentGreen.withValues(alpha: 0.5),
+                      color: AppColors.accentGreen.withOpacity(0.5),
                       fontWeight: FontWeight.w500),
                 ),
               ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 class FacialDetectionScreen extends StatefulWidget {
   const FacialDetectionScreen({super.key});
@@ -75,9 +76,8 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               ),
               child: Center(
                 child: isScanning
-                    ? const CircularProgressIndicator(
-                        color: Colors.blueAccent,
-                        strokeWidth: 3,
+                    ? const AppLoadingIndicator(
+                        color: AppColors.accentGreen,
                       )
                     : Icon(
                         Icons.face_retouching_natural,

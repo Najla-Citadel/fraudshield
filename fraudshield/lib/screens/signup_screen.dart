@@ -9,10 +9,10 @@ import 'email_verification_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'terms_of_service_screen.dart';
 import '../widgets/adaptive_text_field.dart';
-import '../widgets/adaptive_button.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/turnstile_widget.dart';
+import '../design_system/components/app_button.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -182,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         'Join the community to stay protected',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withValues(alpha: 0.7),
+                              color: Colors.white.withOpacity(0.7),
                             ),
                       ),
                       const SizedBox(height: 32),
@@ -253,7 +253,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     text: TextSpan(
                                       style: TextStyle(
                                           color: Colors.white
-                                              .withValues(alpha: 0.8),
+                                              .withOpacity(0.8),
                                           fontSize: 13,
                                           height: 1.4),
                                       children: [
@@ -305,10 +305,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             const SizedBox(height: 16),
 
                             // 🟦 Sign Up Button
-                            AdaptiveButton(
-                              text: 'Sign Up',
+                            AppButton(
+                              label: 'Sign Up',
                               isLoading: _loading,
                               onPressed: _signup,
+                              variant: AppButtonVariant.primary,
                             ),
                           ],
                         ),
@@ -323,7 +324,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Text(
                             "Already have an account? ",
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.7)),
+                                color: Colors.white.withOpacity(0.7)),
                           ),
                           GestureDetector(
                             onTap: () {

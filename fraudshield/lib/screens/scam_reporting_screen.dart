@@ -1015,7 +1015,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
               Text(AppLocalizations.of(context)!.reportSuccessDesc,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
+                      color: Colors.white.withOpacity(0.7),
                       fontSize: 15,
                       height: 1.5)),
               const SizedBox(height: 48),
@@ -1050,7 +1050,7 @@ class _ReviewItem extends StatelessWidget {
         children: [
           Text(label,
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.4), fontSize: 13)),
+                  color: Colors.white.withOpacity(0.4), fontSize: 13)),
           Text(value,
               style: const TextStyle(
                   color: Colors.white,

@@ -104,7 +104,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: color, size: 32),
@@ -126,7 +126,7 @@ class ScamReportEntryScreen extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
+                    color: Colors.white.withOpacity(0.5),
                     fontSize: 13,
                   ),
                 ),
@@ -135,7 +135,7 @@ class ScamReportEntryScreen extends StatelessWidget {
           ),
           Icon(
             LucideIcons.chevronRight,
-            color: Colors.white.withValues(alpha: 0.3),
+            color: Colors.white.withOpacity(0.3),
             size: 20,
           ),
         ],

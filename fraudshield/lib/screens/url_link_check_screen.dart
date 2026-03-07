@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../design_system/components/app_loading_indicator.dart';
 import '../constants/colors.dart';
 import '../services/api_service.dart';
 import '../services/risk_evaluator.dart';
@@ -163,7 +164,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                         setState(() => _recentScans = []);
                       },
                       style: TextButton.styleFrom(
-                        foregroundColor: Colors.white.withValues(alpha: 0.4),
+                        foregroundColor: Colors.white.withOpacity(0.4),
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(50, 30),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -199,7 +200,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               Text(
                 'Enter URL to scan',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withOpacity(0.9),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -211,15 +212,15 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             controller: _urlController,
             decoration: InputDecoration(
               hintText: 'https://example.com',
-              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
               filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.05),
+              fillColor: Colors.white.withOpacity(0.05),
               prefixIcon: Icon(LucideIcons.link,
-                  color: Colors.white.withValues(alpha: 0.3), size: 18),
+                  color: Colors.white.withOpacity(0.3), size: 18),
               suffixIcon: _urlController.text.isNotEmpty
                   ? IconButton(
                       icon: Icon(LucideIcons.xCircle,
-                          color: Colors.white.withValues(alpha: 0.3), size: 18),
+                          color: Colors.white.withOpacity(0.3), size: 18),
                       onPressed: () {
                         _urlController.clear();
                         setState(() {});
@@ -239,25 +240,22 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
           SizedBox(
             width: double.infinity,
             height: 50,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _checkUrl,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Text(
+            child: _isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: AppLoadingIndicator(color: AppColors.accentGreen),
+                  )
+                : ElevatedButton(
+                    onPressed: _isLoading ? null : _checkUrl,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: const Text(
                       'Check Link',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -284,7 +282,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
     return GlassSurface(
       padding: const EdgeInsets.all(24),
       borderRadius: 24,
-      borderColor: riskColor.withValues(alpha: 0.3),
+      borderColor: riskColor.withOpacity(0.3),
       accentColor: AppColors.primaryBlue,
       child: Column(
         children: [
@@ -307,7 +305,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             _urlController.text.trim(),
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7), fontSize: 14),
+                color: Colors.white.withOpacity(0.7), fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -319,7 +317,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               Text(
                 'Risk Score: ',
                 style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
+                    color: Colors.white.withOpacity(0.5), fontSize: 13),
               ),
               Text(
                 '${_lastResult!.score}/100',
@@ -332,7 +330,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
           ),
           if (_lastResult!.reasons.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Divider(color: Colors.white.withValues(alpha: 0.1)),
+            Divider(color: Colors.white.withOpacity(0.1)),
             const SizedBox(height: 8),
             ..._lastResult!.reasons.map((reason) => Padding(
                   padding: const EdgeInsets.only(bottom: 4),
@@ -344,7 +342,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                         child: Text(
                           reason,
                           style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
+                              color: Colors.white.withOpacity(0.7),
                               fontSize: 12),
                         ),
                       ),
@@ -359,7 +357,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
 
   Widget _buildRecentActivity() {
     if (_isFetchingHistory) {
-      return const Center(child: CircularProgressIndicator());
+      return AppLoadingIndicator.center();
     }
 
     if (_recentScans.isEmpty) {
@@ -370,7 +368,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
         child: Column(
           children: [
             Icon(LucideIcons.history,
-                color: AppColors.greyText.withValues(alpha: 0.3), size: 40),
+                color: AppColors.greyText.withOpacity(0.3), size: 40),
             const SizedBox(height: 12),
             const Text(
               'No recent activity',
@@ -390,7 +388,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: _recentScans.length,
         separatorBuilder: (context, index) =>
-            Divider(height: 1, color: Colors.white.withValues(alpha: 0.05)),
+            Divider(height: 1, color: Colors.white.withOpacity(0.05)),
         itemBuilder: (context, index) {
           final scan = _recentScans[index];
           final isSafe = scan['status'] == 'SAFE';
@@ -405,7 +403,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: (isSafe ? AppColors.accentGreen : Colors.red)
-                    .withValues(alpha: 0.1),
+                    .withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -426,13 +424,13 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
             subtitle: Text(
               formattedDate,
               style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                  color: Colors.white.withOpacity(0.5), fontSize: 12),
             ),
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: (isSafe ? AppColors.accentGreen : Colors.red)
-                    .withValues(alpha: 0.1),
+                    .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../design_system/components/app_loading_indicator.dart';
 
 class TurnstileWidget extends StatefulWidget {
   final Function(String token) onTokenReceived;
@@ -123,11 +124,7 @@ class _TurnstileWidgetState extends State<TurnstileWidget> {
             WebViewWidget(controller: _controller),
             if (_isLoading)
               const Center(
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                child: AppLoadingIndicator(size: 20),
               ),
           ],
         ],
