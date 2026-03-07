@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SkeletonCard extends StatelessWidget {
   final double? height;
@@ -19,7 +20,7 @@ class SkeletonCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: Shimmer.fromColors(
@@ -40,7 +41,7 @@ class SkeletonCard extends StatelessWidget {
                     height: 48,
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     ),
                   ),
                   const SizedBox(width: 12),

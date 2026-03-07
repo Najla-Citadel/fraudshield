@@ -65,15 +65,9 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 border: Border.all(color: DesignTokens.colors.primary, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+                boxShadow: DesignTokens.shadows.sm,
               ),
               child: Center(
                 child: isScanning
@@ -109,7 +103,7 @@ class _FacialDetectionScreenState extends State<FacialDetectionScreen> {
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: isSuspicious! ? Colors.red[50] : Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   border: Border.all(
                     color: isSuspicious! ? Colors.redAccent : Colors.green,
                     width: 1.5,

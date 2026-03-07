@@ -27,15 +27,9 @@ class ScamCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 20, left: 16, right: 16),
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -53,7 +47,7 @@ class ScamCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: _getCategoryColor(report['category'])
                           .withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     ),
                     child: Icon(
                       _getCategoryIcon(report['category']),
@@ -95,7 +89,7 @@ class ScamCard extends StatelessWidget {
                                     : const Color(0xFFF59E0B)
                                         .withOpacity(0.15),
                                 borderRadius:
-                                    BorderRadius.circular(20), // Pill shape
+                                    BorderRadius.circular(DesignTokens.radii.lg), // Pill shape
                                 border: Border.all(
                                   color: isVerified
                                       ? const Color(0xFF10B981)
@@ -181,7 +175,7 @@ class ScamCard extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   border:
                       Border.all(color: Colors.white.withOpacity(0.1)),
                 ),
@@ -269,13 +263,13 @@ class ScamCard extends StatelessWidget {
                     onTap: () {
                       // TODO: Implement alert sharing
                     },
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                       ),
                       child: const Row(
                         children: [

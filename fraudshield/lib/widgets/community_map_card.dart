@@ -48,18 +48,12 @@ class _CommunityMapCardState extends State<CommunityMapCard>
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           child: Stack(
             children: [
               // 1. Radar Pulse Background
@@ -97,7 +91,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
                               horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                           ),
                           child: const Icon(LucideIcons.maximize,
                               color: Colors.white, size: 14),
@@ -221,7 +215,7 @@ class _CommunityMapCardState extends State<CommunityMapCard>
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border:
             Border.all(color: const Color(0xFFEF4444).withOpacity(0.5)),
       ),
@@ -276,7 +270,7 @@ class _BlinkingDotState extends State<_BlinkingDot>
       child: Container(
         width: 8,
         height: 8,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Color(0xFFEF4444),
           shape: BoxShape.circle,
         ),

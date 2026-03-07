@@ -55,7 +55,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: allSafe ? Colors.green[50] : Colors.red[50],
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 border: Border.all(
                   color: allSafe ? Colors.green : Colors.redAccent,
                   width: 1.5,
@@ -137,7 +137,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Column(
                 children: apps.map((app) {
@@ -162,7 +162,7 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
                         color: isSuspicious ? Colors.redAccent : Colors.green,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                       ),
                       child: Text(
                         app['status'],
@@ -187,14 +187,8 @@ class _ApplicationMonitoringScreenState extends State<ApplicationMonitoringScree
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: Column(
           children: [

@@ -166,7 +166,7 @@ class _AlertCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: DesignTokens.colors.primaryBlue.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

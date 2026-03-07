@@ -331,7 +331,7 @@ class _ScamMapScreenState extends State<ScamMapScreen> {
                               color: isSelected
                                   ? DesignTokens.colors.accentGreen
                                   : DesignTokens.colors.backgroundDark.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                               border: Border.all(
                                 color: isSelected
                                     ? DesignTokens.colors.accentGreen

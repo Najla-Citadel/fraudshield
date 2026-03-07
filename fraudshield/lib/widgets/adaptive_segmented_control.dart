@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
   final Map<T, Widget> children;
@@ -46,7 +47,7 @@ class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
           visualDensity: VisualDensity.comfortable,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.sm)),
           ),
         ),
         showSelectedIcon: false, // Cleaner look

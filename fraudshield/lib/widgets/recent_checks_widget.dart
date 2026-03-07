@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../services/recent_checks_service.dart';
 import 'package:intl/intl.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class RecentChecksWidget extends StatefulWidget {
   final Function(RecentCheckItem) onCheckSelected;
@@ -135,12 +136,12 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
       color: Colors.transparent,
       child: InkWell(
         onTap: () => widget.onCheckSelected(item),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Row(
@@ -149,7 +150,7 @@ class RecentChecksWidgetState extends State<RecentChecksWidget> {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                 ),
                 child: Icon(icon, color: color, size: 16),
               ),

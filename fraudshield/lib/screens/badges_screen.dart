@@ -90,7 +90,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
@@ -176,7 +176,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 color: isActive
                     ? DesignTokens.colors.accentGreen
                     : Colors.white.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: isActive
                     ? null
                     : Border.all(color: Colors.white.withValues(alpha: 0.1)),
@@ -255,7 +255,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                 color: badge.isEarned
                     ? tierColor.withValues(alpha: 0.1)
                     : Colors.white.withValues(alpha: 0.03),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(
                   color: badge.isEarned
                       ? tierColor.withValues(alpha: 0.3)
@@ -272,13 +272,7 @@ class _BadgesScreenState extends State<BadgesScreen> {
                       height: 40,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: tierColor.withValues(alpha: 0.4),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                        ],
+                        boxShadow: DesignTokens.shadows.md,
                       ),
                     ),
                   Text(
@@ -355,7 +349,7 @@ class _BadgeDetailSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(32),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
       ),
@@ -407,7 +401,7 @@ class _BadgeDetailSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
               color: tierColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             child: Text(
               badge.tier.toUpperCase(),
@@ -434,7 +428,7 @@ class _BadgeDetailSheet extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 border: Border.all(
                     color:
                         DesignTokens.colors.accentGreen.withValues(alpha: 0.3)),

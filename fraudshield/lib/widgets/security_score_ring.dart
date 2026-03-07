@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../design_system/components/app_loading_indicator.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SecurityScoreRing extends StatefulWidget {
   final int score;
@@ -75,13 +76,7 @@ class _SecurityScoreRingState extends State<SecurityScoreRing> with SingleTicker
                   height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: _getStatusColor(widget.score).withOpacity(pulse),
-                        blurRadius: 40,
-                        spreadRadius: 10,
-                      ),
-                    ],
+                    boxShadow: DesignTokens.shadows.lg,
                   ),
                 );
               },

@@ -686,7 +686,7 @@ class _HomeTab extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: DesignTokens.colors.primary,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         ),
                         child: const Icon(LucideIcons.shieldCheck,
                             color: Colors.white, size: 24),
@@ -722,7 +722,7 @@ class _HomeTab extends StatelessWidget {
                         child: Container(
                           width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
@@ -851,7 +851,7 @@ class _HomeTab extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A), // Slate 900
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(
               color: Colors.white.withOpacity(0.1), width: 1.5),
           boxShadow: DesignTokens.shadows.lg,
@@ -919,7 +919,7 @@ class _HomeTab extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     border: Border.all(
                         color: DesignTokens.colors.accentGreen.withOpacity(0.2)),
                   ),
@@ -1017,7 +1017,7 @@ class _HomeTab extends StatelessWidget {
         height: 100,
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
           boxShadow: DesignTokens.shadows.sm,
         ),
@@ -1059,7 +1059,7 @@ class _HomeTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF7E6), // Light yellow tint
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                 border: Border.all(
                     color: const Color(0xFFFFCC00).withOpacity(0.5)),
               ),
@@ -1154,7 +1154,7 @@ class _HomeTab extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white
               .withOpacity(0.08), // Increased opacity for consistency
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border: Border.all(
               color: Colors.white
                   .withOpacity(0.1)), // Slightly more visible border
@@ -1173,7 +1173,7 @@ class _HomeTab extends StatelessWidget {
                   right: -4,
                   child: Container(
                     padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Color(0xFF0F172A),
                       shape: BoxShape.circle,
                     ),
@@ -1238,7 +1238,7 @@ class _HomeTab extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(
                 color: hasAlerts
                     ? iconColor.withOpacity(0.3)
@@ -1296,17 +1296,11 @@ class _HomeTab extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B), // Dark Slate
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3 * value),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: DesignTokens.colors.accentGreen.withOpacity(0.1 * value),
-                blurRadius: 8 * value,
-                spreadRadius: 2,
-              ),
-            ],
+            boxShadow: DesignTokens.shadows.sm,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -1352,7 +1346,7 @@ class _HomeTab extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Match trending alerts style
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3), width: 1),
           boxShadow: DesignTokens.shadows.md,
@@ -1407,7 +1401,7 @@ class _HomeTab extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.xs)),
                 ),
               ),
             ),
@@ -1528,7 +1522,7 @@ class _HomeTab extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: Colors.white.withOpacity(0.05)),
         ),
         child: Row(
@@ -1569,7 +1563,7 @@ class _HomeTab extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: statusColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Text(
                 status,
@@ -1664,7 +1658,7 @@ class _BigActionButtonState extends State<_BigActionButton> {
                 vertical: 12, horizontal: 8), // Reduced horizontal padding
             decoration: BoxDecoration(
               color: widget.color,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
               boxShadow: [
                 BoxShadow(
                   color:
@@ -1741,7 +1735,7 @@ class _StatusItem extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border: onTap != null
               ? Border.all(color: Colors.white.withOpacity(0.05))
               : null,
@@ -1793,11 +1787,7 @@ class _StatusItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen,
                   shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                        color: DesignTokens.colors.accentGreen.withOpacity(0.5),
-                        blurRadius: 6)
-                  ],
+                  boxShadow: DesignTokens.shadows.sm,
                 ),
               )
             else if (onTap != null)
@@ -1826,7 +1816,7 @@ class _DailyRewardDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
       backgroundColor: Colors.transparent,
       child: GlassSurface(
         borderRadius: 20,
@@ -1863,7 +1853,7 @@ class _DailyRewardDialog extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

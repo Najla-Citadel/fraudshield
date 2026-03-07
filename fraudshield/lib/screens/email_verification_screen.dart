@@ -118,13 +118,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           decoration: BoxDecoration(
                             color: DesignTokens.colors.backgroundDark,
                             shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: DesignTokens.colors.primary.withOpacity(0.2),
-                                blurRadius: 20,
-                                spreadRadius: -5,
-                              ),
-                            ],
+                            boxShadow: DesignTokens.shadows.md,
                           ),
                           child: Icon(
                             Icons.mark_email_read_outlined,
@@ -167,7 +161,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 margin: const EdgeInsets.only(bottom: 24),
                                 decoration: BoxDecoration(
                                   color: Colors.red.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                                   border: Border.all(color: Colors.red.withOpacity(0.3)),
                                 ),
                                 child: Row(

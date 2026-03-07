@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SettingsGroup extends StatelessWidget {
   final String? title;
@@ -36,7 +37,7 @@ class SettingsGroup extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(color: Colors.white.withOpacity(0.05)),
             ),
             child: Column(
@@ -94,7 +95,7 @@ class SettingsTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16), // For ripple effect if needed
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md), // For ripple effect if needed
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
@@ -104,7 +105,7 @@ class SettingsTile extends StatelessWidget {
                 height: 36,
                 decoration: BoxDecoration(
                   color: bgColor,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                 ),
                 child: Icon(icon, color: color, size: 20),
               ),

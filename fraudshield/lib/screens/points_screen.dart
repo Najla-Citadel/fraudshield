@@ -278,7 +278,7 @@ class PointsScreenState extends State<PointsScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: DesignTokens.colors.glassDark,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
         ),
         child: Column(
@@ -338,7 +338,7 @@ class PointsScreenState extends State<PointsScreen> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   border: Border.all(
                       color: DesignTokens.colors.accentGreen
                           .withValues(alpha: 0.3)),
@@ -530,7 +530,7 @@ class PointsScreenState extends State<PointsScreen> {
                       color: isLocked
                           ? Colors.black54
                           : DesignTokens.colors.accentGreen,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                     ),
                     child: Text(
                       '$cost PTS',
@@ -603,7 +603,7 @@ class PointsScreenState extends State<PointsScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: DesignTokens.colors.glassDark,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
@@ -678,7 +678,7 @@ class PointsScreenState extends State<PointsScreen> {
       padding: const EdgeInsets.symmetric(vertical: 40),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.02),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
@@ -708,7 +708,7 @@ class _Skeleton extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
       ),
     );
   }

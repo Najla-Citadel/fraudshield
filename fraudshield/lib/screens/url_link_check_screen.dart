@@ -198,7 +198,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
                     )
                   : null,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                 borderSide: BorderSide.none,
               ),
               contentPadding:
@@ -383,7 +383,7 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
                     .withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Text(
                 isSafe ? 'SAFE' : 'RISKY',

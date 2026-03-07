@@ -220,7 +220,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                           isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                       side: BorderSide(
                         color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.1),
                       ),
@@ -362,7 +362,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 child: IntrinsicHeight(
                   child: Row(
                     children: [
@@ -380,7 +380,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                 height: 44,
                                 decoration: BoxDecoration(
                                   color: statusColor.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                                 ),
                                 child: Icon(icon, color: statusColor, size: 20),
                               ),
@@ -409,7 +409,7 @@ class _TransactionJournalScreenState extends State<TransactionJournalScreen> {
                                           decoration: BoxDecoration(
                                             color: statusColor.withOpacity(0.12),
                                             borderRadius:
-                                                BorderRadius.circular(6),
+                                                BorderRadius.circular(DesignTokens.radii.xs),
                                           ),
                                           child: Text(
                                             status,

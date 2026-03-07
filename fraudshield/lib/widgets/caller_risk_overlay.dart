@@ -148,19 +148,12 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFF0F172A).withOpacity(0.9),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
         border: Border.all(
           color: _isLoading ? Colors.white12 : _levelColor.withOpacity(0.4),
           width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color:
-                _isLoading ? Colors.transparent : _levelColor.withOpacity(0.2),
-            blurRadius: 24,
-            spreadRadius: 2,
-          ),
-        ],
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: _isLoading ? _buildLoading() : _buildContent(context),
     );
@@ -191,21 +184,15 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
         if (_level == 'critical') ...[
           InkWell(
             onTap: () => _forceDismiss(context),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
                 color: const Color(0xFFDC2626),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFDC2626).withOpacity(0.5),
-                    blurRadius: 15,
-                    spreadRadius: 2,
-                  ),
-                ],
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+                boxShadow: DesignTokens.shadows.md,
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +232,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: const Color(0xFF22C55E).withOpacity(0.15),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
               border:
                   Border.all(color: const Color(0xFF22C55E).withOpacity(0.4)),
             ),
@@ -284,7 +271,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
 
         // Score bar
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
           child: LinearProgressIndicator(
             value: _score / 100,
             minHeight: 6,
@@ -308,7 +295,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.redAccent.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                   border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
                 ),
                 child: Text(
@@ -338,7 +325,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.07),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                         border: Border.all(color: Colors.white12),
                       ),
                       child: Text(c,
@@ -432,7 +419,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: const Color(0xFFF59E0B).withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
       ),
       child: Row(
@@ -515,7 +502,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
             builder: (ctx) => AlertDialog(
               backgroundColor: const Color(0xFF0F172A),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                   side: const BorderSide(color: Color(0xFFDC2626), width: 2)),
               title: const Row(
                 children: [
@@ -570,7 +557,7 @@ class _CallerRiskOverlayState extends State<CallerRiskOverlay> {
         builder: (_) => AlertDialog(
           backgroundColor: const Color(0xFF1E293B),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
           title: const Text('Block This Number',
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -655,12 +642,12 @@ class _ActionBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: color.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: color.withOpacity(0.35)),
         ),
         child: Column(

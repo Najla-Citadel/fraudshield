@@ -146,7 +146,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         children: [
           // Background Gradient
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -251,14 +251,14 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
         setState(() => _isNearMe = !_isNearMe);
         _fetchFeed(reset: true);
       },
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: _isNearMe
               ? DesignTokens.colors.accentGreen.withOpacity(0.15)
               : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
           border: Border.all(
             color: _isNearMe
                 ? DesignTokens.colors.accentGreen
@@ -292,7 +292,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       height: 45,
       decoration: BoxDecoration(
         color: const Color(0xFF1E293B), // Slate 800
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border: Border.all(color: Colors.white.withOpacity(0.1)),
       ),
       child: TextField(
@@ -359,7 +359,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
                   color: isSelected
                       ? DesignTokens.colors.accentGreen
                       : Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                   border: Border.all(
                     color: isSelected
                         ? DesignTokens.colors.accentGreen

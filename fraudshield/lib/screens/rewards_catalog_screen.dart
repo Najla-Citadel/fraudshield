@@ -228,7 +228,7 @@ class _RewardsCatalogScreenState extends State<RewardsCatalogScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: iconColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   border: Border.all(color: iconColor.withOpacity(0.2)),
                 ),
                 child: Icon(icon, color: iconColor, size: 28),

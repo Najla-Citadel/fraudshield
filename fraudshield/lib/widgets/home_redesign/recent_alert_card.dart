@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../constants/colors.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 enum AlertSeverity { high, warning, info }
 
@@ -92,12 +93,12 @@ class RecentAlertCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onReview,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         decoration: BoxDecoration(
           color: _backgroundColor, 
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: _borderColor, width: 1), 
         ),
         child: Row(

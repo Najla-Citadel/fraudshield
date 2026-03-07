@@ -86,7 +86,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.blueAccent.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
         child: Row(
           children: const [
@@ -112,7 +112,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
           border:
               Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
         ),
@@ -146,7 +146,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: badgeColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         border: Border.all(color: badgeColor.withOpacity(0.3)),
       ),
       child: Row(
@@ -262,7 +262,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
               items: ['BANK', 'PHONE', 'URL', 'DOC', 'MANUAL'].map((method) {
@@ -285,7 +285,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
             ),
@@ -307,7 +307,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                         color: _isIncome
                             ? DesignTokens.colors.accentGreen.withOpacity(0.2)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         border: Border.all(
                             color: _isIncome
                                 ? DesignTokens.colors.accentGreen
@@ -344,7 +344,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                         color: !_isIncome
                             ? Colors.redAccent.withOpacity(0.2)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         border: Border.all(
                             color: !_isIncome
                                 ? Colors.redAccent
@@ -387,7 +387,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
             ),
@@ -404,7 +404,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
               items:
@@ -425,7 +425,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
               items: [
@@ -453,7 +453,7 @@ class _LogPaymentSheetState extends State<LogPaymentSheet> {
                 filled: true,
                 fillColor: const Color(0xFF1E293B),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none),
               ),
             ),

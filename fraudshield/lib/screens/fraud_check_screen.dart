@@ -210,7 +210,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: DesignTokens.colors.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(6),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                           ),
                           child: Text(
                             'Phone/Bank Detected',
@@ -249,7 +249,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.05),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -380,7 +380,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: riskColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                 ),
                 child: Text(
                   '${_lastResult!.score}/100',
@@ -431,7 +431,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               value: _lastResult!.score / 100,
               backgroundColor: Colors.white.withOpacity(0.05),
               valueColor: AlwaysStoppedAnimation<Color>(riskColor),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               minHeight: 6,
             ),
           ),
@@ -513,7 +513,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               decoration: BoxDecoration(
                 color: (isSafe ? DesignTokens.colors.success : DesignTokens.colors.error)
                     .withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Text(
                 riskLevel,

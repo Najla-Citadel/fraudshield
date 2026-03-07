@@ -474,7 +474,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 color: sColor.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(color: sColor.withOpacity(0.5)),
               ),
               child: Row(
@@ -558,7 +558,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: _scoreColor(score).withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child:
                   Icon(LucideIcons.user, color: _scoreColor(score), size: 22),
@@ -620,7 +620,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: const Color(0xFFEF4444).withOpacity(0.12),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
           border:
               Border.all(color: const Color(0xFFEF4444).withOpacity(0.3)),
         ),
@@ -637,7 +637,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFFF59E0B).withOpacity(0.08),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border:
               Border.all(color: const Color(0xFFF59E0B).withOpacity(0.3)),
         ),
@@ -681,7 +681,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.green.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: Colors.green.withOpacity(0.3)),
         ),
         child: const Row(
@@ -726,7 +726,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
             left: 20,
             right: 20,
           ),
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Color(0xFF111827),
             borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
           ),
@@ -777,7 +777,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                   filled: true,
                   fillColor: const Color(0xFF1A2332),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                     borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.all(16),
@@ -808,7 +808,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
                                   ? const Color(0xFFEF4444)
                                       .withOpacity(0.15)
                                   : const Color(0xFF1A2332),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                               border: Border.all(
                                 color: selectedCategory == c
                                     ? const Color(0xFFEF4444)

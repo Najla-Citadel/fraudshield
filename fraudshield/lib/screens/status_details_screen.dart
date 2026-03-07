@@ -187,13 +187,7 @@ class StatusDetailsScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: const Color(0xFF1E293B),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+                boxShadow: DesignTokens.shadows.md,
               ),
               child: Icon(
                 Icons.shield_rounded,
@@ -217,7 +211,7 @@ class StatusDetailsScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
             color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
           ),
           child: Row(
@@ -344,7 +338,7 @@ class StatusDetailsScreen extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: const Color(0xFF1E293B).withOpacity(0.5),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: Column(
@@ -429,14 +423,8 @@ class StatusDetailsScreen extends StatelessWidget {
       height: 56,
       decoration: BoxDecoration(
         color: DesignTokens.colors.accentGreen,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: DesignTokens.colors.accentGreen.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: Material(
         color: Colors.transparent,
@@ -444,7 +432,7 @@ class StatusDetailsScreen extends StatelessWidget {
           onTap: () {
             _showLevelUpGuide(context);
           },
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           child: const Center(
             child: Text(
               'How to Earn Points',

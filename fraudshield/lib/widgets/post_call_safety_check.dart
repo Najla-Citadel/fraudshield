@@ -35,18 +35,12 @@ class PostCallSafetyCheck extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.backgroundDark.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
                 border: Border.all(
                   color: Colors.orangeAccent.withOpacity(0.5),
                   width: 2,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.orangeAccent.withOpacity(0.2),
-                    blurRadius: 30,
-                    spreadRadius: 5,
-                  ),
-                ],
+                boxShadow: DesignTokens.shadows.lg,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -142,12 +136,12 @@ class _ActionBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
           border: Border.all(color: color.withOpacity(0.4)),
         ),
         child: Column(

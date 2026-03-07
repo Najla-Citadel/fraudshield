@@ -166,7 +166,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                             color: isSelected 
                                 ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
                                 : Colors.white.withOpacity(0.05),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                             border: Border.all(
                               color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
                             ),
@@ -301,7 +301,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
               width: 280,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Column(
@@ -328,7 +328,7 @@ class LatestNewsWidgetState extends State<LatestNewsWidget> {
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
                               color: Colors.red.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                             ),
                             child: const Text('SCAM ALERT', style: TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.bold)),
                           ),

@@ -859,7 +859,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                 ),
                 child: Row(
                   children: [
@@ -890,7 +890,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                       DesignTokens.colors.primary.withValues(alpha: 0.05),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                   border: Border.all(
                     color: DesignTokens.colors.primary.withValues(alpha: 0.2),
                   ),
@@ -963,7 +963,7 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.sm)),
                 ),
                 child: Text('Back',
                     style: TextStyle(

@@ -172,7 +172,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Row(
@@ -259,7 +259,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.glassDark.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: SingleChildScrollView(
                 child: Column(
@@ -290,7 +290,7 @@ class _AIFileScannerScreenState extends State<AIFileScannerScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                 ),
                 child: Text(p.split('.').last, style: const TextStyle(fontSize: 10, color: Colors.red, fontWeight: FontWeight.bold)),
               )).toList(),

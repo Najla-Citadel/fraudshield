@@ -773,7 +773,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: colors.textLight.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   ),
                     child: Text(
                       AppLocalizations.of(context)!.accountViewProfile,
@@ -804,15 +804,9 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A),
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
           border: Border.all(color: colors.textLight.withValues(alpha: 0.05)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: Column(
           children: [
@@ -831,7 +825,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: colors.textLight,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -870,7 +864,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                       border: Border.all(
                           color: Colors.white.withValues(alpha: 0.05)),
                     ),
@@ -1048,13 +1042,13 @@ class _AvatarPicker extends StatelessWidget {
             onTap: () => onSelect(seed),
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: isSelected
                     ? Border.all(color: theme.colorScheme.primary, width: 3)
                     : null,
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 child: Image.network(
                   'https://api.dicebear.com/7.x/avataaars/png?seed=$seed',
                   fit: BoxFit.cover,

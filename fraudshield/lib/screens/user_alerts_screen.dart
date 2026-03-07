@@ -6,6 +6,7 @@ import '../widgets/animated_background.dart';
 import '../widgets/glass_surface.dart';
 import '../constants/colors.dart';
 import '../design_system/components/app_snackbar.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class UserAlertsScreen extends StatelessWidget {
   const UserAlertsScreen({super.key});
@@ -70,15 +71,9 @@ class UserAlertsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   border: Border.all(color: Colors.grey[200]!),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  boxShadow: DesignTokens.shadows.sm,
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

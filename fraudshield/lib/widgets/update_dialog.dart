@@ -25,7 +25,7 @@ class UpdateDialog extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: DesignTokens.colors.backgroundDark.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
             border: Border.all(
               color: DesignTokens.colors.accentGreen.withOpacity(0.3),
               width: 1.5,

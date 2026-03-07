@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: Colors.orange.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                             border: Border.all(
                                 color: Colors.orange.withValues(alpha: 0.3)),
                           ),
@@ -259,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(

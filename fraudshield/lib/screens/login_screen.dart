@@ -228,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 minimumSize: const Size(44, 44),
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                                 ),
                               ),
                               child: Text(
@@ -300,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       minimumSize: const Size(44, 44),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                       ),
                     ),
                     child: Text(

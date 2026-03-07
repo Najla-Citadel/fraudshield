@@ -130,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     color: _currentIndex == i
                         ? DesignTokens.colors.primary
                         : Colors.grey,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                   ),
                 ),
               ),

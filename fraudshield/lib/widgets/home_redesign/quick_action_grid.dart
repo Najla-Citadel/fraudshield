@@ -75,20 +75,14 @@ class _QuickActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         width: (MediaQuery.of(context).size.width - 40 - 16) / 2, // 2 items per row
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
           color: DesignTokens.colors.surfaceLight,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

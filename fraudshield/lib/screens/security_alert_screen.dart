@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../services/security_service.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class SecurityAlertScreen extends StatelessWidget {
   const SecurityAlertScreen({super.key});
@@ -116,7 +117,7 @@ class SecurityAlertScreen extends StatelessWidget {
         color: isDark
             ? Colors.white.withOpacity(0.05)
             : Colors.white.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         border: Border.all(
           color: isDark
               ? Colors.white.withOpacity(0.1)

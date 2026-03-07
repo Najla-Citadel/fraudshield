@@ -103,7 +103,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.65,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -289,7 +289,7 @@ class _SearchFilterModalState extends State<SearchFilterModal> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey[300]!),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

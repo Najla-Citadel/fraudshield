@@ -116,7 +116,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: DesignTokens.colors.accentGreen.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                       border: Border.all(
                           color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
                     ),
@@ -200,7 +200,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: const Color(0xFF162032),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: Text(
@@ -234,7 +234,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(
                     color: DesignTokens.colors.accentGreen.withOpacity(0.1)),
               ),
@@ -260,13 +260,13 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             // 5. Actions
             InkWell(
               onTap: () {},
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   border: Border.all(
                       color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
                 ),
@@ -351,7 +351,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
         Container(
           decoration: BoxDecoration(
             color: const Color(0xFF162032),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Row(
@@ -468,7 +468,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.03),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                           ),
                           child: Text(
                             comment['text'] ?? '',
@@ -526,7 +526,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: const Color(0xFF162032),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
@@ -535,7 +535,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: const Color(0xFF1E3A8A).withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             child: Icon(icon, color: const Color(0xFF3B82F6), size: 24),
           ),
@@ -705,10 +705,10 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
           child: Stack(
             fit: StackFit.expand,
             children: [

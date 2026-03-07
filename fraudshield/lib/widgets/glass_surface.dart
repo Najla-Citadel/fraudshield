@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class GlassSurface extends StatelessWidget {
   final Widget child;
@@ -70,19 +71,7 @@ class GlassSurface extends StatelessWidget {
                   color: effectiveBorderColor,
                   width: 1.0,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                  BoxShadow(
-                    color: colorScheme.shadow
-                        .withOpacity(isDark ? 0.3 : 0.05),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                boxShadow: DesignTokens.shadows.sm,
               ),
               child: child,
             ),

@@ -22,30 +22,18 @@ class FloatingNavBar extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
         height: 80,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(36),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 30,
-              spreadRadius: -5,
-              offset: const Offset(0, 15),
-            ),
-            BoxShadow(
-              color: DesignTokens.colors.primary.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
+          borderRadius: BorderRadius.circular(100),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.85),
-                borderRadius: BorderRadius.circular(36),
+                borderRadius: BorderRadius.circular(100),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: 0.6),
                   width: 1.0,
@@ -137,7 +125,7 @@ class _NavItem extends StatelessWidget {
                     color: isSelected
                         ? DesignTokens.colors.primary
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   ),
                   child: Icon(
                     icon,

@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../design_system/components/app_button.dart';
 import 'scam_map_screen.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class ScamInsightScreen extends StatefulWidget {
   const ScamInsightScreen({super.key});
@@ -86,14 +87,8 @@ class _RiskLevelCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+        boxShadow: DesignTokens.shadows.sm,
       ),
       child: Row(
         children: [
@@ -138,19 +133,13 @@ class _TrendingHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         gradient: const LinearGradient(
           colors: [Color(0xFFF97316), Color(0xFFDC2626)], // Orange to Red
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.red.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: Stack(
         children: [
@@ -197,7 +186,7 @@ class _TrendingHeroCard extends StatelessWidget {
                     onPressed: () {},
                     style: TextButton.styleFrom(
                       backgroundColor: Colors.black.withOpacity(0.2),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     ),
                     child: const Row(
@@ -267,14 +256,8 @@ class _DistributionChartCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        boxShadow: DesignTokens.shadows.sm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,7 +387,7 @@ class _AIPatternBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         gradient: const LinearGradient(
           colors: [Color(0xFF1E3A8A), Color(0xFF3B82F6)], // Deep blue to sky blue
           begin: Alignment.centerLeft,
@@ -472,14 +455,8 @@ class _LocalActivityCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        boxShadow: DesignTokens.shadows.sm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +539,7 @@ class _EduCard extends StatelessWidget {
       width: 150,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         image: const DecorationImage(
           image: NetworkImage('https://www.transparenttextures.com/patterns/cubes.png'), // Subtle texture
           opacity: 0.1,
@@ -610,14 +587,8 @@ class _RecentFeedList extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        boxShadow: DesignTokens.shadows.sm,
       ),
       child: Column(
         children: [

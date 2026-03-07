@@ -90,7 +90,7 @@ class AdaptiveTextField extends StatelessWidget {
                   (isDark
                       ? CupertinoColors.systemGrey6.darkColor
                       : CupertinoColors.systemGrey6),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             style: TextStyle(
               color: textColor ??
@@ -139,11 +139,11 @@ class AdaptiveTextField extends StatelessWidget {
           fillColor: fillColor ?? Colors.white.withValues(alpha: 0.05),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             borderSide: BorderSide(
               color: errorText != null
                   ? DesignTokens.colors.error
@@ -152,7 +152,7 @@ class AdaptiveTextField extends StatelessWidget {
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             borderSide: BorderSide(
               color: errorText != null
                   ? DesignTokens.colors.error
@@ -161,7 +161,7 @@ class AdaptiveTextField extends StatelessWidget {
             ),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             borderSide: BorderSide(color: DesignTokens.colors.error, width: 1),
           ),
         ),

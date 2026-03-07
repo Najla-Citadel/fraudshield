@@ -101,15 +101,9 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF0F172A).withOpacity(0.95), // Deeper, more integrated navy
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.06)), // Subtle edge
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -124,7 +118,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
                       padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: DesignTokens.colors.accentGreen.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                       ),
                       child: Icon(LucideIcons.zap, color: DesignTokens.colors.accentGreen, size: 14),
                     ),
@@ -221,7 +215,7 @@ class _DailyDigestWidgetState extends State<DailyDigestWidget> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.15), // Recessed/darker inner box
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(color: Colors.white.withOpacity(0.04)),
               ),
               child: Row(

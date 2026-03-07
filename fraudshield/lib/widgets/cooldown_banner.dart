@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class CoolDownBanner extends StatefulWidget {
   const CoolDownBanner({super.key});
@@ -71,17 +72,11 @@ class _CoolDownBannerState extends State<CoolDownBanner> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: const Color(0xFF0F172A).withOpacity(0.95),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             border: const Border(
               left: BorderSide(color: Color(0xFFDC2626), width: 4),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: DesignTokens.shadows.sm,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,

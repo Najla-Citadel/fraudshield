@@ -233,15 +233,9 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +246,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: DesignTokens.colors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                 ),
                 child: Icon(LucideIcons.fileText,
                     color: DesignTokens.colors.primary, size: 20),
@@ -285,7 +279,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   border: Border.all(color: statusColor.withOpacity(0.2)),
                 ),
                 child: Text(

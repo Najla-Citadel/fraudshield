@@ -492,7 +492,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: DesignTokens.colors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             child: Icon(LucideIcons.phoneIncoming,
                 color: DesignTokens.colors.primary, size: 24),
@@ -649,7 +649,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.red.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
         border: Border.all(color: Colors.red.withOpacity(0.1)),
       ),
       child: Row(
@@ -699,7 +699,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
             _resultRow('Risk Score', '${r.riskScore}/100', color, isBold: true),
             const SizedBox(height: 12),
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               child: LinearProgressIndicator(
                 value: r.riskScore / 100,
                 minHeight: 8,
@@ -736,7 +736,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                           decoration: BoxDecoration(
                             color:
                                 DesignTokens.colors.glassDark.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                           ),
                           child: Text(p,
                               style: const TextStyle(
@@ -816,7 +816,7 @@ class _VoiceDetectionScreenState extends State<VoiceDetectionScreen>
                                 ? DesignTokens.colors.error
                                 : DesignTokens.colors.accentGreen)
                             .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                       ),
                       child: Text(
                         item['result'],

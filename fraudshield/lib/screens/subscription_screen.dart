@@ -234,7 +234,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: colors.accentGreen.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
               border: Border.all(color: colors.accentGreen.withValues(alpha: 0.4), width: 1.5),
             ),
             child: Column(
@@ -286,7 +286,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             ),
             child: Row(
               children: [
@@ -294,7 +294,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: colors.textLight.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   ),
                   child: Icon(Icons.settings_outlined, color: colors.textLight.withValues(alpha: 0.7), size: 20),
                 ),
@@ -347,7 +347,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         decoration: BoxDecoration(
           color: isActive ? DesignTokens.colors.accentGreen : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         ),
         child: Row(
           children: [
@@ -362,7 +362,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(color: colors.accentGreen, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: colors.accentGreen, borderRadius: BorderRadius.circular(DesignTokens.radii.xs)),
                 child: Text('SAVE 20%', style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: colors.textDark)),
               ),
             ],
@@ -392,7 +392,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFF162032),
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xxl),
         border: isPremium
             ? Border.all(color: colors.accentGreen.withValues(alpha: 0.5), width: 1.5)
             : Border.all(color: colors.textLight.withValues(alpha: 0.06)),
@@ -419,7 +419,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: DesignTokens.colors.accentGreen.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
                     ),
                     child: Text('POPULAR', style: TextStyle(color: DesignTokens.colors.accentGreen, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
@@ -557,9 +557,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget _buildStickyButton() {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(color: DesignTokens.colors.accentGreen.withValues(alpha: 0.35), blurRadius: 24, offset: const Offset(0, 6)),
-        ],
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: AppButton(
         isLoading: _isSubscribing,

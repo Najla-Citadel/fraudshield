@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
-
 class ErrorState extends StatelessWidget {
   final VoidCallback onRetry;
   final String title;

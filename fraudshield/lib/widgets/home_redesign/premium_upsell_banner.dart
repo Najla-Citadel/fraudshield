@@ -14,19 +14,13 @@ class PremiumUpsellBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: DesignTokens.colors.premiumYellow,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: Row(
           children: [

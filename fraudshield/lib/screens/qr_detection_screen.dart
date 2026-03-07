@@ -178,13 +178,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
           color: Colors.white.withOpacity(0.05),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.lg,
         ),
         child: Column(
           children: [
@@ -229,7 +223,7 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.03),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
             border: Border.all(color: Colors.white.withOpacity(0.05)),
           ),
           child: ListTile(
@@ -683,7 +677,7 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
               height: 250,
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.white70, width: 2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: const Align(
                 alignment: Alignment.bottomCenter,

@@ -118,7 +118,7 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
         height: 48,
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
         ),
         child: const TextField(
@@ -156,7 +156,7 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 border: Border.all(
                   color: isSelected ? DesignTokens.colors.accentGreen : Colors.white.withOpacity(0.1),
                 ),
@@ -203,15 +203,9 @@ class _ScamCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B), // Slate 800
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
           border: Border.all(color: Colors.white.withOpacity(0.1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          boxShadow: DesignTokens.shadows.md,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +275,7 @@ class _ScamCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -316,7 +310,7 @@ class _ScamCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFF0F172A), // Slate 900
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               border: Border.all(color: Colors.white.withOpacity(0.1)),
             ),
             child: Column(

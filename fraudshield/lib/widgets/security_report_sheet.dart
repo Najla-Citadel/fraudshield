@@ -67,7 +67,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getScoreColor(widget.score).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                   border: Border.all(color: _getScoreColor(widget.score)),
                 ),
                 child: Text(
@@ -156,7 +156,7 @@ class _SecurityReportSheetState extends State<SecurityReportSheet> {
                           color: isSafe 
                             ? DesignTokens.colors.accentGreen.withOpacity(0.1) 
                             : Colors.redAccent.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                         ),
                         child: Icon(
                           icon,

@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../design_system/tokens/design_tokens.dart';
-
 class SecurityHealthCard extends StatelessWidget {
   final int score;
   final String status;
@@ -27,14 +27,8 @@ class SecurityHealthCard extends StatelessWidget {
             DesignTokens.colors.primary, // Blue
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: DesignTokens.colors.primary.withOpacity(0.25),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+        boxShadow: DesignTokens.shadows.md,
       ),
       child: Stack(
         children: [
@@ -90,7 +84,7 @@ class SecurityHealthCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

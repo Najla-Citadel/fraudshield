@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:fraudshield/design_system/tokens/design_tokens.dart';
 
 class AdaptiveButton extends StatelessWidget {
   final String text;
@@ -76,7 +77,7 @@ class AdaptiveButton extends StatelessWidget {
                 backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 ),
                 elevation: 0,
               ),
@@ -88,7 +89,7 @@ class AdaptiveButton extends StatelessWidget {
                 backgroundColor: isDestructive ? colorScheme.error : colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                 ),
                 elevation: 0,
               ),

@@ -69,7 +69,7 @@ class _SmartAlertCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(DesignTokens.radii.md),
       child: Container(
         width: 110, // Fixed width based on screenshot
         height: 70, 
@@ -82,14 +82,8 @@ class _SmartAlertCard extends StatelessWidget {
               const Color(0xFFFFF2CC), // Slightly deeper premium gold
             ],
           ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+          boxShadow: DesignTokens.shadows.sm,
         ),
         child: Stack(
           children: [

@@ -127,9 +127,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: color.withOpacity(0.5), width: 3),
-                boxShadow: [
-                  BoxShadow(color: color.withOpacity(0.2), blurRadius: 15, spreadRadius: 2),
-                ],
+                boxShadow: DesignTokens.shadows.md,
               ),
               child: CircleAvatar(
                 radius: size / 2,
@@ -169,7 +167,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.02),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
         border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
@@ -235,10 +233,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
-          ],
+          borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
+          boxShadow: DesignTokens.shadows.md,
           border: Border.all(color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
         ),
         child: Row(
@@ -247,7 +243,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
               ),
               child: Text(
                 'YOUR RANK: #${_myRank!['rank']}',

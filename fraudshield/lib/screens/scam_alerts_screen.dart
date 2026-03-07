@@ -182,7 +182,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFE4E6).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(DesignTokens.radii.md),
               ),
               child: const Icon(LucideIcons.alertTriangle,
                   color: Color(0xFFE11D48), size: 24),
@@ -254,7 +254,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
           color: isPrimary
               ? const Color(0xFFDC2626)
               : Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
         ),
         child: Text(
           label,
@@ -318,7 +318,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             });
           }
         },
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         child: GlassSurface(
           padding: const EdgeInsets.all(24),
           borderRadius: 24,
@@ -334,7 +334,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF43F5E), // Rose red
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                         ),
                         child: const Icon(LucideIcons.alertTriangle,
                             color: Colors.white, size: 24),
@@ -344,7 +344,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                         Container(
                           width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Color(0xFFF43F5E),
                             shape: BoxShape.circle,
                           ),
@@ -357,7 +357,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF43F5E).withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
                     ),
                     child: const Text(
                       'HIGH RISK',
@@ -393,7 +393,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   border: Border.all(color: Colors.white.withOpacity(0.1)),
                 ),
                 child: Column(
@@ -513,7 +513,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
             });
           }
         },
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
         child: GlassSurface(
           padding: const EdgeInsets.all(20),
           borderRadius: 24,
@@ -526,7 +526,7 @@ class _ScamAlertsScreenState extends State<ScamAlertsScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: bgColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(DesignTokens.radii.md),
                   ),
                   child: Icon(icon, color: iconColor, size: 24),
                 ),

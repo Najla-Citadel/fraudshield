@@ -119,7 +119,7 @@ class _NewsScreenState extends State<NewsScreen> {
         elevation: 0,
         pressElevation: 0,
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
       ),
     );
   }
@@ -232,7 +232,7 @@ class _NewsScreenState extends State<NewsScreen> {
         color: Colors.white.withOpacity(0.05),
         borderRadius: isTop
             ? const BorderRadius.vertical(top: Radius.circular(24))
-            : BorderRadius.circular(24),
+            : BorderRadius.circular(DesignTokens.radii.xl),
       ),
       child: const Icon(LucideIcons.newspaper, color: Colors.white24, size: 48),
     );

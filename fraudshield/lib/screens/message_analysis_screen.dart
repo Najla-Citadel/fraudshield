@@ -192,7 +192,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
       ),
       child: Row(
         children: [
@@ -200,7 +200,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
             child: const Icon(LucideIcons.shieldCheck, color: Colors.white),
           ),
@@ -243,7 +243,7 @@ class _MessageAnalysisScreenState extends State<MessageAnalysisScreen> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
             ),
             child: Icon(icon, color: color, size: 24),
           ),
