@@ -33,3 +33,4 @@ build/
 
 /src/generated/prisma
 fraudshield-271b0-firebase-adminsdk-fbsvc-*.json
+src/config/secrets/*.json

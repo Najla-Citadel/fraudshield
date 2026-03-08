@@ -17,11 +17,16 @@ import android.util.Log
 import kotlinx.coroutines.*
 import java.security.MessageDigest
 import java.util.*
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.android.play.core.integrity.IntegrityManager
+import com.google.android.gms.tasks.Task
 
 class MainActivity: FlutterActivity() {
     private val SETTINGS_CHANNEL = "com.citadel.fraudshield/settings"
     private val CALL_ATTESTATION_CHANNEL = "com.citadel.fraudshield/call_attestation"
     private val SCANNER_CHANNEL = "com.citadel.fraudshield/scanner"
+    private val ATTESTATION_CHANNEL = "com.citadel.fraudshield/attestation"
     
     // Store the last known verification status mapped by phone number
     private val lastVerificationStatus = HashMap<String, Int>()
@@ -148,6 +153,41 @@ class MainActivity: FlutterActivity() {
                 }
                 else -> result.notImplemented()
             }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ATTESTATION_CHANNEL).setMethodCallHandler { call, result ->
+            if (call.method == "getIntegrityToken") {
+                val nonce = call.argument<String>("nonce")
+                val cloudProjectNumber = call.argument<String>("cloudProjectNumber")?.toLong()
+
+                if (nonce == null || cloudProjectNumber == null) {
+                    result.error("INVALID_ARGUMENT", "Nonce and CloudProjectNumber are required", null)
+                    return@setMethodCallHandler
+                }
+
+                requestIntegrityToken(nonce, cloudProjectNumber, result)
+            } else {
+                result.notImplemented()
+            }
+        }
+    }
+
+    private fun requestIntegrityToken(nonce: String, cloudProjectNumber: Long, result: MethodChannel.Result) {
+        val integrityManager = IntegrityManagerFactory.create(applicationContext)
+
+        val integrityTokenRequest = IntegrityTokenRequest.builder()
+            .setNonce(nonce)
+            .setCloudProjectNumber(cloudProjectNumber)
+            .build()
+
+        val integrityTokenResponse: Task<com.google.android.play.core.integrity.IntegrityTokenResponse> = 
+            integrityManager.requestIntegrityToken(integrityTokenRequest)
+
+        integrityTokenResponse.addOnSuccessListener { response ->
+            result.success(response.token())
+        }.addOnFailureListener { exception ->
+            Log.e("FraudShield", "Integrity Error: ${exception.message}")
+            result.error("INTEGRITY_ERROR", exception.message, null)
         }
     }
 
