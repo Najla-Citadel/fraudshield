@@ -30,6 +30,7 @@ model User {
   userTransactions     Transaction[]
   transactionJournals  TransactionJournal[]
   subscriptions        UserSubscription[]
+  securityScans        SecurityScan[]
 }
 
 model AuditLog {
@@ -151,6 +152,39 @@ model BehavioralEvent {
   metadata  Json
   userId    String
   createdAt DateTime @default(now())
+}
+
+model SecurityScan {
+  id               String   @id @default(uuid())
+  userId           String
+  totalAppsScanned Int
+  riskyApps        Json     @default("[]")
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AppReputation {
+  packageName            String   @id
+  safeVotes              Int      @default(0)
+  threatReports          Int      @default(0)
+  globalScoreAdjustment  Int      @default(0)
+  lastUpdated            DateTime @updatedAt
+
+  @@index([packageName])
+}
+
+model AppActionLog {
+  id          String   @id @default(uuid())
+  userId      String
+  packageName String
+  action      String   // "SAFE" | "REPORT"
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, packageName, action])
+  @@index([packageName])
 }
 
 model Alert {

@@ -2,7 +2,9 @@ import { Router } from 'express';
 import {
     SubscriptionController,
     PointsController,
-    BehavioralController
+    BehavioralController,
+    SecurityScanController,
+    AppIntelligenceController
 } from '../controllers/feature.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
@@ -75,6 +77,14 @@ router.get('/badges/all', BadgeController.getAllBadges);
 router.post('/behavioral', featureLimiter, BehavioralController.logEvent);
 router.post('/behavioral/call-signal', featureLimiter, VoiceSignalController.reportCallSignal);
 router.get('/behavioral', BehavioralController.getMyEvents);
+
+// Security Audit Logs
+router.post('/security-scans', featureLimiter, SecurityScanController.saveScan);
+router.get('/security-scans', SecurityScanController.getMyScans);
+
+// Community Intelligence
+router.get('/apps/intelligence', AppIntelligenceController.getIntelligence);
+router.post('/apps/action', featureLimiter, AppIntelligenceController.recordAction);
 
 // Macau Scam Check
 router.post('/check/macau-scam', authenticate, MacauScamController.evaluate);

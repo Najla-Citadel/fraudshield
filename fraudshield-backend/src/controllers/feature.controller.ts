@@ -138,3 +138,127 @@ export class BehavioralController {
         }
     }
 }
+
+export class SecurityScanController {
+    static async saveScan(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { totalAppsScanned, riskyApps } = req.body;
+            const userId = (req.user as any).id;
+
+            const scan = await prisma.securityScan.create({
+                data: {
+                    userId,
+                    totalAppsScanned: parseInt(String(totalAppsScanned)) || 0,
+                    riskyApps: riskyApps || [],
+                },
+            });
+
+            res.status(201).json(scan);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getMyScans(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = (req.user as any).id;
+            const limit = parseInt(req.query.limit as string) || 20;
+
+            const scans = await prisma.securityScan.findMany({
+                where: { userId },
+                orderBy: { createdAt: 'desc' },
+                take: limit,
+            });
+
+            res.json(scans);
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
+export class AppIntelligenceController {
+    static async getIntelligence(req: Request, res: Response, next: NextFunction) {
+        try {
+            const packages = (req.query.packages as string || '').split(',').filter(p => p.length > 0);
+            
+            if (packages.length === 0) {
+                return res.json([]);
+            }
+
+            const intelligence = await prisma.appReputation.findMany({
+                where: {
+                    packageName: { in: packages }
+                }
+            });
+
+            res.json(intelligence);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async recordAction(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { packageName, action } = req.body; // action: "SAFE" | "REPORT"
+            const userId = (req.user as any).id;
+
+            if (!packageName || !['SAFE', 'REPORT'].includes(action)) {
+                return res.status(400).json({ message: 'Invalid package name or action' });
+            }
+
+            // check for dup action
+            const existingAction = await prisma.appActionLog.findUnique({
+                where: {
+                    userId_packageName_action: {
+                        userId,
+                        packageName,
+                        action
+                    }
+                }
+            });
+
+            if (existingAction) {
+                return res.status(409).json({ message: 'Action already recorded by this user' });
+            }
+
+            // Record action and update reputation in a transaction
+            const result = await prisma.$transaction(async (tx) => {
+                await tx.appActionLog.create({
+                    data: { userId, packageName, action }
+                });
+
+                const currentRep = await tx.appReputation.findUnique({
+                    where: { packageName }
+                });
+
+                const safeVotes = (currentRep?.safeVotes || 0) + (action === 'SAFE' ? 1 : 0);
+                const threatReports = (currentRep?.threatReports || 0) + (action === 'REPORT' ? 1 : 0);
+                
+                // Simple score calc: Safe votes help, reports hurt.
+                // Cap adjustment to [-30, 30]
+                let adjustment = Math.floor(safeVotes / 2) - (threatReports * 3);
+                adjustment = Math.max(-30, Math.min(30, adjustment));
+
+                return await tx.appReputation.upsert({
+                    where: { packageName },
+                    create: {
+                        packageName,
+                        safeVotes,
+                        threatReports,
+                        globalScoreAdjustment: adjustment
+                    },
+                    update: {
+                        safeVotes,
+                        threatReports,
+                        globalScoreAdjustment: adjustment
+                    }
+                });
+            });
+
+            res.status(201).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+}
