@@ -11,30 +11,44 @@ import android.telephony.TelephonyManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import android.content.pm.PackageManager
+import android.content.pm.ApplicationInfo
+import android.util.Log
+import kotlinx.coroutines.*
+import java.security.MessageDigest
+import java.util.*
 
 class MainActivity: FlutterActivity() {
     private val SETTINGS_CHANNEL = "com.citadel.fraudshield/settings"
     private val CALL_ATTESTATION_CHANNEL = "com.citadel.fraudshield/call_attestation"
+    private val SCANNER_CHANNEL = "com.citadel.fraudshield/scanner"
     
     // Store the last known verification status mapped by phone number
     private val lastVerificationStatus = HashMap<String, Int>()
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == TelephonyManager.ACTION_PHONE_STATE_CHANGED) {
-                val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
-                if (state == TelephonyManager.EXTRA_STATE_RINGING) {
-                    val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // In Android, verification status is typically only available to CallScreeningServices.
-                        // We use the string literal to allow compilation and intercept if any custom ROMs broadcast it.
-                        val extraVerificationStatus = "android.telecom.extra.VERIFICATION_STATUS"
-                        if (intent.hasExtra(extraVerificationStatus)) {
-                            val status = intent.getIntExtra(extraVerificationStatus, android.telecom.Connection.VERIFICATION_STATUS_NOT_VERIFIED)
-                            if (incomingNumber != null) {
-                                lastVerificationStatus[incomingNumber] = status
+            when (intent.action) {
+                TelephonyManager.ACTION_PHONE_STATE_CHANGED -> {
+                    val state = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
+                    if (state == TelephonyManager.EXTRA_STATE_RINGING) {
+                        val incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            val extraVerificationStatus = "android.telecom.extra.VERIFICATION_STATUS"
+                            if (intent.hasExtra(extraVerificationStatus)) {
+                                val status = intent.getIntExtra(extraVerificationStatus, android.telecom.Connection.VERIFICATION_STATUS_NOT_VERIFIED)
+                                if (incomingNumber != null) {
+                                    lastVerificationStatus[incomingNumber] = status
+                                }
                             }
                         }
+                    }
+                }
+                Intent.ACTION_PACKAGE_ADDED -> {
+                    val packageName = intent.data?.schemeSpecificPart
+                    if (packageName != null) {
+                        Log.d("FraudShield", "New app installed: $packageName. Triggering scan...")
+                        // In a real app, we would push a notification if risky
                     }
                 }
             }
@@ -43,7 +57,10 @@ class MainActivity: FlutterActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val filter = IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED)
+        val filter = IntentFilter()
+        filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED)
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED)
+        filter.addDataScheme("package")
         registerReceiver(receiver, filter)
     }
 
@@ -82,5 +99,205 @@ class MainActivity: FlutterActivity() {
                 result.notImplemented()
             }
         }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SCANNER_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "startFullScan" -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val scanResults = performFullScan()
+                            withContext(Dispatchers.Main) {
+                                result.success(scanResults)
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                result.error("SCAN_ERROR", e.message, null)
+                            }
+                        }
+                    }
+                }
+                "uninstallApp" -> {
+                    val packageName = call.argument<String>("packageName")
+                    if (packageName != null) {
+                        try {
+                            val intent = Intent(Intent.ACTION_DELETE)
+                            intent.data = android.net.Uri.parse("package:$packageName")
+                            startActivity(intent)
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("UNINSTALL_ERROR", e.message, null)
+                        }
+                    } else {
+                        result.error("INVALID_ARGUMENT", "Package name is required", null)
+                    }
+                }
+                "openAppSettings" -> {
+                    val packageName = call.argument<String>("packageName")
+                    if (packageName != null) {
+                        try {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = android.net.Uri.parse("package:$packageName")
+                            startActivity(intent)
+                            result.success(true)
+                        } catch (e: Exception) {
+                            result.error("SETTINGS_ERROR", e.message, null)
+                        }
+                    } else {
+                        result.error("INVALID_ARGUMENT", "Package name is required", null)
+                    }
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    private fun getEnabledAccessibilityServices(): Set<String> {
+        val enabledServices = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+        return enabledServices?.split(':')?.mapNotNull { 
+            val component = android.content.ComponentName.unflattenFromString(it)
+            component?.packageName 
+        }?.toSet() ?: emptySet()
+    }
+
+    private fun getAppSignature(packageName: String): String? {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+                val signingInfo = packageInfo.signingInfo
+                if (signingInfo != null) {
+                    val signatures = if (signingInfo.hasMultipleSigners()) {
+                        signingInfo.apkContentsSigners
+                    } else {
+                        signingInfo.signingCertificateHistory
+                    }
+                    signatures?.firstOrNull()?.let { hashSignature(it.toByteArray()) }
+                } else {
+                    null
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                val signatures = packageInfo.signatures
+                signatures?.firstOrNull()?.let { hashSignature(it.toByteArray()) }
+            }
+        } catch (e: Exception) { 
+            Log.e("FraudShield", "Error getting signature for $packageName: ${e.message}")
+            null 
+        }
+    }
+
+    private fun hashSignature(signature: ByteArray): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(signature)
+        return digest.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun performFullScan(): Map<String, Any> {
+        val results = mutableMapOf<String, Any>()
+        val pm = packageManager
+        val installedApps = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+        val enabledAccessibilityApps = getEnabledAccessibilityServices()
+        
+        val riskyApps = mutableListOf<Map<String, Any>>()
+        val totalApps = installedApps.size
+        
+        for (pkg in installedApps) {
+            val appInfo = pkg.applicationInfo
+            if (appInfo == null) continue
+            
+            val appRisk = analyzeAppRisk(pkg, enabledAccessibilityApps.contains(pkg.packageName))
+            if (appRisk["score"] as Int > 0) {
+                riskyApps.add(appRisk)
+            }
+        }
+        
+        results["totalAppsScanned"] = totalApps
+        results["riskyApps"] = riskyApps
+        results["timestamp"] = System.currentTimeMillis()
+        
+        return results
+    }
+
+    private fun analyzeAppRisk(pkg: android.content.pm.PackageInfo, hasActiveAccessibility: Boolean): Map<String, Any> {
+        val risk = mutableMapOf<String, Any>()
+        val appInfo = pkg.applicationInfo
+        val appName = appInfo?.loadLabel(packageManager)?.toString() ?: "Unknown"
+        val packageName = pkg.packageName
+        var score = 0
+        val reasons = mutableListOf<String>()
+        
+        // 1. System Whitelist (Reduce False Positives)
+        val isSystemApp = (appInfo?.flags?.and(ApplicationInfo.FLAG_SYSTEM)) != 0
+        val isGoogleApp = packageName.startsWith("com.google.android") || packageName.startsWith("com.android.vending")
+        val isAndroidSystem = packageName.startsWith("com.android.") || packageName == "android"
+        
+        // 2. Signature Fingerprinting (Spoofing Detection)
+        val sig = getAppSignature(packageName)
+        val isImpersonatingGoogle = (appName.contains("Google", ignoreCase = true) || appName.contains("Play Store", ignoreCase = true)) && !isGoogleApp
+        
+        if (isImpersonatingGoogle) {
+            score += 100 // Critical
+            reasons.add("Potential Impersonation: App uses 'Google' name but is not from Google")
+        }
+
+        if (isSystemApp && (isGoogleApp || isAndroidSystem)) {
+            risk["name"] = appName
+            risk["packageName"] = packageName
+            risk["score"] = 0
+            risk["reasons"] = reasons
+            return risk
+        }
+
+        // 2. Accessibility Service Audit (Phase 3)
+        if (hasActiveAccessibility) {
+            score += 50
+            reasons.add("Active Accessibility Service (Can monitor screen and simulate clicks)")
+        }
+
+        // 3. Category-Aware Permission Analysis (Phase 3)
+        val permissions = pkg.requestedPermissions
+        if (permissions != null) {
+            val hasSms = permissions.contains(android.Manifest.permission.RECEIVE_SMS)
+            val hasInternet = permissions.contains(android.Manifest.permission.INTERNET)
+            val hasOverlay = permissions.contains(android.Manifest.permission.SYSTEM_ALERT_WINDOW)
+            
+            // Context Check: Is this a tool/utility that shouldn't need SMS?
+            val category = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) appInfo?.category else -1
+            val isSocialOrComm = category == ApplicationInfo.CATEGORY_SOCIAL || category == ApplicationInfo.CATEGORY_MAPS
+            
+            if (hasSms && hasInternet) {
+                if (!isSocialOrComm) {
+                    score += 50 // Much higher for non-comm apps
+                    reasons.add("SMS + Internet in non-communication app (Critical OTP risk)")
+                } else {
+                    score += 15 // Normal-ish for messengers
+                    reasons.add("SMS + Internet combination")
+                }
+            }
+
+            if (hasOverlay) {
+                score += 30
+                reasons.add("Overlay permission enabled (Can capture screen content)")
+            }
+        }
+
+        // 4. Sideload Check
+        val installer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            packageManager.getInstallSourceInfo(packageName).installingPackageName
+        } else {
+            packageManager.getInstallerPackageName(packageName)
+        }
+        
+        if (installer == null || installer.isEmpty()) {
+            score += 15
+            reasons.add("App from unknown source (Sideloaded)")
+        }
+        
+        risk["name"] = appName
+        risk["packageName"] = packageName
+        risk["score"] = score
+        risk["reasons"] = reasons
+        
+        return risk
     }
 }

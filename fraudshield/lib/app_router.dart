@@ -10,15 +10,19 @@ import 'screens/privacy_policy_screen.dart';
 import 'screens/terms_of_service_screen.dart';
 import 'screens/leaderboard_screen.dart';
 import 'screens/alert_center_screen.dart';
-import 'screens/scam_insight_screen.dart';
+import 'screens/scam_scanner_screen.dart';
+import 'screens/security_audit_logs_screen.dart';
 import 'screens/privacy_settings_screen.dart';
 import 'screens/security_alert_screen.dart';
 import 'screens/voice_detection_screen.dart';
 import 'screens/subscription_screen.dart';
 import 'screens/scam_reporting_screen.dart';
+import 'services/scam_scanner_service.dart';
 
 class AppRouter {
   static final navigatorKey = GlobalKey<NavigatorState>();
+  static const String scamIntelligenceDetail = '/scam-intelligence-detail';
+  static const String deviceScan = '/device-scan';
 
   static Route generate(RouteSettings settings) {
     switch (settings.name) {
@@ -42,8 +46,11 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const LeaderboardScreen());
       case '/alert-center':
         return MaterialPageRoute(builder: (_) => const AlertCenterScreen());
-      case '/scam-insight':
-        return MaterialPageRoute(builder: (_) => const ScamInsightScreen());
+      case '/device-scan':
+        final scanResult = settings.arguments as ScamScannerResult?;
+        return MaterialPageRoute(builder: (_) => ScamScannerScreen(initialResult: scanResult));
+      case '/security-logs':
+        return MaterialPageRoute(builder: (_) => const SecurityAuditLogsScreen());
       case '/privacy-settings':
         return MaterialPageRoute(builder: (_) => const PrivacySettingsScreen());
       case '/security-alert':

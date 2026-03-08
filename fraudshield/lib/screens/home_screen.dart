@@ -792,6 +792,25 @@ class _HomeTab extends StatelessWidget {
 
               SizedBox(height: 24),
 
+              // 4.5 FULL DEVICE SCANNER (NEW)
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 70 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: _buildFullScanAction(context),
+              ),
+
+              SizedBox(height: 24),
+
               // 5. SECURITY NEWS & INSIGHTS
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0.0, end: 1.0),
@@ -1034,6 +1053,46 @@ class _HomeTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFullScanAction(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, '/device-scan'),
+      child: GlassSurface(
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
+        borderRadius: 24,
+        borderColor: DesignTokens.colors.primary.withOpacity(0.3),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
+              decoration: BoxDecoration(
+                color: DesignTokens.colors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(LucideIcons.shieldCheck, color: DesignTokens.colors.primary, size: 28),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Full Device Scan',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  Text(
+                    'Audit all apps and permissions for risks',
+                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Icon(LucideIcons.chevronRight, color: Colors.white.withOpacity(0.3), size: 20),
           ],
         ),
       ),

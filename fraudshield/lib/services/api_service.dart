@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'scam_scanner_service.dart';
 
 class ApiService {
   ApiService._privateConstructor();
@@ -607,6 +608,42 @@ class ApiService {
 
   Future<Map<String, dynamic>> claimDailyReward() async {
     return post('/rewards/daily', {});
+  }
+
+  // ---------------- Security Scans ----------------
+  
+  Future<void> saveSecurityScan(ScamScannerResult result) async {
+    await post('/features/security-scans', result.toJson());
+  }
+
+  Future<List<ScamScannerResult>> getSecurityScans() async {
+    final response = await get('/features/security-scans');
+    if (response is List) {
+      return response.map((json) => ScamScannerResult.fromJson(Map<String, dynamic>.from(json))).toList();
+    }
+    if (response is Map && response.containsKey('results')) {
+      final results = response['results'] as List;
+       return results.map((json) => ScamScannerResult.fromJson(Map<String, dynamic>.from(json))).toList();
+    }
+    return [];
+  }
+
+  // ---------------- Community Intelligence ----------------
+
+  Future<List<Map<String, dynamic>>> getAppIntelligence(List<String> packageNames) async {
+    if (packageNames.isEmpty) return [];
+    final response = await get('/features/apps/intelligence?packages=${packageNames.join(',')}');
+    if (response is List) {
+      return response.cast<Map<String, dynamic>>();
+    }
+    return [];
+  }
+
+  Future<void> recordAppAction(String packageName, String action) async {
+    await post('/features/apps/action', {
+      'packageName': packageName,
+      'action': action,
+    });
   }
 
   // ---------------- Safe Browsing ----------------
