@@ -17,6 +17,8 @@ import '../design_system/layouts/screen_scaffold.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../l10n/app_localizations.dart';
 import '../design_system/components/app_divider.dart';
+import '../services/attestation_service.dart';
+import 'dart:io';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -85,6 +87,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (!mounted) return;
+        
+        // 🛡️ Trigger App Attestation in the background
+        // We do this after login because our challenge API requires a JWT
+        try {
+          final attestation = await AttestationService.instance.runAttestationSequence();
+          if (attestation['isValid'] == false) {
+             debugPrint('⚠️ Device Attestation Failed: ${attestation['error'] ?? attestation['verdict']}');
+             // In a strict production environment, we might force logout or restrict features here.
+             // For now, we just log it. The backend will have recorded the failure.
+          }
+        } catch (e) {
+          debugPrint('Attestation Sequence failed: $e');
+        }
+
+        if (!mounted) return;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -140,6 +157,18 @@ class _LoginScreenState extends State<LoginScreen> {
       debugPrint('Google Sign-In: Backend response success: $success');
 
       if (success) {
+        if (!mounted) return;
+
+        // 🛡️ Trigger App Attestation in the background
+        try {
+          final attestation = await AttestationService.instance.runAttestationSequence();
+          if (attestation['isValid'] == false) {
+             debugPrint('⚠️ Device Attestation Failed: ${attestation['error'] ?? attestation['verdict']}');
+          }
+        } catch (e) {
+          debugPrint('Attestation Sequence failed: $e');
+        }
+
         if (!mounted) return;
         Navigator.pushReplacement(
           context,

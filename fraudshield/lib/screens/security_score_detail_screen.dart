@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
-import 'subscription_screen.dart';
+import '../widgets/security_score_gauge.dart';
 
 class SecurityScoreDetailScreen extends StatelessWidget {
   final Map<String, dynamic> healthData;
@@ -50,15 +49,29 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                       // 2. Breakdown Items
                       _buildBreakdownItem(
                         context,
+                        title: 'Device Security Scan',
+                        points: breakdown['scan'] ?? 0,
+                        maxPoints: 20,
+                        icon: LucideIcons.scanLine,
+                        description:
+                            'Comprehensive analysis of installed apps and permissions.',
+                        actionLabel: 'Scan Now',
+                        onAction: () => Navigator.pushNamed(context, '/device-scan'),
+                      ),
+                      _buildBreakdownItem(
+                        context,
                         title: 'Email Verification',
                         points: breakdown['verification'] ?? 0,
-                        maxPoints: 20,
+                        maxPoints: 10,
                         icon: LucideIcons.mail,
                         description:
                             'Verify your email to secure your account recovery.',
                         actionLabel: 'Verify Now',
                         onAction: () {
-                          // Navigate to verification or show info
+                          // TODO: Navigate to verification or show info
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Email verification flow coming soon.')),
+                          );
                         },
                       ),
                       _buildBreakdownItem(
@@ -70,10 +83,7 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                         description:
                             'Unlock advanced SMS and Call screening features.',
                         actionLabel: 'Upgrade Plan',
-                        onAction: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SubscriptionScreen())),
+                        onAction: () => Navigator.pushNamed(context, '/subscription'),
                       ),
                       _buildBreakdownItem(
                         context,
@@ -84,40 +94,29 @@ class SecurityScoreDetailScreen extends StatelessWidget {
                         description:
                             'A complete profile helps verify your identity.',
                         actionLabel: 'Edit Profile',
-                        onAction: () => Navigator.pop(context),
+                        onAction: () => Navigator.pop(context), // Root screen usually has profile
                       ),
                       _buildBreakdownItem(
                         context,
-                        title: 'Community Reputation',
+                        title: 'Community Intelligence',
                         points: breakdown['reputation'] ?? 0,
                         maxPoints: 15,
                         icon: LucideIcons.star,
                         description:
                             'Earn points by contributing accurate scan results.',
-                        actionLabel: 'Learn More',
+                        actionLabel: 'Active',
                         onAction: () {},
                       ),
                       _buildBreakdownItem(
                         context,
-                        title: 'Reporting Activity',
-                        points: breakdown['activity'] ?? 0,
+                        title: 'Security Logs',
+                        points: 10,
                         maxPoints: 10,
-                        icon: LucideIcons.flag,
+                        icon: LucideIcons.fileText,
                         description:
-                            'Active reporting helps protect the community.',
-                        actionLabel: 'Report Now',
-                        onAction: () {},
-                      ),
-                      _buildBreakdownItem(
-                        context,
-                        title: 'Alert Monitoring',
-                        points: breakdown['alerts'] ?? 0,
-                        maxPoints: 10,
-                        icon: LucideIcons.bell,
-                        description:
-                            'Enable real-time push notifications for threats.',
-                        actionLabel: 'Enable Alerts',
-                        onAction: () {},
+                            'Regularly review your security audit history.',
+                        actionLabel: 'View History',
+                        onAction: () => Navigator.pushNamed(context, '/security-logs'),
                       ),
 
                     ],
@@ -133,15 +132,15 @@ class SecurityScoreDetailScreen extends StatelessWidget {
     Color statusColor;
     if (score >= 90) {
       status = 'EXCELLENT';
-      statusColor = DesignTokens.colors.accentGreen;
-    } else if (score >= 70) {
+      statusColor = DesignTokens.colors.success;
+    } else if (score >= 75) {
       status = 'GOOD';
       statusColor = DesignTokens.colors.primary;
     } else if (score >= 50) {
-      status = 'PROTECTED';
+      status = 'ATTENTION';
       statusColor = DesignTokens.colors.warning;
     } else {
-      status = 'AT RISK';
+      status = 'CRITICAL';
       statusColor = DesignTokens.colors.error;
     }
 
@@ -156,61 +155,42 @@ class SecurityScoreDetailScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 140,
-                height: 140,
-                child: AppLoadingIndicator.center(),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    score.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  Text(
-                    'OF 100',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+          SecurityScoreGauge(
+            score: score,
+            color: statusColor,
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 32),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: statusColor, // Badge background is now the status color for better visibility
               borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+              boxShadow: [
+                BoxShadow(
+                  color: statusColor.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Text(
               status,
-              style: TextStyle(
-                color: statusColor,
+              style: const TextStyle(
+                color: Colors.white, // White text for better contrast
                 fontWeight: FontWeight.w900,
                 fontSize: 14,
-                letterSpacing: 1.0,
+                letterSpacing: 1.5,
               ),
             ),
           ),
-          SizedBox(height: 12),
+          SizedBox(height: 16),
           Text(
             'Your security environment is currently $status',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withOpacity(0.8),
               fontSize: 14,
+              letterSpacing: 0.2,
             ),
           ),
         ],
