@@ -8,6 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import 'report_details_screen.dart';
 
 class ReportHistoryScreen extends StatefulWidget {
   const ReportHistoryScreen({super.key});
@@ -171,6 +172,16 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
               child: SlideAnimation(
                 verticalOffset: 50.0,
                 child: FadeInAnimation(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReportDetailsScreen(report: report),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
                   child: _historyCard(
                     title: '${report['type']} - ${report['category']}',
                     description: report['description'] ?? '',
@@ -179,6 +190,7 @@ class _ReportHistoryScreenState extends State<ReportHistoryScreen> {
                     statusColor: _getStatusColor(report['status'] ?? 'PENDING'),
                     isPublic: report['isPublic'] ?? false,
                   ),
+                ),
                 ),
               ),
             );

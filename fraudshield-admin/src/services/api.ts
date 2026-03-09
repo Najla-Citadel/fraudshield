@@ -98,6 +98,7 @@ export const adminService = {
     updateUserRole: (id: string, role: string) => api.patch(`/admin/users/${id}/role`, { role }),
     updateUser: (id: string, data: any) => api.patch(`/admin/users/${id}`, data),
     getReports: (page = 1, limit = 15) => api.get('/admin/reports', { params: { page, limit } }),
+    getReportById: (id: string) => api.get(`/admin/reports/${id}`),
     updateReportStatus: (id: string, status: string) => api.patch(`/admin/reports/${id}/status`, { status }),
     labelTransaction: (data: { txId: string; label: string; alertId?: string }) => api.post('/admin/label-transaction', data),
     getSubscriptionPlans: () => api.get('/admin/subscription-plans'),

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { adminService } from '../services/api';
-import { AlertCircle, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { AlertCircle, CheckCircle2, XCircle, Clock, Eye } from 'lucide-react';
+import ReportDetailModal from '../components/ReportDetailModal';
 
 interface ScamReport {
     id: string;
@@ -21,6 +22,7 @@ const Reports = () => {
     const [reports, setReports] = useState<ScamReport[]>([]);
     const [loading, setLoading] = useState(true);
     const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
+    const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
     const fetchReports = async (page = 1) => {
         setLoading(true);
@@ -46,6 +48,15 @@ const Reports = () => {
         } catch (error) {
             alert('Failed to update status');
         }
+    };
+
+    const truncateId = (id: string) => {
+        if (!id) return id;
+        if (id.length <= 20) return id;
+        const hexLikeRegex = /([a-fA-Z0-9]{15,})/;
+        return id.replace(hexLikeRegex, (matched) => {
+            return `${matched.substring(0, 10)}...${matched.substring(matched.length - 4)}`;
+        });
     };
 
     if (loading) return <div className="text-white">Loading...</div>;
@@ -102,7 +113,7 @@ const Reports = () => {
                                     {report.target && (
                                         <div className="bg-navy-700/50 px-3 py-1.5 rounded-lg border border-navy-600 flex items-center space-x-2">
                                             <span className="text-xs text-slate-400 uppercase">{report.targetType}:</span>
-                                            <span className="text-sm font-mono text-white">{report.target}</span>
+                                            <span className="text-sm font-mono text-white">{truncateId(report.target || '')}</span>
                                         </div>
                                     )}
                                     <div className="bg-navy-700/50 px-3 py-1.5 rounded-lg border border-navy-600 flex items-center space-x-2">
@@ -137,10 +148,25 @@ const Reports = () => {
                                         Reset to Pending
                                     </button>
                                 )}
+                                <button
+                                    onClick={() => setSelectedReportId(report.id)}
+                                    className="w-full bg-navy-900/50 hover:bg-navy-700 text-accent-green font-bold py-2 rounded-lg transition-colors text-sm border border-accent-green/30 flex items-center justify-center space-x-2"
+                                >
+                                    <Eye size={16} />
+                                    <span>Deep Dive</span>
+                                </button>
                             </div>
                         </div>
                     </div>
                 ))}
+
+                {selectedReportId && (
+                    <ReportDetailModal
+                        reportId={selectedReportId}
+                        onClose={() => setSelectedReportId(null)}
+                        onStatusUpdate={handleStatusUpdate}
+                    />
+                )}
 
                 {reports.length === 0 && (
                     <div className="text-center py-20 bg-navy-800 border-2 border-dashed border-navy-700 rounded-xl">

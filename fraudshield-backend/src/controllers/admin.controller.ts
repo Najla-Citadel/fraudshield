@@ -274,6 +274,45 @@ export class AdminController {
         }
     }
 
+    static async getReportById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const report = await prisma.scamReport.findUnique({
+                where: { id: id as string },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            email: true,
+                        }
+                    },
+                    comments: {
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    fullName: true,
+                                    email: true,
+                                }
+                            }
+                        },
+                        orderBy: { createdAt: 'desc' }
+                    },
+                    verifications: true
+                }
+            });
+
+            if (!report) {
+                return res.status(404).json({ message: 'Report not found' });
+            }
+
+            res.json(report);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async updateReportStatus(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -301,10 +340,15 @@ export class AdminController {
             // If transitioned to APPROVED, award points and dispatch alerts
             if (isNowApproved && !wasPreviouslyApproved) {
                 try {
+                    let displayTarget = updatedReport.target || 'General';
+                    if (displayTarget.length > 20) {
+                        displayTarget = `${displayTarget.substring(0, 10)}...${displayTarget.substring(displayTarget.length - 4)}`;
+                    }
+
                     await GamificationService.awardPoints(
                         updatedReport.userId,
                         10,
-                        `Scam report verified: ${updatedReport.target || 'General'}`
+                        `Scam report verified: ${displayTarget}`
                     );
 
                     await AlertEngineService.dispatchLocalAlert(updatedReport);

@@ -462,7 +462,7 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  tx['description'] ?? 'Points Update',
+                  _truncateDescription(tx['description'] ?? 'Points Update'),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -501,5 +501,19 @@ class _PointsDetailsScreenState extends State<PointsDetailsScreen> {
     if (d.contains('alert')) return Icons.sensors;
     if (d.contains('referral')) return Icons.group_outlined;
     return Icons.star;
+  }
+
+  String _truncateDescription(String desc) {
+    if (desc.length <= 30) return desc;
+
+    // Look for patterns like "det:..." or long hex strings
+    final hexRegex = RegExp(r'([a-fA-Z0-9]{10,})');
+    return desc.replaceAllMapped(hexRegex, (match) {
+      final id = match.group(1)!;
+      if (id.length > 15) {
+        return '${id.substring(0, 7)}...${id.substring(id.length - 4)}';
+      }
+      return id;
+    });
   }
 }

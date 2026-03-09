@@ -21,6 +21,7 @@ router.patch('/users/:id', AdminController.updateUser);
 
 // Scam Report Management
 router.get('/reports', AdminController.getReports);
+router.get('/reports/:id', AdminController.getReportById);
 router.patch('/reports/:id/status', AdminController.updateReportStatus);
 router.delete('/reports/:id', AdminController.deleteReport);
 
