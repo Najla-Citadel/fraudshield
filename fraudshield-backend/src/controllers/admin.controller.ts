@@ -285,6 +285,7 @@ export class AdminController {
                             id: true,
                             fullName: true,
                             email: true,
+                            createdAt: true,
                         }
                     },
                     comments: {

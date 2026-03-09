@@ -131,7 +131,7 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, onClose
                                 <p className="text-slate-400 text-sm truncate">{report.user?.email}</p>
                                 <div className="pt-2">
                                     <span className="text-[10px] bg-navy-700 text-slate-300 px-2 py-1 rounded-md uppercase font-bold">
-                                        Joined {new Date(report.user?.createdAt).toLocaleDateString()}
+                                        Joined {report.user?.createdAt ? new Date(report.user.createdAt).toLocaleDateString() : 'N/A'}
                                     </span>
                                 </div>
                             </div>
