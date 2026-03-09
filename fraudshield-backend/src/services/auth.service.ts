@@ -4,6 +4,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../config/database';
 import { getRedisClient } from '../config/redis';
 import { EncryptionUtils } from '../utils/encryption';
+import logger from '../utils/logger';
 
 export class AuthService {
     private static get JWT_SECRET(): string {
@@ -160,8 +161,16 @@ export class AuthService {
 
         const secretKey = process.env.TURNSTILE_SECRET_KEY;
         if (!secretKey) {
-            console.warn('AuthService: TURNSTILE_SECRET_KEY is not set. CAPTCHA verification bypassed.');
-            return true; // Bypass if not configured (useful for dev/local)
+            // 🛡️ SECURITY: Do NOT bypass if key is missing (prevents production bypass)
+            logger.error('AuthService: TURNSTILE_SECRET_KEY is not set. CAPTCHA verification failing for security.');
+            
+            // Allow bypass ONLY in non-production environments IF explicitly requested or for local dev ease.
+            // But for a hardening task, we should be strict.
+            if (process.env.NODE_ENV === 'development') {
+                logger.warn('AuthService: Development bypass for CAPTCHA enabled (KEY MISSING)');
+                return true; 
+            }
+            return false;
         }
 
         try {

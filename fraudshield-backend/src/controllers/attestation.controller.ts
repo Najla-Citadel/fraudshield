@@ -57,8 +57,11 @@ export class AttestationController {
      */
     static async verify(req: Request, res: Response, next: NextFunction) {
         try {
-            const { platform, token, nonce, packageName } = req.body;
+            const { platform, token, nonce, packageName, securitySignals } = req.body;
             console.log(`🛡️ AttestationController: Received verification request. Platform: ${platform}, Package: ${packageName}`);
+            if (securitySignals) {
+                console.log('🛡️ AttestationController: Security Signals:', JSON.stringify(securitySignals, null, 2));
+            }
 
             if (!platform || !token || !nonce) {
                 return res.status(400).json({ error: 'Missing required attestation data' });

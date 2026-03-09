@@ -78,8 +78,18 @@ export const antiReplay = async (req: Request, res: Response, next: NextFunction
         next();
     } catch (err) {
         logger.error('AntiReplay middleware error:', err);
-        // Fail-open for availability if Redis is down, or fail-closed for security.
-        // Given this is a security audit hardening, let's fail-closed or at least log heavily.
-        next();
+        
+        // 🛡️ SECURITY: Fail-closed by default for security hardening.
+        // We only fail-open if explicitly configured to do so.
+        if (process.env.ANTI_REPLAY_FAIL_OPEN === 'true') {
+            logger.warn('AntiReplay: Failing open due to Redis error (ANTI_REPLAY_FAIL_OPEN is true)');
+            return next();
+        }
+
+        return res.status(503).json({
+            error: 'Service Unavailable',
+            message: 'Security validation service is currently unavailable. Please try again later.',
+            code: 'SECURITY_SERVICE_OFFLINE'
+        });
     }
 };

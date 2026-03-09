@@ -145,6 +145,24 @@ export class SecurityScanController {
             const { totalAppsScanned, riskyApps } = req.body;
             const userId = (req.user as any).id;
 
+            // 🛡️ Deduplication: Check for an identical scan within the last 10 seconds
+            // This prevents duplicate entries from UI double-taps or network retries
+            const recentScan = await prisma.securityScan.findFirst({
+                where: {
+                    userId,
+                    totalAppsScanned: parseInt(String(totalAppsScanned)) || 0,
+                    createdAt: {
+                        gte: new Date(Date.now() - 10000) // 10s window
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            });
+
+            if (recentScan) {
+                // Return existing scan to ensure idempotency
+                return res.json(recentScan);
+            }
+
             const scan = await prisma.securityScan.create({
                 data: {
                     userId,

@@ -13,20 +13,29 @@ export const validateEnv = () => {
         'DB_ENCRYPTION_KEY',
     ];
 
-    const optionalEnvVars = [
-        'ADMIN_ALERT_EMAIL',
-        'CRITICAL_ALERT_WEBHOOK_URL'
+    // 🛡️ SECURITY: These are critical for production but we can allow missing in dev with a warning
+    const criticalSecurityVars = [
+        'METRICS_API_KEY',
+        'TURNSTILE_SECRET_KEY',
     ];
 
-    const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+    const missingRequired = requiredEnvVars.filter((varName) => !process.env[varName]);
+    const missingSecurity = criticalSecurityVars.filter((varName) => !process.env[varName]);
 
-    if (missingVars.length > 0) {
-        const errorMsg = `❌ CRITICAL: Missing required environment variables: ${missingVars.join(', ')}`;
+    if (missingRequired.length > 0) {
+        const errorMsg = `❌ CRITICAL: Missing required environment variables: ${missingRequired.join(', ')}`;
         logger.error(errorMsg);
-
-        // In production, we must fail fast and loud.
-        // In development, we still want to throw to alert the developer.
         throw new Error(errorMsg);
+    }
+
+    if (missingSecurity.length > 0) {
+        const warnMsg = `⚠️ WARNING: Missing security environment variables: ${missingSecurity.join(', ')}`;
+        if (process.env.NODE_ENV === 'production') {
+            logger.error(`❌ CRITICAL: ${warnMsg} (Required in production)`);
+            throw new Error(`CRITICAL: ${missingSecurity.join(', ')} must be set in production.`);
+        } else {
+            logger.warn(`${warnMsg} - Security features (Metrics/CAPTCHA) may be disabled or bypassed.`);
+        }
     }
 
     logger.info('✅ Environment variables validated');

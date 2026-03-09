@@ -129,6 +129,15 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Prometheus Metrics Endpoint
 app.get('/metrics', async (req: Request, res: Response) => {
+    // 🛡️ SECURITY: Authenticate metrics endpoint
+    const metricsKey = process.env.METRICS_API_KEY;
+    const providedKey = req.headers['x-metrics-api-key'] || req.query.api_key;
+
+    if (!metricsKey || providedKey !== metricsKey) {
+        logger.warn(`Unauthorized metrics access attempt from IP: ${req.ip}`);
+        return res.status(401).json({ error: 'Unauthorized', message: 'Invalid or missing Metrics API Key' });
+    }
+
     try {
         res.set('Content-Type', MetricsService.registry.contentType);
         res.end(await MetricsService.registry.metrics());
