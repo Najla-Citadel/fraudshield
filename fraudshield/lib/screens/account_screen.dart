@@ -143,12 +143,15 @@ class _AccountScreenState extends State<AccountScreen> {
   // ================= DATA =================
   Future<void> _loadProfile() async {
     final authProvider = context.read<AuthProvider>();
-    final profile = authProvider.userProfile;
-
-    if (profile == null) {
-      // Clear flag to avoid infinite loops if it fails persistently
-      await authProvider.refreshProfile().catchError((_) => null);
+    
+    if (authProvider.userProfile != null) {
+      if (mounted) setState(() => _loading = false);
     }
+
+    await Future.wait([
+      authProvider.refreshProfile().catchError((_) => null),
+      authProvider.refreshSubscription().catchError((_) => null),
+    ]);
 
     if (!mounted) return;
 

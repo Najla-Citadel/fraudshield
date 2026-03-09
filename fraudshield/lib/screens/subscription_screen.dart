@@ -44,7 +44,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   final PageController _pageController = PageController(viewportFraction: 0.88);
 
-  bool get hasActiveSub => _activeSub != null && _activeSub!['status'] == 'ACTIVE';
+  bool get hasActiveSub => _activeSub != null && (_activeSub!['isActive'] == true || _activeSub!['status'] == 'ACTIVE');
 
   String get _expiryText {
     if (_activeSub == null) return '';

@@ -115,11 +115,11 @@ class ApiService {
     });
 
     await _setTokens(data['token'], data['refreshToken']);
-    return data['user'];
+    return data; // Return full body to allow capture of dev_otp
   }
 
-  Future<void> requestVerificationEmail() async {
-    await post('/auth/request-verification', {});
+  Future<Map<String, dynamic>> requestVerificationEmail() async {
+    return await post('/auth/request-verification', {});
   }
 
   Future<void> verifyEmail(String email, String otp) async {

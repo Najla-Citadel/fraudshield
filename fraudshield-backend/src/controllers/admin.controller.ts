@@ -74,17 +74,13 @@ export class AdminController {
                     createdAt: true,
                     emailVerified: true,
                     subscriptions: {
-                        where: {
-                            isActive: true,
-                            endDate: { gt: new Date() }
-                        },
                         include: {
                             plan: true
                         },
                         orderBy: { startDate: 'desc' },
                         take: 1
                     }
-                } as any,
+                },
                 orderBy: { createdAt: 'desc' },
             });
             res.json(users);
@@ -184,32 +180,54 @@ export class AdminController {
             }
 
             // Handle subscription tier change
-            // planId === "" means "set to free" (deactivate all), planId is a valid UUID means "set to paid"
             if ('planId' in req.body) {
-                if (!planId) {
-                    // Downgrade to free: deactivate all active subscriptions, set endDate to past
-                    const yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    await (prisma as any).userSubscription.updateMany({
-                        where: { userId: id },
-                        data: { isActive: false, endDate: yesterday },
-                    });
-                } else {
-                    const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
-                    if (plan) {
-                        const endDate = new Date();
-                        endDate.setDate(endDate.getDate() + plan.durationDays);
+                const adminId = (req.user as any).id;
+                
+                await (prisma as any).$transaction(async (tx: any) => {
+                    if (!planId) {
+                        // Downgrade to free: deactivate all active subscriptions
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        
+                        await tx.userSubscription.updateMany({
+                            where: { userId: id },
+                            data: { isActive: false, endDate: yesterday },
+                        });
 
-                        // Deactivate old subscriptions and create new one
-                        await (prisma as any).userSubscription.updateMany({
-                            where: { userId: id, isActive: true },
-                            data: { isActive: false },
+                        await AuditService.logAction({
+                            adminId,
+                            action: 'REMOVE_USER_SUBSCRIPTION',
+                            targetType: 'User',
+                            targetId: id as string,
+                            payload: { previousPlanId: 'unknown' } // Could fetch previous plan if needed
                         });
-                        await prisma.userSubscription.create({
-                            data: { userId: id, planId, endDate, isActive: true, startDate: new Date() }
-                        });
+                    } else {
+                        const plan = await tx.subscriptionPlan.findUnique({ where: { id: planId } });
+                        if (plan) {
+                            const endDate = new Date();
+                            endDate.setDate(endDate.getDate() + plan.durationDays);
+
+                            // Deactivate old subscriptions
+                            await tx.userSubscription.updateMany({
+                                where: { userId: id, isActive: true },
+                                data: { isActive: false },
+                            });
+
+                            // Create new one
+                            const newSub = await tx.userSubscription.create({
+                                data: { userId: id, planId, endDate, isActive: true, startDate: new Date() }
+                            });
+
+                            await AuditService.logAction({
+                                adminId,
+                                action: 'UPDATE_USER_SUBSCRIPTION',
+                                targetType: 'UserSubscription',
+                                targetId: newSub.id,
+                                payload: { planId, planName: plan.name, endDate }
+                            });
+                        }
                     }
-                }
+                });
             }
 
             const updatedUser = await (prisma as any).user.findUnique({

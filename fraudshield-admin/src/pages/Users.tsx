@@ -11,6 +11,7 @@ interface SubscriptionPlan {
 
 interface UserSubscription {
     id: string;
+    isActive: boolean;
     endDate: string;
     plan: SubscriptionPlan;
 }
@@ -35,7 +36,7 @@ interface User {
 }
 
 const getActiveSub = (user: User) =>
-    user.subscriptions?.find(s => new Date(s.endDate) > new Date()) || null;
+    user.subscriptions?.find(s => s.isActive && new Date(s.endDate) > new Date()) || null;
 
 const Users = () => {
     const [users, setUsers] = useState<User[]>([]);

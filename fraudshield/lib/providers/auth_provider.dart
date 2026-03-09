@@ -12,6 +12,7 @@ class AuthProvider extends ChangeNotifier {
   bool _loading = true;
   UserModel? _user;
   Map<String, dynamic>? _subscription;
+  String? _devOtp; // Temporary storage for development verification
 
   AuthProvider() {
     _init();
@@ -25,6 +26,8 @@ class AuthProvider extends ChangeNotifier {
       _subscription != null &&
       (_subscription!['isActive'] == true ||
           _subscription!['status'] == 'ACTIVE');
+
+  String? get devOtp => _devOtp;
 
   /// Compatibility getter for screens expecting 'userProfile'
   UserModel? get userProfile => _user;
@@ -141,13 +144,14 @@ class AuthProvider extends ChangeNotifier {
     _loading = true;
     notifyListeners();
     try {
-      final userData = await api.signUp(
+      final data = await api.signUp(
         email: email,
         password: password,
         fullName: fullName,
         captchaToken: captchaToken,
       );
-      _user = UserModel.fromJson(userData);
+      _user = UserModel.fromJson(data['user']);
+      _devOtp = data['dev_otp']; // Capture OTP for local development ease
       NotificationService.instance.initialize(_user!.id);
       return true;
     } catch (e) {
@@ -156,6 +160,17 @@ class AuthProvider extends ChangeNotifier {
     } finally {
       _loading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> resendVerificationEmail() async {
+    try {
+      final data = await api.requestVerificationEmail();
+      _devOtp = data['dev_otp'];
+      notifyListeners();
+    } catch (e) {
+      log('AuthProvider resendVerificationEmail error: $e');
+      rethrow;
     }
   }
 

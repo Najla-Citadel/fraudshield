@@ -7,6 +7,8 @@ import '../design_system/layouts/screen_scaffold.dart';
 import '../widgets/adaptive_text_field.dart';
 import '../widgets/glass_surface.dart';
 import '../services/api_service.dart';
+import '../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -61,6 +63,25 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         _isLoading = false;
         _errorMessage = e.toString().replaceAll('Exception: ', '');
       });
+    }
+  }
+
+  Future<void> _handleResendCode() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await context.read<AuthProvider>().resendVerificationEmail();
+      if (!mounted) return;
+      AppSnackBar.showSuccess(context, 'Verification code resent successfully!');
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -150,6 +171,39 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       prefixIcon: LucideIcons.hash,
                       keyboardType: TextInputType.number,
                     ),
+                    const SizedBox(height: 12),
+                    
+                    // 🛡️ Debug Mode OTP Hint
+                    Consumer<AuthProvider>(
+                      builder: (context, auth, _) {
+                        if (auth.devOtp != null && (ApiService.baseUrl.contains('10.0.2.2') || ApiService.baseUrl.contains('localhost'))) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: DesignTokens.colors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: DesignTokens.colors.primary.withValues(alpha: 0.2)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(LucideIcons.terminal, size: 14, color: DesignTokens.colors.primary),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Development OTP: ${auth.devOtp}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: DesignTokens.colors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+
                     const SizedBox(height: 32),
                     AppButton(
                       label: 'Verify Email',
@@ -163,7 +217,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               const SizedBox(height: 24),
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: _isLoading ? null : _handleResendCode,
                   child: Text(
                     'Resend Code',
                     style: TextStyle(
