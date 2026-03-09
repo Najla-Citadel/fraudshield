@@ -12,6 +12,7 @@ import 'screens/leaderboard_screen.dart';
 import 'screens/alert_center_screen.dart';
 import 'screens/scam_scanner_screen.dart';
 import 'screens/security_audit_logs_screen.dart';
+import 'screens/transaction_journal_screen.dart';
 import 'screens/privacy_settings_screen.dart';
 import 'screens/security_alert_screen.dart';
 import 'screens/voice_detection_screen.dart';
@@ -68,6 +69,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SubscriptionScreen());
       case '/report':
         return MaterialPageRoute(builder: (_) => const ScamReportingScreen());
+      case '/transaction-journal':
+        return MaterialPageRoute(builder: (_) => const TransactionJournalScreen());
       case '/fraud-check-result':
         final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(

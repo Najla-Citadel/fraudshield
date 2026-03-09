@@ -119,51 +119,58 @@ class AppButton extends StatelessWidget {
               backgroundColor: backgroundColor,
               foregroundColor: foregroundColor,
               elevation: 0,
-              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(radii.md),
-                side: border ?? BorderSide.none,
-              ),
-            ).copyWith(
-              overlayColor: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.pressed)) {
-                  return foregroundColor.withOpacity(0.1);
-                }
-                return null;
-              }),
+            padding: EdgeInsets.symmetric(
+                horizontal: label.isEmpty ? spacing.md : horizontalPadding),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(radii.md),
+              side: border ?? BorderSide.none,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (isLoading) ...[
-                  AppLoadingIndicator(
-                    size: iconSize * 0.8,
-                    strokeWidth: 2,
-                    color: foregroundColor,
-                  ),
-                  SizedBox(width: spacing.md),
-                ] else if (iconWidget != null) ...[
-                  iconWidget!,
-                  SizedBox(width: spacing.sm),
-                ] else if (icon != null) ...[
-                  Icon(icon, size: iconSize),
-                  SizedBox(width: spacing.sm),
-                ],
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
+          ).copyWith(
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.pressed)) {
+                return foregroundColor.withOpacity(0.1);
+              }
+              return null;
+            }),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isLoading) ...[
+                AppLoadingIndicator(
+                  size: iconSize * 0.8,
+                  strokeWidth: 2,
+                  color: foregroundColor,
+                ),
+                if (label.isNotEmpty) SizedBox(width: spacing.md),
+              ] else if (iconWidget != null) ...[
+                iconWidget!,
+                if (label.isNotEmpty) SizedBox(width: spacing.sm),
+              ] else if (icon != null) ...[
+                Icon(icon, size: iconSize),
+                if (label.isNotEmpty) SizedBox(width: spacing.sm),
+              ],
+              if (label.isNotEmpty)
+                Expanded(
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (!isLoading && suffixIcon != null) ...[
-                  SizedBox(width: spacing.sm),
-                  Icon(suffixIcon, size: iconSize),
-                ],
+              if (!isLoading && suffixIcon != null) ...[
+                if (label.isNotEmpty) SizedBox(width: spacing.sm),
+                Icon(suffixIcon, size: iconSize),
               ],
-            ),
+            ],
+          ),
           ),
         ),
       ),

@@ -266,6 +266,18 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                     variant: AppButtonVariant.primary,
                   ),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    label: AppLocalizations.of(context)!.fraudRecentActivity,
+                    icon: LucideIcons.history,
+                    variant: AppButtonVariant.secondary,
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/transaction-journal');
+                    },
+                  ),
+                ),
                 
                 
                 const SizedBox(height: 32),

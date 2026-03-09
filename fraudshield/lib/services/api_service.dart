@@ -4,6 +4,7 @@ import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'scam_scanner_service.dart';
+import '../models/trending_scam.dart';
 
 class ApiService {
   ApiService._privateConstructor();
@@ -644,6 +645,17 @@ class ApiService {
       'packageName': packageName,
       'action': action,
     });
+  }
+
+  Future<List<TrendingScam>> getTrendingScams() async {
+    final response = await get('/trending/scams');
+    if (response is Map && response.containsKey('data')) {
+      final List<dynamic> data = response['data'];
+      return data
+          .map((json) => TrendingScam.fromJson(Map<String, dynamic>.from(json)))
+          .toList();
+    }
+    return [];
   }
 
   // ---------------- Safe Browsing ----------------

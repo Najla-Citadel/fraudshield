@@ -4,6 +4,10 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/components/app_button.dart';
 import '../models/trending_scam.dart';
+import '../services/api_service.dart';
+import '../widgets/skeleton_card.dart';
+import '../widgets/error_state.dart';
+import 'trending_scam_detail_screen.dart';
 
 class TrendingScamsScreen extends StatefulWidget {
   const TrendingScamsScreen({super.key});
@@ -13,9 +17,42 @@ class TrendingScamsScreen extends StatefulWidget {
 }
 
 class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
-  final List<TrendingScam> _scams = MockScamService.getTrendingScams();
+  List<TrendingScam> _scams = [];
+  bool _isLoading = true;
+  String? _errorMessage;
   int _selectedFilterIndex = 0;
   final List<String> _filters = ['All', 'Recent', 'Near Me', 'Financial'];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchTrendingScams();
+  }
+
+  Future<void> _fetchTrendingScams() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      final scams = await ApiService.instance.getTrendingScams();
+      
+      if (mounted) {
+        setState(() {
+          _scams = scams;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,37 +84,56 @@ class _TrendingScamsScreenState extends State<TrendingScamsScreen> {
                 _buildSearchBar(),
                 _buildFilterChips(),
                 Expanded(
-                  child: AnimationLimiter(
-                    child: ListView.separated(
-                      padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xl, DesignTokens.spacing.lg, 100),
-                      itemCount: _scams.length,
-                      separatorBuilder: (context, index) => SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        return AnimationConfiguration.staggeredList(
-                          position: index,
-                          duration: const Duration(milliseconds: 375),
-                          child: SlideAnimation(
-                            verticalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: _ScamCard(
-                                scam: _scams[index],
-                                onToggleExpand: () {
-                                  setState(() {
-                                    _scams[index].isExpanded = !_scams[index].isExpanded;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  child: _isLoading 
+                    ? _buildLoadingState() 
+                    : _errorMessage != null
+                      ? ErrorState(onRetry: _fetchTrendingScams, message: _errorMessage!)
+                      : _buildScamList(),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return ListView.builder(
+      padding: EdgeInsets.all(DesignTokens.spacing.lg),
+      itemCount: 4,
+      itemBuilder: (context, index) => SkeletonCard(
+        height: 200,
+        margin: EdgeInsets.only(bottom: DesignTokens.spacing.lg),
+      ),
+    );
+  }
+
+  Widget _buildScamList() {
+    return AnimationLimiter(
+      child: ListView.separated(
+        padding: EdgeInsets.fromLTRB(DesignTokens.spacing.lg, DesignTokens.spacing.xl, DesignTokens.spacing.lg, 100),
+        itemCount: _scams.length,
+        separatorBuilder: (context, index) => SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: _ScamCard(
+                  scam: _scams[index],
+                  onToggleExpand: () {
+                    setState(() {
+                      _scams[index].isExpanded = !_scams[index].isExpanded;
+                    });
+                  },
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -214,8 +270,10 @@ class _ScamCard extends StatelessWidget {
             // Top Bar: Badge & Timestamp
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildBadge(scam.badgeText, scam.badgeColor),
+                Expanded(child: Align(alignment: Alignment.centerLeft, child: _buildBadge(scam.badgeText, scam.badgeColor))),
+                SizedBox(width: 8),
                 Text(
                   scam.timestamp,
                   style: const TextStyle(
@@ -223,6 +281,8 @@ class _ScamCard extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -259,7 +319,7 @@ class _ScamCard extends StatelessWidget {
 
             SizedBox(height: 20),
             // Bottom Action Buttons
-            _buildActionButtons(),
+            _buildActionButtons(context),
           ],
         ),
       ),
@@ -430,26 +490,30 @@ class _ScamCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     if (scam.isExpanded) {
       // Expanded Buttons (Report Similar & Share)
       return Row(
         children: [
           Expanded(
-            flex: 4,
             child: AppButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => TrendingScamDetailScreen(scam: scam)),
+                );
+              },
               icon: LucideIcons.flag,
-              label: 'Report Similar',
+              label: 'View Full Intel',
               variant: AppButtonVariant.primary,
             ),
           ),
           SizedBox(width: 12),
-          Expanded(
-            flex: 1,
+          SizedBox(
+            width: 56,
             child: AppButton(
               onPressed: () {},
-              label: '',
+              label: '', // empty label for icon-only button
               icon: LucideIcons.share2,
               variant: AppButtonVariant.secondary,
             ),
@@ -461,17 +525,21 @@ class _ScamCard extends StatelessWidget {
       return Row(
         children: [
           Expanded(
-            flex: 4,
             child: AppButton(
-              onPressed: onToggleExpand,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => TrendingScamDetailScreen(scam: scam)),
+                );
+              },
               label: 'View Details',
               icon: LucideIcons.eye,
               variant: AppButtonVariant.secondary,
             ),
           ),
           SizedBox(width: 12),
-          Expanded(
-            flex: 1,
+          SizedBox(
+            width: 56,
             child: AppButton(
               onPressed: () {},
               label: '',

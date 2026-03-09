@@ -16,15 +16,66 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> {
+  bool _navigationTriggered = false;
+  
   @override
   void initState() {
     super.initState();
-    // Logic moved to build/Consumer for reactive navigation
+    _checkNavigation();
+  }
+
+  Future<void> _checkNavigation() async {
+    if (_navigationTriggered) return;
+    _navigationTriggered = true;
+
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+
+    // Initial Loading State handled in build
+    if (auth.loading) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      _navigationTriggered = false; // reset to allow check when loading finished
+      _checkNavigation();
+      return;
+    }
+
+    // 🛡️ SECURITY CHECK FIRST
+    final isSecure = await SecurityService.instance.checkSecurity();
+    if (!isSecure && !kDebugMode) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/security-alert');
+        return;
+      }
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
+    if (!mounted) return;
+
+    if (!onboardingDone) {
+      Navigator.pushReplacementNamed(context, '/onboarding');
+    } else {
+      // Run version check before home/login
+      if (mounted) {
+        await VersionService.instance.checkVersion(context);
+      }
+
+      if (auth.isAuthenticated) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/splash'); // Or login
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+
+    // If loading just finished and we haven't navigated yet, trigger it
+    if (!auth.loading && !_navigationTriggered) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _checkNavigation());
+    }
 
     // Initial Loading State
     if (auth.loading) {
@@ -33,41 +84,6 @@ class _RootScreenState extends State<RootScreen> {
         body: AppLoadingIndicator.center(),
       );
     }
-
-    // Navigation Check
-    // We use a Future.microtask to avoid calling setState (navigator push) during build
-    Future.microtask(() async {
-      if (!mounted) return;
-
-      // 🛡️ SECURITY CHECK FIRST
-      final isSecure = await SecurityService.instance.checkSecurity();
-      if (!isSecure && !kDebugMode) {
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/security-alert');
-          return;
-        }
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      final bool onboardingDone = prefs.getBool('onboarding_done') ?? false;
-
-      if (!mounted) return;
-
-      if (!onboardingDone) {
-        Navigator.pushReplacementNamed(context, '/onboarding');
-      } else {
-        // Run version check before home/login
-        if (mounted) {
-          await VersionService.instance.checkVersion(context);
-        }
-
-        if (auth.isAuthenticated) {
-          Navigator.pushReplacementNamed(context, '/home');
-        } else {
-          Navigator.pushReplacementNamed(context, '/splash'); // Or login
-        }
-      }
-    });
 
     // While deciding/navigating, show spinner
     return Scaffold(
