@@ -37,6 +37,7 @@ import alertRoutes from './routes/alert.routes';
 import transactionRoutes from './routes/transaction.routes';
 import configRoutes from './routes/config.routes';
 import attestationRoutes from './routes/attestation.routes';
+import trendingRoutes from './routes/trending.routes';
 import { requestTimeout } from './middleware/timeout.middleware';
 import { antiReplay } from './middleware/antiReplay.middleware';
 import { tracer } from './middleware/tracer.middleware';
@@ -171,6 +172,7 @@ app.use(`${apiPrefix}/alerts`, alertRoutes);
 app.use(`${apiPrefix}/transactions`, transactionRoutes);
 app.use(`${apiPrefix}/config`, configRoutes);
 app.use(`${apiPrefix}/attestation`, attestationRoutes);
+app.use(`${apiPrefix}/trending`, trendingRoutes);
 
 // API version endpoint
 app.get(`${apiPrefix}/status`, async (req: Request, res: Response) => {
