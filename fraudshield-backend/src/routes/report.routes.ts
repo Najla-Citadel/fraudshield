@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ReportController } from '../controllers/report.controller';
 import { CommentController } from '../controllers/comment.controller';
+import { ScamNumberController } from '../controllers/scam-number.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { validateReport } from '../middleware/validators';
 import { reportLimiter, featureLimiter } from '../middleware/rateLimiter';
@@ -21,5 +22,9 @@ router.post('/verify', authenticate, featureLimiter, ReportController.verifyRepo
 // Comments
 router.get('/:reportId/comments', CommentController.getComments);
 router.post('/comments', authenticate, reportLimiter, CommentController.addComment);
+
+// Scam number cache sync for offline protection
+router.get('/scam-numbers/sync', authenticate, featureLimiter, ScamNumberController.syncScamNumbers);
+router.get('/scam-numbers/stats', authenticate, ScamNumberController.getCacheStats);
 
 export default router;

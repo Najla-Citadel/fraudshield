@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'providers/theme_provider.dart';
 import 'providers/auth_provider.dart';
 import 'services/notification_service.dart';
 import 'services/security_service.dart';
+import 'services/scam_sync_service.dart';
 import 'app_router.dart';
 import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
@@ -25,6 +27,29 @@ import 'widgets/caller_risk_overlay.dart';
 import 'widgets/post_call_safety_check.dart';
 import 'widgets/cooldown_banner.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
+/// Workmanager callback for background tasks
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    debugPrint('🔄 Workmanager: Executing task: $task');
+
+    try {
+      if (task == "scamNumberSync") {
+        // Perform scam number sync from backend
+        final success = await ScamSyncService.performSync();
+        debugPrint(success
+            ? '✅ Workmanager: Scam sync completed'
+            : '⚠️ Workmanager: Scam sync failed');
+        return Future.value(success);
+      }
+      return Future.value(true);
+    } catch (e) {
+      debugPrint('❌ Workmanager: Task failed - $e');
+      return Future.value(false);
+    }
+  });
+}
 
 @pragma('vm:entry-point')
 void overlayMain() {
@@ -78,6 +103,23 @@ void main() async {
 
   // 🛡️ Initialize Security Checks
   await SecurityService.instance.init();
+
+  // 📊 Initialize Workmanager for background sync
+  await Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: kDebugMode,
+  );
+
+  // Schedule periodic scam number sync (every 12 hours)
+  await Workmanager().registerPeriodicTask(
+    "scam-number-sync",
+    "scamNumberSync",
+    frequency: const Duration(hours: 12),
+    constraints: Constraints(
+      networkType: NetworkType.connected,
+      requiresBatteryNotLow: true,
+    ),
+  );
 
   // 🔔 Initialize Phase 2 Services
   await _initBackgroundService();

@@ -1,4 +1,5 @@
 import { prisma } from '../config/database';
+import { getRedisClient } from '../config/redis';
 import { SemakMuleService } from './semak-mule.service';
 
 export interface RiskFactor {
@@ -33,10 +34,50 @@ export class RiskEvaluationService {
 
     /**
      * Primary entry point. Evaluates risk for any target and type.
+     * Checks Redis cache first, then falls back to full evaluation.
      * type: 'phone' | 'bank' | 'url' | 'doc'
      */
     static async evaluate(type: string, value: string): Promise<RiskEvaluationResult> {
         const cleanValue = value.trim().toLowerCase();
+        const cacheKey = `risk:${type}:${cleanValue}`;
+
+        // 1. Check Redis cache first
+        try {
+            const redis = getRedisClient();
+            await redis.connect().catch(() => {}); // Ensure connection
+
+            const cached = await redis.get(cacheKey);
+            if (cached) {
+                const result = JSON.parse(cached);
+                return result;
+            }
+        } catch (error) {
+            console.error('Redis cache read error:', error);
+            // Continue with evaluation if Redis fails
+        }
+
+        // 2. Perform full evaluation
+        const result = await this.evaluateInternal(type, cleanValue);
+
+        // 3. Cache result (24 hour TTL, only if score > 0 to avoid caching unknowns)
+        if (result.score > 0) {
+            try {
+                const redis = getRedisClient();
+                await redis.setex(cacheKey, 86400, JSON.stringify(result));
+            } catch (error) {
+                console.error('Redis cache write error:', error);
+                // Don't fail the request if caching fails
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Internal evaluation logic (no caching)
+     */
+    private static async evaluateInternal(type: string, value: string): Promise<RiskEvaluationResult> {
+        const cleanValue = value;
 
         // 1. Query community intelligence from DB
         const communityData = await this.getCommunityIntelligence(type, cleanValue);
@@ -101,6 +142,23 @@ export class RiskEvaluationService {
             },
             checkedAt: new Date().toISOString(),
         };
+    }
+
+    /**
+     * Invalidate Redis cache for a specific target
+     * Called when new reports are submitted or verified
+     */
+    static async invalidateCache(type: string, value: string): Promise<void> {
+        const cleanValue = value.trim().toLowerCase();
+        const cacheKey = `risk:${type}:${cleanValue}`;
+
+        try {
+            const redis = getRedisClient();
+            await redis.connect().catch(() => {});
+            await redis.del(cacheKey);
+        } catch (error) {
+            console.error('Redis cache invalidation error:', error);
+        }
     }
 
     // ── DB Query ──────────────────────────────────────────────────────────

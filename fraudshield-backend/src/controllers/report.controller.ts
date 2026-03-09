@@ -4,6 +4,7 @@ import { BadgeService } from '../services/badge.service';
 import { SemakMuleService } from '../services/semak-mule.service';
 import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
+import { RiskEvaluationService } from '../services/risk-evaluation.service';
 import { EncryptionUtils } from '../utils/encryption';
 
 /**
@@ -74,6 +75,11 @@ export class ReportController {
                     evidence: evidence || {},
                     status: 'PENDING',
                 },
+            });
+
+            // Invalidate Redis cache for this target
+            await RiskEvaluationService.invalidateCache(type, target).catch(err => {
+                console.error('Failed to invalidate cache:', err);
             });
 
             res.status(201).json({
@@ -166,8 +172,12 @@ export class ReportController {
                 user: undefined, // Don't expose sensitive user info
                 userId: isOwner ? report.userId : undefined,
                 _count: {
-                    verifications: report.verifications.length
-                }
+                    verifications: report.verifications.length,
+                    upvotes: report.verifications.filter((v: any) => v.isSame).length,
+                    downvotes: report.verifications.filter((v: any) => !v.isSame).length,
+                },
+                myVote: report.verifications.find((v: any) => v.userId === userId)?.isSame === true ? 'up' : 
+                         report.verifications.find((v: any) => v.userId === userId)?.isSame === false ? 'down' : null,
             };
 
             res.json(response);
@@ -234,6 +244,7 @@ export class ReportController {
                 (prisma as any).scamReport.findMany({
                     where: whereClause,
                     include: {
+                        verifications: true,
                         _count: {
                             select: { verifications: true },
                         },
@@ -270,6 +281,11 @@ export class ReportController {
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
+                    },
+                    _count: {
+                        verifications: report.verifications.length,
+                        upvotes: report.verifications.filter((v: any) => v.isSame).length,
+                        downvotes: report.verifications.filter((v: any) => !v.isSame).length,
                     },
                     user: undefined, // Don't expose user info
                     userId: undefined,
@@ -462,9 +478,9 @@ export class ReportController {
                 return res.status(403).json({ message: 'You cannot verify your own reports' });
             }
 
-            // Security Check: Report must be VERIFIED/Public by admin first
-            if (report.status !== 'VERIFIED' || !report.isPublic) {
-                return res.status(403).json({ message: 'Only admin-verified public reports can be community-verified' });
+            // Security Check: Report must be publicly accessible
+            if (!report.isPublic) {
+                return res.status(403).json({ message: 'Only public reports can be community-verified' });
             }
 
             // Security Check: Minimum reputation to verify others
@@ -507,6 +523,18 @@ export class ReportController {
 
                 // Evaluate badges for the reporter
                 await BadgeService.evaluateBadges(report.userId);
+            } else {
+                // Potential penalty logic if many people dispute this report
+                const downvoteCount = await (prisma as any).verification.count({
+                    where: { reportId, isSame: false }
+                });
+                
+                if (downvoteCount >= 5) {
+                    await (prisma as any).profile.update({
+                        where: { userId: report.userId },
+                        data: { reputation: { decrement: 2 } }
+                    });
+                }
             }
 
             res.json(verification);

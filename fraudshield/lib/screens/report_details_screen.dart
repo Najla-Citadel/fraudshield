@@ -20,11 +20,31 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   List<dynamic> _comments = [];
   bool _isLoadingComments = true;
   bool _isSubmitting = false;
+  Map<String, dynamic>? _fullReport;
+  String? _myVote; // 'up', 'down', or null
+  bool _isLoadingReport = true;
 
   @override
   void initState() {
     super.initState();
+    _fetchReportDetails();
     _fetchComments();
+  }
+
+  Future<void> _fetchReportDetails() async {
+    try {
+      final report = await ApiService.instance.getReportDetails(widget.report['id']);
+      if (mounted) {
+        setState(() {
+          _fullReport = report;
+          _myVote = report['myVote'];
+          _isLoadingReport = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching report details: $e');
+      if (mounted) setState(() => _isLoadingReport = false);
+    }
   }
 
   Future<void> _fetchComments() async {
@@ -59,6 +79,24 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       AppSnackBar.showError(context, 'Failed to post comment: $e');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  Future<void> _handleVote(bool isUpvote) async {
+    final reportId = widget.report['id'];
+    final newVote = isUpvote ? 'up' : 'down';
+    
+    // Optimistic UI update
+    final oldVote = _myVote;
+    setState(() => _myVote = newVote);
+
+    try {
+      await ApiService.instance.verifyReport(reportId: reportId, isSame: isUpvote);
+      AppSnackBar.showSuccess(context, isUpvote ? 'Report confirmed as scam' : 'Report disputed');
+      _fetchReportDetails(); // Refresh counts
+    } catch (e) {
+      setState(() => _myVote = oldVote); // Rollback
+      AppSnackBar.showError(context, 'Voting failed: $e');
     }
   }
 
@@ -106,7 +144,9 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       border: Border.all(
                           color: DesignTokens.colors.accentGreen.withOpacity(0.3)),
                     ),
-                    child: Row(
+                    child: _isLoadingReport 
+                      ? SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))
+                      : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.verified_user_rounded,
@@ -124,6 +164,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                       ],
                     ),
                   ),
+                _buildVoteButtons(),
               ],
             ),
             SizedBox(height: 12),
@@ -733,5 +774,83 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     } catch (_) {
       return '2 hours ago';
     }
+  }
+
+  Widget _buildVoteButtons() {
+    final counts = _fullReport?['_count'] ?? widget.report['_count'] ?? {};
+    final upvotes = counts['upvotes'] ?? 0;
+    final downvotes = counts['downvotes'] ?? 0;
+
+    return Container(
+      margin: EdgeInsets.only(left: DesignTokens.spacing.md),
+      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _voteIcon(
+            icon: _myVote == 'up' ? Icons.thumb_up_rounded : Icons.thumb_up_outlined,
+            isSelected: _myVote == 'up',
+            count: upvotes,
+            onTap: () => _handleVote(true),
+            activeColor: DesignTokens.colors.accentGreen,
+          ),
+          Container(
+            width: 1,
+            height: 12,
+            color: Colors.white.withValues(alpha: 0.1),
+            margin: EdgeInsets.symmetric(horizontal: 4),
+          ),
+          _voteIcon(
+            icon: _myVote == 'down' ? Icons.thumb_down_rounded : Icons.thumb_down_outlined,
+            isSelected: _myVote == 'down',
+            count: downvotes,
+            onTap: () => _handleVote(false),
+            activeColor: Color(0xFFF87171), // Red
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _voteIcon({
+    required IconData icon,
+    required bool isSelected,
+    required int count,
+    required VoidCallback onTap,
+    required Color activeColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(100),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? activeColor : DesignTokens.colors.textLight.withValues(alpha: 0.4),
+            ),
+            if (count > 0) ...[
+              SizedBox(width: 2),
+              Text(
+                count.toString(),
+                style: TextStyle(
+                  color: isSelected ? activeColor : DesignTokens.colors.textLight.withValues(alpha: 0.4),
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

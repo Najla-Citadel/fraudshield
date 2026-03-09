@@ -114,6 +114,18 @@ model ScamReport {
   @@index([targetType])
 }
 
+model ScamNumberCache {
+  phoneNumber   String   @id
+  riskScore     Int
+  reportCount   Int
+  verifiedCount Int
+  categories    Json     @default("[]")
+  lastReported  DateTime
+  updatedAt     DateTime @updatedAt
+
+  @@index([lastReported])
+}
+
 model Comment {
   id        String     @id @default(uuid())
   text      String

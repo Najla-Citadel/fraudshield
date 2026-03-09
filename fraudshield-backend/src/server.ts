@@ -4,6 +4,7 @@ import app from './app';
 import { initializeFirebase } from './config/firebase.config';
 import { AlertEngineService } from './services/alert-engine.service';
 import { AlertWorkerService } from './services/alert-worker.service';
+import { ScamNumberCacheService } from './services/scam-number-cache.service';
 import logger from './utils/logger';
 
 const PORT = process.env.PORT || 3000;
@@ -49,6 +50,9 @@ const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
     AlertWorkerService.initialize().catch(err => {
         logger.error('❌ Failed to initialize Alert Worker:', err);
     });
+    ScamNumberCacheService.initialize().catch(err => {
+        logger.error('❌ Failed to initialize Scam Number Cache Service:', err);
+    });
 });
 
 // Graceful shutdown
@@ -56,6 +60,7 @@ process.on('SIGTERM', () => {
     logger.warn('SIGTERM received: shutting down');
     server.close(async () => {
         await AlertWorkerService.shutdown();
+        await ScamNumberCacheService.shutdown();
         logger.info('HTTP server closed');
     });
 });
@@ -64,6 +69,7 @@ process.on('SIGINT', () => {
     logger.warn('SIGINT received: shutting down');
     server.close(async () => {
         await AlertWorkerService.shutdown();
+        await ScamNumberCacheService.shutdown();
         logger.info('HTTP server closed');
         process.exit(0);
     });

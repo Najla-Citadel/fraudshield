@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'notification_service.dart';
 import 'api_service.dart';
 import 'risk_evaluator.dart';
+import 'scam_number_db.dart';
+import 'dart:convert';
 
 class CallStateService {
   static final CallStateService instance = CallStateService._internal();
@@ -311,7 +313,52 @@ class CallStateService {
       return;
     }
 
-    // Step 2: Live risk lookup & Neighbor Spoofing Check
+    // Step 2: Check offline database first (instant response)
+    try {
+      final offlineRisk = await ScamNumberDb.getRisk(number);
+      if (offlineRisk != null) {
+        debugPrint(
+            'CallStateService: 📱 Offline DB HIT - Score: ${offlineRisk['risk_score']}');
+
+        final riskScore = offlineRisk['risk_score'] as int;
+        final level = _getRiskLevel(riskScore);
+        final categories = offlineRisk['categories'] as List<dynamic>;
+
+        final offlineData = {
+          'phoneNumber': number,
+          'loading': false,
+          'score': riskScore,
+          'level': level,
+          'communityReports': offlineRisk['report_count'],
+          'categories': categories,
+          'source': 'offline',
+        };
+
+        // Show offline result immediately
+        NotificationService.instance.updateCallerRiskData(offlineData);
+        await FlutterOverlayWindow.shareData(offlineData);
+
+        // Update push notification
+        NotificationService.instance.showCallAlert(
+          number: displayNumber,
+          score: riskScore,
+          level: level,
+          categories: categories.cast<String>(),
+        );
+
+        _lastScore = riskScore;
+        _lastLevel = level;
+
+        // Still call backend in background for fresh data + STIR/SHAKEN
+        _updateRiskInBackground(number, displayNumber);
+        return;
+      }
+    } catch (e) {
+      debugPrint('CallStateService: Offline DB lookup failed: $e');
+      // Continue with online lookup
+    }
+
+    // Step 3: Live risk lookup & Neighbor Spoofing Check
     try {
       final neighborResult = RiskEvaluator.evaluateNeighborSpoofing(
         incomingNumber: displayNumber,
@@ -424,6 +471,92 @@ class CallStateService {
       debugPrint('CallStateService: Reported $type to backend');
     } catch (e) {
       debugPrint('CallStateService: Failed to report $type: $e');
+    }
+  }
+
+  /// Convert risk score to level string
+  String _getRiskLevel(int score) {
+    if (score >= 80) return 'critical';
+    if (score >= 55) return 'high';
+    if (score >= 30) return 'medium';
+    return 'low';
+  }
+
+  /// Update risk data in background (after showing offline result)
+  /// This ensures fresh data with STIR/SHAKEN verification
+  Future<void> _updateRiskInBackground(String number, String displayNumber) async {
+    try {
+      debugPrint('CallStateService: 🔄 Updating risk in background...');
+
+      final neighborResult = RiskEvaluator.evaluateNeighborSpoofing(
+        incomingNumber: displayNumber,
+        userPhoneNumber: _userPhoneNumber,
+      );
+
+      final result = await RiskEvaluator.evaluatePayment(
+        type: 'phone',
+        value: number,
+      );
+
+      int finalScore = result.score;
+      String finalLevel = result.level;
+      List<String> finalReasons = List.from(result.categories);
+
+      // Check STIR/SHAKEN Attestation Status
+      try {
+        final int attestationStatus =
+            await _attestationChannel.invokeMethod('getVerificationStatus', {
+          'phoneNumber': displayNumber,
+        });
+
+        if (attestationStatus == 1) {
+          finalScore = (finalScore - 20).clamp(0, 100);
+          finalReasons.insert(
+              0, '✅ Caller Identity Verified by Carrier (STIR/SHAKEN)');
+        } else if (attestationStatus == 2) {
+          finalScore = (finalScore + 30).clamp(0, 100);
+          finalReasons.insert(0,
+              '❌ Caller Identity Failed Carrier Verification (Spoofing Risk)');
+        }
+      } catch (e) {
+        debugPrint('CallStateService: Failed to get STIR/SHAKEN status: $e');
+      }
+
+      // Merge Neighbor Spoofing Risk if it's higher
+      if (neighborResult.score > 0) {
+        if (neighborResult.score > finalScore) {
+          finalScore = neighborResult.score;
+        }
+        finalReasons.insertAll(0, neighborResult.reasons);
+      }
+
+      // Recalculate level
+      finalLevel = _getRiskLevel(finalScore);
+
+      // Only update if score changed significantly (>10 points)
+      if ((_lastScore == null || (finalScore - _lastScore!).abs() > 10)) {
+        debugPrint('CallStateService: ⚡ Significant change detected, updating overlay');
+
+        final riskData = {
+          'phoneNumber': number,
+          'loading': false,
+          'score': finalScore,
+          'level': finalLevel,
+          'communityReports': result.communityReports,
+          'categories': finalReasons,
+          'source': 'online',
+        };
+
+        _lastScore = finalScore;
+        _lastLevel = finalLevel;
+
+        NotificationService.instance.updateCallerRiskData(riskData);
+        await FlutterOverlayWindow.shareData(riskData);
+      } else {
+        debugPrint('CallStateService: No significant change, keeping offline result');
+      }
+    } catch (e) {
+      debugPrint('CallStateService: Background update failed: $e');
     }
   }
 }
