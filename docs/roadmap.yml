@@ -1,0 +1,32 @@
+roadmap:
+  phase_1:
+    name: Critical Security & Stability
+    tasks:
+      - setup_github_actions_ci_cd
+      - implement_bahasa_malaysia_localization
+      - expand_backend_unit_testing_coverage
+      - integrate_payment_gateway_securely
+  phase_2:
+    name: Core Fraud Detection Completeness
+    tasks:
+      - complete_real_time_call_protection_foreground_service
+      - enhance_apk_manifest_permission_analysis
+      - finalize_security_health_score_logic
+  phase_3:
+    name: Product Experience & Engagement
+    tasks:
+      - implement_offline_scam_database_cache
+      - build_streak_rewards_system
+      - enable_whatsapp_deep_link_sharing
+  phase_4:
+    name: Intelligence & AI Enhancements
+    tasks:
+      - integrate_ocr_detection_for_images
+      - finalize_voice_scam_detection_whisper_integration
+      - improve_nlp_url_obfuscation_heuristics
+  phase_5:
+    name: Scaling & Growth
+    tasks:
+      - implement_kubernetes_or_auto_scaling_infrastructure
+      - establish_telco_bank_api_partnerships
+      - launch_android_home_screen_widget

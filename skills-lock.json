@@ -1,0 +1,3295 @@
+{
+  "version": 1,
+  "skills": {
+    "3d-web-experience": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ba4a54a164735ea7cd1b3561853e1bd83c143713d7202bbd7e67cc8a24e37ff8"
+    },
+    "API Fuzzing for Bug Bounty": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e638eb1e0952ccec8a551aa1891ab977af457fb019e7bdd8386c0a2a88c969ed"
+    },
+    "API Integration Specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "79be72a11a9a834165f0e123a1e6234cb737928c00bbe6612820c74db0c4dd94"
+    },
+    "AWS Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9335b273669a6496a95bdb6804055d9f957dc530296cc866e401435025ce3d5b"
+    },
+    "Accessibility Auditor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2baea5fb7c1becea5a7f4b075220ee8a1dcf3cc101859a92430661a3dd5f3351"
+    },
+    "Active Directory Attacks": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ed97fc77c712c0dde10c4703fd6e1450fc1a78f3225ab503ddb79d86d4c23b78"
+    },
+    "Agent Development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "896fdceba46339d0a249ed315173361ec93de5c1d11c4dbce749d3bc7fb0734d"
+    },
+    "Broken Authentication Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6cec60023e65c266d124f59f7b073e76f3d9a286a5bc26f6289e1bb0414d31dd"
+    },
+    "Burp Suite Web Application Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "24f92edbc7901b3afd776075da8d1904c411199bc1b858498cdc0a1cadd578d8"
+    },
+    "Claude Code Guide": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ae35e8416f3c1e20c03e0db59413e0e4cbdf9188c7b2dfbc4ab844a4e53dcc90"
+    },
+    "Cloud Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0f0c6c1e3ab8251e6a8433d55c938c7ba8a1bc3916a7af4f4c0754e4ff791bf0"
+    },
+    "Command Development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4be13adfb1f71ef399daec12f5748f81e1ee53c594c301f9db6b1a038735cf94"
+    },
+    "Cross-Site Scripting and HTML Injection Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "09b4fb5f570ca4b4846374e3b9bc3e5951470b5801e4d4859548a9dcc731d9f5"
+    },
+    "Data Privacy Compliance": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "146751418c73c0a06026fb7c5e9db7229c7c40f4f523631af66f53e5427ccd4c"
+    },
+    "Email Composer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c1c8668c954c5f02b20cb1578a1328f322bb9949c567113c4048d385cf77714a"
+    },
+    "Error Resolver": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "496846a3624b63b61a69c7aedb7fa6cff089bf356561978b0a037b0290972359"
+    },
+    "Ethical Hacking Methodology": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "bb2160e56fca641a3e588e2b0d01ad633992ae9f534dd0267285236e8667a91d"
+    },
+    "Excel Analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "931298820626001e63ac80e2c0244152677e09761c16b866874350c8a33925e3"
+    },
+    "File Path Traversal Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3c965f496eab4cc2e2a0e236dc9d7acdc9db86c9bb1f89bda97a7793df1f3bc1"
+    },
+    "Git Commit Helper": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cb2e24c286a00d8cdfe592a59691bd49dc55b0df6b624c55de1f8ffd922621a7"
+    },
+    "HTML Injection Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8d08955ecd69a5de60a7ae1a34cb6649408287991705f2e5ce66fc926cf21d84"
+    },
+    "Hook Development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4014495475aa72b0daa44a0cc67d7fa8de12b608e8927643d38fee0425b6d51f"
+    },
+    "IDOR Vulnerability Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6a0f399341501b53e56e2954f791592b0bb8a0363fa78e2c61484ce2622d5414"
+    },
+    "Linux Privilege Escalation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "62665fdbab16dd8c54d882a5d4a9e30b18397de119cc6347e167409408c05325"
+    },
+    "Linux Production Shell Scripts": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c550a691f99fd184e5354bb225f80ca0359a7358e9a249d28897fd636cff72ce"
+    },
+    "MCP Integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "86ffeac975a45eb4f74ce43ef0f6fba9556283f7968c93790e8fd57c1f9146b0"
+    },
+    "Manifest": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "41b8c0aed7313cb0eb0e2b053f4afb0280c763f1c9f70412cb83f5675783c7cf"
+    },
+    "Metasploit Framework": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "52aee14b8f7c1a5f8b1f5b8562381a8c4e0ea1ca5663599560ece1ce6bbe34e1"
+    },
+    "Network 101": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "886417319404b261ea7bcf6ae3293c7cc37a8c3e46a70266c67d954cbef01f39"
+    },
+    "PDF Processing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "93941ec8f11617fed629e450ae1e4ec857127b3deba2a9b47beff717b9e49113"
+    },
+    "PDF Processing Pro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d555142c25b12f244d54f401227a259af0ffd9ffb1d8b434e89ce36571dc7814"
+    },
+    "Pentest Checklist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3510ea2b5349fe5b9208a812ae20a59949891b67b8544db5455aa32a03c85b24"
+    },
+    "Pentest Commands": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "330bf569d7de50ec1bb9c92fde428d6c125b56b9334c52ad08cf3ac1569bc4da"
+    },
+    "Plugin Settings": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ad1a0629457914d1ccc67762c80a03c073a02a2eb21c7dbb8bebe4b39521b29e"
+    },
+    "Plugin Structure": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "393385634ba1df342a6d6ec3de81c0549aa8cd4b5032a7c54ec7a60fece568be"
+    },
+    "Privilege Escalation Methods": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5e479d22e6b14918514a4b67b6204a8bab0859d90e5ff508a6ce5b88c6165edf"
+    },
+    "Red Team Tools and Methodology": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "897c7c56f0e0c6088757e53320b10794e345bfdfe0bf2b0580405d32ec4bf902"
+    },
+    "SEO Optimizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1ad7ac7488d2050dfd7d64c592a64f86f8ec9a1a871b571544b1a997031c3f38"
+    },
+    "SMTP Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b9b9de4ea7945a28647e5157aae9df2399f789e9e4982dbd255bbff250b029e5"
+    },
+    "SQL Injection Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "01edbeab083d31cfc24537a13569f0edb2db879dc78cd43258c0b6ad046feed1"
+    },
+    "SQLMap Database Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3af4a1529b19f4c607440cb9cee57efab038cfdae5f0fe1a236017f8d0605b7f"
+    },
+    "SSH Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b48abadbbc57dae912f1fd3185c94ce979de2b1afc2eee71f62a2773c0857b40"
+    },
+    "Security Scanning Tools": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ac803f9df02467233052286970156e4ab58699e02038dee65a538759842bbab2"
+    },
+    "Shodan Reconnaissance and Pentesting": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "05c8bc35508a2d0db94c40027864cda1bbae4cc548b6a5b745e78fdf461bf284"
+    },
+    "Skill Development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1d2f67ff5aa242d9b9ebbbb2687a3b8867c4d9b0730297aaea2988bc20171f9b"
+    },
+    "Telegram Bot Builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e9a2a0cae316b54cc992a4c23494ab7f72dd9db0d85611d26c52c9e119c4dfd8"
+    },
+    "Top 100 Web Vulnerabilities Reference": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0f286eded7b5feea2f3d77b59ef323243b596e61fd0e8849313cd480296d684d"
+    },
+    "Windows Privilege Escalation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "94c66c428407933e6cb3a22c0818cae8e6db1af23eb893553807e235f3b35d88"
+    },
+    "Wireshark Network Traffic Analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "25a43c035c75bcef12784fd071178b5370af70024d25a3fcdf45f97ac3fdda69"
+    },
+    "WordPress Penetration Testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d896ca63bd50412a47e4fce266257701c15cebd383e83d8270ef0da46b71e5a0"
+    },
+    "Writing Hookify Rules": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "69f85418c15b930302ba7b63d5eda00e43435c703f76d82a62ac1e5d06f5a746"
+    },
+    "ab-test-setup": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8fbad989894fe34f62f3d4df30d105ca3086b8dab4ae4438f63832fb3aaceaa2"
+    },
+    "accessibility": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3f390c14d09ca45da332b6c421b3195d12da099ec24ee549f80e666ec48dc89b"
+    },
+    "adaptyv": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2bdb0cb8ad0a34d35d88913a5fb4cd472f03d761af9a7320c5d46edf5d5d827e"
+    },
+    "address-github-comments": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "74c0efd4670ee064273afc0a5ab2e75601be16b0acde9889bd6081c087362f8f"
+    },
+    "aeon": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "31e62e7a854fe25261a37a8d012358c492065f52fbbefda752700d07d52b3ea3"
+    },
+    "agent-evaluation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "224a2974eef26aa1bedb9378663f8da1e51fb4ad5af248611e18e7e908402450"
+    },
+    "agent-management": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "43e5e08ac38bf1527f0773e993ad2b8bb1806ac4ea2de7cb1e476acb84e7d19f"
+    },
+    "agent-manager-skill": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "154fd5a91bd387092405cc68651f0021fe7416ffe194fa992c81673a23124684"
+    },
+    "agent-md-refactor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "11d1ffbb2d9f180d63dabfb0b6c63a4632b4c0e2e6be1660c7651cef0f3f1c07"
+    },
+    "agent-memory-mcp": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "015aeec363365e6dde5a46d66fbe24d3a441f80cfb442dc208728a18ec308c20"
+    },
+    "agent-memory-systems": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a708b11bf9cbb053b8c557096943488ead89a29f0b1c0d0cfa4adbff28e0a5e3"
+    },
+    "agent-messaging": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c8d01e451eb3ded44fe3a0648dbba7e147d69aec33d836f731627d9bc4eb1223"
+    },
+    "agent-tool-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4eeb4a86f65d1d5ca961a8c67175f9eed8b7683e39841bbdb976c3a383930bee"
+    },
+    "agile-product-owner": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8cb7ba551cd157174f48eb1ee605ed1de194e4f6f1a258a1815d6628691de807"
+    },
+    "ai-agents-architect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8a5ff990847b2c45503aa4608c6e4586121a6f5461c025790bfe36c52abdb52f"
+    },
+    "ai-product": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4d09aa0592942b69e6347c8466868e408cdd2ce5675a960e70198ab52ec6bb16"
+    },
+    "ai-wrapper-product": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "af373b9f2c97298d67eba130688c0238ef0ba787c4929277ac2d23c01012316c"
+    },
+    "algolia-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "39712659aa04c9e6b02886860678b21a99f5fe50f38afddc14426e572daeddc1"
+    },
+    "algorithmic-art": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7c446629c20a537aba3496490550bbfddf71b3bb71904c9c0056c9daa025a330"
+    },
+    "alphafold-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c743201b5e32a4f453bb0787e214f35931c1364e25648d5df6b5c977d89dcb6c"
+    },
+    "analytics-tracking": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f2716f09e03c6a3a9b4baabab0c3562c918dab5ba3505b12307c33bbcf5164ef"
+    },
+    "anndata": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "76960abe3b9912bbc14c1f225e0d6a23cb9835ebfdf5ccc56ffe99cd906a752e"
+    },
+    "api-documentation-generator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "00e9c9ad4946ccf37920ca739a16d7d0b5539b3195aab3821f08b5b7bb17de91"
+    },
+    "api-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0c5167106a970e61b682a1f8ae26dc97b7f65dace5805c13984514d6208534be"
+    },
+    "api-security-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "08d5fb0c2436cfbd634373b29b2bf0ce4cb13e6045f33116ca6dce0282c924c1"
+    },
+    "app-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "81e6bfdc83f5b2e2e46e0c602ca1d041214502c9a00cf11c4b08b92310324fd6"
+    },
+    "app-store-optimization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7107ba66d053dbcf664463fa4511ef997e91ff22ca1253d660a1b3e1fb2db53f"
+    },
+    "arboreto": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6ceb19282030c3bbfc1bb62d7aac6257c65385454ce14015ea20602fd557a2d4"
+    },
+    "architecture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "63e6ab07146f10aed351ee190e6c79dd8fb40bf20ed9c15c6ba397fbbba05559"
+    },
+    "artifacts-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cf159d33884126cc10f45c7b50bc37b1f68df24a16e83db49143d42c18e2681d"
+    },
+    "astropy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2d945e6cd65303b1cefe52796418ef11b9f1972aad12c8e711dfb800768f1999"
+    },
+    "audiocraft-audio-generation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "850fb7038d07df1fdbdc964ee12211a1c803ed2df6dfa8fb48c6a9ba17f1a367"
+    },
+    "autogpt-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3e38029dfde68616750a198e4937bd3c318f2316ff5f8fc18a3359785d8e89a1"
+    },
+    "autonomous-agent-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d26112fe2895df7d179d7abcbfaf98ae92fabe600e0969f567969d712cb2840c"
+    },
+    "autonomous-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7b89ab24e1722ef890a88bb2b062e69a5cf4a1a5d32eb4fae728e9dd72aeeca0"
+    },
+    "avalonia-layout-zafiro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "95c0961bec86bc04318cace1da47c956acbdff59a7b559f0a7979f72debb6da5"
+    },
+    "avalonia-viewmodels-zafiro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "36741002f27322766379ef9670fd255edb364afcbae5ccfcae625e14209352e8"
+    },
+    "avalonia-zafiro-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3e0fff9b2d0fc47b3acc1c91d4553c8960f813e02ebd40e522791423196180de"
+    },
+    "awq-quantization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7df5c18d72ccd3884d9473624b7282de73a302921f7a80a314a1dfe60a39743c"
+    },
+    "aws-serverless": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f706099ae3c88aaf4faf52a5503fe2bd3694859f6c79b7878f675e01701bad36"
+    },
+    "axolotl": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "87033a6ae8f10fe8e2be1a5e24a5e1d8da8238bccae7c9bc82eb2ec53498109c"
+    },
+    "azure-functions": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fb9c7d0e0f596db79b2f424495d63bc94d89aed4baa06feb86b79e8f4dbd5ccb"
+    },
+    "backend-dev-guidelines": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "53e108e5a880d348f35a4428217382ce538449193dd098a1cdee2d41151ed28a"
+    },
+    "backend-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5b3a956d0bf0d757f056aba310401aea7493e874c14fa58533cf6a0b19ebb4d7"
+    },
+    "backend-to-frontend-handoff-docs": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7c43829a6f1731fca5bd4f4341254016fff31b4130c3208b2e9f0dce2660283d"
+    },
+    "bash-linux": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7de4cb2ee7bcecd08bc9714470afaf93c49542bfda16553dbff22919a5beaad5"
+    },
+    "behavioral-modes": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6b7dad418ca999953c06d5498c63156239786c93726144a6c3e41a23ae66d5f4"
+    },
+    "benchling-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a9ee20ade8d3a8f7f55e25cbed05941bdd527ca201d784cafc14d1dbd2c4eb18"
+    },
+    "best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f5d58f0adf9cc9646b35daf2241377e1ad7b8ab094e54c9792a826af1e0dca5b"
+    },
+    "biomni": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b04bb9f7d269e48671dc247fa0225d192fb2d1bc46d99e7440ea8c626e98ebac"
+    },
+    "biopython": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "63e067ff688ad89c1579261e8708c01ea845565b1e4eb2caf57dcd0d3d77e9aa"
+    },
+    "biorxiv-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "556444442f21dbde4224779efd368d73f453d2da071767c3aaead6abcb787c39"
+    },
+    "bioservices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "431d3feb380fa3d84560beca5bbd68185db733b66ee11d4bbc4144be7cd19a1d"
+    },
+    "blip-2-vision-language": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a7b354dbb673d10e264c41a031c03545cbe013410c88435be7246be5641f4e07"
+    },
+    "blockrun": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "decb559ce576ce1aea29d892ecfe4435c63f45213794fbdf375510ee0f3b43c1"
+    },
+    "brainstorming": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "271e0e8e1cd5a16386d52bca0970579b4df145f8c1ae650eb31231aac726a785"
+    },
+    "brand-guidelines": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cf41642f38f35bcae5bbf59215f0ee629d5f6a54b4811454f6cb93bc9b12b69e"
+    },
+    "brenda-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dc8c056147ec12103564c4ffc7daf5691fd164da5bc3feb853ddf3b2ee941238"
+    },
+    "browser-automation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ba917ad78916c2441db6cefd126176df427fd692c322dc395f13a7ae06042034"
+    },
+    "browser-extension-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7b9c08fd2bf2320865c49c3aacabe13802902c9c1f50bf235d61164b2906d3f0"
+    },
+    "bullmq-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f8071e05e96a7d72bfec5d0c43d2d0c831a6ac3d3c7eb0c8d435c6aeb0cd988b"
+    },
+    "bun-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2cad06e3544baad8ed2fda901b915f40f360c01b91b9e8a6a48721f71c0c17fb"
+    },
+    "busybox-on-windows": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e0000097c06c0d1b138e328f0bb598622983e66804ea27c6f08bf1fa417fb8ca"
+    },
+    "c4-architecture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9192b5d6be529478a70d1a73f3d4ce83db12c2052c4e6df4accd445f21e906d4"
+    },
+    "canvas-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "21e7c68d336893e4f2aa8d269854fd5e253c89cfc6dd0e74fa487fe7e96abdeb"
+    },
+    "capa-officer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a00537977906419d2e589be8f75db0eec46de9999e95495dd50141fb0016972e"
+    },
+    "cc-skill-continuous-learning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dba07201b345556047faac1b359e4f2a12720fa745a9b952a213ad5e21ada6a3"
+    },
+    "cc-skill-project-guidelines-example": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "edfdab6dd4c6fe988e5eebc20fa38b5df9f2e3e07cd32a11a4c1a7459cc5f288"
+    },
+    "cc-skill-strategic-compact": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "97f26d1dfca90a7f03965afee438d7c4037725253b0ee3487b51738e9ec49b0e"
+    },
+    "cellxgene-census": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b0a995f2e14407f463ea0f803a4e288471f45462ef0bf8c09a8250ac1d2a6bab"
+    },
+    "ceo-advisor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d99a6bb73f4d6d215b153b63e031ab6085d5e96a62884d39162bb2f99c146308"
+    },
+    "changelog-generator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f84bcb773a67ade28878d63103e3d4dc1f5031d6103be5107ff99c15b8d4a992"
+    },
+    "chembl-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "17fba017dfae8f75f52ffeeb64fb3bbc826f5a1804ee6295cfced4ab84b1c073"
+    },
+    "chroma": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c53a59bde55e41edd2e7ea604dce84dabc1f316adc054f91fc66c0824791c133"
+    },
+    "cirq": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f1c0963b35bd6dfd3fa17db003f02022d68b399cdfaec091ac1118def6c8e0aa"
+    },
+    "citation-management": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "63591de7743cba4053672fe1b165061c74c0bfde372129bacb6fe70b1c550b58"
+    },
+    "claude-api": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cb77ddf3e8de7eeeea0faf42ecea6508eab6c1e8b001df907660b346f5882c80"
+    },
+    "claude-opus-4-5-migration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "edd3682f58a49ba72838497f72af783b0d7efbebf2d91fd00426dbcdc298b71d"
+    },
+    "clean-code": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "89a0d403e495dc3e94ab2b2fa55f54a51b5971f994900c27fc88006f1b83e3c0"
+    },
+    "clerk-auth": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7e27fbc6d897a21c051fc10e2206985cbf06de45c2117037d67e1dbd8594009a"
+    },
+    "clickhouse-io": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "14b877b8639412c01d097239073e7415128da7c65e85dbe520db7033418b6907"
+    },
+    "clinical-decision-support": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f0dce7ecee896696fef751fe5cea6e55192cd70bd80dd702215dab629852630a"
+    },
+    "clinical-reports": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "46a5cc5dc61d602bcb1effcce9e3f57d818a7da2d33e317e06acc1e44ae7ed27"
+    },
+    "clinicaltrials-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "43228e03b98a549fa4a3742eb12c4c4a602b1cfe1d445551a09001297852e3e6"
+    },
+    "clinpgx-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "47537b2a75c97d0129615232849574cbd611b7bff93f1585aa2aff1bce2e85ba"
+    },
+    "clinvar-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ccebc3bae6c1d8e2dfef1afdb69d33cc8a12d07c4d817d9416644401d0ce8d34"
+    },
+    "clip": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "426c780108f17f8fc8478cdc936366935b0785e6edd678697aa9a9b66194a3ca"
+    },
+    "cloudflare-deploy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9d99ee445ed01fd9b5f5704515e70f0636cf1320f63b8912742413553a12836a"
+    },
+    "cobrapy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "552bdd1396894333b9d6a608262f2325c7bfb203fa0a980ed06a697500d567b0"
+    },
+    "cocoindex": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e70fc0992bc51567f14431f19df7583a5facbb5cef7b06151f3002f546b40eee"
+    },
+    "code-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "26dfc1f30bda2b34a9329204bfe21905e6e41e2c8b74252bc7295b944ca745a9"
+    },
+    "code-review-checklist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4c5dbdfef8a45bc3a17f15ba7383d99967f52404366fb8919305880134edc8d7"
+    },
+    "code-reviewer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e86db66846b35a0f334e6718ee2e612696dc53348d53d78949bca1be6109c2fa"
+    },
+    "codex": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "36d06fc81796999e18ca611c03ff7787c618a7ea744761093995962e147ccdf7"
+    },
+    "codex-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1af564fe6e1333fb376d91bee5e3cb453df9fe45ba64bdcd527b8ca961155ff3"
+    },
+    "coding-standards": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "254edb14fa6ef91b07a12a0e27300a31197380de9723b646fc9fafa2ee068553"
+    },
+    "command-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0808dd1c7ddc68f07c072e090d1864decda125ce6dbdfc5122e6477eb1428fb8"
+    },
+    "commit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9736e44228d70dec65981555fe8763da6c279ea623d0d525a0dccd869710b295"
+    },
+    "commit-smart": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "096f88d1827a7db29711ab0f9e1e404d50e5250415e8b417f84d3b391614c70d"
+    },
+    "commit-work": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a01c4a1dd71cd7296e85932ce1d6c75bb9fe60ab9682424422c62c7a9cf68976"
+    },
+    "competitive-ads-extractor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "adc3ba60f71649c45193f27d32b9cc2cce07636c32b55c9dc9aeefc4c09f6b4b"
+    },
+    "competitor-alternatives": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1363b4e562846e5b118db551f438099e8e19e6bed747fd68be8bf4881754916a"
+    },
+    "computer-use-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e2e60d76ae77c8cdb19bc258c41618fc28aecb49670e051a8e9e5db8245fe62d"
+    },
+    "concise-planning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7540addde4b933a70cb780867421664dd402a096634988b5b1c4b74db96970ce"
+    },
+    "constitutional-ai": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "43cda1cab5010f8ba4b49f717b6426de937c6be45037d39d9344a932dcaabbc2"
+    },
+    "content-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e0d2a7fa160de8efb91062d5538b79ff3ff45e02e08139f4f221e5574ee8a5ad"
+    },
+    "content-research-writer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "17d22250b59fd2544477788e4a27bde6503e2f3b5a938d21fac69b733fa8e938"
+    },
+    "context-window-management": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2bd3e8ea39f1e11333b5d5d598828d23f735a0732d671ae6e76f0d7b2d5d49a1"
+    },
+    "context7-auto-research": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7a98ef6cd5844fca9a985ed5ce91c2d8882db0bc27657a44affacc41f718d4d9"
+    },
+    "conversation-memory": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "bc9a3a434e3d92e9803cc2f5bdea87ab07dd4f06d346918db269c3044fd91144"
+    },
+    "copy-editing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fb252e1871703dd6c502f3826942dd369d86972ae696645a84291bb98eee74c5"
+    },
+    "copywriting": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "719a96ce6e89d54ae1bb503106b5731aad73a6a610f8de08eb881a0b25bce2cb"
+    },
+    "core-components": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "11e0756de9a6542f0c19748eaa19db05e4fc1fd164a75241078d09b80ea128f2"
+    },
+    "core-web-vitals": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "466ba01941037ddc0b519273035eae1e1f591019bdeb0fd83cd8786c53a07f89"
+    },
+    "cosmic-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3410e084921d9f1b48929567d65d1e9e150fe675abf38ef5d0deb1ad88bdbb36"
+    },
+    "crafting-effective-readmes": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8fcf043250b819f2435b1ceaa3c6cf6e26543b0e5542ecb0243585d9f3b948b5"
+    },
+    "create-plan": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "304edde95edfd9ca37b1077168874e0722fba2036b510f121ce6ce2d2c3b0e37"
+    },
+    "create-pr": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "402175aa6a41c135dbdc869a0711eaa7e8ee763ff21872e0f17e48c0778bac91"
+    },
+    "crewai": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2a51f2c0a14ca843448abda08d7c437632edd14ac37dbd7ea2d889c31c50de01"
+    },
+    "crewai-multi-agent": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "487d8dfd3f3cbe34786c0e671fe5898969b617213d6395ccdad87e4d64429d46"
+    },
+    "cto-advisor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "55204a78041419eac8d58010519a8d01c2277079676a7c43922bf4ae46b1d10b"
+    },
+    "d3-viz": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7bf222fdb6005fc8b802b43b93a5f4db9b40db15ec5c13a646ab5edfa52b94e7"
+    },
+    "daily-meeting-update": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a01be54c92bdfd8aa40ce77e7ff168531fe43543319850b8dc5824fd568fc68d"
+    },
+    "dask": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3f3cfe548727ab527ef4825f3d5ca6ea788b729b1b3fd6dc387ec8eb83dc6c3e"
+    },
+    "database-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a1a0b5952537df776e2d8f311e30074561709e7fd0a49a691a45f4ffdf12df22"
+    },
+    "database-schema-designer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f23c909d45c6207e974dbce0db4c648de13d586abb37057cfec34d62f25bb526"
+    },
+    "datacommons-client": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "69ea4aa9a403d4fe7860817634a9d1f8c4a3767d55a1c7e59fb6bb54457820a3"
+    },
+    "datadog-cli": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "11b87a7b2610755693e0d21aa626c96ec536daa869c6f178ccfb170bfba404d6"
+    },
+    "datamol": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b3cde1683aa2dfc2732eb94d1b678ed5dac7842fc65d6e51a246e61638bf267e"
+    },
+    "deadline-prep": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c92d395b25873589c6e09db1271dffde7becbee208a32f90008337626e00d040"
+    },
+    "deepchem": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5ab37f34542a4d7aaabf0b282425218afcf25b6cf238a6e9e5b190c4309eb457"
+    },
+    "deepspeed": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "73b43e60ce390220ff614240b49c157ce275ac8abfb23304c4791dd9e33383f3"
+    },
+    "deeptools": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e91a8dacf1870756371f456afc013f2002fcf6315ed3e1dfd1ec4fb4c0b12d00"
+    },
+    "denario": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4ddb011c66222f43f4b8c88a2b926830d989db256b6ddae56a6feb964c804459"
+    },
+    "dependency-updater": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3fc648ed28dfce104c7749318489af2c388de99dde2d85c145a4e028d994db41"
+    },
+    "deployment-procedures": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5a97812d880a6382c27b1c6ac326e499c924a32e9dd9cf288997da814196d574"
+    },
+    "design-system-starter": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e6df3b8d53a8333f44db1da91a10570488e46c3aea899476875aad894858a3b0"
+    },
+    "design-to-code": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "96774227b28647e925521bc0ba023ed23abfaecec0c016ff211ddfa382f4ce9e"
+    },
+    "deslop": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0c698611bffcced196b26fe0dcef9775690183ef87bf56201f025745d79cafaa"
+    },
+    "develop-web-game": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ab89a0f35fd9ebfa5d9be3c440bca60641f27e09e9f330ab7f31612c3dc15cab"
+    },
+    "developer-growth-analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "af382e4194b6ca784e14cfe2aa7df1682c4d42f83807e5785ffab3577fe83176"
+    },
+    "devops-iac-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "87e5ae8d12d3e3759e4cb1397bd4d77fb44c80739eb219296a6719590b3aae45"
+    },
+    "diffdock": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dbabfff4a42de4418b14fc8a661034b3743d0284a27077b987e3c918376b455d"
+    },
+    "difficult-workplace-conversations": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e37c79cdcb3569a3f2c2eb875d993c495c6313165036d75b9b2fa5f117d802b2"
+    },
+    "discord-bot-architect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a0f06671eda6d75ca3c241d26507597f38a7cd631b7b5e5e0189bf8f24357d54"
+    },
+    "dispatching-parallel-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6bde5606c855bfa0a9ab0ce9989e960f9759995511917a2576fd17dc7c8ddc0e"
+    },
+    "distributed-llm-pretraining-torchtitan": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d47f735fbd5020656f5713af3337edb561e99ae6942bb7283fb6e844fa1fcdec"
+    },
+    "dnanexus-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e3ae93032bf06b1c1243dc193dfed3377072cdba0a8a53f0a89d5610ab32956f"
+    },
+    "doc": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "93e65e9f3680a83f80beb6ed57d6153d48cdef33c7572b0726d31a50324da19e"
+    },
+    "doc-coauthoring": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "62cd7744438ee2aecc986c520bb603988a78ff6aaaf70a471bf4584fe0b78dae"
+    },
+    "docker-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c57f0fbdfd11a21ced2c5c3102421ee5e79e8de9872152c21c42b30be3b34516"
+    },
+    "docs-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c7e06231f1504944dff0e5ba1f52b90977cc14d11c244886d80117a2ab7271bb"
+    },
+    "documentation-templates": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e693be963b1861cf8cff51e3d42f92e144dc017e76bb02e90c56becae228c87b"
+    },
+    "docx": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e62f62bb4ba4f5512d70ac812d3a31ffd0ec9f7d0101a8901d21ce12947e3a16"
+    },
+    "domain-name-brainstormer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d8cdaa1279f4447fdd766bed9a566346ff2e72db822b4b3695fe033701903af6"
+    },
+    "draw-io": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f7318f5fd5207c3386eea323fe83398a6f126bb662b373e168566dc39470cb01"
+    },
+    "drugbank-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "643512432e442fbdb19464129479b5b3a044b68ae9433d089d674d3f897d2588"
+    },
+    "dspy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6cc629ec64e10cc2794aab0ead2a23dd7528089edd03355dd632680c30da1a3b"
+    },
+    "email-sequence": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "908ca2b6c122c6e42ad20ba58404e91074b3a3e78e145c6e6c88bafda07ed2cf"
+    },
+    "email-systems": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6b9d55bcb006087c49bb1098b2dbca11e494228c980c93a05d82a74f9f47ed78"
+    },
+    "ena-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7d96c14ae73383c92680305ae561ee4e1eb826ce186531e80680e81172cc0cc3"
+    },
+    "ensembl-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e2ac75e451bc2af14dfc9e29428912aad749c04ba7178f017aa6feef27c2ff14"
+    },
+    "environment-setup-guide": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7395ca75d770365fc76e118a41d59416a08d247e2acb7834715702e0f4109e3f"
+    },
+    "esm": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6b40a3d551c342d6bdfa798754db3c8579030abd6ffca724e945b70963a338a0"
+    },
+    "etetoolkit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "29720224aed38a8e729148b17828e6032b8db5e09c6d774214bfdd1710fba765"
+    },
+    "evaluating-code-models": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "03aa565ec540ed586594aea368b39f5d8a456fdfd701be778441aa0fa1d9ed4f"
+    },
+    "evaluating-llms-harness": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "bb59037597fe101031982be5d665682856b6c26307c86646f900ad6092d7b63e"
+    },
+    "exa-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "501baf7f16223264102c7bc5d854e50dd6eded6cac118ec49b2a14775a9ef4f9"
+    },
+    "excalidraw": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f7d76efd72bebb97e2a398cd7fe2924927fcdab24d586bda2fcc867396b740c0"
+    },
+    "executing-marketing-campaigns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9b5c5f7d4a665c37749406677131d8d5966382b345072500ae561d3fb752d768"
+    },
+    "executing-plans": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2f9a194a4ba8ecaac5ba4f9175139a407068c01f411b09fee9025fe80c7bcc70"
+    },
+    "exploratory-data-analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ecbe35035e3598bbb055e69b90fba121de28a6f5e4309757c5c5e4a1e01fe423"
+    },
+    "faiss": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "951c4010ce958065c952efb152b5cf16b49a24df0b5396ba1f30fcbda66dff31"
+    },
+    "fastapi-endpoint": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b0a077fb8e51934dcb95b9d4b7ccac169310c0d4f23a7226c8ae1d16cfc671d1"
+    },
+    "fastmcp-server": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "83617686543675e3a5e69745cd11108b2fdd0b5fbfa78f5fe99461681046179f"
+    },
+    "fda-consultant-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8d3dc00660146566f00d392ef807ccd78a25b4b52d5af2fb1fe4de1fb64ffb38"
+    },
+    "fda-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "08cf0df1525de2af27e2cd3490ad8abc638e662d03447b989050f2d45fb3aa1b"
+    },
+    "feature-design-assistant": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8d3cb5f0e13fb04ff5dcaa2a0fa351db4050d70c7fe8d9a90de920b0bb3d3366"
+    },
+    "feedback-mastery": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "29e2af48dc587059f389287ae51ba0ecd7b9c853223ddb9f679834edd91e5cae"
+    },
+    "figma": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "36a18d074be50ee2f9329946ead9c0c4b3fddc543108aedbd23bd098b0b58ddb"
+    },
+    "figma-implement-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "984529e68f43a9d20f991c3f4a9127bc2a041f879ffe8e64bf32cbf725a43101"
+    },
+    "file-organizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6284de07d60553318fe6c6e1d516bfad3c097d01e7b5047dac50c43637b9c9b9"
+    },
+    "file-uploads": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "16ab1fe3c8e3fc9db24b3a9d02e7d68a6d6a0a25c0489dd9641dc231067cd9d1"
+    },
+    "find-bugs": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "eee674bee07e913f544795b00368c53ce7ec6658e56fbeddb4aefff975a7face"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "computedHash": "25872a21881a950edc3db1f3329664d60405d539660ce05b3265db2de06a7dfd"
+    },
+    "fine-tuning-with-trl": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fefda43859328e8384ffee62c8a2fd0837aa76c5e82dfe7d5686769cda8f651f"
+    },
+    "finishing-a-development-branch": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "701745dddbb0687c1d515cd0d206cdb79e4170442d5b1f7a0e18b816c3ddde79"
+    },
+    "firebase": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "04f8d6d4bf280df55a9e68767d53f9a624f61192cc2c7f7b02a7f6dfd41a2822"
+    },
+    "firecrawl-scraper": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1545f14bd0262a7b84f47eeebd27e6b4d010995968c70222ad0b0916585de981"
+    },
+    "flowio": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0a0c928568784b57b98f7c6d28040bd3914044e377208469963e86e8baaffbf0"
+    },
+    "fluidsim": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d03c4fb7ff69b0a7f8e80c567d2ea8b7c515f74405f850aef3a002f879de9f52"
+    },
+    "footballbin-predictions": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d6a004fdb3a2fcac929a2c8ecb2f53ad16f32dbe5f367a15e728a186e6c8e093"
+    },
+    "form-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dd13577a7d48d40c88e31740d9b9c08224fa95e1599e067a85e55c37225fa190"
+    },
+    "free-tool-strategy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6d3198502017193990f422a40283f0a210aaa457c84ff25460204ab25b0f959a"
+    },
+    "frontend-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "516bd2154eb843a8240e43d5b285229129853114ad7075a5e141e1c08e408c84"
+    },
+    "frontend-dev-guidelines": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f9e3b4dfa442f7674801176a4c0626f13a7fcd7baf73aa24bfde2a8eeea8e70d"
+    },
+    "frontend-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dff8d04b5f0e2710d07ea4aebfb857b2e2b2a3736392d1b68803d1a6a6389f76"
+    },
+    "frontend-to-backend-requirements": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8c887221cfcf9f4cf25a8acc72798e911e0ce1c952f99fe75ed5b2554b48ea40"
+    },
+    "game-changing-features": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "957248a5654c01fe82186b4b31199b0c618a9375c1d0024fd66568afbe12c48f"
+    },
+    "game-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e544e4b64e28cc610cad6043f87f47251570e126946dba8c3129f2c63cecf761"
+    },
+    "gcc": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7742e842e701920b3e584de317452b044562d474aa42bd6d34184df6005e1480"
+    },
+    "gcp-cloud-run": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ef08a4d5f3625d30c32c08ec211dd657753c956e20b7052ca817061fe38d4fbd"
+    },
+    "gdpr-dsgvo-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "49d6130fbf6899042bdee5a698df63ac88b0bb786c0a9472cf328c368d400cd3"
+    },
+    "gemini": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "feed23504518537af26b18b25ea80ea1ceb6d06084b1deeb3784d63ed151e6b4"
+    },
+    "gene-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e44201eddc8d3eebc21aed29414b826a00f93a23e80fe166073970297675ac4c"
+    },
+    "generate-image": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f71c2d3041659ad807e53c1cba2e8e7150d14b90402c0948eed01a2821ddfa06"
+    },
+    "geniml": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "50a75ceb365f010632c9dfcd8d28a7755944f74a7fb14bdd75438d58f5493620"
+    },
+    "geo-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1e4cf05230d6224881c0fe99be873d99284a6b25fe217332ed60f89866c2fe7b"
+    },
+    "geo-fundamentals": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f47e4b764589c4986f0bc07787121e679732f13900f36828861dd0be426bb475"
+    },
+    "geopandas": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3127ae5410176f7662552a0c5af1cb0ecfc9d4cdcff49ac71de5869ca2e2ad53"
+    },
+    "gepetto": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "76fa67fd2eac92fd8d4d22be2adaff981791f2009248b1813db9a8e0ab245dd8"
+    },
+    "get-available-resources": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4e38266ac7589fd384ad4d30fe41bef3e9e1a07f10f81c30caa0211ef5c4c067"
+    },
+    "gget": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "73962f8f8cf76b72a331d6aa8365f47c05ac81d21ec9be0ae3b28d6f4ae000f4"
+    },
+    "gguf-quantization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ae00f27f64eabba770309f9cbd89ccfebfa9921f2f811ccce07dbbec904c009f"
+    },
+    "gh-address-comments": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "affe02a0293b8e3adea9d647e5589e6b78276c5f72d7e908f119c92fbca8892e"
+    },
+    "gh-fix-ci": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4c4af664053e6d11af1c6af06a74e7f1078f8308b945d63d01e5f13204796833"
+    },
+    "git-pushing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "02fdfd58ff35a4ae25465219be43275ce232d522776e53fa3610cf744542661f"
+    },
+    "github-actions-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "54a574fdc71d7a81add02d9155358b883e904a7c339948048847f7544d19093f"
+    },
+    "github-workflow-automation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3c89cf28e41265132a08f73988e319fa0ed47c0e2d6b440a53bd2f0365008287"
+    },
+    "gmod-addon-maker": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a20f756d9844aeb36def3078a5c437ac56f6fc04b91542ec7b6552d55785d8d3"
+    },
+    "google-analytics": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b23249c478ddac014eb00dd434c2890e3ec62c604794ae06d1d33c13532ffb88"
+    },
+    "gptq": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "41b74929f6e0ba5e8c0a8756306470d9d1064bdeaf6ffda570c294de9ca943c0"
+    },
+    "graph-query": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9130bd318c1ed10d4f9620102f7e43bc65e7a89ad5399e8f7063f4ddad236cdc"
+    },
+    "graphql": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7d85f62cd84957e564fcbb60902618590c49085d95fc3e097dd04e491339321d"
+    },
+    "grpo-rl-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "33e65f7dfec3108b0d6d8439b078e9dbf63bee7f3d5fbb04c7139e68bf5b6012"
+    },
+    "gtars": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "bd7b0c60fad243bbc211d7a3ae0576e0da585343d1c98c147707951f84997be8"
+    },
+    "guidance": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1f0c54efc9f489ad78107b39a522eacc6e9a33f1f70f81bb882decb2e729a378"
+    },
+    "gwas-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e9998f3a1d74cd382b825767297ab304aab41d6401ca83150b7e2b282eb164d0"
+    },
+    "heygen-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "85b9c9b4844f3e8d50efae762f96b82914637cd07ab60a24b19f5e481e04aecb"
+    },
+    "histolab": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "758a4c0ca1bfb536fd8832c8bf0a8d00b569cb99debe0a8d4aca55209dad271b"
+    },
+    "hmdb-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e995165f509c8e2220877248af08706f09ecb710089e55668f3df0fdd4b47beb"
+    },
+    "hqq-quantization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a4ec729e2044315a5c904b2c893910b5f5728694a09996b99b5da79e856f9847"
+    },
+    "hubspot-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "24ef403b1ff7ffd6c8747d28c865dff8d896ab00da9c9d6d9834ee7d7a37a9c4"
+    },
+    "huggingface-accelerate": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fde0ed50e08a97a04a98764c211c58ff0dca6bf1b1f893c6add75375d64a61d7"
+    },
+    "huggingface-tokenizers": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c49d33eb8bf3624aa81b7a842a4fbac99f606be07724501a148da173fa5b0b9a"
+    },
+    "humanizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c948e831d5fdfbe2e1fbbba1ebf8ab410a8f077ba529ddd522fd9ae40e6cc653"
+    },
+    "hypogenic": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a7b20de5c5dd217a044ec02569097307fc9c21a4097eeaedc0edc3c1a76a79f3"
+    },
+    "hypothesis-generation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f87a04c06ec658914a00f7e72c75b4359a711a8c9c03d760a4bc1e184e3283b9"
+    },
+    "i18n-localization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "04021dbf4002e045d1598b482f8ff69dbaac832cce863fc72d23ae28359f7da8"
+    },
+    "image-enhancer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e673c02c3e970b3ea0bd4ca449ae12f955d8476bb4196842d1b1489cca6be219"
+    },
+    "imagegen": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2c50077168a77a0adb293f0ce045a1e1b52159df1d8acac36949130966c6f7a2"
+    },
+    "implementing-llms-litgpt": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3425f70e972ff637ff18b78ae422dc1a818558c100df523e25a387fdd578a3f2"
+    },
+    "information-security-manager-iso27001": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c457cde9bc166f1ee9b23a4f419d2f5be158b900a731dd151ee554022574d48f"
+    },
+    "inngest": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "398701f802cf5dc66f85d13068de77442c4599f1b98121da6f49989d2be8a70e"
+    },
+    "instructor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "12a9ac7aade14bcc7b8ad707e8a3028c9b0e945600bfe170b0cc5ec2fc7d3c7d"
+    },
+    "interactive-portfolio": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "211aa900b0bfb9833bab025a313b02438ff911965df803b2c8135c5b5d653ec7"
+    },
+    "internal-comms": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6e7e5d2f3bfa91e6ce302e629ff639bc82d95d2ce3454383531093cbeb8b38b0"
+    },
+    "invoice-organizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9bed4335d5a8792140c7bf8a602a5b661a469f8f4bb94ea943b43d14fcef024b"
+    },
+    "isms-audit-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "92d7a2850c89114d969601a752fadfb3ab66e00209d30243d3f110b61b6da66a"
+    },
+    "it-operations": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "21390e8163c610c45a6a4067f96fd0385c48fb53e5cde652855573a31ef1cc96"
+    },
+    "iterate-pr": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9901030abdfd7d7bbea3e701962a29dc068893bb72c114f4b541e80239637845"
+    },
+    "javascript-mastery": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6ba6650aa12cf14bf8cecb04d99135692475c82f297c5a9bcd0c052e44bffc50"
+    },
+    "jira": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8977d5956e0254ddef59889758353c28f919853ddb13c3b34be018a799154c4c"
+    },
+    "json-canvas": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a0ae3b87d2d259aaad490435597a09cef189c01ce474c90d9d666c2bbabcbe08"
+    },
+    "jupyter-notebook": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e8fd29c54d09b9862858b8ff78ccfe4c06e02c7b14c731275208fc5cdc0e248c"
+    },
+    "kaizen": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9470996285a2d6119d3111138f498fbd8c064abe386c99bf66850a4e875fa796"
+    },
+    "kegg-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ecb7ec401fe74a1d284ff0977679c0618bc2be449485d106aefb9652e2ece892"
+    },
+    "knowledge-distillation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "83570ac666d6cd29245341531446be1227fb5ae223f7f4bd67f41e3cc15ce7bb"
+    },
+    "labarchive-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "43777676844294ec068332d7af5bb580ec17ef00f5a02f50516e9f6ccad0a1bc"
+    },
+    "lambda-labs-gpu-cloud": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4404110fa638ac37c6beff1830493a3cea2754479007b9fc110d42dd48fb6e75"
+    },
+    "lamindb": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "99292d41ea98c134680bcec815bea77459d25f9ebd1f92a39e95a5d567cc0173"
+    },
+    "langchain": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "35c093146e1c0147709a900eef682b79c1cbda35d895c967039c4bd646684cf2"
+    },
+    "langfuse": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6d7f0adb7521c86ad74fc5d9968824c7023f64c79b5227867b7348328dc1a5e6"
+    },
+    "langgraph": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "588b697c6671627f29106e6e88f87dbc3b190518d3d32e36319fc5b50e04b098"
+    },
+    "langsmith-observability": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "77353a496a8a74fe9aea4dcbc71aec63aefea92acf511f3205951bf5497e9343"
+    },
+    "latchbio-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "56fecae21a55618b660475af63b45f0704778ecc37f93c13b1035991f4642378"
+    },
+    "latex-posters": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "179dc1f8a06baf175e994c2670eb91bc70f4ddda6c704e05642ac6c4f6f0f675"
+    },
+    "launch-strategy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "74fadc54feaf5ed6139c5576bdaf5596c1cf513f93b89ee97ffe570b2629f8a3"
+    },
+    "lead-research-assistant": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3300bbb81db602444370e66baa7c5395a8cbd9bf11f23c0ecbce1568f0ed9f05"
+    },
+    "linear": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f646e079f5a1cee6a97dc14e64ccab78c64a4e413954ae5caea9ec73dfd0d0e7"
+    },
+    "lint-and-validate": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a5116393fae75b4d5c088696996126d9b97cf8ab4443f40a6d1074089df0110d"
+    },
+    "literature-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "854f60b6f2b2b72183f1a384961dca03123e013955837858a2a3607b223d64b6"
+    },
+    "llama-cpp": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "21aa41619f44a0ea0a8d066c69a5229490a089ec18d1fd099c00057bf43bceb6"
+    },
+    "llama-factory": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "45c651226d7ed81b8b0f4ecd972952d0ebf386f3ea8021d6af508c9c0d6e7009"
+    },
+    "llamaguard": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "036ab30f6e303f69a530cf554a27c6a61b46369640bf24e49f19c98b8d771daa"
+    },
+    "llamaindex": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d5532596a00b3093c1d4d9de3ef143d46f29a94b7ffbce18b621bc6f5bffb7c3"
+    },
+    "llava": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "89391378b3cec71fca5ee48551ecc1acff0fbb017db128d1460438c69147c1a7"
+    },
+    "llm-app-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a346181a23065116d42410f1b109200ee157677bc8fca15158547cf945b231df"
+    },
+    "loki-mode": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4dd167d0a3284bc2e15be8cfe64cd3b0a6588f8ab012b2bd89337190985e4509"
+    },
+    "long-context": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "61b550bafff4e8f21737b7af2e38bfdc96ed1423fa92cc2588a7eafedd9c8533"
+    },
+    "mamba-architecture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "60f2a91b5136d37932b33be5bb1ebdbf0fbe5f4795deb91aee621e6ec441f114"
+    },
+    "manim": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0748c431216ccad4cff36ec63006e4ed1757b58c25b18373a255840c06c4b6bc"
+    },
+    "market-research-reports": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cf1440b6e3057d587297a39bd0303b3db3eb91195e17e07916f6243fbfc7f5ca"
+    },
+    "marketing-demand-acquisition": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "07314353595788721865bbbfb1f6bd2b87d990bd72bad1127d079af6e52a7541"
+    },
+    "marketing-ideas": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b62d62e4372538a791625fe3fd61a1384248ff89d8bf58a80d9c620fbdea038b"
+    },
+    "marketing-psychology": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "66da80b70ab377d4ae57a849d298a7a79589f08b958b1e36eba00579267953ef"
+    },
+    "marketing-strategy-pmm": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fe7218fb3da1da0746f8e874e1bf5a0f72977bebf321860d5ad798441f736645"
+    },
+    "markitdown": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1b2ff0693423568ec77669ccb66c7e07363ae3aabef1ff73987490f257d4d46b"
+    },
+    "marp-slide": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "efcbde4c9d03ee14aa76aba7c6c466774cacce3ab1447a26d06131910af94237"
+    },
+    "matchms": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8915297e62510d73ec4ce1d55bb1bcb9ef08c38d0e5bd2bba4e63b14c0f5ee79"
+    },
+    "matplotlib": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "585d3ae58225ee637bc0ea34b5714aa3f8fd21579c567fb66d920af11c824be6"
+    },
+    "mcp-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e257cceb3e4724db5ada5bcb750308f00c5f3597f047230138c5ff741fc3ab1b"
+    },
+    "mdr-745-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5a5bb0b773b09b0ee64d3e146147d65c45ff9c7589b247e673575ecd0ab8abb9"
+    },
+    "medchem": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "24787aabfafcdb7d30282ef2b6a32e37686880f3bf0f4eb9f73186c66e9c2e8c"
+    },
+    "meeting-insights-analyzer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b2b4a825e349b914c3423a0bbc8f6c6912ba5bdab2c4ce21d2952e10b3bb585f"
+    },
+    "meme-factory": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a746b66da0219bd23de2a91ed5a21d2e951b92a56d89dd0193866950e927589f"
+    },
+    "memory-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "663d828df017127312725ddd9017f50ec034159a5913d9da5fc1fb1a21c12392"
+    },
+    "mermaid-diagram-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4fd9576e76e89e17d72891fb63e11741bf34c72390058baeb42812e396698525"
+    },
+    "mermaid-diagrams": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8f59e878e4ecdb6205c968dc6eb92aca1d1d5c949ce4dfd8cef06208bffbc10b"
+    },
+    "metabolomics-workbench-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6461230e96b9b258941cb2ec90203996865366d4a84e6c4d9fe97ac9fa6cbf48"
+    },
+    "micro-saas-launcher": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b0143239cb400c56bf528fed333134399aca8361b5ce0228c03f8b9ac69cc7d4"
+    },
+    "miles-rl-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2826c4e54758eb041eeca3930817922c45d6c70699c63d8f7393d504e96f9b51"
+    },
+    "ml-paper-writing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e7295298be17d946ba02d98d855060861f48dc0f20537c99e70d10ca8f8e9f74"
+    },
+    "mlflow": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "92490db364058792bc478232dfa297c8dcd0697876800f4ca9ecec4d03e51a60"
+    },
+    "mobile-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2cd07193e7c49d7450bb68364ce3d2b0155a7ea645164b671dfa4d32b7afb77f"
+    },
+    "modal": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2c561246a27b5b87a771b0f98e02063dfadf3d17c2083e8044b35b15feacff9c"
+    },
+    "modal-serverless-gpu": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ec1712cd12927dc5c808925e2c9bb6c1a2ca9aee0deca985245f40cc00d1bc54"
+    },
+    "model-merging": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "03c13fa29fe8d99d6e3a93442a6c327c01664a86296f029adf11f86d66010643"
+    },
+    "model-pruning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "773358507b84007e143a395288a969269393b8f3a8e21e0b0239bf21723ab448"
+    },
+    "moe-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "49b9d70fb7e3e82c33e0f2516fadc9af32cb9626bfb65cd8a0acf72248c272cf"
+    },
+    "molfeat": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "227f84bdfb6386ca7e39c8eb5fcde69bc9d401fa56e813ac8ac19684ed7147e1"
+    },
+    "moodle-external-api-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "48b0b2046ff05acec20c9207ab9009e8b75e7e6711d89618e4d4f986d7269e1d"
+    },
+    "move-code-quality": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "142977fdd943b5ba306e317e786eeed7e2d60116bf4dba6c26dfc2dd94805a06"
+    },
+    "mui": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "363bda5252637c682d30907de02efe538abc42843d1d20624d1e5e35823e996c"
+    },
+    "naming-analyzer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0200d6f4b2edfe342c255c49f9c46b0937c079899f3c5255c2a624686777ca51"
+    },
+    "nanogpt": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1c1384ee2e356c98a970ebe1c5e50c6144d5d0a8f813635da88a1d2321e47d17"
+    },
+    "nemo-curator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b5a433cf2ee7fb24a21b7583bae20fedafa906b8f38af6259ff18fc3f276a0d0"
+    },
+    "nemo-evaluator-sdk": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5abf098b1cd60806ca103fd0514738dd91af9184e8a036d18d3215734a596661"
+    },
+    "nemo-guardrails": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "264b2f5945f91724d1a539d4d85664e575a88d347ac217bcb9e7dec1b700dc2d"
+    },
+    "neon-instagres": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ead45f84c9b0146994a1388aa76c6a1b61c7d299c7bf53ea8a2d41ecbe42db10"
+    },
+    "neon-postgres": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "00951b0e750fcd626eba9b081e313b97f0c99329dae7f594164900ad45c41394"
+    },
+    "nestjs-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "77f3e03f10c5147a4c57c208ebd41f7cac6dbe39ca31c2e8f5af374af8e39229"
+    },
+    "netlify-deploy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0831e067f9820dddf936f635bb4a986e54463c10a1d495ae8e493db928268952"
+    },
+    "networkx": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "adfe8bdea5b8ad684d32a84558a66a026f8585299bdfb20d6abe4165dd4ded59"
+    },
+    "neurokit2": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7f128c4989efa7294adb81c55c3e7de277f274c682e36dca1ce1afe39615b02e"
+    },
+    "neuropixels-analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "516f29c1f42b56a34c2d48bf863b61c4292dcc8ac52ca1c7b90f66b397b2b419"
+    },
+    "nextjs-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "08a3db84148a4cafcb711443571813fd9d14a7658b96bbbe6c083efef4fd8a0b"
+    },
+    "nextjs-supabase-auth": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dac7daff87e4b51bf43af34e21863b9ebc088d470f19625ee0d1d839431334b4"
+    },
+    "nnsight-remote-interpretability": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "51000c08b139d82e6f6344f5eed8bd46797a556c4f8b5201f1777db3dbde8b72"
+    },
+    "nodejs-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a942c5fc15af3e9f80bf7d338d31c8eeff411b5430995211ef3b975e63c3c929"
+    },
+    "nosql-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "49d558d68b81a9868ec9246c90a4b5830f5c87026b1ccd019992007bb0e0ddb5"
+    },
+    "notebooklm": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "40877d53667ab1d100695e3b171c305a9c341fa251835af1c6f5d8a910f3ac6f"
+    },
+    "notion-knowledge-capture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ca63ff34a3d19c6f50714c7b76a2bffa8d19e83c6168505cea89472e5f2f2815"
+    },
+    "notion-meeting-intelligence": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "10da2be27a6587290cb790e85b507f2613825ff23af6a8c741a272414108470b"
+    },
+    "notion-research-documentation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "41efe9a33771fe084db8d5bc21ed42958b74858a03eca7ead500deb097f0d13a"
+    },
+    "notion-spec-to-implementation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "708a76b187caaa132d17fea351570d134e1d1ea55f41bc44b330a920cacc6ef9"
+    },
+    "notion-template-business": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "80a5601c8f22af79e1135ad676a63da1d028f752254cb17bd808d9548cd23311"
+    },
+    "nowait-reasoning-optimizer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "12a49c0153367729f19f517ef5987e991f89b6b92908bf7d8a2e47420e13e82f"
+    },
+    "obsidian-bases": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6d5a91bf0b5bc2610fc9389c47a96883ebbc6fe703e5852bd9f55ac92e5810ce"
+    },
+    "obsidian-clipper-template-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "26577c15b4507f65d211cdf8144be096b1ffe134feeb00c3a3f8de692d745f0f"
+    },
+    "obsidian-markdown": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "71b665da9582306b2c67d94165aad735fc3723ac35738f4194562a8ef6299acc"
+    },
+    "omero-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2e620f69c8989c26cedad4772ce4d4d60cc2e0b6542e076d2dd90641e5e1d190"
+    },
+    "onboarding-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ba298c4d0bdba03f7093635b7fac2960cbf3a16a6ee2b37ab5938ff1f60ee25f"
+    },
+    "openai-docs": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2d5b418e5c521691afad80f31d553967b961885f29ad1add9bd1796ca73f4fef"
+    },
+    "openalex-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "02764ba46575e6d4976c4bc5514a2be9f490130cf9ff55e8e34899011d8c879f"
+    },
+    "openapi-to-typescript": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "703ab2a30b2113c9c18bf7982905c0b0f711f7476128ce30aa086585476af277"
+    },
+    "openrlhf-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e0e1d99a71c8dd594db271b8f810cb6cf84dccef8bbb5975cdc27ecda882df4f"
+    },
+    "opentargets-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9c1cfb19ed2762c39c10cc30f227c8960a251a7fe39da6d5d0a63ff5c60f52ac"
+    },
+    "opentrons-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "57fbe0c99dc5399aa39f0c71d064c7bcf5d11846e5e328d9d5bb04216cc0cfad"
+    },
+    "optimizing-attention-flash": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "76219a0e36632c40b7d68aa89ec2caf908ac5099132451076584b73804b51148"
+    },
+    "outlines": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9f3c8402b998503938339dfeb2d260a466e0cc4cf94a548593770ccfe86d7a30"
+    },
+    "page-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a2db6f5b3e6856c8b3076c722d7e014110ae7595379e62e8ce72e04651e7cd24"
+    },
+    "paid-ads": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a18a9d612645fe9c49bcdc6a80a4e7e31cd00dac317b522e6bcd6121ce12d112"
+    },
+    "paper-2-web": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fa3fa3d3fdf64ca0fb5c6574de49eea25ab7e05603118992803612e3b984a41c"
+    },
+    "parallel-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "444cc0cfd4c4278610af56124f09e7eeebd5a895b90f8c61ad219fa4fc5d8192"
+    },
+    "pathml": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8a32863da8ce05d70624a900083280c142a5b56a4b4f5d6f77f32874d891a48f"
+    },
+    "paywall-upgrade-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5455eb31f27fdd9ae4eb8c2646459eb9ca06948ed29282a8524865458bc40f88"
+    },
+    "pdb-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ef1e1912f306c0faaf989794be58fa3d2897bb037d0e54a0638540cbf8620f3b"
+    },
+    "pdf": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b01d70063be7115b374550f7f95498b34c861d1eb348cb807d697d29a5c2539a"
+    },
+    "peer-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0336d67ad01959eadcf88806b783aa58d7787e8ec118d5b3b5cd9ee4dbb9363a"
+    },
+    "peft-fine-tuning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e4a7ee9040fe581444e7de7baa2ab4a38b7a8b1b2ec2e6d2342aec3b13962a00"
+    },
+    "pennylane": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "41ded13556106bc4400c3d6c4f40ee0ffd92aa61d4be01855c688aa27a657ee8"
+    },
+    "performance": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9e0e29b7919bacfd2d0caae0f841fa53ae3d7b7427d27f4fdbacc76643d7d138"
+    },
+    "performance-profiling": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5caafecb4db1f54ce7b4026444b183c2f08083e6e639c8f348904ffff141154a"
+    },
+    "perplexity": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1d32fbce001646737afa8208adaae6e8b1b6c74bd85eae492a9b89901e8c1668"
+    },
+    "perplexity-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d6aa0431a5e2af47c8d50267aa3017178642b10a719206e1247a7de3321c0e28"
+    },
+    "personal-tool-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4c3cdc345df76f88a9a6eabcb2d39ff63b4ed5f943e8ed52ee179b5946f87b1c"
+    },
+    "phoenix-observability": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fac660539b4a822813683cf05eacbdaf87ef1c3678737a7b95f9c7b210953534"
+    },
+    "pinecone": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "496e45c1a8cf5d7c9568927e3f258609a3d498d8e0a8d32289d64945968107ca"
+    },
+    "plaid-fintech": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "aa52ad86a906cd77a92f9323c53b79fd7c7119532e2afa6f14e4282cf8064521"
+    },
+    "plan-writing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "72d16a06648bf0c7ccdd538266f6a423b3ea746761f5bbf282c21dd6945195c3"
+    },
+    "planning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c48c2a6914513ec956722cf89e2d72341a344d7ad8a5a3b5f7b9011bc317f214"
+    },
+    "planning-with-files": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "062baef38184df9ac4a9b0443d7c57d803ce73a1dedda7e61b922a34d7dc0918"
+    },
+    "playwright": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a30736fff1a626726e82f421801fb50ab6a741dac4272ed948dcece5ffdcd1e7"
+    },
+    "playwright-e2e-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0733d1de8a6e8a81878209cf79b313bc20ea741ef40117fc2ff2787ca32e8f41"
+    },
+    "playwright-skill": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0f4b5a14e0afb85c2855943e5898a2da565c504bc46943aaf9e768f251ceb47f"
+    },
+    "plotly": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4fdf1d51109325319d58807609509b26e932a42acb4612c72cfbe40bb8316013"
+    },
+    "plugin-forge": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6b8eaac56d39fad5f79a2495b506edbebf46d23d9b596aafc2428566c8f76bd7"
+    },
+    "polars": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "160f497d2db6bd7bc1fdb6117a41b34187f807e815337f60374045d409b3f989"
+    },
+    "popup-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "143ccfb54bfe019553665335c71ebb9ecc682c5f9fd295712e7adde8695f37d2"
+    },
+    "postgres-schema-design": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7769f180d078491ef2c4603fb8af4cd4300b68af293e03f6469027f4fcec07bb"
+    },
+    "powershell-windows": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a5826d34e236673f7b06aa37c92121f31cffcd0dc405e79a63a97060114f3876"
+    },
+    "pptx": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c6a8906684b704ddad43d8f1e6cfe23d96b042d526e584f36ba6c16595f1efe7"
+    },
+    "pricing-strategy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9095236091545fd76a752b4e8c4c036fdf56ac7e84f180427486197c8e8c710a"
+    },
+    "prisma-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7413bb3d5ee4c321d6d592786893ce1f855cd374f6554d4016f6324c355b4d3c"
+    },
+    "product-manager-toolkit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1be88a94b1b7c02034bd17d429fcfa4ddecd7146eddad72ab0c44b19da69a159"
+    },
+    "product-strategist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8c7fde73aacb2ec26380ab7750190453f75f7f112ab66c5a802733f0c156a520"
+    },
+    "production-code-audit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4b7c06f9f036acd19027496340a4ebc344b0370379737707c120252eede1c0c9"
+    },
+    "professional-communication": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "80bc71b76f37e46ae5628205c004a02c696d808ea63539ef7260c92222e1de98"
+    },
+    "programmatic-seo": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "df62848ddf2c502256b927b318b923ef32238d712db63b95e170cdac80931a94"
+    },
+    "prompt-caching": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cb1aae7f0ec3d965bd384f148ec9a7d334ebdcf0581c1b561d2a5425428c7e61"
+    },
+    "prompt-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8fdaa14384b7a83271e1a03bf0828627dd78525aa3c65ccb2566519623ad96ae"
+    },
+    "prompt-engineering": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c4d5b6a2e49423e586aed0d5e198b8c452fd2b56a82ee02d2fa66ae60f099556"
+    },
+    "prompt-library": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7439e23c8863eb415b1fb058d921ff8b0dd694d9e49fa281415ed3e36fae5c6a"
+    },
+    "protocolsio-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e441f090836743eeb0fe31963b9536975c7d5439675b2d696d6d420847d67211"
+    },
+    "pubchem-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "713252915dc4ab85780baa4cd1c6132c64f18cc37959da4430a437828158bdbd"
+    },
+    "pubmed-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b7aac78c8514114a3f094174f8489068eb3aae88f6a89c970c45e99fc89fe433"
+    },
+    "pufferlib": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "924cc1ce282bce65c24a1b29b723d360d3e16fb1db761d4e086935a526a63e2a"
+    },
+    "pydeseq2": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5003bbb5b6d11ffb1ef2d1f40129b0cb546aadf60d479ff86b3ab9f6186192bd"
+    },
+    "pydicom": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c1339efb022f8eed4ec72922de40c7bae53885e12f3646c34cbd4bf2b8eb2d57"
+    },
+    "pyhealth": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "036d3bc163fab013c6ad0ec7cefd21f5806120f3a00394e27a4f925af3e5ed3a"
+    },
+    "pylabrobot": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e987494f47ff6e4932688871d9a58564560ee372c13ef3b211c0cb61ae26666f"
+    },
+    "pymatgen": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b7c6fcf2c9eda377bc90dfe8a2647894cd73fb23f1e6efb4084738e19ebf5198"
+    },
+    "pymc-bayesian-modeling": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fdd6df3755f801215e732852082d1c88ebb8c46127913819f04e6ffc65f39cfe"
+    },
+    "pymoo": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e71c68e3c0f0216d4d1ab7894cce9e6307826b7f90f176095d748741bca67d3c"
+    },
+    "pyopenms": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "375886471b29ea7cb81904f1db3a59ae2ff4d9990984a538a8c9ebeea77161bc"
+    },
+    "pysam": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a9ddec5c10e1bb1d48259da996803529d5ba0c6dee6318c8ea82a9bb35f4063f"
+    },
+    "pytdc": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "00fc82feaf4c2b5aea98e4e401869a64f797d4a7750cd0469263515a9d833dce"
+    },
+    "python-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "43a9de3f27a62b6ea5bd2e30b4d45ec71bf1467bbae67067dfcc83ce83bbcfc3"
+    },
+    "pytorch-fsdp": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "21a0bac9f1943c5861d90a17e0f073d26c3dc15acb9d1050e729153ce2dc41d7"
+    },
+    "pytorch-lightning": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4518728be0825fd4ac8c93df26fbc45d6eb0f81ed2b556269f1e40bb4d98edc4"
+    },
+    "pyvene-interventions": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "32d0365706650f072e19b209866058f5d095bbf9f7cb0fed3cb3a145c76edaec"
+    },
+    "qa-test-planner": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8ee0d30acc14528eff0cf0b953f5adb6185a8ed65a72a489ae9297ddfee000b0"
+    },
+    "qdrant-vector-search": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "85e1e9fe69ae564e1b87b2bf52876ceb3eabb9e4266ea171f774f55a1e2c3352"
+    },
+    "qiskit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "48cbebcb3c756f3dd46c0ac804fe6cb17b05a5a18ad4ef352a31e81240e30268"
+    },
+    "qms-audit-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "33c22947faa4eccf6e692581a03ccd7c4fa3d6b98996455963e1e6ed65bc75a2"
+    },
+    "quality-documentation-manager": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "600c1efa1cd9c5fe31c9a93891ae2b65bfafdd94d7897614b1379226b7a21bc3"
+    },
+    "quality-manager-qmr": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "31dd0ecbfba1b87f06cf8e4ef1eec955137ed5533f67d8041400945f0bba41e0"
+    },
+    "quality-manager-qms-iso13485": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c46c3be27cc72ebc8e7756bbf0bdefd8c7981637422a1a178aad7a4382822643"
+    },
+    "quantizing-models-bitsandbytes": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "07c2dd3ffa62869390328a28324946465e363dc4e00469eb6d24ee8cdacb3726"
+    },
+    "qutip": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c3b3040ee4b0729ba54d7d9e3da88f6d531519b79baca686729ebdca0e5e8606"
+    },
+    "raffle-winner-picker": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0918819700109196ab695d3e3a0945da650fb0d889896e154b6a0a321b8deda3"
+    },
+    "rag-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "888777b6ee6b0710d00bb7096c8acf8a8b29da8855882f33cc8faded47887e8f"
+    },
+    "rag-implementation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ce8a9eb0a45ffe5873fc4a4f5098b5cfb52726eacb9ac195409d922c019d1cd9"
+    },
+    "railway-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ca0016de17f3c7d25f75c2a2284ec654f7042505d0cb38b069b201ae25862b53"
+    },
+    "railway-deploy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "18409fc18d577c946c86f49d6ca10bf3a8d466738ee56c6cc3915e7bf9e65fcb"
+    },
+    "railway-deployment": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2860b8b9a713f01f8ea694a73ff2a9f7bbf40f79c49aee61f1e521b5e5b8259f"
+    },
+    "railway-docs": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8c1f5c3a0aad02155eba881e83f09ab7b3a8bb011ce56a13287aab8557f208fd"
+    },
+    "railway-domain": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "20f73ddf5a1762cb928eed705c73a75aa37b2c9f0b604a1336ab3238027792ee"
+    },
+    "railway-environment": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "63f7cc175b54abec4c49491b7dadaf6a03a519be66b403971e904574fbe64713"
+    },
+    "railway-metrics": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d0c7138ca50378790623b1cdf488c85bcb0f85836174e1c99434c874e522e8f3"
+    },
+    "railway-new": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e531d2f56a15e4f77b6e3c2213f03d06c016d6caeccddc1dac10bdeab8145a5c"
+    },
+    "railway-projects": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2a196971d9d235624ca14f7ba4622c9063aab3a0eebeaa97e3cb78c2621dffbe"
+    },
+    "railway-service": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "323f1eea525da25d139a5903028d5b28cdd79fcb0cf20ee92540c72bee5c650c"
+    },
+    "railway-status": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a22be471abc690b87cd67d69dc08c2bf5fb02c8b200856cec3115f9be98bea75"
+    },
+    "railway-templates": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ca2c35bf491be283df7963f96f56bc279512ddfe4b438872134dc910a3f7f2c5"
+    },
+    "rdkit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2f09a44ea7440c8e7d9f7322ba95fa725db9e92fd3cdcff9519f13f4bccf4afb"
+    },
+    "react-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "11ca78c0f5ac7585286331df5ba0ba6a9f3014b0844abea7fb01de5f7933f21e"
+    },
+    "react-dev": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "da3caa5f2bfd7274fad3f08524ff3ad4f427978773c3e77e7b14e44aaac31d78"
+    },
+    "react-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ddec119b3bde73b8aa93ffb5f0e7bbc17fa7c9dcdec813edb2511925806ffe2e"
+    },
+    "react-ui-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "60d5bc3b421fd351c0e69e4f96bae87de60ef415429a70c0691d36360c298b2b"
+    },
+    "react-useeffect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1fdf524f8335afac6f44d3460d6d20e71db9c1d14643e4a31ea17d6463504447"
+    },
+    "reactome-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5a85dba26dc642834689d39e06498113a24b142717adce4355a2492db686138b"
+    },
+    "receiving-code-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "855ce5b4866b87dc442af3852559c148d6402ab551f8953c610c9ff778c4f018"
+    },
+    "red-team-tactics": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5f9af33d1109245174eeec54f638ebeee31828a3889bbb4450b387e42124d2fc"
+    },
+    "reducing-entropy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "61312c5abe8003bc1fd0a8e1ec208d2af61bdd6c93fd0fa36ae1a2fa37f08e62"
+    },
+    "referral-program": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6c0e2ef66e0b8ab2f77bcc375b3c63fb75c5350db86762a0548aef25e16f8fbc"
+    },
+    "regulatory-affairs-head": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f75777266662488dcebf191e2e7d195e473063fa11086b76682764ac9abd1147"
+    },
+    "remotion": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a7a6e283151f4217b3e4655be17d70495c0e34952f4ad94d44d38ffeb946df50"
+    },
+    "remotion-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ecff049ce3575d4312f78ac096d869f44966e585426e5ee9ad1e8dbaa522d883"
+    },
+    "render-deploy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6631bf09857d256d199e13da16966fbb0fad2ad3d9f181030c3af5f7d544624a"
+    },
+    "requesting-code-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "45bc3d93df767608bc73b86f69f20fbb8d21e65fe784873d0f0b43e4ac67b384"
+    },
+    "requirements-clarity": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a23371d1cd5d8cfdd62af76ce0cd462095d35dfd612587ed30528b4a54105771"
+    },
+    "research-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3a22603343abff2eb98cb88ef6cfb97d7e2fee4b88fc6e0b984e3914c446a720"
+    },
+    "research-grants": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fbcce327984010ed0be08d1acbe5f2b767be6519815a642f3f7a3ffa5ce39614"
+    },
+    "research-lookup": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "36799d5259f85ab4325b1211978a69add77fef515eac828b485478314b98a169"
+    },
+    "risk-management-specialist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ff130bf980369a50d01a0f90a354dcb1422e72e551b79ee8e500652fbf1dc690"
+    },
+    "roier-seo": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dda9c3136d33237e996fd2b70d3c3038aee7b64f8bd8f592fe8e2a25215bbe54"
+    },
+    "rust-cli-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b97107666686dbcdb462bf19d942934667a32d18ce9f6b84798bea28cab1345d"
+    },
+    "rwkv-architecture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d3d70b5a7f660c976598d403f8134192490d76fc2de4b5df60460fca41b8b8a6"
+    },
+    "salesforce-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0590f73578aaf615ab1dac01bbfefb3f3bb8fab4ac75071536283db5e324aed7"
+    },
+    "scanpy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "605f6b5314e1e16e15d1eb6fb065588b88d0c6b8fb0a2ca98966605c1ef4ea0f"
+    },
+    "schema-markup": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "98cf9e71347a834a1184d1515573e922214e4fb5e0fb5cda8da075d92e1a4957"
+    },
+    "scientific-brainstorming": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b737ffd6f4983a55b31cd7d30fde7358f31047fa6a028291b3e95edd8cf1c5db"
+    },
+    "scientific-critical-thinking": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1964eedcd149315330ad22f769f893af67acd51dc462bbbdc6fde97e4338bf66"
+    },
+    "scientific-schematics": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "122800bd3762df55f9e58d67ae406b41002252f45acd9b0de23a6ca8d01ea86f"
+    },
+    "scientific-slides": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "be8de55f2c8162b022ba0ba82616eb40fec898a0e2f06cabc905a6f24c746710"
+    },
+    "scientific-visualization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "764e9b5031a195d2cc9fd4207f58ca755e0ccc8917e270ab2eb84c086af1773f"
+    },
+    "scientific-writing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b65b6b7591d5192aef31792d4291dd267d5f5a31fd5a5923e5dc4719c18700a8"
+    },
+    "scikit-bio": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d7a48d898938c38b7f867403d1609c40a06d401961d8d8d49cc48696a97ee0ad"
+    },
+    "scikit-learn": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "34ec8dd2e3f30fc4356def435c4918e68c539b761ec1369154753e7a9b91275b"
+    },
+    "scikit-survival": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3c4a712d3e94d008a0d9ef097d3e16189f4892bde9cf52111b7f7a3617881076"
+    },
+    "screenshot": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e5201a2f01a68b8eae09774853c122605498b6db60ea02ad2d7827f046df3d9a"
+    },
+    "screenshot-feature-extractor": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "81c8de01204c102a5fb28962918caac104faa43b3c3f36815804ccd97c739453"
+    },
+    "scroll-experience": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ba5138a41c7f58f4ecedad23a69ec57613b1760bef086f923c386f5dc39e6202"
+    },
+    "scvi-tools": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "54a833fdcbe2e15f9066c8406a66716513e0416266e175281e0503b1e5714fdd"
+    },
+    "seaborn": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8b40700157913b8e24b9b304c40299b509fbd2c15159733ee3f1806b0edd3e7c"
+    },
+    "security-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ce47a30fd15b47f829074c186ebdd8ff4449eebeeff509d7c4faf3a07633c41d"
+    },
+    "security-compliance": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "747a25a95f4cdca6bfe132515251b989c315c855dc2ad7591f52b64c139b9d4e"
+    },
+    "security-ownership-map": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9e2c5a1a08056be8b6ff5953ed05cf7e947a15c88fc8e4fba2efaa213ebe3f3e"
+    },
+    "security-review": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5d137f0304ea45675b78171f4ec4379dd14306851a86314512a0683eafc2da63"
+    },
+    "security-threat-model": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e2198bc2b4c67c1ae12392f74406aecd6227b0cb1a2fb9cc36627bf3073d87b4"
+    },
+    "segment-anything-model": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dd6ab7284eb1c2c808812cf47d44d0b41af54df84c0728bc6a9c289c6c851ad9"
+    },
+    "segment-cdp": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "60889c3e6aa98de07927838661c15055e93dfc12553935fb8cae8d6b51de3623"
+    },
+    "senior-architect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "03f75291acbd3934c4a1d8aa73b24357d74d848fa587bf5d7dc0a90e7437b5b7"
+    },
+    "senior-backend": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c15972382ed35ec141f419c3caec031156721d85b26c29fd22cd4cf9991acd7b"
+    },
+    "senior-computer-vision": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9bc4400ddfe302fd2406ba1cec5e69d77e59b6b27548df20246328c656a1ca73"
+    },
+    "senior-data-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "16514d8e6382d6d3377d57a09f04cccbfc1fbed274c4fadd64d2340dea61fe2c"
+    },
+    "senior-data-scientist": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "42804288d4f9036199a5e8ff73ceda214ae8c12bf04e712577b0eb9751c69710"
+    },
+    "senior-devops": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1bcff120b84c851b3c16aa3abc9c66b1ffd93c9482616467a4cca1c86b66c809"
+    },
+    "senior-frontend": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e0e83f80d3eb965b1e36acb8a336333a5db1152ddacdc07e19bd715187a6a455"
+    },
+    "senior-fullstack": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f5e896578aa49e4d9b573c9950336cada44821bf7a1d4771b547c05bf2e42449"
+    },
+    "senior-ml-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7d570f11118b12a8be7eb893439fc3baa280aba625b7a96e33302cb4501156b7"
+    },
+    "senior-prompt-engineer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "64350494e583aa1d3c3b9a8a0623f217bf7cff04a685cea23811dbb7edfa47f6"
+    },
+    "senior-qa": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d08a98dae716b409de5ef92f0a50278b2b6add0e4360cbb70456b5b9957a8de3"
+    },
+    "senior-secops": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "506dafd7c132e4d2a22778784bb7af6009588d39e04f5d7075ab62a2895a22b9"
+    },
+    "senior-security": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9489abd6ae7b28d6d7fba1a75cdcc78cb370558d9c3129cc6a0276bc1630823a"
+    },
+    "sentence-transformers": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b1ec651d05d41b826f03eaf153444b63891817e82bfdd22db2f08ceda5b1edac"
+    },
+    "sentencepiece": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "7ee840480f074a8cb519305773c667b15148be3b54c337e0d463f94a30a62336"
+    },
+    "seo": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "680cc12a17e9308b4592a2751db51615c618993f75362cb8e64207f6355a8c63"
+    },
+    "seo-audit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c3cc327b68800b9e3a221533a488fa62cc4292d0fd42dbdced5a0c5e2ab1df7e"
+    },
+    "seo-fundamentals": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "72650aab70956ffb5ebac7877d6631356900da0ab33e50499312a4b1c3c0aa5d"
+    },
+    "server-management": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2e1a9dd7f0c20ad6d74c1c394147a29cd99688e94d64ae32eb260b1c94d3c416"
+    },
+    "serving-llms-vllm": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8d51c09bf42a8592a7e84fa179ceaed56b83b6fa1d682f002967d45eb40469e2"
+    },
+    "session-handoff": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "6401b3a156f4f756bb6faf54a633b3d092aea822115ef26858a8a6ce60b58a8e"
+    },
+    "sglang": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0b297a29b523df13650c1b516f138818ae6997bc53ce6d1057c9c5de117a8c7c"
+    },
+    "shap": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a748571500fd4bc04949cde54c75575b04d0a57be277f3fc0b458ed68455908c"
+    },
+    "ship-learn-next": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4df93407ee5223f5905178f134839dd0e100a5ddaba88c0e6a408dacb468d942"
+    },
+    "shopify-apps": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "df99d346e61e2f5c2ded9b0f27ca6e75b7fb2c44833ae6abd0c7e7a83ef0dcbc"
+    },
+    "shopify-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "48af259f6381b4bcd172ec991e6b699de46d4c366824babe4d2ea08a35ac78b4"
+    },
+    "signup-flow-cro": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2353b78762610839d97e89a787eb1f0f25ab54ac7aec5118473aebd288d9e5a8"
+    },
+    "simpo-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2a73811838947cc2f940baead0d9a317124dd37d383a098dba6128f13ed3ec9a"
+    },
+    "simpy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9bb4d3b8973cd9edbfd6c8075cd6bcc8ac8664d4fdcbd0ca807c3d0b6037e5dc"
+    },
+    "skill-creation-guide": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "63e9612f1642d88e904e0df6fb071779f3a216f26213d143dbf6147f5f4905cc"
+    },
+    "skill-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3bc61dd979ebedf0f1907755dd72af7dc70fb5e92bd2d20219fc26e76f5b0d85"
+    },
+    "skill-developer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2301853f62abefc6e2671b789aa83b2e0333048e25f4a22f82f0cc0b64dd2ae6"
+    },
+    "skill-installer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "455163d9fffc9fe67bd7abfc581f4050b756c0cc06da13ad8e558c5b30ebfa4a"
+    },
+    "skill-judge": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "14aa05080e7bb08f1da33a32c6e65e41ae67375f09747ab0a3432e3ffbf8506a"
+    },
+    "skill-share": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1c89bff64e8759680be02473463800e328fe810e7328bc144ae8b2308bd6f687"
+    },
+    "skypilot-multi-cloud-orchestration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d2f7fdf7364b9c9f76572711690466d5cc947396b661fed409e509dccbea7358"
+    },
+    "slack-bot-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "49436f821ab5c5089ba065339ba221e2738de92b08e924e0fd2b5c8af03a4c92"
+    },
+    "slack-gif-creator": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e6ee3f4b80444460bee4044a7b225748398e0aa3eeb019ad945d6e91570a6ceb"
+    },
+    "slime-rl-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "089474429511584f3448a08bfec416ef14685dac62c4b3613bee019d1289d826"
+    },
+    "social-content": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "cd8737babfbd6746ed0f1b7482343d64b4036a545a193f15adda15b191ee332b"
+    },
+    "software-architecture": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "994fdb5e73bfe2739aaf455c93e393002894bd549a02ebe5946430ef78af5aa7"
+    },
+    "sora": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f656d17e8cee921f9668d89c93a43121165eaa00c6f07c41f79bf98e053528f0"
+    },
+    "sparse-autoencoder-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "363ae94599c94832c18e762350d3f858ac086aaa2ed94ed6c79f2fd41cca6b11"
+    },
+    "speculative-decoding": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "eca8b02d2b6d6cfaca5d2013103c8ecdef53b174a90388ee4198e4bbdb6dde6a"
+    },
+    "speech": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4770c0605d28dcde43417df9699d106e5bd899cd1e871e2a752b6021218ddcba"
+    },
+    "spreadsheet": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1afaec31c8307ae578efb8e18cc6c7ff1c4bb4357201f87a22578434e17be7ce"
+    },
+    "stable-baselines3": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "22866d24492bc14eb473cb272fe61a8fca59fca35f87c4525503d26e3cede312"
+    },
+    "stable-diffusion-image-generation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1a7f74e63f53cd6904734f3ec6a8e9a74e649c6b0daf192742e93b804b717300"
+    },
+    "statistical-analysis": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "56ba09c3330a2d5b921f219da6cd427d9c1fede07544107c0938162210f1f01e"
+    },
+    "statsmodels": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a1c24864b725de84fd39dc0d6937add99fa3bc233c934a8049b27f03b5200a49"
+    },
+    "string-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1d39e64653d4901cd145f022645b1117be71391bbf300c0e7d0190d315439de9"
+    },
+    "stripe-integration": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3f451da7569efd254f5a9fed6b2ea04b9e0204fa5207c3b6006734b4d4ea570f"
+    },
+    "subagent-driven-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b68a001c693f617d1c994a66b17f55d25ce94405e0b522d84a6ed5b1ce78a719"
+    },
+    "supabase-postgres-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4ca30065b3947eb024a6161e295ad8affbbf3cb71da947becabc0d1b4f2217d8"
+    },
+    "sympy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4b49b1b103e4425d34ccfd244aa95927cd8e4373200a98a14b99f5ec52315cab"
+    },
+    "systematic-debugging": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "76fbc4973428879e433a5a205ff29fdc993ca940d92d8dfa874997bac6c16ff2"
+    },
+    "tailwind-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f290ab4c14cc322a2631afec394d711dff83ca0c5b05322d03e14a4bc6859674"
+    },
+    "task-execution-engine": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "816db7156c6901e3255ad211b1cd6e62234d555ae0425c4a5a4c680ef1c65aeb"
+    },
+    "tavily-web": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b3907e355f52b55abd1ebb996d711ce8ed619229a639bc6a1cc50e18109931bb"
+    },
+    "tdd-workflow": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "adde44ca11625f88cb470a436c2d9c91aaa357a07eba18d522edc7e868ed8afc"
+    },
+    "telegram-bot-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0443dbe20b2af93f86638c82c087d9040990ff7b688d26a25656530a80b76097"
+    },
+    "telegram-mini-app": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8d242be176cf2c29a0bef82ee1e9baeb976fd4a366ac5f09ce6c7c9f9db4337c"
+    },
+    "template-skill": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "daf176f2cd0030d321982d3e813fd1a794a0b4744c5a92d2931a37001bb40fb9"
+    },
+    "tensorboard": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "81309b7cbadd4eb64ae4ec6ed014d30972e9aaaa9d822a437e805d84fa344786"
+    },
+    "tensorrt-llm": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b5d31427652dfdc965d22e4f86d98dcc79a67e8fd2a3b9938bafe1b4726aaf50"
+    },
+    "test-detect": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5899da35ecaba27324cf32e71cb69ca1ad0238552df07c289c4bea6c98f21e13"
+    },
+    "test-driven-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "dcace03622fa596da5d8f0d2eb7e8d20f0f43f72687d0a29dd0da70af071025e"
+    },
+    "test-fixing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9404587239a0c671be242415afad5e330f54d7f5c4dc39016ac00844ed23e2cf"
+    },
+    "testing-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8ebab54001e9ca5f1e2589f013c8960c8880241d125faaef3496fa96ea20f710"
+    },
+    "theme-factory": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0290eabfd6fea9fcfd59c12de15e3f4046593185089956802b6d48ba1d07f428"
+    },
+    "torch-geometric": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "182e545658256d38fa42ed2a1a29e8c3815b629049f0f0888659d208ac3ff8ba"
+    },
+    "torchdrug": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "088b2a1137a1e88d507ba3461ac567ae271b806f162363b0d59cbbc76647cae4"
+    },
+    "torchforge-rl-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "468b3d860811a6ea011cc36b7fa7f7092c74d7db528348e11b26a77e78360d88"
+    },
+    "training-llms-megatron": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0be441d206a0d094fe977fc621bb6415445837fa4c66e304e5cdd50be331903e"
+    },
+    "transcribe": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f05b08700cda5be5b8de9253d4907e2297550d3ef16e1161afe7faf0d1f07a1e"
+    },
+    "transformer-lens-interpretability": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "fb256fac46513645a0842beb0ef4aa5ec6b3cf5e9e98a53a588e50257e48bf80"
+    },
+    "transformers": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a60a83c586cbe54c15959c23aa5e60e5dd238345d3fca258a4696cae341a7be0"
+    },
+    "treatment-plans": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f32ea32e4c32f302c17c73b6332d369545b33dddee9e76465056f12ed6a5ce2f"
+    },
+    "trigger-dev": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "586fea2d45a4a3ce2a29cd59857d575945997a89c6989bc48f1cc1d369151f95"
+    },
+    "twilio-communications": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e44025b591e374f4a82c995ddac3149e489c5d5a0f23cba02f9565aa3111496d"
+    },
+    "typescript-expert": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e9849ebd067e2b7b620cdbd4d02468215f52d03ba7ad7830e9d980f13bc3a58e"
+    },
+    "ui-design-system": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "df7ee532a89043b7964152ea84a9794d0faefadad255bfb354d9a6997fdd1846"
+    },
+    "ui-ux-pro-max": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "adab776dc60f4f3466185318575abe670981c64b3584368dbb09f985d2ac0965"
+    },
+    "umap-learn": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "21c8ff06d6b72da4e6cc3392bbca11f1889feb32921dbe2081b7dfc606d37b4b"
+    },
+    "uniprot-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e0e10f5441b86c6d3dace099d9609968e0c7687118b7f5f4209f2b685d53add1"
+    },
+    "unsloth": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "49aa02ff1761e1faa076ad7f883b09e6d93d54bf21e9082f1260ad50e5242d79"
+    },
+    "upstash-qstash": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8861b7fee42604c65df1820b870f0e5e4da5b6d1aa5eae59ddd1f3714b1b958c"
+    },
+    "using-git-worktrees": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e2049fc84856389967ad34a3c67cb6b270a479644cd2973b014465bbc042bf43"
+    },
+    "using-neon": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "209cec20e18e827b33bd80d8802f824aa45bc9a323eb966cf34f74df284d608c"
+    },
+    "using-superpowers": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "4ad63d02dc3ef9120d02090d1fa68d9f6fe2551c04e740a2178e4f57e38ef60f"
+    },
+    "uspto-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0c50c649941e4461ef12c5a6c81d7657a9a12c8a523714e5ed28cb0ba79ae75c"
+    },
+    "ux-researcher-designer": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "c710ba2b486644d58e305e2d5a2631d8b04bb04ff7cfb07529810c2326631bbb"
+    },
+    "vaex": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "2472fe97d4bab9c23a8182f2530ed9ac134866d5082fa509d8cdc5d36802a3d7"
+    },
+    "venue-templates": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ef3173ae12338cdfb96db16699fd990e1db53349577597aaf9527e4af59ea542"
+    },
+    "vercel-deploy": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "56d5571ea0f83b7271fc8bdc1ca016b9efb64b1df9d59d92467139dc9966bef1"
+    },
+    "vercel-deployment": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8b222596a0b5b2e87b231aeb2ef8d895c6c96d61f42932c8ad63d5aa4725d400"
+    },
+    "vercel-react-best-practices": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "0152317e3e11aaec2fd3675d7f0f88bff9b0388be78cf482a7e0657dc7d70239"
+    },
+    "verification-before-completion": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "a601754d7bc96487b23101f2ed669e71df6468f6a005fa17d615f45e17d385c7"
+    },
+    "verl-rl-training": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e2d5118fa530282b7758e94f6a70914bab4ac577634bde91b3808a96c9fea322"
+    },
+    "video-downloader": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3c745bc246c20930bd059d2d72ce52ad934050c16f7215ab6b3aa8657c9e40d0"
+    },
+    "viral-generator-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9b9455d1b9792121c0f78b07755320af60c7f499a187a95996919df42f11bec1"
+    },
+    "voice-agents": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3921a4f0ef373672b0385f5a35664ae1ea3c89eca1f0d4f3fd936c7184fcf69d"
+    },
+    "voice-ai-development": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e8ef2cce0c5ba77d9a40f6915a6de705a2fd3722c9e5fd99a48aafff1ca10629"
+    },
+    "vulnerability-scanner": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "923f774e1df46f916be0757303eb5a8af1bb5d46c6b91ac0f42387c1697f1063"
+    },
+    "web-artifacts-builder": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8506451d6d3a3494ddca091b0f0ff7a9961ddd4301df2b6264dd3f98bed75b0a"
+    },
+    "web-design-guidelines": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "9e3990bbf0bae401ccc1d74608e87ef5d1879bce925121f72f049877ac86963d"
+    },
+    "web-performance-optimization": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "ae9ce304ef1454ae440e7db4772ce3831621bb15cc637eda28c7505e93dd99ff"
+    },
+    "web-quality-audit": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "04aeec0ff9071fc9cfb5b848a25946f8ca8586c842e50da4c1abbba8ceeaec40"
+    },
+    "web-to-markdown": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "af7462aa34043006b760c2059ab89f4eeff647be25db7ebbe9d45b95f0078ad2"
+    },
+    "webapp-testing": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "5a6a18c0137cfbabec058e86fc1c8f6919d846a7b2a34ee978cc8ced866ee2e5"
+    },
+    "weights-and-biases": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "061d03ebf73dadb198a389d0deb5222287290571b6a689eef5d074d58b834e1b"
+    },
+    "whisper": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "b5abdd770c3ca1cbea146649a74ba8a27fff2d6cb2e2efc563e88cb708269545"
+    },
+    "workflow-automation": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "1f962d42059f8a3b442020ee8b4af64022a50d0612393eeeff176a6348a3e0e2"
+    },
+    "writing-clearly-and-concisely": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "e699e58a3236a491cba7959014e4834ab014aec557be0a5c30ae802770b19c0f"
+    },
+    "writing-plans": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "798ba061d5ca81fdbdbc41524038ae29856d43376a4cc9056459d496d70fb76e"
+    },
+    "writing-skills": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "f7ea7858bda5a4e406b91910fcc46ea3373bec4487f8dec98d4780a48dd449cf"
+    },
+    "x-twitter-scraper": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "3aaccaf2ab15be34be9057714fe75e915ab8e14e88c4a82ab8a86f6f493c2849"
+    },
+    "xlsx": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "8dbd767f6cb0ccb5644308fd7c0591e0841828cd00b8b3a0539480a3c9dcd626"
+    },
+    "yeet": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "56a3b068d1a62aa0605e7ad1c618787557ab236cc390fa23f88e18980272adb1"
+    },
+    "zapier-make-patterns": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "65444f469b361665ee8ffa08229fdd5ac35997bae6d11e4f0e998b002d5d6f06"
+    },
+    "zapier-workflows": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "d1fdc71154eea1a90ed406b3aaa26ade92d1e7ec9ca1466d9438de80cb579a35"
+    },
+    "zarr-python": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "40f00ae93d740d8dc813e41a0fbe257b921e7109cc7e8bca758ceab924f2f774"
+    },
+    "zinc-database": {
+      "source": "davila7/claude-code-templates",
+      "sourceType": "github",
+      "computedHash": "567c9148687bbdfb8f81fc5837e5a589e568cdaeb3fc105d61123ee94c0f09ca"
+    }
+  }
+}
