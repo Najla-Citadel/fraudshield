@@ -156,18 +156,23 @@ class MainActivity: FlutterActivity() {
         }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ATTESTATION_CHANNEL).setMethodCallHandler { call, result ->
-            if (call.method == "getIntegrityToken") {
-                val nonce = call.argument<String>("nonce")
-                val cloudProjectNumber = call.argument<String>("cloudProjectNumber")?.toLong()
+            when (call.method) {
+                "getIntegrityToken" -> {
+                    val nonce = call.argument<String>("nonce")
+                    val cloudProjectNumber = call.argument<String>("cloudProjectNumber")?.toLong()
 
-                if (nonce == null || cloudProjectNumber == null) {
-                    result.error("INVALID_ARGUMENT", "Nonce and CloudProjectNumber are required", null)
-                    return@setMethodCallHandler
+                    if (nonce == null || cloudProjectNumber == null) {
+                        result.error("INVALID_ARGUMENT", "Nonce and CloudProjectNumber are required", null)
+                        return@setMethodCallHandler
+                    }
+
+                    requestIntegrityToken(nonce, cloudProjectNumber, result)
                 }
-
-                requestIntegrityToken(nonce, cloudProjectNumber, result)
-            } else {
-                result.notImplemented()
+                "getSecuritySignals" -> {
+                    val signals = getSecuritySignals()
+                    result.success(signals)
+                }
+                else -> result.notImplemented()
             }
         }
     }
@@ -339,5 +344,91 @@ class MainActivity: FlutterActivity() {
         risk["reasons"] = reasons
         
         return risk
+    }
+    private fun getSecuritySignals(): Map<String, Any> {
+        val signals = mutableMapOf<String, Any>()
+        
+        // 1. Debugger Detection
+        signals["isDebuggerConnected"] = android.os.Debug.isDebuggerConnected()
+        
+        // 2. Emulator Detection (Deep)
+        val isEmulator = Build.FINGERPRINT.contains("generic") ||
+                Build.FINGERPRINT.contains("unknown") ||
+                Build.MODEL.contains("google_sdk") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86") ||
+                Build.BOARD == "QC_Reference_Phone" || // Native bridge often has this
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.HOST.startsWith("Build") || // Android Studio Build
+                Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic") ||
+                "google_sdk" == Build.PRODUCT
+        signals["isEmulator"] = isEmulator
+
+        // 3. Hooking Framework Detection (Frida/Xposed)
+        signals["isFridaDetected"] = detectFrida()
+        signals["isXposedDetected"] = detectXposed()
+        
+        // 4. Root Detection (Basic)
+        signals["isRooted"] = checkRootMethod()
+
+        return signals
+    }
+
+    private fun detectFrida(): Boolean {
+        val fridaFiles = arrayOf(
+            "/data/local/tmp/re.frida.server",
+            "/data/local/tmp/frida-server",
+            "/usr/bin/frida-server"
+        )
+        for (path in fridaFiles) {
+            if (java.io.File(path).exists()) return true
+        }
+        
+        // Check for common Frida port (fast check, doesn't block UI if local)
+        try {
+            val socket = java.net.Socket("127.0.0.1", 27042)
+            socket.close()
+            return true
+        } catch (e: Exception) {
+            // Port closed as expected
+        }
+        
+        return false
+    }
+
+    private fun detectXposed(): Boolean {
+        try {
+            // Check for XposedBridge class
+            Class.forName("de.robv.android.xposed.XposedBridge")
+            return true
+        } catch (e: ClassNotFoundException) {
+            // Not detected
+        }
+        
+        // Check for Xposed packages
+        val packages = packageManager.getInstalledPackages(0)
+        for (pkg in packages) {
+            if (pkg.packageName.contains("de.robv.android.xposed.installer")) return true
+        }
+        
+        return false
+    }
+
+    private fun checkRootMethod(): Boolean {
+        val paths = arrayOf(
+            "/system/app/Superuser.apk",
+            "/sbin/su",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su"
+        )
+        for (path in paths) {
+            if (java.io.File(path).exists()) return true
+        }
+        return false
     }
 }

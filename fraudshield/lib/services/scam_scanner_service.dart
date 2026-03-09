@@ -14,13 +14,20 @@ class ScamScannerResult {
   });
 
   factory ScamScannerResult.fromMap(Map<String, dynamic> map) {
+    DateTime parsedDate;
+    if (map['createdAt'] != null) {
+      parsedDate = DateTime.parse(map['createdAt'] as String);
+    } else {
+      parsedDate = DateTime.fromMillisecondsSinceEpoch(
+          map['timestamp'] as int? ?? DateTime.now().millisecondsSinceEpoch);
+    }
+
     return ScamScannerResult(
       totalAppsScanned: map['totalAppsScanned'] as int? ?? 0,
       riskyApps: (map['riskyApps'] as List? ?? [])
           .map((app) => RiskyApp.fromMap(Map<String, dynamic>.from(app)))
           .toList(),
-      timestamp: DateTime.fromMillisecondsSinceEpoch(
-          map['timestamp'] as int? ?? DateTime.now().millisecondsSinceEpoch),
+      timestamp: parsedDate,
     );
   }
 
@@ -75,8 +82,14 @@ class RiskyApp {
 
 class ScamScannerService {
   static const _channel = MethodChannel('com.citadel.fraudshield/scanner');
+  static bool _isScanning = false;
 
   static Future<ScamScannerResult> startFullScan() async {
+    if (_isScanning) {
+      throw Exception('Scan already in progress');
+    }
+    
+    _isScanning = true;
     try {
       final Map<String, dynamic> resultData = Map<String, dynamic>.from(
         await _channel.invokeMethod('startFullScan') as Map,
@@ -119,6 +132,8 @@ class ScamScannerService {
     } catch (e) {
       log('Unexpected error during scan: $e');
       rethrow;
+    } finally {
+      _isScanning = false;
     }
   }
   static Future<bool> uninstallApp(String packageName) async {

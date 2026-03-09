@@ -48,12 +48,18 @@ class AttestationService {
       }
       debugPrint('🛡️ AttestationService: Token obtained (length: ${token.length})');
 
-      // 3. Submit for Verification
+      // 3. Fetch Advanced Security Signals
+      debugPrint('🛡️ AttestationService: Fetching advanced security signals...');
+      final securitySignals = await getSecuritySignals();
+      debugPrint('🛡️ AttestationService: Signals: $securitySignals');
+
+      // 4. Submit for Verification
       debugPrint('🛡️ AttestationService: Submitting to backend for verification...');
       final verificationResult = await _apiService.post('/attestation/verify', {
         'platform': platform,
         'token': token,
         'nonce': nonce,
+        'securitySignals': securitySignals,
         if (Platform.isAndroid) 'packageName': 'com.citadel.fraudshield.v2',
       });
 
@@ -79,6 +85,28 @@ class AttestationService {
     } catch (e) {
       debugPrint('Play Integrity Error: $e');
       return null;
+    }
+  }
+
+  /// Fetches advanced security signals from the native side.
+  /// Detects Frida, Xposed, Emulators, and Debuggers.
+  Future<Map<String, dynamic>> getSecuritySignals() async {
+    try {
+      if (!Platform.isAndroid) {
+        return {
+          'isDebuggerConnected': false,
+          'isEmulator': false,
+          'isFridaDetected': false,
+          'isXposedDetected': false,
+          'isRooted': false,
+        };
+      }
+      
+      final Map<dynamic, dynamic> result = await _channel.invokeMethod('getSecuritySignals');
+      return Map<String, dynamic>.from(result);
+    } catch (e) {
+      debugPrint('🛡️ AttestationService: Error fetching security signals: $e');
+      return {};
     }
   }
 
