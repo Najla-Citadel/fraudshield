@@ -60,6 +60,8 @@ class UserProfile {
   final String id;
   final String? avatar;
   final String? bio;
+  final String? mobile;
+  final String? mailingAddress;
   final int points;
   final int totalPoints;
   final int reputation;
@@ -71,6 +73,8 @@ class UserProfile {
     required this.id,
     this.avatar,
     this.bio,
+    this.mobile,
+    this.mailingAddress,
     this.points = 0,
     this.totalPoints = 0,
     this.reputation = 0,
@@ -84,6 +88,8 @@ class UserProfile {
       id: json['id'] ?? '',
       avatar: json['avatar'],
       bio: json['bio'],
+      mobile: json['mobile'],
+      mailingAddress: json['mailingAddress'],
       points: json['points'] ?? 0,
       totalPoints: json['totalPoints'] ?? 0,
       reputation: json['reputation'] ?? 0,
@@ -98,6 +104,8 @@ class UserProfile {
       'id': id,
       'avatar': avatar,
       'bio': bio,
+      'mobile': mobile,
+      'mailingAddress': mailingAddress,
       'points': points,
       'totalPoints': totalPoints,
       'reputation': reputation,

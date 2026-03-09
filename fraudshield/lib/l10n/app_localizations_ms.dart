@@ -536,6 +536,18 @@ class AppLocalizationsMs extends AppLocalizations {
   String get accountViewProfile => 'Lihat Profil';
 
   @override
+  String get profileFullName => 'Nama Penuh';
+
+  @override
+  String get profilePreferredName => 'Nama Panggilan';
+
+  @override
+  String get profilePreferredNameHint => 'Bagaimana patut kami panggil anda?';
+
+  @override
+  String get profilePhoneNumber => 'Nombor Telefon';
+
+  @override
   String get accountSimulateBankingAlert => 'Simulasi Amaran Perbankan';
 
   @override

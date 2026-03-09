@@ -533,6 +533,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountViewProfile => 'View Profile';
 
   @override
+  String get profileFullName => 'Full Name';
+
+  @override
+  String get profilePreferredName => 'Preferred Name';
+
+  @override
+  String get profilePreferredNameHint => 'How should we call you?';
+
+  @override
+  String get profilePhoneNumber => 'Phone Number';
+
+  @override
   String get accountSimulateBankingAlert => 'Simulate Banking Alert';
 
   @override

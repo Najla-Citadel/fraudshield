@@ -224,12 +224,16 @@ class ApiService {
     String? fullName,
     String? bio,
     String? avatar,
+    String? mobile,
+    String? mailingAddress,
     Map<String, dynamic>? metadata,
   }) async {
     return patch('/auth/profile', {
       if (fullName != null) 'fullName': fullName,
       if (bio != null) 'bio': bio,
       if (avatar != null) 'avatar': avatar,
+      if (mobile != null) 'mobile': mobile,
+      if (mailingAddress != null) 'mailingAddress': mailingAddress,
       if (metadata != null) 'metadata': metadata,
     });
   }

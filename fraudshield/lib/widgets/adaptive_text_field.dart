@@ -9,6 +9,7 @@ class AdaptiveTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType? keyboardType;
   final String? placeholder;
+  final String? hintText;
   final int maxLines;
   final bool? filled;
   final Color? fillColor;
@@ -29,6 +30,7 @@ class AdaptiveTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType,
     this.placeholder,
+    this.hintText,
     this.maxLines = 1,
     this.filled,
     this.fillColor,
@@ -67,7 +69,7 @@ class AdaptiveTextField extends StatelessWidget {
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            placeholder: placeholder ?? label,
+            placeholder: hintText ?? placeholder ?? label,
             maxLines: maxLines,
             autofocus: autofocus,
             readOnly: readOnly,
@@ -121,7 +123,7 @@ class AdaptiveTextField extends StatelessWidget {
                 ? DesignTokens.colors.error
                 : Colors.white.withValues(alpha: 0.5),
           ),
-          hintText: placeholder,
+          hintText: hintText ?? placeholder,
           hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
           prefixIcon: prefixIcon != null
               ? Icon(prefixIcon,

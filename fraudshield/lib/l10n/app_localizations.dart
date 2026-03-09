@@ -1130,6 +1130,30 @@ abstract class AppLocalizations {
   /// **'View Profile'**
   String get accountViewProfile;
 
+  /// No description provided for @profileFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get profileFullName;
+
+  /// No description provided for @profilePreferredName.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Name'**
+  String get profilePreferredName;
+
+  /// No description provided for @profilePreferredNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'How should we call you?'**
+  String get profilePreferredNameHint;
+
+  /// No description provided for @profilePhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get profilePhoneNumber;
+
   /// No description provided for @accountSimulateBankingAlert.
   ///
   /// In en, this message translates to:

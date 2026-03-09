@@ -45,6 +45,7 @@ dependencies:
   record: ^6.0.0
   path_provider: ^2.1.5
   flutter_contacts: ^1.1.9
+  intl_phone_field: ^3.2.0
 
   socket_io_client: ^3.1.2
   flutter_launcher_icons: ^0.14.4

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -8,7 +9,10 @@ import '../design_system/components/app_button.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_snackbar.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'email_verification_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,8 +24,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
+  late TextEditingController _preferredNameController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
+  String? _dialCode;
   bool _isLoading = false;
   bool _isEditing = false;
 
@@ -34,15 +40,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _resetControllers() {
     final user = context.read<AuthProvider>().user;
     _nameController = TextEditingController(text: user?.fullName ?? '');
-    _phoneController = TextEditingController(text: user?.phoneNumber ?? '');
-    _addressController = TextEditingController(
-      text: user?.profile?.metadata?['address']?.toString() ?? '',
+    _preferredNameController = TextEditingController(
+      text: user?.profile?.metadata?['preferredName']?.toString() ?? '',
     );
+    _phoneController = TextEditingController(text: user?.profile?.mobile ?? '');
+    _addressController = TextEditingController(
+      text: user?.profile?.mailingAddress ?? '',
+    );
+    _dialCode = user?.profile?.metadata?['dialCode']?.toString() ?? '+60';
   }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _preferredNameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
     super.dispose();
@@ -58,10 +69,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       await ApiService.instance.updateProfile(
         fullName: _nameController.text.trim(),
+        mobile: _phoneController.text.trim(),
+        mailingAddress: _addressController.text.trim(),
         metadata: {
           ...?currentUser?.profile?.metadata,
-          'address': _addressController.text.trim(),
-          'phoneNumber': _phoneController.text.trim(),
+          'preferredName': _preferredNameController.text.trim(),
+          'dialCode': _dialCode ?? '+60',
         },
       );
 
@@ -139,10 +152,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               SizedBox(height: 20),
               _item(
-                label: 'Full Name',
+                label: AppLocalizations.of(context)!.profileFullName,
                 controller: _nameController,
                 isEditing: _isEditing,
                 icon: LucideIcons.user,
+              ),
+              SizedBox(height: 16),
+              _item(
+                label: AppLocalizations.of(context)!.profilePreferredName,
+                controller: _preferredNameController,
+                isEditing: _isEditing,
+                icon: LucideIcons.userCircle,
+                hintText: AppLocalizations.of(context)!.profilePreferredNameHint,
               ),
               SizedBox(height: 16),
               _item(
@@ -178,12 +199,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
               ),
               SizedBox(height: 16),
-              _item(
-                label: 'Phone Number',
+              _phoneItem(
+                label: AppLocalizations.of(context)!.profilePhoneNumber,
                 controller: _phoneController,
                 isEditing: _isEditing,
                 icon: LucideIcons.smartphone,
-                keyboardType: TextInputType.phone,
               ),
               SizedBox(height: 16),
               _item(
@@ -223,15 +243,98 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           SizedBox(height: 16),
           Text(
-            user?.fullName ?? 'Anonymous',
+            (user?.fullName ?? 'Anonymous').toUpperCase(),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _phoneItem({
+    required String label,
+    required TextEditingController controller,
+    required bool isEditing,
+    required IconData icon,
+  }) {
+    if (isEditing) {
+      return IntlPhoneField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+          ),
+          filled: true,
+          fillColor: Colors.white.withValues(alpha: 0.05),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+            borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+            borderSide: BorderSide(color: DesignTokens.colors.accentGreen.withValues(alpha: 0.5)),
+          ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: DesignTokens.spacing.md,
+            vertical: DesignTokens.spacing.md,
+          ),
+        ),
+        initialCountryCode: 'MY',
+        disableLengthCheck: true,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        style: const TextStyle(color: Colors.white, fontSize: 15),
+        dropdownTextStyle: const TextStyle(color: Colors.white),
+        pickerDialogStyle: PickerDialogStyle(
+          backgroundColor: const Color(0xFF0F172A),
+          countryCodeStyle: const TextStyle(color: Colors.white),
+          countryNameStyle: const TextStyle(color: Colors.white),
+          searchFieldInputDecoration: InputDecoration(
+            hintText: 'Search country',
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+            prefixIcon: Icon(LucideIcons.search, color: Colors.white.withValues(alpha: 0.5), size: 18),
+          ),
+        ),
+        keyboardType: TextInputType.number,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        onCountryChanged: (country) {
+          setState(() {
+            _dialCode = '+${country.dialCode}';
+          });
+        },
+        onChanged: (phone) {
+          // Instead of manually setting controller.text in onChanged (which can cause desync),
+          // we use it only to check if we should strip a leading zero
+          if (phone.number.startsWith('0')) {
+            final newNumber = phone.number.substring(1);
+            // Using microtask to avoid changing text while the widget is still processing the event
+            Future.microtask(() {
+              controller.text = newNumber;
+              controller.selection = TextSelection.fromPosition(
+                TextPosition(offset: newNumber.length),
+              );
+            });
+          }
+        },
+      );
+    }
+
+    return _item(
+      label: label,
+      value: '${_dialCode ?? "+60"} ${controller.text}',
+      isEditing: false,
+      icon: icon,
     );
   }
 
@@ -244,6 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Widget? trailing,
     TextInputType? keyboardType,
     int maxLines = 1,
+    String? hintText,
   }) {
     if (isEditing && controller != null) {
       return AdaptiveTextField(
@@ -252,6 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         prefixIcon: icon,
         keyboardType: keyboardType,
         maxLines: maxLines,
+        hintText: hintText,
       );
     }
 
@@ -300,3 +405,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
