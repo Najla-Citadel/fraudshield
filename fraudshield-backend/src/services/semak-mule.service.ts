@@ -48,7 +48,18 @@ export class SemakMuleService {
         reportsCount: number;
         recommendation: string;
     }> {
-        // ── TODO: replace block below with real API call ──────────────────────
+        // In production, return "not found" until real PDRM API is integrated
+        // This prevents mock data from affecting real risk scores
+        if (process.env.NODE_ENV === 'production') {
+            return {
+                found: false,
+                riskLevel: 'low',
+                reportsCount: 0,
+                recommendation: `Official Semak Mule database check not yet available. Community intelligence is used instead.`,
+            };
+        }
+
+        // ── MOCK for development/staging only ─────────────────────────────────
         // Simulate network latency of the real endpoint
         await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -69,6 +80,6 @@ export class SemakMuleService {
             reportsCount: 0,
             recommendation: `This ${type} is not listed in the official PDRM Semak Mule database, but please remain vigilant.`,
         };
-        // ── end TODO block ────────────────────────────────────────────────────
+        // ── end MOCK block ──────────────────────────────────────────────────
     }
 }
