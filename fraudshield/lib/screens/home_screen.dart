@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/notification_service.dart';
-import '../widgets/latest_news_widget.dart';
 import 'fraud_check_screen.dart';
 import 'url_link_check_screen.dart';
 import 'voice_detection_screen.dart';
@@ -55,8 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // Key to refresh PointsScreen from Home
   final GlobalKey<PointsScreenState> _pointsKey =
       GlobalKey<PointsScreenState>();
-  final GlobalKey<LatestNewsWidgetState> _newsKey =
-      GlobalKey<LatestNewsWidgetState>();
 
   // Customization State
   List<String> _activeQuickActions = ['fraud_check', 'qr_scan', 'report_scam'];
@@ -589,7 +586,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 onShowReport: () => _showSecurityReport(isSubscribed),
                 recentTransactions: _recentTransactions,
                 myReports: _myReports,
-                newsKey: _newsKey,
                 onRefresh: _handleRefresh,
                 healthData: _healthData,
               ),
@@ -629,7 +625,6 @@ class _HomeTab extends StatelessWidget {
   final VoidCallback onShowReport;
   final List<dynamic> recentTransactions;
   final List<dynamic> myReports;
-  final GlobalKey<LatestNewsWidgetState> newsKey;
   final Future<void> Function() onRefresh;
   final Map<String, dynamic> healthData;
 
@@ -646,7 +641,6 @@ class _HomeTab extends StatelessWidget {
     required this.onShowReport,
     required this.recentTransactions,
     required this.myReports,
-    required this.newsKey,
     required this.onRefresh,
     required this.healthData,
   });
@@ -826,7 +820,7 @@ class _HomeTab extends StatelessWidget {
                     ),
                   );
                 },
-                child: _buildSecurityNewsSection(context),
+                child: _buildSecurityNewsAction(context),
               ),
 
               SizedBox(height: 24),
@@ -1471,49 +1465,58 @@ class _HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildSecurityNewsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _buildSecurityNewsAction(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const NewsScreen()),
+      ),
+      child: GlassSurface(
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
+        borderRadius: DesignTokens.radii.xl,
+        borderColor: DesignTokens.colors.primary.withOpacity(0.3),
+        child: Row(
           children: [
-            Text(
-              AppLocalizations.of(context)!.homeSecurityNews,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Container(
+              padding: EdgeInsets.all(DesignTokens.spacing.md),
+              decoration: BoxDecoration(
+                color: DesignTokens.colors.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(LucideIcons.newspaper,
+                  color: DesignTokens.colors.primary, size: 28),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.homeSecurityNews,
+                    style: TextStyle(
+                      color: DesignTokens.colors.textLight,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'Stay updated with the latest scam alerts and trends',
+                    style: TextStyle(
+                      color: DesignTokens.colors.textLight.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(width: 8),
-            IconButton(
-              onPressed: () => newsKey.currentState?.showCustomization(),
-              icon: Icon(
-                LucideIcons.slidersHorizontal,
-                size: 18,
-                color: Colors.white.withOpacity(0.6),
-              ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              visualDensity: VisualDensity.compact,
-              tooltip: 'Filter Categories',
-            ),
-            Spacer(),
-            TextButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const NewsScreen())),
-              child: Text(
-                'See All',
-                style: TextStyle(
-                    color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold),
-              ),
+            Icon(
+              LucideIcons.chevronRight,
+              color: DesignTokens.colors.textLight.withOpacity(0.3),
+              size: 20,
             ),
           ],
         ),
-        SizedBox(height: 8),
-        LatestNewsWidget(key: newsKey, limit: 5),
-      ],
+      ),
     );
   }
 

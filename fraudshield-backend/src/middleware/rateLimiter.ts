@@ -75,7 +75,7 @@ export const reportLimiter = rateLimit({
  */
 export const featureLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 20, // 20 scans per hour
+    max: 100, // Increased from 20 to 100 for better UX during active security audits
     store: new RedisStore({
         sendCommand: (...args: string[]) => redisClient.call(args[0], ...args.slice(1)) as any,
         prefix: 'rl:feature:',
@@ -89,6 +89,6 @@ export const featureLimiter = rateLimit({
     validate: false,
     message: {
         error: 'Too Many Requests',
-        message: 'You have reached the hourly limit for analysis scans. Please try again after an hour.',
+        message: 'You have reached the hourly limit for analysis scans (100). Please try again after an hour.',
     },
 });

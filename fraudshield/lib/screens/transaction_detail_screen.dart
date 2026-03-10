@@ -70,34 +70,22 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
 
-  Color _statusColor(String status) {
-    switch (status.toUpperCase()) {
-      case 'SAFE':
-        return DesignTokens.colors.accentGreen;
-      case 'SUSPICIOUS':
-        return DesignTokens.colors.warning;
-      case 'BLOCKED':
-        return DesignTokens.colors.error;
-      case 'SCAMMED':
-        return DesignTokens.colors.error;
-      default:
-        return DesignTokens.colors.textGrey;
-    }
+  Color _statusColor(String status, int score) {
+    if (score >= 75) return DesignTokens.colors.error;
+    if (score >= 30) return DesignTokens.colors.warning;
+    return DesignTokens.colors.accentGreen;
   }
 
-  IconData _statusIcon(String status) {
-    switch (status.toUpperCase()) {
-      case 'SAFE':
-        return LucideIcons.shieldCheck;
-      case 'SUSPICIOUS':
-        return LucideIcons.alertTriangle;
-      case 'BLOCKED':
-        return LucideIcons.shieldOff;
-      case 'SCAMMED':
-        return LucideIcons.xCircle;
-      default:
-        return LucideIcons.shield;
-    }
+  IconData _statusIcon(String status, int score) {
+    if (score >= 75) return LucideIcons.shieldAlert;
+    if (score >= 30) return LucideIcons.alertTriangle;
+    return LucideIcons.shieldCheck;
+  }
+
+  String _statusLabel(String status, int score) {
+    if (score >= 75) return 'RISKY';
+    if (score >= 30) return 'SUSPICIOUS';
+    return 'SAFE';
   }
 
   Color _scoreColor(int score) {
@@ -192,7 +180,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
     final status = (_transaction!['status'] ?? 'UNKNOWN') as String;
     final type = (_transaction!['checkType'] ?? 'MANUAL') as String;
     final score = (_transaction!['riskScore'] ?? 0) as int;
-    final sColor = _statusColor(status);
+    final sColor = _statusColor(status, score);
     final metadata = _transaction!['metadata'] as Map<String, dynamic>? ?? {};
     final notes = _transaction!['notes']?.toString() ?? '';
     final recipient =
@@ -474,19 +462,19 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen>
             Container(
               padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: sColor.withOpacity(0.15),
+                color: _statusColor(status, score).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
-                border: Border.all(color: sColor.withOpacity(0.5)),
+                border: Border.all(color: _statusColor(status, score).withOpacity(0.5)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(_statusIcon(status), color: sColor, size: 14),
+                   Icon(_statusIcon(status, score), color: _statusColor(status, score), size: 14),
                   SizedBox(width: 6),
                   Text(
-                    status.toUpperCase(),
+                    _statusLabel(status, score),
                     style: TextStyle(
-                      color: sColor,
+                      color: _statusColor(status, score),
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,

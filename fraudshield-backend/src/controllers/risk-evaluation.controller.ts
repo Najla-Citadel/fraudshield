@@ -46,7 +46,7 @@ export class RiskEvaluationController {
                         checkType: checkTypeMap[type.toLowerCase()] as any,
                         target: value,
                         riskScore: result.score,
-                        status: result.score >= 55 ? 'SUSPICIOUS' : 'SAFE',
+                        status: result.score >= 30 ? 'SUSPICIOUS' : 'SAFE',
                         metadata: {
                             level: result.level,
                             factors: result.factors,

@@ -38,7 +38,7 @@ export class QuishingController {
                         checkType: CheckType.URL,
                         target: url.trim(),
                         riskScore: result.score,
-                        status: result.score >= 55 ? 'SUSPICIOUS' : 'SAFE',
+                        status: result.score >= 30 ? 'SUSPICIOUS' : 'SAFE',
                         metadata: {
                             level: result.level,
                             redirectChain: result.redirectChain,
@@ -91,7 +91,7 @@ export class QuishingController {
                         checkType: CheckType.URL,
                         target: payload.trim().substring(0, 500), // Cap for DB storage
                         riskScore: result.score,
-                        status: result.score >= 55 ? 'SUSPICIOUS' : 'SAFE',
+                        status: result.score >= 30 ? 'SUSPICIOUS' : 'SAFE',
                         metadata: {
                             level: result.level,
                             redirectChain: result.redirectChain,

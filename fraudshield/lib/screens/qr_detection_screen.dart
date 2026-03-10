@@ -1,4 +1,3 @@
-// lib/screens/qr_detection_screen.dart
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -9,6 +8,9 @@ import '../services/risk_evaluator.dart';
 import '../widgets/adaptive_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/scan_history_service.dart';
+import '../widgets/glass_surface.dart';
+import '../widgets/security_tips_card.dart';
+import '../design_system/tokens/typography.dart';
 
 ////////////////////////////////////////////////////////////////
 /// 1. DASHBOARD SCREEN (Entry Point)
@@ -44,8 +46,8 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'QR Security Hub', // Changed title to match original AppBar text
-      actions: [ // Added actions to replicate original AppBar functionality
+      title: 'QR Security Hub',
+      actions: [
         IconButton(
           icon: Icon(LucideIcons.trash2, color: Colors.white38),
           onPressed: () async {
@@ -75,77 +77,47 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
           },
         ),
       ],
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF0F172A),
-                  DesignTokens.colors.backgroundDark,
-                  const Color(0xFF1E3A8A),
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SecurityTipsCard(tips: [
+              'Always verify the URL matches the expected domain.',
+              'Be cautious of QR codes in unexpected places.',
+              'Report suspicious codes to help protect others.',
+            ]),
+            SizedBox(height: 32),
+            _buildScanActionCard(),
+            SizedBox(height: 32),
+            Text(
+              'Recent Scans',
+              style: DesignTypography.h3,
             ),
-          ),
-
-          // Content
-          Padding(
-            padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        _buildHeroScanButton(),
-                        SizedBox(height: 40),
-                        Text(
-                          'Recent Scans',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        if (_isLoading)
-                          Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(40),
-                              child: AppLoadingIndicator(
-                                  size: 40,
-                                  strokeWidth: 4,
-                                  color: DesignTokens.colors.accentGreen),
-                            ),
-                          )
-                        else if (_history.isEmpty)
-                          _buildEmptyState()
-                        else
-                          _buildHistoryList(),
-                        SizedBox(height: 40),
-                      ],
-                    ),
-                  ),
+            SizedBox(height: 16),
+            if (_isLoading)
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.all(40),
+                  child: AppLoadingIndicator(
+                      size: 40,
+                      strokeWidth: 4,
+                      color: DesignTokens.colors.accentGreen),
                 ),
-              ],
-            ),
-          ),
-        ],
+              )
+            else if (_history.isEmpty)
+              _buildEmptyState()
+            else
+              _buildHistoryList(),
+            SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
 
-
-  Widget _buildHeroScanButton() {
-    return GestureDetector(
+  Widget _buildScanActionCard() {
+    return GlassSurface(
       onTap: () async {
         await Navigator.push(
           context,
@@ -153,102 +125,139 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
         );
         _loadHistory();
       },
-      child: Container(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
-          boxShadow: DesignTokens.shadows.lg,
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(DesignTokens.spacing.xl),
-              decoration: BoxDecoration(
-                color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(LucideIcons.scanLine,
-                  color: DesignTokens.colors.accentGreen, size: 48),
+      borderRadius: 24,
+      accentColor: DesignTokens.colors.accentGreen,
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
+            decoration: BoxDecoration(
+              color: DesignTokens.colors.accentGreen.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(DesignTokens.radii.md),
             ),
-            SizedBox(height: 24),
-            Text(
-              'Scan New QR Code',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+            child: Icon(LucideIcons.scanLine,
+                color: DesignTokens.colors.accentGreen, size: 32),
+          ),
+          SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Scan New QR Code',
+                  style: DesignTypography.h3,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Instantly check URLs for threats',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 8),
-            Text(
-              'Instantly check URLs for phishing and threats',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            LucideIcons.chevronRight,
+            color: Colors.white.withOpacity(0.3),
+            size: 20,
+          ),
+        ],
       ),
     );
+  }
+
+  Color _getRiskColor(String level) {
+    switch (level.toLowerCase()) {
+      case 'low':
+        return DesignTokens.colors.accentGreen;
+      case 'medium':
+        return DesignTokens.colors.warning;
+      case 'high':
+      case 'critical':
+        return DesignTokens.colors.error;
+      default:
+        return DesignTokens.colors.textGrey;
+    }
+  }
+
+  IconData _getRiskIcon(String level) {
+    switch (level.toLowerCase()) {
+      case 'low':
+        return LucideIcons.shieldCheck;
+      case 'medium':
+        return LucideIcons.alertTriangle;
+      case 'high':
+      case 'critical':
+        return LucideIcons.shieldAlert;
+      default:
+        return LucideIcons.shield;
+    }
   }
 
   Widget _buildHistoryList() {
     return Column(
       children: _history.map((item) {
-        final isSafe = item.riskLevel == 'low';
-        return Container(
-          margin: EdgeInsets.only(bottom: DesignTokens.spacing.md),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.03),
-            borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
-          ),
-          child: ListTile(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: DesignTokens.spacing.sm),
-            leading: Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: (isSafe ? DesignTokens.colors.accentGreen : Colors.red)
-                    .withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isSafe ? LucideIcons.check : LucideIcons.alertTriangle,
-                color: isSafe ? DesignTokens.colors.accentGreen : Colors.red,
-                size: 20,
-              ),
-            ),
-            title: Text(
-              item.content,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ),
-            subtitle: Text(
-              '${_formatTimestamp(item.timestamp)} • ${item.riskLevel.toUpperCase()}',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.4),
-                fontSize: 12,
-              ),
-            ),
-            trailing: Icon(LucideIcons.chevronRight,
-                color: Colors.white24, size: 16),
+        final level = item.riskLevel.toLowerCase();
+        final accentColor = _getRiskColor(level);
+        final riskIcon = _getRiskIcon(level);
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: DesignTokens.spacing.md),
+          child: GlassSurface(
             onTap: () {
-              // Show report details (Re-using evaluation from Camera screen if needed)
               final result =
                   RiskEvaluator.evaluate(type: 'QR', value: item.content);
               _showStaticResult(item.content, result);
             },
+            padding: EdgeInsets.all(DesignTokens.spacing.lg),
+            borderRadius: 20,
+            accentColor: accentColor,
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: accentColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    riskIcon,
+                    color: accentColor,
+                    size: 20,
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.content,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        '${_formatTimestamp(item.timestamp)} • ${item.riskLevel.toUpperCase()}',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.4),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(LucideIcons.chevronRight,
+                    color: Colors.white.withOpacity(0.2), size: 16),
+              ],
+            ),
           ),
         );
       }).toList(),
@@ -289,52 +298,77 @@ class _QRDetectionScreenState extends State<QRDetectionScreen> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => Container(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-        decoration: BoxDecoration(
-          color: Color(0xFF0F172A).withOpacity(0.95),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _riskHeader(result),
-            SizedBox(height: 16),
-            Text('Content:',
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold)),
-            Text(raw,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 14, fontFamily: 'Courier')),
-            SizedBox(height: 24),
-            Row(
-              children: [
-                if (result.level != 'high' && result.level != 'critical')
-                  Expanded(
-                    child: AdaptiveButton(
-                      onPressed: () async {
-                        final uri = Uri.tryParse(result.finalUrl ?? raw);
-                        if (uri != null && await canLaunchUrl(uri)) {
-                          await launchUrl(uri,
-                              mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      text: 'Open Link',
-                    ),
-                  ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: AdaptiveButton(
-                    onPressed: () => Navigator.pop(context),
-                    text: 'Close',
+        margin: EdgeInsets.all(DesignTokens.spacing.lg),
+        child: GlassSurface(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          borderRadius: 28,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-          ],
+              ),
+              SizedBox(height: 24),
+              _riskHeader(result),
+              SizedBox(height: 20),
+              Text('CONTENT',
+                  style: DesignTypography.bodyXs.copyWith(
+                    color: Colors.white38,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  )),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(raw,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 13,
+                      fontFamily: 'Courier',
+                    )),
+              ),
+              SizedBox(height: 24),
+              Row(
+                children: [
+                  if (result.level != 'high' && result.level != 'critical')
+                    Expanded(
+                      child: AdaptiveButton(
+                        onPressed: () async {
+                          final uri = Uri.tryParse(result.finalUrl ?? raw);
+                          if (uri != null && await canLaunchUrl(uri)) {
+                            await launchUrl(uri,
+                                mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        text: 'Open Link',
+                      ),
+                    ),
+                  if (result.level != 'high' && result.level != 'critical')
+                    SizedBox(width: 12),
+                  Expanded(
+                    child: AdaptiveButton(
+                      onPressed: () => Navigator.pop(context),
+                      text: 'Close',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
@@ -489,77 +523,115 @@ class _QRScannerCameraScreenState extends State<QRScannerCameraScreen> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (_) => Container(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-        decoration: BoxDecoration(
-          color: Color(0xFF0F172A).withOpacity(0.95),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _riskHeader(result),
-            SizedBox(height: 16),
-            Text('Content:',
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold)),
-            Text(raw,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: 14, fontFamily: 'Courier'),
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis),
-            SizedBox(height: 16),
-            Text('Analysis:',
-                style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            ...result.reasons.map((r) => Padding(
-                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
-                  child: Row(
-                    children: [
-                      Icon(LucideIcons.shieldCheck,
-                          size: 14,
-                          color:
-                              r.startsWith('✅') ? Colors.green : Colors.orange),
-                      SizedBox(width: 8),
-                      Expanded(
-                          child: Text(r,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 13))),
-                    ],
-                  ),
-                )),
-            SizedBox(height: 30),
-            Row(
-              children: [
-                if (result.level != 'high' && result.level != 'critical')
-                  Expanded(
-                    child: AdaptiveButton(
-                      onPressed: () async {
-                        final uri = Uri.tryParse(result.finalUrl ?? raw);
-                        if (uri != null && await canLaunchUrl(uri)) {
-                          await launchUrl(uri,
-                              mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      text: 'Open Link',
-                    ),
-                  ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: AdaptiveButton(
-                    onPressed: () => Navigator.pop(context),
-                    text: result.level == 'low' ? 'Done' : 'Close',
+        margin: EdgeInsets.all(DesignTokens.spacing.lg),
+        child: GlassSurface(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          borderRadius: 28,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-          ],
+              ),
+              SizedBox(height: 24),
+              _riskHeader(result),
+              SizedBox(height: 20),
+              Text('CONTENT',
+                  style: DesignTypography.bodyXs.copyWith(
+                    color: Colors.white38,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  )),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(raw,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 13,
+                      fontFamily: 'Courier',
+                    )),
+              ),
+              SizedBox(height: 20),
+              Text('ANALYSIS',
+                  style: DesignTypography.bodyXs.copyWith(
+                    color: Colors.white38,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  )),
+              SizedBox(height: 12),
+              ...result.reasons.map((r) => Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 2),
+                          child: Icon(
+                            r.contains('Safe') || r.contains('valid')
+                                ? LucideIcons.checkCircle
+                                : LucideIcons.alertTriangle,
+                            size: 16,
+                            color: r.contains('Safe') || r.contains('valid')
+                                ? DesignTokens.colors.accentGreen
+                                : DesignTokens.colors.warning,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                            child: Text(r.replaceAll(RegExp(r'^[✅⚠️]\s*'), ''),
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ))),
+                      ],
+                    ),
+                  )),
+              SizedBox(height: 30),
+              Row(
+                children: [
+                  if (result.level != 'high' && result.level != 'critical')
+                    Expanded(
+                      child: AdaptiveButton(
+                        onPressed: () async {
+                          final uri = Uri.tryParse(result.finalUrl ?? raw);
+                          if (uri != null && await canLaunchUrl(uri)) {
+                            await launchUrl(uri,
+                                mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        text: 'Open Link',
+                      ),
+                    ),
+                  if (result.level != 'high' && result.level != 'critical')
+                    SizedBox(width: 12),
+                  Expanded(
+                    child: AdaptiveButton(
+                      onPressed: () => Navigator.pop(context),
+                      text: result.level == 'low' ? 'Done' : 'Close',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     ).whenComplete(() {

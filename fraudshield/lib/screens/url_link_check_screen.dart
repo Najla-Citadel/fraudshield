@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/tokens/design_tokens.dart';
-import '../design_system/components/app_button.dart';
-import '../design_system/components/app_divider.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../services/api_service.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/adaptive_button.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
 
 class UrlLinkCheckScreen extends StatefulWidget {
@@ -23,7 +22,6 @@ class UrlLinkCheckScreen extends StatefulWidget {
 class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
   final TextEditingController _urlController = TextEditingController();
   bool _isLoading = false;
-  RiskResult? _lastResult;
   List<dynamic> _recentScans = [];
   bool _isFetchingHistory = true;
   DateTime? _lastClearedAt;
@@ -84,9 +82,11 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
       final result = await RiskEvaluator.evaluateUrl(url);
       if (mounted) {
         setState(() {
-          _lastResult = result;
           _isLoading = false;
         });
+        
+        _showResultSheet(url, result);
+        
         // Refresh history after check
         _fetchHistory();
       }
@@ -102,7 +102,40 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
-      title: 'URL LINK CHECK',
+      title: 'URL Security Hub',
+      actions: [
+        IconButton(
+          icon: Icon(LucideIcons.trash2, color: Colors.white38),
+          onPressed: () async {
+            if (_recentScans.isEmpty) return;
+            
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                backgroundColor: DesignTokens.colors.backgroundDark,
+                title: Text('Clear History?',
+                    style: TextStyle(color: Colors.white)),
+                content: Text('This will remove all recent URL check activity.',
+                    style: TextStyle(color: Colors.white70)),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Cancel')),
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Clear',
+                          style: TextStyle(color: Colors.red))),
+                ],
+              ),
+            );
+            
+            if (confirm == true) {
+              _saveClearedTimestamp();
+              setState(() => _recentScans = []);
+            }
+          },
+        ),
+      ],
       body: SingleChildScrollView(
         padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
@@ -113,39 +146,12 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
               'Avoid clicking links that create a false sense of urgency.',
               "Always verify the domain name (e.g., 'google.com' vs 'qooqle.com').",
             ]),
-            SizedBox(height: 24),
+            SizedBox(height: 32),
             _buildInputSection(),
-            SizedBox(height: 24),
-            if (_lastResult != null) ...[
-              _buildResultCard(),
-              SizedBox(height: 32),
-            ],
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Recent Activity',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (_recentScans.isNotEmpty)
-                  TextButton(
-                    onPressed: () {
-                      _saveClearedTimestamp();
-                      setState(() => _recentScans = []);
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white.withOpacity(0.4),
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text('Clear', style: TextStyle(fontSize: 12)),
-                  ),
-              ],
+            SizedBox(height: 32),
+            Text(
+              'Recent Activity',
+              style: DesignTypography.h3,
             ),
             SizedBox(height: 16),
             _buildRecentActivity(),
@@ -166,238 +172,326 @@ class _UrlLinkCheckScreenState extends State<UrlLinkCheckScreen> {
         children: [
            Row(
             children: [
-              Icon(LucideIcons.globe, color: DesignTokens.colors.primary, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Enter URL to scan',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: DesignTokens.colors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
+                child: Icon(LucideIcons.shield, color: DesignTokens.colors.primary, size: 20),
+              ),
+              SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Link Analyzer',
+                    style: DesignTypography.labelLg,
+                  ),
+                  Text(
+                    'Stay protected from malicious URLs',
+                    style: DesignTypography.caption.copyWith(color: Colors.white38),
+                  ),
+                ],
               ),
             ],
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 24),
           TextField(
             controller: _urlController,
             decoration: InputDecoration(
-              hintText: 'https://example.com',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+              hintText: 'Paste or type URL here...',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.05),
+              fillColor: Colors.white.withOpacity(0.03),
               prefixIcon: Icon(LucideIcons.link,
-                  color: Colors.white.withOpacity(0.3), size: 18),
+                  color: DesignTokens.colors.primary.withOpacity(0.5), size: 18),
               suffixIcon: _urlController.text.isNotEmpty
                   ? IconButton(
                       icon: Icon(LucideIcons.xCircle,
-                          color: Colors.white.withOpacity(0.3), size: 18),
+                          color: Colors.white.withOpacity(0.2), size: 18),
                       onPressed: () {
                         _urlController.clear();
                         setState(() {});
                       },
                     )
                   : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-                borderSide: BorderSide.none,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: Colors.white.withOpacity(0.05)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: DesignTokens.colors.primary.withOpacity(0.3)),
               ),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: 14),
+                  EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg, vertical: 16),
             ),
-            style: const TextStyle(fontSize: 15, color: Colors.white),
+            style: const TextStyle(fontSize: 14, color: Colors.white, fontFamily: 'Courier'),
           ),
-          SizedBox(height: 20),
-          AppButton(
+          SizedBox(height: 24),
+          AdaptiveButton(
             onPressed: _isLoading ? null : _checkUrl,
-            label: 'Check Link',
+            text: 'Analyze Link',
             isLoading: _isLoading,
-            variant: AppButtonVariant.primary,
-            width: double.infinity,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildResultCard() {
-    if (_lastResult == null) return SizedBox.shrink();
+  Color _getRiskColor(int score, String status) {
+    if (score >= 75 || status == 'SCAMMED' || status == 'BLOCKED') return DesignTokens.colors.error;
+    if (score >= 30 || status == 'SUSPICIOUS') return DesignTokens.colors.warning;
+    return DesignTokens.colors.accentGreen;
+  }
 
-    final isSafe = _lastResult!.score < 30;
-    final riskColor = _lastResult!.level == 'critical'
-        ? DesignTokens.colors.error
-        : _lastResult!.level == 'high'
-            ? DesignTokens.colors.warning
-            : _lastResult!.level == 'medium'
-                ? Color(0xFFFBBF24)
-                : DesignTokens.colors.accentGreen;
+  IconData _getRiskIcon(int score, String status) {
+    if (score >= 75 || status == 'SCAMMED' || status == 'BLOCKED') return LucideIcons.shieldAlert;
+    if (score >= 30 || status == 'SUSPICIOUS') return LucideIcons.alertTriangle;
+    return LucideIcons.shieldCheck;
+  }
 
-    return GlassSurface(
-      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-      borderRadius: 24,
-      borderColor: riskColor.withOpacity(0.3),
-      accentColor: DesignTokens.colors.primary,
-      child: Column(
-        children: [
-          Icon(
-            isSafe ? LucideIcons.checkCircle2 : LucideIcons.alertTriangle,
-            color: riskColor,
-            size: 48,
-          ),
-          SizedBox(height: 16),
-          Text(
-            isSafe ? 'Website is Safe' : 'Suspicious Website',
-            style: TextStyle(
-              color: riskColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            _urlController.text.trim(),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white.withOpacity(0.7), fontSize: 14),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          SizedBox(height: 16),
-          // Risk Score Indicator
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  String _getRiskLabel(int score, String status) {
+    if (status == 'SCAMMED') return 'SCAMMED';
+    if (status == 'BLOCKED') return 'BLOCKED';
+    if (score >= 75) return 'RISKY';
+    if (score >= 30) return 'SUSPICIOUS';
+    return 'SAFE';
+  }
+
+  void _showResultSheet(String url, RiskResult result) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        margin: EdgeInsets.all(DesignTokens.spacing.lg),
+        child: GlassSurface(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          borderRadius: 28,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Risk Score: ',
-                style: TextStyle(
-                    color: Colors.white.withOpacity(0.5), fontSize: 13),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
+                  ),
+                ),
               ),
-              Text(
-                '${_lastResult!.score}/100',
-                style: TextStyle(
-                    color: riskColor,
+              SizedBox(height: 24),
+              _buildRiskHeader(result),
+              SizedBox(height: 20),
+              Text('TARGET URL',
+                  style: DesignTypography.bodyXs.copyWith(
+                    color: Colors.white38,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15),
+                    letterSpacing: 1.2,
+                  )),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(url,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 13,
+                      fontFamily: 'Courier',
+                    )),
               ),
+              SizedBox(height: 20),
+              Text('RISK ANALYSIS',
+                  style: DesignTypography.bodyXs.copyWith(
+                    color: Colors.white38,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  )),
+              SizedBox(height: 12),
+              ...result.reasons.map((r) => Padding(
+                    padding: EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 2),
+                          child: Icon(
+                            r.contains('Safe') || r.contains('valid')
+                                ? LucideIcons.checkCircle
+                                : LucideIcons.alertTriangle,
+                            size: 16,
+                            color: r.contains('Safe') || r.contains('valid')
+                                ? DesignTokens.colors.accentGreen
+                                : DesignTokens.colors.warning,
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                            child: Text(r.replaceAll(RegExp(r'^[✅⚠️]\s*'), ''),
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 13,
+                                  height: 1.4,
+                                ))),
+                      ],
+                    ),
+                  )),
+              SizedBox(height: 30),
+              Row(
+                children: [
+                   Expanded(
+                    child: AdaptiveButton(
+                      onPressed: () => Navigator.pop(context),
+                      text: result.level == 'low' ? 'Done' : 'Understood',
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
             ],
           ),
-          if (_lastResult!.reasons.isNotEmpty) ...[
-            SizedBox(height: 16),
-            AppDivider(),
-            SizedBox(height: 8),
-            ..._lastResult!.reasons.map((reason) => Padding(
-                  padding: EdgeInsets.only(bottom: DesignTokens.spacing.xs),
-                  child: Row(
-                    children: [
-                      Icon(LucideIcons.dot, color: riskColor, size: 16),
-                      SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          reason,
-                          style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-          ],
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildRiskHeader(RiskResult result) {
+    final Color color = _getRiskColor(result.score, '');
+    final String label = result.level == 'low' ? 'Secure Link' : _getRiskLabel(result.score, '');
+    final IconData icon = _getRiskIcon(result.score, '');
+
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 28),
+        ),
+        SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: DesignTypography.h3.copyWith(color: color)),
+            Text('Risk Level: ${result.level.toUpperCase()}',
+                style: DesignTypography.caption.copyWith(color: color.withOpacity(0.7))),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _buildRecentActivity() {
     if (_isFetchingHistory) {
-      return AppLoadingIndicator.center();
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: AppLoadingIndicator.center(),
+      );
     }
 
     if (_recentScans.isEmpty) {
-      return GlassSurface(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxxl),
-        borderRadius: 24,
-        accentColor: DesignTokens.colors.primary,
+      return Center(
         child: Column(
           children: [
+            SizedBox(height: 40),
             Icon(LucideIcons.history,
-                color: DesignTokens.colors.textGrey.withOpacity(0.3), size: 40),
+                size: 64, color: Colors.white.withOpacity(0.1)),
             SizedBox(height: 12),
             Text(
               'No recent activity',
-              style: TextStyle(color: DesignTokens.colors.textGrey),
+              style: DesignTypography.bodySm.copyWith(color: Colors.white24),
             ),
           ],
         ),
       );
     }
 
-    return GlassSurface(
-      borderRadius: 24,
-      padding: EdgeInsets.zero,
-      accentColor: DesignTokens.colors.primary,
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: _recentScans.length,
-        separatorBuilder: (context, index) =>
-            AppDivider(),
-        itemBuilder: (context, index) {
-          final scan = _recentScans[index];
-          final isSafe = scan['status'] == 'SAFE';
+    return Column(
+        children: _recentScans.map((scan) {
+          final score = (scan['riskScore'] ?? 0) as int;
+          final status = (scan['status'] ?? 'SAFE') as String;
+          final accentColor = _getRiskColor(score, status);
+          final label = _getRiskLabel(score, status);
+          final icon = _getRiskIcon(score, status);
+          
           final DateTime date = DateTime.parse(scan['createdAt']);
-          final String formattedDate =
-              DateFormat('dd MMM yyyy, HH:mm').format(date.toLocal());
+          final String formattedDate = _formatTimestamp(date);
 
-          return ListTile(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: DesignTokens.spacing.xl, vertical: DesignTokens.spacing.sm),
-            leading: Container(
-              padding: EdgeInsets.all(DesignTokens.spacing.sm),
-              decoration: BoxDecoration(
-                color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
-                    .withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isSafe ? LucideIcons.shieldCheck : LucideIcons.shieldAlert,
-                color: isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error,
-                size: 20,
-              ),
-            ),
-            title: Text(
-              scan['target'] ?? 'Unknown URL',
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Colors.white),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              formattedDate,
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.5), fontSize: 12),
-            ),
-            trailing: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
-              decoration: BoxDecoration(
-                color: (isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error)
-                    .withOpacity(0.1),
-                borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-              ),
-              child: Text(
-                isSafe ? 'SAFE' : 'RISKY',
-                style: TextStyle(
-                  color: isSafe ? DesignTokens.colors.accentGreen : DesignTokens.colors.error,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                ),
+          return Padding(
+            padding: EdgeInsets.only(bottom: DesignTokens.spacing.md),
+            child: GlassSurface(
+              onTap: () {
+                final url = scan['target'] ?? 'Unknown URL';
+                setState(() => _urlController.text = url);
+                _checkUrl();
+              },
+              padding: EdgeInsets.all(DesignTokens.spacing.lg),
+              borderRadius: 20,
+              accentColor: accentColor,
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: accentColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: accentColor,
+                      size: 20,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          scan['target'] ?? 'Unknown URL',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: DesignTypography.labelMd,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          '$formattedDate • $label',
+                          style: DesignTypography.caption.copyWith(color: Colors.white38),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(LucideIcons.chevronRight,
+                      color: Colors.white.withOpacity(0.2), size: 16),
+                ],
               ),
             ),
           );
-        },
-      ),
+      }).toList(),
     );
+  }
+
+  String _formatTimestamp(DateTime ts) {
+    final now = DateTime.now();
+    final diff = now.difference(ts);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${ts.day} ${_getMonth(ts.month)}';
+  }
+
+  String _getMonth(int m) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[m - 1];
   }
 }

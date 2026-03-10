@@ -1,6 +1,8 @@
 import { prisma } from '../config/database';
 import { getRedisClient } from '../config/redis';
 import { SemakMuleService } from './semak-mule.service';
+import { SafeBrowsingService } from './safebrowsing.service';
+import { UrlHeuristicService } from './url-heuristic.service';
 
 export interface RiskFactor {
     key: string;
@@ -101,12 +103,26 @@ export class RiskEvaluationService {
             repScore * this.W_REPORTER_REP +
             recencyScore * this.W_RECENCY;
 
-        // 5. Boost score if found in Semak Mule
+        // 5. Boost score if found in Semak Mule (Phone/Bank)
         if (semakMuleData?.found) {
-            // If blacklisted by PDRM, it's at least high risk (base 75)
             rawScore = Math.max(rawScore, 75);
             if (semakMuleData.riskLevel === 'high') {
-                rawScore = Math.max(rawScore, 90); // Near critical
+                rawScore = Math.max(rawScore, 90);
+            }
+        }
+
+        // 6. Boost score if flagged by Google Safe Browsing or Heuristics (URL)
+        if (type === 'url') {
+            // Check Google Safe Browsing
+            const sbResult = await SafeBrowsingService.checkUrl(value);
+            if (!sbResult.safe) {
+                rawScore = Math.max(rawScore, 90);
+            }
+
+            // Check Local Heuristics (Keywords, Patterns)
+            const heuristicResult = UrlHeuristicService.analyze(value);
+            if (heuristicResult.score > 0) {
+                rawScore = Math.max(rawScore, heuristicResult.score);
             }
         }
 
@@ -123,7 +139,8 @@ export class RiskEvaluationService {
             verRatioScore,
             repScore,
             recencyScore,
-            semakMuleData
+            semakMuleData,
+            value: cleanValue // Pass the target value (e.g. URL) for heuristic display
         });
 
         return {
@@ -264,8 +281,9 @@ export class RiskEvaluationService {
         repScore: number;
         recencyScore: number;
         semakMuleData?: any;
+        value: string;
     }): string[] {
-        const { communityData, semakMuleData } = data;
+        const { communityData, semakMuleData, value } = data;
         const reasons: string[] = [];
 
         // 1. Official Data Reasons (Primary)
@@ -273,7 +291,20 @@ export class RiskEvaluationService {
             reasons.push(`🚓 CCID Semak Mule: Blacklisted (${semakMuleData.reportsCount} official reports)`);
         }
 
-        // 2. Community Data Reasons
+        // 2. Google Safe Browsing & Heuristic Reasons
+        if (data.score >= 30 && !semakMuleData?.found && communityData.totalReports < 3) {
+            // URL specific heuristics
+            const h = UrlHeuristicService.analyze(value);
+            if (h.reasons.length > 0) {
+                reasons.push(...h.reasons.map(r => `💡 Analysis: ${r}`));
+            }
+            
+            if (data.score >= 90 && communityData.totalReports < 3) {
+                reasons.push('⚠️ Flagged as malicious by Google Safe Browsing');
+            }
+        }
+
+        // 3. Community Data Reasons
         if (communityData.totalReports === 0) {
             if (!semakMuleData?.found) {
                 reasons.push('✅ No community reports found for this target');

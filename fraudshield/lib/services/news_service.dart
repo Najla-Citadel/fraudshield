@@ -10,13 +10,22 @@ import '../constants/news_categories.dart';
 class NewsService {
   /// Fetch latest articles from Google News RSS
   /// [categories] is an optional list of NewsCategory to filter news.
-  Future<List<model.NewsItem>> fetchLatest({int limit = 3, List<NewsCategory>? categories}) async {
-    String query = defaultNewsQuery;
+  /// [searchQuery] is an optional string to search specific terms.
+  Future<List<model.NewsItem>> fetchLatest({
+    int limit = 20, 
+    List<NewsCategory>? categories,
+    String? searchQuery,
+  }) async {
+    String query = '';
     
-    if (categories != null && categories.isNotEmpty) {
+    if (searchQuery != null && searchQuery.trim().isNotEmpty) {
+      query = '(${searchQuery.trim()}) malaysia';
+    } else if (categories != null && categories.isNotEmpty) {
       // Build a query: (cat1 OR cat2 OR cat3) malaysia
       final terms = categories.map((c) => '(${c.keywords})').join(' OR ');
       query = '($terms) malaysia';
+    } else {
+      query = defaultNewsQuery;
     }
 
     final encodedQuery = Uri.encodeComponent(query);
@@ -45,10 +54,17 @@ class NewsService {
       final titleNode = it.getElement('title');
       final linkNode = it.getElement('link');
       final descNode = it.getElement('description');
+      final dateNode = it.getElement('pubDate');
 
       final title = titleNode?.text.trim();
       final link = linkNode?.text.trim();
       final excerpt = descNode?.text.trim();
+      final dateStr = dateNode?.text.trim();
+      
+      DateTime? published;
+      if (dateStr != null) {
+        published = _parseRfc822Date(dateStr);
+      }
 
       if (title == null || link == null) continue;
 
@@ -92,7 +108,7 @@ class NewsService {
         url: link,
         excerpt: _stripHtml(excerpt ?? ''),
         image: image,
-        published: null,
+        published: published,
       ));
     }
 
@@ -100,7 +116,54 @@ class NewsService {
   }
 
   static String _stripHtml(String input) {
-    return input.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').trim();
+    return input
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&amp;', '&')
+        .trim();
+  }
+
+  static DateTime? _parseRfc822Date(String dateString) {
+    try {
+      // RFC 822 format: "Tue, 10 Mar 2026 05:30:00 GMT"
+      // Split and extract the relevant parts manually for reliability
+      final parts = dateString.split(' ');
+      if (parts.length < 4) return DateTime.tryParse(dateString);
+
+      final day = int.tryParse(parts[1]);
+      final monthStr = parts[2];
+      final year = int.tryParse(parts[3]);
+
+      if (day == null || year == null) return DateTime.tryParse(dateString);
+
+      final months = {
+        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12
+      };
+
+      final month = months[monthStr];
+      if (month == null) return DateTime.tryParse(dateString);
+
+      // Extract time: HH:mm:ss
+      int hour = 0;
+      int minute = 0;
+      int second = 0;
+      if (parts.length >= 5) {
+        final timeParts = parts[4].split(':');
+        if (timeParts.length >= 2) {
+          hour = int.tryParse(timeParts[0]) ?? 0;
+          minute = int.tryParse(timeParts[1]) ?? 0;
+          if (timeParts.length >= 3) {
+            second = int.tryParse(timeParts[2]) ?? 0;
+          }
+        }
+      }
+
+      return DateTime.utc(year, month, day, hour, minute, second);
+    } catch (_) {
+      return DateTime.tryParse(dateString);
+    }
   }
 
   static void clearCache() {}

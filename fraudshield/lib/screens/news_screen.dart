@@ -20,10 +20,18 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   final NewsService _newsService = NewsService();
+  final TextEditingController _searchController = TextEditingController();
   bool _isLoading = true;
   String? _error;
   List<NewsItem> _items = [];
   NewsCategory? _selectedCategory;
+  bool _isDescending = true; // For sorting
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -39,13 +47,15 @@ class _NewsScreenState extends State<NewsScreen> {
 
     try {
       final list = await _newsService.fetchLatest(
-        limit: 20,
+        limit: 40,
         categories: _selectedCategory != null ? [_selectedCategory!] : null,
+        searchQuery: _searchController.text.isNotEmpty ? _searchController.text : null,
       );
       if (mounted) {
         setState(() {
           _items = list;
           _isLoading = false;
+          _sortItems();
         });
       }
     } catch (e) {
@@ -58,12 +68,37 @@ class _NewsScreenState extends State<NewsScreen> {
     }
   }
 
+  void _sortItems() {
+    _items.sort((a, b) {
+      if (a.published == null || b.published == null) return 0;
+      return _isDescending
+          ? b.published!.compareTo(a.published!)
+          : a.published!.compareTo(b.published!);
+    });
+  }
+
+  void _toggleSort() {
+    setState(() {
+      _isDescending = !_isDescending;
+      _sortItems();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenScaffold(
       title: AppLocalizations.of(context)!.newsTitle,
+      actions: [
+        IconButton(
+          icon: Icon(_isDescending ? LucideIcons.chevronDown : LucideIcons.chevronUp,
+              color: Colors.white),
+          onPressed: _toggleSort,
+          tooltip: 'Sort by date',
+        ),
+      ],
       body: Column(
         children: [
+          _buildSearchBar(),
           _buildFilters(),
           Expanded(
             child: _isLoading
@@ -76,6 +111,36 @@ class _NewsScreenState extends State<NewsScreen> {
                         : _buildNewsList(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(DesignTokens.spacing.xl, DesignTokens.spacing.md, DesignTokens.spacing.xl, 0),
+      child: GlassSurface(
+        borderRadius: DesignTokens.radii.lg,
+        padding: EdgeInsets.symmetric(horizontal: DesignTokens.spacing.lg),
+        child: TextField(
+          controller: _searchController,
+          onSubmitted: (_) => _loadNews(),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: 'Search for scam terms...',
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+            border: InputBorder.none,
+            icon: Icon(LucideIcons.search, color: Colors.white.withOpacity(0.5), size: 18),
+            suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(LucideIcons.x, size: 16, color: Colors.white54),
+                    onPressed: () {
+                      _searchController.clear();
+                      _loadNews();
+                    },
+                  )
+                : null,
+          ),
+        ),
       ),
     );
   }
@@ -98,28 +163,37 @@ class _NewsScreenState extends State<NewsScreen> {
 
   Widget _buildCategoryChip(String label, NewsCategory? category) {
     final isSelected = _selectedCategory == category;
-    return Padding(
-      padding: EdgeInsets.only(right: DesignTokens.spacing.sm),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: isSelected,
-        onSelected: (val) {
-          if (val) {
-            setState(() => _selectedCategory = category);
-            _loadNews();
-          }
-        },
-        selectedColor: DesignTokens.colors.primary,
-        labelStyle: TextStyle(
-          color: isSelected ? Colors.white : Colors.white.withOpacity(0.6),
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          fontSize: 12,
+    return GestureDetector(
+      onTap: () {
+        setState(() => _selectedCategory = category);
+        _loadNews();
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: DesignTokens.spacing.sm),
+        padding: EdgeInsets.symmetric(
+          horizontal: DesignTokens.spacing.lg,
+          vertical: DesignTokens.spacing.sm,
         ),
-        backgroundColor: Colors.white.withOpacity(0.05),
-        elevation: 0,
-        pressElevation: 0,
-        side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radii.lg)),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? DesignTokens.colors.primary.withOpacity(0.15)
+              : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(DesignTokens.radii.lg),
+          border: Border.all(
+            color: isSelected
+                ? DesignTokens.colors.primary
+                : Colors.white.withOpacity(0.1),
+            width: 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? DesignTokens.colors.primary : Colors.white.withOpacity(0.6),
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }
@@ -197,7 +271,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                 size: 14, color: Colors.white24),
                             SizedBox(width: 6),
                             Text(
-                              AppLocalizations.of(context)!.newsLatestUpdate,
+                              item.published != null 
+                                  ? _getTimeAgo(item.published!) 
+                                  : AppLocalizations.of(context)!.newsLatestUpdate,
                               style: TextStyle(
                                   color: Colors.white.withOpacity(0.4),
                                   fontSize: 11),
@@ -210,6 +286,8 @@ class _NewsScreenState extends State<NewsScreen> {
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12),
                             ),
+                            SizedBox(width: 4),
+                            Icon(LucideIcons.arrowRight, size: 14, color: DesignTokens.colors.primary),
                           ],
                         ),
                       ],
@@ -222,6 +300,14 @@ class _NewsScreenState extends State<NewsScreen> {
         },
       ),
     );
+  }
+
+  String _getTimeAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${date.day}/${date.month}/${date.year}';
   }
 
   Widget _buildPlaceholderImage({bool isTop = false}) {

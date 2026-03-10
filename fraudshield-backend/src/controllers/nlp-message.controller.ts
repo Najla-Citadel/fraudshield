@@ -59,7 +59,7 @@ export class NlpMessageController {
                 scamType: result.scamType,
                 language: result.language,
                 checkedAt: result.checkedAt,
-                // Note: matchedPatterns and highlightedPhrases are hidden from non-admins
+                matchedPatterns: result.matchedPatterns, // Expose user-friendly labels for UI breakdown
             };
 
             return res.json(responseData);

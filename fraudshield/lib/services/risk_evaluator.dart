@@ -75,43 +75,17 @@ class RiskEvaluator {
       apiChecked = true;
 
       final int v2Score = (res['score'] as num?)?.toInt() ?? 0;
-      final String level = res['level'] as String? ?? 'low';
+      final String v2Level = res['level'] as String? ?? 'low';
       final List<dynamic> v2Reasons = res['reasons'] as List? ?? [];
 
-      if (v2Score > score) {
-        // V2 backend knows more — use its score and reasons
-        score = v2Score;
-        reasons =
-            ['🤖 Community Intelligence Score'] + v2Reasons.cast<String>();
-      }
-
-      // Still apply Google Safe Browsing for URLs specifically
-      try {
-        final sbRes = await _api.checkUrl(url);
-        if (sbRes['safe'] == false) {
-          final threats = List<String>.from(sbRes['threats'] ?? []);
-          score = ((score + 90) / 2).round().clamp(90, 100);
-          for (final threat in threats) {
-            switch (threat) {
-              case 'SOCIAL_ENGINEERING':
-                reasons.insert(
-                    0, '⚠️ Phishing site detected by Google Safe Browsing');
-                break;
-              case 'MALWARE':
-                reasons.insert(0,
-                    '⚠️ Malware distribution detected by Google Safe Browsing');
-                break;
-              default:
-                reasons.insert(
-                    0, '⚠️ Flagged as $threat by Google Safe Browsing');
-            }
-          }
-        } else if (v2Score < 30) {
-          reasons.add('✅ Verified safe by Google Safe Browsing');
-        }
-      } catch (_) {
-        // Safe Browsing failure is non-fatal
-      }
+      // Backend now centralizes BOTH community reports and Google Safe Browsing/Heuristics.
+      // We trust it as the primary source of truth.
+      return RiskResult(
+        score: v2Score.clamp(0, 100),
+        level: v2Level,
+        reasons: v2Reasons.cast<String>(),
+        apiChecked: true,
+      );
     } catch (e) {
       log('V2 risk evaluation failed, falling back to local heuristics: $e');
       reasons.add('⚡ Could not reach community database (offline check only)');

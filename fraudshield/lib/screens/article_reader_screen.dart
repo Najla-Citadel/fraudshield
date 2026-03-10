@@ -30,7 +30,11 @@ class _ArticleReaderScreenState extends State<ArticleReaderScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (_) => setState(() => _isLoading = false),
+          onPageFinished: (_) {
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          },
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
