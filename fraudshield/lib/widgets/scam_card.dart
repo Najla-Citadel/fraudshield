@@ -7,12 +7,14 @@ class ScamCard extends StatelessWidget {
   final Map<String, dynamic> report;
   final VoidCallback onVerify;
   final VoidCallback? onTap;
+  final void Function(String targetId, String type)? onFlag;
 
   const ScamCard({
     super.key,
     required this.report,
     required this.onVerify,
     this.onTap,
+    this.onFlag,
   });
 
   @override
@@ -130,7 +132,7 @@ class ScamCard extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '${_getTimeAgo(report['createdAt'])} • ${report['user'] ?? 'Anonymous'}',
+                          '${_getTimeAgo(report['createdAt'])} • Community Member',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                             fontSize: 12,
@@ -258,35 +260,57 @@ class ScamCard extends StatelessWidget {
                       ),
                     ),
 
-                  // Alert Action Button
-                  InkWell(
-                    onTap: () {
-                      // TODO: Implement alert sharing
-                    },
-                    borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(LucideIcons.share2,
-                              size: 14, color: Colors.white),
-                          SizedBox(width: 6),
-                          Text(
-                            'Share Alert',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
+                  // Action Buttons
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Flag Button
+                      if (onFlag != null)
+                        InkWell(
+                          onTap: () => onFlag!(report['id'] ?? '', 'report'),
+                          borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+                          child: Container(
+                            padding: EdgeInsets.all(DesignTokens.spacing.sm),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                             ),
+                            child: Icon(LucideIcons.flag,
+                                size: 14, color: Colors.white.withOpacity(0.6)),
                           ),
-                        ],
+                        ),
+                      if (onFlag != null) SizedBox(width: 8),
+                      // Share Alert Button
+                      InkWell(
+                        onTap: () {
+                          // TODO: Implement alert sharing
+                        },
+                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: DesignTokens.spacing.md, vertical: DesignTokens.spacing.sm),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(LucideIcons.share2,
+                                  size: 14, color: Colors.white),
+                              SizedBox(width: 6),
+                              Text(
+                                'Share Alert',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),

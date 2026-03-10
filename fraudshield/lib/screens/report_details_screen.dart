@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../design_system/components/app_snackbar.dart';
 import '../design_system/layouts/screen_scaffold.dart';
+import '../services/socket_service.dart';
 
 class ReportDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> report;
@@ -25,10 +26,29 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   bool _isLoadingReport = true;
 
   @override
+  void dispose() {
+    SocketService.instance.leaveReport(widget.report['id']);
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     _fetchReportDetails();
     _fetchComments();
+
+    // Join room and listen for real-time comments
+    SocketService.instance.joinReport(widget.report['id']);
+    SocketService.instance.onNewComment((data) {
+      if (mounted) {
+        setState(() {
+          if (!_comments.any((c) => c['id'] == data['id'])) {
+            _comments.insert(0, data);
+          }
+        });
+      }
+    });
   }
 
   Future<void> _fetchReportDetails() async {
@@ -100,6 +120,94 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
     }
   }
 
+  void _showFlagSheet(BuildContext context, String targetId, String type) {
+    final reasons = [
+      {'key': 'false_accusation', 'label': 'False accusation', 'icon': Icons.gavel_rounded},
+      {'key': 'harassment', 'label': 'Harassment or bullying', 'icon': Icons.warning_amber_rounded},
+      {'key': 'spam', 'label': 'Spam or duplicate', 'icon': Icons.content_copy_rounded},
+      {'key': 'pii_exposed', 'label': 'Exposes personal info', 'icon': Icons.privacy_tip_rounded},
+      {'key': 'inappropriate', 'label': 'Inappropriate content', 'icon': Icons.block_rounded},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.lg),
+              Text(
+                'Report this content',
+                style: TextStyle(
+                  color: DesignTokens.colors.textLight,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.xs),
+              Text(
+                'Why are you reporting this?',
+                style: TextStyle(
+                  color: DesignTokens.colors.textLight.withValues(alpha: 0.6),
+                  fontSize: 14,
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.lg),
+              ...reasons.map((r) => ListTile(
+                leading: Icon(r['icon'] as IconData, color: Colors.white.withValues(alpha: 0.7), size: 22),
+                title: Text(
+                  r['label'] as String,
+                  style: TextStyle(color: DesignTokens.colors.textLight, fontSize: 15),
+                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final result = await ApiService.instance.flagContent(
+                      targetId: targetId,
+                      type: type,
+                      reason: r['key'] as String,
+                    );
+                    if (mounted) {
+                      final autoHidden = result['autoHidden'] == true;
+                      AppSnackBar.showSuccess(
+                        context,
+                        autoHidden
+                            ? 'Content hidden pending moderator review'
+                            : 'Report submitted. Our moderators will review it.',
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      AppSnackBar.showError(context, 'Failed to report: $e');
+                    }
+                  }
+                },
+              )),
+              SizedBox(height: DesignTokens.spacing.md),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -109,9 +217,10 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
       title: 'REPORT DETAILS',
       actions: [
         IconButton(
-          icon: Icon(Icons.more_horiz_rounded,
+          icon: Icon(Icons.flag_outlined,
               color: DesignTokens.colors.textLight),
-          onPressed: () {},
+          tooltip: 'Report this content',
+          onPressed: () => _showFlagSheet(context, widget.report['id'], 'report'),
         ),
       ],
       body: SingleChildScrollView(
@@ -392,10 +501,12 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               Expanded(
                 child: TextField(
                   controller: _commentController,
+                  maxLength: 500,
                   style:
                       TextStyle(color: DesignTokens.colors.textLight, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Add a comment...',
+                    counterText: '', // Hide default counter
                     hintStyle: TextStyle(
                         color: DesignTokens.colors.textLight.withValues(alpha: 0.3),
                         fontSize: 14),
@@ -452,7 +563,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
             separatorBuilder: (context, index) => SizedBox(height: 16),
             itemBuilder: (context, index) {
               final comment = _comments[index];
-              final userData = comment['user'] ?? {};
+              final commenter = comment['commenter'] ?? {};
 
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -460,11 +571,16 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                   CircleAvatar(
                     radius: 16,
                     backgroundColor: Colors.white.withValues(alpha: 0.05),
-                    child: Text(
-                      (userData['fullName'] ?? '?').substring(0, 1),
-                      style: TextStyle(
-                          color: DesignTokens.colors.textLight, fontSize: 12),
-                    ),
+                    backgroundImage: commenter['avatar'] != null && commenter['avatar'].startsWith('http') 
+                        ? NetworkImage(commenter['avatar']) 
+                        : null,
+                    child: commenter['avatar'] == null || !commenter['avatar'].startsWith('http')
+                        ? Text(
+                            (commenter['displayName'] ?? '?').substring(0, 1),
+                            style: TextStyle(
+                                color: DesignTokens.colors.textLight, fontSize: 12),
+                          )
+                        : null,
                   ),
                   SizedBox(width: 12),
                   Expanded(
@@ -474,7 +590,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
                         Row(
                           children: [
                             Text(
-                              userData['fullName'] ?? 'Anonymous User',
+                              commenter['displayName'] ?? 'Community Member',
                               style: TextStyle(
                                   color: DesignTokens.colors.textLight,
                                   fontWeight: FontWeight.bold,

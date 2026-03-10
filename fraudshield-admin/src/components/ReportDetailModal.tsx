@@ -84,13 +84,47 @@ const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, onClose
                             </div>
                         </div>
 
+                        {/* Moderation Screening Section */}
+                        {report.evidence?._moderation && (
+                            <div className="bg-accent-red/5 border border-accent-red/20 p-6 rounded-3xl">
+                                <h4 className="text-xs font-bold text-accent-red uppercase tracking-widest mb-4 flex items-center">
+                                    <Shield size={14} className="mr-1" /> AI Moderation Screening
+                                </h4>
+                                <div className="space-y-4">
+                                    {report.evidence._moderation.reasons && report.evidence._moderation.reasons.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            {report.evidence._moderation.reasons.map((reason: string, idx: number) => (
+                                                <span key={idx} className="px-3 py-1 bg-accent-red/20 text-accent-red text-xs font-bold rounded-full border border-accent-red/30">
+                                                    {reason}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-accent-green text-sm font-medium">No automated flags detected.</p>
+                                    )}
+                                    
+                                    {report.evidence?._device && (
+                                        <div className="pt-2 border-t border-navy-700/50 flex items-center justify-between">
+                                            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-tight">Device Fingerprint</span>
+                                            <span className="text-slate-400 font-mono text-[10px]">{report.evidence._device}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Evidence Section */}
-                        {report.evidence && Object.keys(report.evidence).length > 0 && (
+                        {report.evidence && Object.keys(report.evidence).filter(k => !k.startsWith('_')).length > 0 && (
                             <div>
                                 <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Evidence Data</h4>
                                 <div className="bg-navy-900/80 border border-navy-700 p-4 rounded-2xl overflow-x-auto">
                                     <pre className="text-xs text-accent-green font-mono">
-                                        {JSON.stringify(report.evidence, null, 2)}
+                                        {JSON.stringify(
+                                            Object.fromEntries(
+                                                Object.entries(report.evidence).filter(([k]) => !k.startsWith('_'))
+                                            ), 
+                                            null, 2
+                                        )}
                                     </pre>
                                 </div>
                             </div>

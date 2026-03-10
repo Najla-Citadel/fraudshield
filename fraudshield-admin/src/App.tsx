@@ -9,6 +9,7 @@ import Badges from './pages/Badges';
 import Rewards from './pages/Rewards';
 import Broadcasts from './pages/Broadcasts';
 import FraudAnalysis from './pages/FraudAnalysis';
+import ContentFlags from './pages/ContentFlags';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -92,6 +93,14 @@ function App() {
           element={
             <ProtectedRoute>
               <FraudAnalysis />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/content-flags"
+          element={
+            <ProtectedRoute>
+              <ContentFlags />
             </ProtectedRoute>
           }
         />

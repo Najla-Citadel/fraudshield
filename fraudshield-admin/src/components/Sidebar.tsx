@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, AlertTriangle, LogOut, CreditCard, Award, ShoppingBag, Radio, Search } from 'lucide-react';
+import { LayoutDashboard, Users, AlertTriangle, LogOut, CreditCard, Award, ShoppingBag, Radio, Search, Flag } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
@@ -20,6 +20,7 @@ const Sidebar = () => {
         { icon: ShoppingBag, label: 'Store & Rewards', path: '/rewards' },
         { icon: Radio, label: 'Broadcaster', path: '/broadcasts' },
         { icon: Search, label: 'Fraud Analysis', path: '/fraud-analysis' },
+        { icon: Flag, label: 'Content Flags', path: '/content-flags' },
     ];
 
     return (

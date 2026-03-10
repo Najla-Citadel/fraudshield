@@ -11,7 +11,9 @@ import '../screens/report_details_screen.dart';
 import '../widgets/skeleton_card.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../widgets/error_state.dart';
+import '../design_system/components/app_snackbar.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../services/socket_service.dart';
 
 class CommunityFeedScreen extends StatefulWidget {
   const CommunityFeedScreen({super.key});
@@ -51,6 +53,14 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _fetchFeed(reset: true);
+
+    // Listen for real-time new report notifications
+    SocketService.instance.onNewPublicReport((data) {
+      if (mounted && _selectedCategory == null && !_isSearchVisible) {
+        // Auto-refresh only if on 'All' and not searching
+        _fetchFeed(reset: true);
+      }
+    });
   }
 
   @override
@@ -440,6 +450,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
               childWidget = ScamCard(
                 report: report,
                 onVerify: () => _fetchFeed(reset: true),
+                onFlag: (targetId, type) => _showFlagSheet(context, targetId, type),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -461,6 +472,95 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
             );
           },
           childCount: _reports.length + 1,
+        ),
+      ),
+    );
+  }
+
+  void _showFlagSheet(BuildContext context, String targetId, String type) {
+    final reasons = [
+      {'key': 'false_accusation', 'label': 'False accusation', 'icon': Icons.gavel_rounded},
+      {'key': 'harassment', 'label': 'Harassment or bullying', 'icon': Icons.warning_amber_rounded},
+      {'key': 'spam', 'label': 'Spam or duplicate', 'icon': Icons.content_copy_rounded},
+      {'key': 'pii_exposed', 'label': 'Exposes personal info', 'icon': Icons.privacy_tip_rounded},
+      {'key': 'inappropriate', 'label': 'Inappropriate content', 'icon': Icons.block_rounded},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(DesignTokens.spacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.lg),
+              Text(
+                'Report this content',
+                style: TextStyle(
+                  color: DesignTokens.colors.textLight,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.xs),
+              Text(
+                'Why are you reporting this?',
+                style: TextStyle(
+                  color: DesignTokens.colors.textLight.withValues(alpha: 0.6),
+                  fontSize: 14,
+                ),
+              ),
+              SizedBox(height: DesignTokens.spacing.lg),
+              ...reasons.map((r) => ListTile(
+                leading: Icon(r['icon'] as IconData, color: Colors.white.withValues(alpha: 0.7), size: 22),
+                title: Text(
+                  r['label'] as String,
+                  style: TextStyle(color: DesignTokens.colors.textLight, fontSize: 15),
+                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    final result = await ApiService.instance.flagContent(
+                      targetId: targetId,
+                      type: type,
+                      reason: r['key'] as String,
+                    );
+                    if (mounted) {
+                      final autoHidden = result['autoHidden'] == true;
+                      AppSnackBar.showSuccess(
+                        context,
+                        autoHidden
+                            ? 'Content hidden pending moderator review'
+                            : 'Report submitted. Our moderators will review it.',
+                      );
+                      if (autoHidden) _fetchFeed(reset: true);
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      AppSnackBar.showError(context, 'Failed to report: $e');
+                    }
+                  }
+                },
+              )),
+              SizedBox(height: DesignTokens.spacing.md),
+            ],
+          ),
         ),
       ),
     );

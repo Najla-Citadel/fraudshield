@@ -31,10 +31,12 @@ export class NlpMessageController {
 
             const result = NlpMessageService.analyze(message.trim());
 
+            let journalId: string | undefined;
+
             // Log to TransactionJournal (using 'MSG' as checkType string)
             const userId = (req.user as any)?.id;
             if (userId) {
-                await prisma.transactionJournal.create({
+                const journal = await (prisma as any).transactionJournal.create({
                     data: {
                         userId,
                         checkType: CheckType.MSG,
@@ -49,17 +51,19 @@ export class NlpMessageController {
                         },
                     },
                 });
+                journalId = journal.id;
             }
 
             // Obfuscate detailed patterns for non-admins to prevent evasion mapping (Audit #4)
             const isAdminUser = (req.user as any)?.role === 'ADMIN';
-            const responseData = isAdminUser ? result : {
+            const responseData = isAdminUser ? { ...result, journalId } : {
                 score: result.score,
                 level: result.level,
                 scamType: result.scamType,
                 language: result.language,
                 checkedAt: result.checkedAt,
-                matchedPatterns: result.matchedPatterns, // Expose user-friendly labels for UI breakdown
+                matchedPatterns: result.matchedPatterns,
+                journalId,
             };
 
             return res.json(responseData);

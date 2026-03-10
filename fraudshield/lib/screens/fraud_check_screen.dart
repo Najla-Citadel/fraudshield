@@ -152,6 +152,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   }
 
   void _showResultSheet(String value, RiskResult result) {
+    bool feedbackSubmitted = false;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -267,7 +268,69 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                       ],
                     ),
                   )),
-              SizedBox(height: 30),
+              SizedBox(height: 20),
+              
+              if (result.journalId != null) ...[
+                Text('WAS THIS HELPFUL?',
+                    style: DesignTypography.bodyXs.copyWith(
+                      color: Colors.white38,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    )),
+                SizedBox(height: 12),
+                StatefulBuilder(builder: (context, setSheetState) {
+                  return feedbackSubmitted 
+                    ? Container(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: DesignTokens.colors.accentGreen.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+                        ),
+                        child: Center(
+                          child: Text('Thank you for the feedback!',
+                              style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold)),
+                        ),
+                      )
+                    : Row(
+                        children: [
+                          _feedbackButton(
+                            icon: LucideIcons.thumbsUp,
+                            label: 'Yes',
+                            onTap: () async {
+                              try {
+                                await ApiService.instance.submitLookupFeedback(
+                                  journalId: result.journalId!,
+                                  wasHelpful: true,
+                                );
+                                setSheetState(() => feedbackSubmitted = true);
+                              } catch (e) {
+                                 AppSnackBar.showError(context, 'Failed to submit feedback');
+                              }
+                            },
+                          ),
+                          SizedBox(width: 12),
+                          _feedbackButton(
+                            icon: LucideIcons.thumbsDown,
+                            label: 'No',
+                            onTap: () async {
+                              try {
+                                await ApiService.instance.submitLookupFeedback(
+                                  journalId: result.journalId!,
+                                  wasHelpful: false,
+                                );
+                                setSheetState(() => feedbackSubmitted = true);
+                              } catch (e) {
+                                 AppSnackBar.showError(context, 'Failed to submit feedback');
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                }),
+                SizedBox(height: 30),
+              ],
+
               Row(
                 children: [
                   Expanded(
@@ -279,6 +342,39 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                 ],
               ),
               SizedBox(height: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _feedbackButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
+            border: Border.all(color: Colors.white.withOpacity(0.05)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 16, color: onTap == null ? Colors.white24 : Colors.white70),
+              SizedBox(width: 8),
+              Text(label, style: TextStyle(
+                color: onTap == null ? Colors.white24 : Colors.white70,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              )),
             ],
           ),
         ),

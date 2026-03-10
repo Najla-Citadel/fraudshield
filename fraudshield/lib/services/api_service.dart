@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:io' show Platform;
 import 'scam_scanner_service.dart';
 import '../models/trending_scam.dart';
 
@@ -31,6 +33,7 @@ class ApiService {
 
   String? _token;
   String? _refreshToken;
+  String? _deviceId;
   Future<bool>? _refreshFuture;
 
   /// Callback to notify when a session is invalidated (e.g., 401 on refresh)
@@ -60,6 +63,7 @@ class ApiService {
         debugPrint('⚠️ WARNING: Running with a LOCAL development backend.');
       }
     }
+    await _initDeviceId();
     _token = await _secureStorage.read(key: _keyAuthToken);
     _refreshToken = await _secureStorage.read(key: _keyRefreshToken);
   }
@@ -90,6 +94,7 @@ class ApiService {
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         if (_token != null) 'Authorization': 'Bearer $_token',
+        'X-Device-Id': _deviceId ?? 'unknown',
         'X-FS-Timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
         'X-FS-Nonce': _generateNonce(),
       };
@@ -97,6 +102,24 @@ class ApiService {
   String _generateNonce() {
     final random = DateTime.now().microsecondsSinceEpoch.toString();
     return random.hashCode.toString(); // Simple unique string for now
+  }
+
+  Future<void> _initDeviceId() async {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      if (kIsWeb) {
+        _deviceId = 'web-client';
+      } else if (Platform.isAndroid) {
+        final androidInfo = await deviceInfo.androidInfo;
+        _deviceId = androidInfo.id;
+      } else if (Platform.isIOS) {
+        final iosInfo = await deviceInfo.iosInfo;
+        _deviceId = iosInfo.identifierForVendor;
+      }
+    } catch (e) {
+      debugPrint('ApiService: Failed to get device ID: $e');
+      _deviceId = 'unknown-device';
+    }
   }
 
   // ---------------- Auth ----------------
@@ -427,6 +450,18 @@ class ApiService {
     return post('/reports/verify', {
       'reportId': reportId,
       'isSame': isSame,
+    });
+  }
+
+  Future<Map<String, dynamic>> flagContent({
+    required String targetId,
+    required String type,
+    required String reason,
+  }) async {
+    return post('/reports/flag-content', {
+      'targetId': targetId,
+      'type': type,
+      'reason': reason,
     });
   }
 
@@ -772,6 +807,16 @@ class ApiService {
     required String value,
   }) async {
     return await get('/reports/lookup?type=$type&value=$value');
+  }
+
+  Future<void> submitLookupFeedback({
+    required String journalId,
+    required bool wasHelpful,
+  }) async {
+    await post('/reports/lookup-feedback', {
+      'journalId': journalId,
+      'wasHelpful': wasHelpful,
+    });
   }
 
   // ---------------- AI Risk Score V2 ----------------

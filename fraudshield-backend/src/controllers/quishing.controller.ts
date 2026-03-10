@@ -29,10 +29,12 @@ export class QuishingController {
 
             const result = await QuishingService.analyzeUrl(url.trim());
 
+            let journalId: string | undefined;
+
             // Log to TransactionJournal
             const userId = (req.user as any)?.id;
             if (userId) {
-                await prisma.transactionJournal.create({
+                const journal = await (prisma as any).transactionJournal.create({
                     data: {
                         userId,
                         checkType: CheckType.URL,
@@ -48,9 +50,13 @@ export class QuishingController {
                         },
                     },
                 });
+                journalId = journal.id;
             }
 
-            return res.json(result);
+            return res.json({
+                ...result,
+                journalId,
+            });
         } catch (error) {
             next(error);
         }
@@ -82,10 +88,12 @@ export class QuishingController {
 
             const result = await QuishingService.analyzeUrl(payload.trim());
 
+            let journalId: string | undefined;
+
             // Log to TransactionJournal
             const userId = (req.user as any)?.id;
             if (userId) {
-                await prisma.transactionJournal.create({
+                const journal = await (prisma as any).transactionJournal.create({
                     data: {
                         userId,
                         checkType: CheckType.URL,
@@ -101,9 +109,13 @@ export class QuishingController {
                         },
                     },
                 });
+                journalId = journal.id;
             }
 
-            return res.json(result);
+            return res.json({
+                ...result,
+                journalId,
+            });
         } catch (error) {
             next(error);
         }

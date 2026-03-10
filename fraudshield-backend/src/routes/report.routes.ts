@@ -5,6 +5,7 @@ import { ScamNumberController } from '../controllers/scam-number.controller';
 import { authenticate } from '../middleware/auth.middleware';
 import { validateReport } from '../middleware/validators';
 import { reportLimiter, featureLimiter } from '../middleware/rateLimiter';
+import { deviceFingerprint } from '../middleware/device-fingerprint';
 
 const router = Router();
 
@@ -14,10 +15,12 @@ router.get('/public', ReportController.getPublicFeed);
 
 // Protected routes
 router.get('/lookup', authenticate, featureLimiter, ReportController.lookupReport);
-router.post('/', authenticate, reportLimiter, validateReport, ReportController.submitReport);
+router.post('/', authenticate, deviceFingerprint, reportLimiter, validateReport, ReportController.submitReport);
 router.get('/my', authenticate, ReportController.getMyReports);
 router.get('/:id', authenticate, ReportController.getReportDetails);
 router.post('/verify', authenticate, featureLimiter, ReportController.verifyReport);
+router.post('/lookup-feedback', authenticate, ReportController.submitLookupFeedback);
+router.post('/flag-content', authenticate, featureLimiter, ReportController.flagContent);
 
 // Comments
 router.get('/:reportId/comments', CommentController.getComments);

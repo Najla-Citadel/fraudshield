@@ -123,4 +123,6 @@ export const adminService = {
     getFraudLabels: () => api.get('/admin/fraud-labels'),
     createFraudLabel: (data: any) => api.post('/admin/fraud-labels', data),
     deleteFraudLabel: (id: string) => api.delete(`/admin/fraud-labels/${id}`),
+    getContentFlags: () => api.get('/admin/content-flags'),
+    updateFlagStatus: (id: string, status: string) => api.patch(`/admin/content-flags/${id}`, { status }),
 };

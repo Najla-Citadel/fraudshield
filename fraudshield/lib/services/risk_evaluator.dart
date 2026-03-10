@@ -30,6 +30,7 @@ class RiskResult {
   final List<String> dangerousPermissions; // APK dangerous permissions
   final int? pageCount; // PDF page count
   final String? sha256; // File fingerprint
+  final String? journalId; // Log ID for feedback
 
   RiskResult({
     required this.score,
@@ -52,6 +53,7 @@ class RiskResult {
     this.dangerousPermissions = const [],
     this.pageCount,
     this.sha256,
+    this.journalId,
   });
 }
 
@@ -85,6 +87,7 @@ class RiskEvaluator {
         level: v2Level,
         reasons: v2Reasons.cast<String>(),
         apiChecked: true,
+        journalId: res['journalId'],
       );
     } catch (e) {
       log('V2 risk evaluation failed, falling back to local heuristics: $e');
@@ -300,6 +303,18 @@ class RiskEvaluator {
           if (!reasons.contains(r)) reasons.add(r as String);
         }
       }
+
+      return RiskResult(
+        score: score.clamp(0, 100),
+        level: level,
+        reasons: reasons,
+        apiChecked: true,
+        communityReports: communityReports,
+        verifiedReports: verifiedReports,
+        categories: categories,
+        sources: sources,
+        journalId: res['journalId'],
+      );
     } catch (e) {
       log('V2 payment risk evaluation failed: $e');
       // Fall through to local heuristic result

@@ -26,6 +26,11 @@ io.on('connection', (socket) => {
         logger.info('User joined socket room', { userId, socketId: socket.id });
     });
 
+    socket.on('join_report', (reportId: string) => {
+        socket.join(`report_${reportId}`);
+        logger.info('User joined report room', { reportId, socketId: socket.id });
+    });
+
     socket.on('disconnect', () => {
         logger.info('Socket client disconnected', { socketId: socket.id });
     });

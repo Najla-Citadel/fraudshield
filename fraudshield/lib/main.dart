@@ -12,6 +12,7 @@ import 'providers/auth_provider.dart';
 import 'services/notification_service.dart';
 import 'services/security_service.dart';
 import 'services/scam_sync_service.dart';
+import 'services/socket_service.dart';
 import 'app_router.dart';
 import 'constants/app_theme.dart';
 import 'screens/root_screen.dart';
@@ -126,6 +127,7 @@ void main() async {
   await NotificationService.instance.init();
   await CallStateService.instance.init();
   ClipboardMonitorService.instance.init();
+  SocketService.instance.init();
 
   final prefs = await SharedPreferences.getInstance();
   if (prefs.getBool('smart_capture_enabled') ?? false) {

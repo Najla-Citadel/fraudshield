@@ -3,6 +3,7 @@ import { prisma } from '../config/database';
 import { AuditService } from '../services/audit.service';
 import { GamificationService } from '../services/gamification.service';
 import { AlertEngineService } from '../services/alert-engine.service';
+import { io } from '../server';
 
 export class AdminController {
     static async getAlerts(req: Request, res: Response, next: NextFunction) {
@@ -371,6 +372,14 @@ export class AdminController {
                     );
 
                     await AlertEngineService.dispatchLocalAlert(updatedReport);
+
+                    // Emit real-time update
+                    io.emit('new_public_report', {
+                        id: updatedReport.id,
+                        category: updatedReport.category,
+                        targetType: updatedReport.type,
+                        timestamp: updatedReport.createdAt,
+                    });
                 } catch (err) {
                     console.error('❌ Failed to process approval side-effects:', err);
                 }
@@ -871,6 +880,45 @@ export class AdminController {
                 totalReports: reportCount,
                 pendingReports: pendingReports,
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getContentFlags(req: Request, res: Response, next: NextFunction) {
+        try {
+            const flags = await (prisma as any).contentFlag.findMany({
+                include: {
+                    user: { select: { fullName: true, email: true } }
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            res.json(flags);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async updateFlagStatus(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const { status } = req.body; // 'DISMISSED' | 'TAKEN_ACTION'
+
+            const flag = await (prisma as any).contentFlag.update({
+                where: { id: id as string },
+                data: { status },
+            });
+
+            const adminId = (req.user as any).id;
+            await AuditService.logAction({
+                adminId,
+                action: 'UPDATE_FLAG_STATUS',
+                targetType: 'ContentFlag',
+                targetId: id as string,
+                payload: { status }
+            });
+
+            res.json(flag);
         } catch (error) {
             next(error);
         }

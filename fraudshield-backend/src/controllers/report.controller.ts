@@ -6,6 +6,8 @@ import { AlertEngineService } from '../services/alert-engine.service';
 import { GamificationService } from '../services/gamification.service';
 import { RiskEvaluationService } from '../services/risk-evaluation.service';
 import { EncryptionUtils } from '../utils/encryption';
+import { ContentModerationService } from '../services/content-moderation.service';
+import { io } from '../server';
 
 /**
  * @openapi
@@ -62,6 +64,57 @@ export class ReportController {
                 },
             });
 
+            // 2.3 Duplicate Report Detection
+            const encryptedTarget = EncryptionUtils.deterministicEncrypt(target);
+            const duplicate = await (prisma as any).scamReport.findFirst({
+                where: {
+                    userId,
+                    target: encryptedTarget,
+                    createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+                },
+            });
+
+            if (duplicate) {
+                return res.status(409).json({
+                    message: 'You have already reported this target in the last 24 hours.',
+                    reportId: duplicate.id,
+                });
+            }
+
+            // Step 1.5: Validate evidence JSON schema
+            const MAX_EVIDENCE_SIZE = 50 * 1024; // 50KB max
+            const evidenceStr = JSON.stringify(evidence || {});
+
+            if (evidenceStr.length > MAX_EVIDENCE_SIZE) {
+                return res.status(400).json({ message: 'Evidence data exceeds maximum size (50KB)' });
+            }
+
+            // Whitelist allowed keys
+            const ALLOWED_EVIDENCE_KEYS = ['smsContent', 'message', 'callerName', 'screenshots', 'notes'];
+            if (evidence && typeof evidence === 'object') {
+                const keys = Object.keys(evidence);
+                const invalidKeys = keys.filter(k => !ALLOWED_EVIDENCE_KEYS.includes(k));
+                if (invalidKeys.length > 0) {
+                    return res.status(400).json({
+                        message: `Invalid evidence fields: ${invalidKeys.join(', ')}`,
+                    });
+                }
+
+                // Validate screenshots array
+                if (evidence.screenshots && (!Array.isArray(evidence.screenshots) || (evidence.screenshots as any[]).length > 5)) {
+                    return res.status(400).json({ message: 'Maximum 5 screenshot references allowed' });
+                }
+
+                // Validate text field lengths
+                if (evidence.smsContent && (evidence.smsContent as string).length > 2000) {
+                    return res.status(400).json({ message: 'SMS content exceeds maximum length (2000 chars)' });
+                }
+
+                if (evidence.message && (evidence.message as string).length > 2000) {
+                    return res.status(400).json({ message: 'Message content exceeds maximum length (2000 chars)' });
+                }
+            }
+
             const report = await (prisma as any).scamReport.create({
                 data: {
                     userId,
@@ -72,7 +125,12 @@ export class ReportController {
                     isPublic: false, // Force false for moderation
                     latitude,
                     longitude,
-                    evidence: evidence || {},
+                    evidence: {
+                        ...(evidence || {}),
+                        _moderation: await ContentModerationService.screenReport(description),
+                        _extractedEntities: await ContentModerationService.extractEntities(description),
+                        _device: (req as any).deviceId || 'unknown',
+                    },
                     status: 'PENDING',
                 },
             });
@@ -262,7 +320,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
+                }).then(reports => reports.map(r => ({ ...r, target: r.target }))), // Keep raw target for now, redact in final map
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -277,7 +335,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: EncryptionUtils.decrypt(report.target || ''),
+                    target: redactTarget(EncryptionUtils.decrypt(report.target || ''), report.type),
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -402,7 +460,7 @@ export class ReportController {
                     orderBy: orderByClause,
                     take: limitNum,
                     skip: offsetNum,
-                }).then(reports => reports.map(r => ({ ...r, target: EncryptionUtils.decrypt(r.target || '') }))),
+                }).then(reports => reports.map(r => ({ ...r, target: r.target }))), // Keep raw target for now, redact in final map
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -430,7 +488,7 @@ export class ReportController {
 
                 return {
                     ...report,
-                    target: EncryptionUtils.decrypt(report.target || ''),
+                    target: redactTarget(EncryptionUtils.decrypt(report.target || ''), report.type),
                     reporterTrust: {
                         score: profile?.reputation ?? 0,
                         badges: Array.isArray(badges) ? badges : [],
@@ -500,26 +558,52 @@ export class ReportController {
                 create: { reportId, userId, isSame },
             });
 
-            // 3. Reward the verifier with Shield Points
-            await GamificationService.awardPoints(
-                userId,
-                10,
-                `Verified report ${reportId}`
-            );
+            // 3. Reward the verifier with Shield Points (with daily cap)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const todayVerifications = await prisma.verification.count({
+                where: {
+                    userId,
+                    createdAt: { gte: today },
+                },
+            });
+
+            const DAILY_VERIFICATION_CAP = 10; // Max 10 rewarded votes per day
+
+            if (todayVerifications <= DAILY_VERIFICATION_CAP) {
+                await GamificationService.awardPoints(
+                    userId,
+                    10,
+                    `Verified report ${reportId}`
+                );
+            }
 
             // 4. Reward the original reporter with Reputation if verified as 'Same'
             if (isSame) {
-                await (prisma as any).profile.upsert({
-                    where: { userId: report.userId },
-                    update: {
-                        reputation: { increment: 5 },
-                    },
-                    create: {
-                        userId: report.userId,
-                        reputation: 5,
-                        avatar: 'Felix',
+                // Daily reputation gain cap: max 20 upvotes per report per day
+                const todayUpvotes = await (prisma as any).verification.count({
+                    where: {
+                        reportId,
+                        isSame: true,
+                        createdAt: { gte: today },
                     },
                 });
+
+                const DAILY_REP_CAP = 20;
+                if (todayUpvotes <= DAILY_REP_CAP) {
+                    await (prisma as any).profile.upsert({
+                        where: { userId: report.userId },
+                        update: {
+                            reputation: { increment: 5 },
+                        },
+                        create: {
+                            userId: report.userId,
+                            reputation: 5,
+                            avatar: 'Felix',
+                        },
+                    });
+                }
 
                 // Evaluate badges for the reporter
                 await BadgeService.evaluateBadges(report.userId);
@@ -528,12 +612,20 @@ export class ReportController {
                 const downvoteCount = await (prisma as any).verification.count({
                     where: { reportId, isSame: false }
                 });
-                
+
                 if (downvoteCount >= 5) {
-                    await (prisma as any).profile.update({
+                    // Reputation floor: never go below 0
+                    const reporterProfile = await (prisma as any).profile.findUnique({
                         where: { userId: report.userId },
-                        data: { reputation: { decrement: 2 } }
+                        select: { reputation: true },
                     });
+                    const currentRep = reporterProfile?.reputation ?? 0;
+                    if (currentRep > 0) {
+                        await (prisma as any).profile.update({
+                            where: { userId: report.userId },
+                            data: { reputation: { decrement: Math.min(2, currentRep) } }
+                        });
+                    }
                 }
             }
 
@@ -636,16 +728,7 @@ export class ReportController {
                 recommendation = 'No community reports found. Proceed with standard caution.';
             }
 
-            res.json({
-                found: totalCount > 0 || riskLevel === 'high',
-                riskLevel,
-                communityReports: totalCount,
-                verifiedReports: verifiedCount,
-                categories,
-                lastReported,
-                sources,
-                recommendation,
-            });
+            let journalId: string | undefined;
 
             // Log to TransactionJournal if user is authenticated
             const userId = (req.user as any)?.id;
@@ -662,15 +745,15 @@ export class ReportController {
                     status = 'SUSPICIOUS';
                 }
 
-                await prisma.transactionJournal.create({
+                const journal = await (prisma as any).transactionJournal.create({
                     data: {
                         userId,
                         checkType: dbCheckType as any,
-                        target: value,
+                        target: value as string,
                         riskScore: score,
                         status: status,
                         metadata: {
-                            found: true,
+                            found: (totalCount || 0) > 0 || riskLevel === 'high',
                             riskLevel,
                             communityReports: totalCount,
                             verifiedReports: verifiedCount,
@@ -678,20 +761,161 @@ export class ReportController {
                         }
                     }
                 });
+                journalId = journal.id;
             }
+
+            res.json({
+                found: (totalCount || 0) > 0 || riskLevel === 'high',
+                riskLevel,
+                communityReports: totalCount,
+                verifiedReports: verifiedCount,
+                categories,
+                lastReported,
+                sources,
+                recommendation,
+                journalId,
+            });
 
         } catch (error) {
             next(error);
         }
     }
+
+    /**
+     * @openapi
+     * /api/v1/reports/lookup-feedback:
+     *   post:
+     *     summary: Submit feedback for a lookup
+     *     tags: [Reports]
+     *     security:
+     *       - bearerAuth: []
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             required: [journalId, wasHelpful]
+     *             properties:
+     *               journalId:
+     *                 type: string
+     *               wasHelpful:
+     *                 type: boolean
+     *     responses:
+     *       200:
+     *         description: Feedback submitted successfully
+     */
+    static async submitLookupFeedback(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { journalId, wasHelpful } = req.body;
+            const userId = (req.user as any).id;
+
+            if (!journalId) {
+                return res.status(400).json({ message: 'Journal ID is required' });
+            }
+
+            const updatedJournal = await (prisma as any).transactionJournal.update({
+                where: {
+                    id: journalId,
+                    userId,
+                },
+                data: {
+                    wasHelpful: wasHelpful === true,
+                },
+            });
+
+            res.json({ success: true, journalId: updatedJournal.id });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static flagContent = async (req: Request, res: Response) => {
+        try {
+            const { targetId, type, reason } = req.body;
+            const userId = (req.user as any).id;
+
+            if (!['report', 'comment'].includes(type)) {
+                return res.status(400).json({ message: 'Invalid flag type. Must be "report" or "comment".' });
+            }
+
+            if (!targetId || !reason) {
+                return res.status(400).json({ message: 'Target ID and reason are required.' });
+            }
+
+            const flag = await (prisma as any).contentFlag.upsert({
+                where: {
+                    targetId_userId_type: {
+                        targetId,
+                        userId,
+                        type,
+                    },
+                },
+                update: { reason, status: 'PENDING' },
+                create: {
+                    targetId,
+                    userId,
+                    type,
+                    reason,
+                },
+            });
+
+            // Auto-hide logic: if 3+ reports, hide it
+            const flagCount = await (prisma as any).contentFlag.count({
+                where: { targetId, type, status: 'PENDING' },
+            });
+
+            if (flagCount >= 3) {
+                if (type === 'report') {
+                    await (prisma as any).scamReport.update({
+                        where: { id: targetId },
+                        data: { isPublic: false },
+                    });
+                } else if (type === 'comment') {
+                    await (prisma as any).comment.update({
+                        where: { id: targetId },
+                        data: { text: '[This comment has been hidden due to community reports]' },
+                    });
+                }
+            }
+
+            res.json({
+                message: 'Content flagged successfully. Our moderators will review it shortly.',
+                flagId: flag.id,
+                autoHidden: flagCount >= 3
+            });
+        } catch (error) {
+            console.error('Flag error:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    };
 }
 
-function redactedValue(val: string): string {
-    if (val.includes('@')) {
-        const [user, domain] = val.split('@');
-        return `${user[0]}***@${domain}`;
+function redactTarget(val: string, type?: string): string {
+    if (!val) return '****';
+
+    // Phone: show first 3 + last 2 → "012****89"
+    if (type === 'phone' && val.length > 5) {
+        return `${val.substring(0, 3)}****${val.substring(val.length - 2)}`;
     }
-    if (val.length > 4) {
+
+    // Bank: show last 4 digits → "****1234"
+    if (type === 'bank' && val.length > 4) {
+        return `****${val.substring(val.length - 4)}`;
+    }
+
+    // URL: show domain only → "example.com/****"
+    if (type === 'link' || type === 'url') {
+        try {
+            const url = new URL(val.startsWith('http') ? val : `https://${val}`);
+            return `${url.hostname}/****`;
+        } catch {
+            return val.length > 10 ? `${val.substring(0, 10)}****` : val;
+        }
+    }
+
+    // Default: show first 3 + last 2
+    if (val.length > 5) {
         return `${val.substring(0, 3)}****${val.substring(val.length - 2)}`;
     }
     return '****';
