@@ -4,7 +4,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <!-- Only request READ_CALL_LOG on Android 9 and below (phone_state fallback) -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
@@ -51,8 +53,18 @@
 
         <service
             android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
-            android:foregroundServiceType="specialUse"
+            android:foregroundServiceType="phoneCall"
             android:stopWithTask="false" />
+
+        <!-- CallScreeningService for Android 10+ (no READ_CALL_LOG needed) -->
+        <service
+            android:name=".CallScreeningServiceImpl"
+            android:permission="android.permission.BIND_SCREENING_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
 
         <!-- Notification Listener for Smart Capture -->
         <service android:name="notification.listener.service.NotificationListener"
@@ -65,7 +77,7 @@
         </service>
 
         <service
-            android:name="com.flutter_overlay_window.flutter_overlay_window.OverlayService"
+            android:name="flutter.overlay.window.flutter_overlay_window.OverlayService"
             android:exported="false" />
             
         <meta-data

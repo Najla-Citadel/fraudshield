@@ -19,6 +19,12 @@
 # This is mostly for third-party SDKs that might use Java reflection.
 -keep class com.citadel.fraudshield.v2.models.** { *; }
 
+# Keep CallScreeningService (required by Android framework for call screening)
+-keep class com.citadel.fraudshield.v2.CallScreeningServiceImpl { *; }
+
+# Keep MainActivity bridge methods (MethodChannel/EventChannel handlers)
+-keep class com.citadel.fraudshield.v2.MainActivity { *; }
+
 # Google Play Core rules to suppress R8 warnings
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication
 -dontwarn com.google.android.play.core.splitinstall.SplitInstallException

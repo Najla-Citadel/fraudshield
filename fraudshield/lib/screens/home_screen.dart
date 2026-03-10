@@ -39,6 +39,7 @@ import '../widgets/terms_acceptance_overlay.dart';
 import '../services/biometric_service.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_snackbar.dart';
+// Removed: import '../services/call_state_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

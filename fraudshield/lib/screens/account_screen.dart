@@ -27,7 +27,7 @@ import '../services/biometric_service.dart';
 import '../services/smart_capture_service.dart';
 import '../services/call_state_service.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
-import 'package:permission_handler/permission_handler.dart';
+// Removed: import 'package:permission_handler/permission_handler.dart';
 import 'log_payment_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -96,27 +96,24 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Future<void> _loadCallerIdProtectionState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final enabled = prefs.getBool('caller_id_protection_enabled') ?? false;
-    if (enabled) {
-      CallStateService.instance.startProtection();
-    }
+    final enabled = CallStateService.instance.isEnabled;
     if (mounted) {
       setState(() => _callerIdProtectionEnabled = enabled);
     }
   }
 
   Future<void> _toggleCallerIdProtection(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('caller_id_protection_enabled', enabled);
+    await CallStateService.instance.setProtectionEnabled(enabled);
 
     if (enabled) {
-      if (!await Permission.systemAlertWindow.isGranted) {
-        await Permission.systemAlertWindow.request();
+      final isRoleHeld = await CallStateService.instance.isCallScreeningRoleHeld();
+      if (!isRoleHeld && mounted) {
+        // Redirection to setup if role is missing
+        Navigator.pushNamed(context, '/caller-id-setup').then((_) {
+          // Refresh state after returning from setup
+          _loadCallerIdProtectionState();
+        });
       }
-      await CallStateService.instance.startProtection();
-    } else {
-      await CallStateService.instance.stopProtection();
     }
 
     if (mounted) {

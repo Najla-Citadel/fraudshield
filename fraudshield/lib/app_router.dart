@@ -19,6 +19,7 @@ import 'screens/voice_detection_screen.dart';
 import 'screens/subscription_screen.dart';
 import 'screens/scam_reporting_screen.dart';
 import 'screens/fraud_check_result_screen.dart';
+import 'screens/features/caller_id_setup_screen.dart';
 import 'services/risk_evaluator.dart';
 import 'services/scam_scanner_service.dart';
 
@@ -79,6 +80,8 @@ class AppRouter {
             searchValue: args?['searchValue'] as String,
           ),
         );
+      case '/caller-id-setup':
+        return MaterialPageRoute(builder: (_) => const CallerIdSetupScreen());
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }

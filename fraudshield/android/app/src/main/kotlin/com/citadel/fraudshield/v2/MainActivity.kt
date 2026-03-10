@@ -8,8 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
+import android.app.Activity
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import android.content.pm.PackageManager
 import android.content.pm.ApplicationInfo
@@ -27,6 +29,9 @@ class MainActivity: FlutterActivity() {
     private val CALL_ATTESTATION_CHANNEL = "com.citadel.fraudshield/call_attestation"
     private val SCANNER_CHANNEL = "com.citadel.fraudshield/scanner"
     private val ATTESTATION_CHANNEL = "com.citadel.fraudshield/attestation"
+    private val CALL_SCREENING_CHANNEL = "com.citadel.fraudshield/call_screening"
+    private val SYSTEM_CHANNEL = "com.citadel.fraudshield/system"
+    private val ROLE_CHANNEL = "com.citadel.fraudshield/role"
     
     // Store the last known verification status mapped by phone number
     private val lastVerificationStatus = HashMap<String, Int>()
@@ -94,11 +99,20 @@ class MainActivity: FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CALL_ATTESTATION_CHANNEL).setMethodCallHandler { call, result ->
             if (call.method == "getVerificationStatus") {
                 val number = call.argument<String>("phoneNumber")
-                if (number != null && lastVerificationStatus.containsKey(number)) {
-                    result.success(lastVerificationStatus[number])
+                if (number != null) {
+                    // Check CallScreeningService's status first (Android 10+, more reliable)
+                    val screeningStatus = CallScreeningServiceImpl.lastVerificationStatus[number]
+                    if (screeningStatus != null) {
+                        result.success(screeningStatus)
+                    } else if (lastVerificationStatus.containsKey(number)) {
+                        // Fallback to BroadcastReceiver status (Android 9)
+                        result.success(lastVerificationStatus[number])
+                    } else {
+                        // Default to NOT_VERIFIED (0)
+                        result.success(0)
+                    }
                 } else {
-                    // Default to NOT_VERIFIED (0)
-                    result.success(0) 
+                    result.success(0)
                 }
             } else {
                 result.notImplemented()
@@ -174,6 +188,77 @@ class MainActivity: FlutterActivity() {
                 }
                 else -> result.notImplemented()
             }
+        }
+
+        // EventChannel for CallScreeningService (Android 10+)
+        // Streams incoming call events to Flutter without READ_CALL_LOG permission
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, CALL_SCREENING_CHANNEL).setStreamHandler(
+            object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    CallScreeningServiceImpl.eventSink = events
+                    Log.d("FraudShield", "CallScreening EventChannel: Flutter listening")
+                }
+                override fun onCancel(arguments: Any?) {
+                    CallScreeningServiceImpl.eventSink = null
+                    Log.d("FraudShield", "CallScreening EventChannel: Flutter cancelled")
+                }
+            }
+        )
+
+        // System MethodChannel for platform info (Android version, etc.)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, SYSTEM_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getAndroidVersion" -> {
+                    result.success(Build.VERSION.SDK_INT)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        // Role MethodChannel for Call Screening role management (Android 10+)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, ROLE_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "isRoleHeld" -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val roleManager = getSystemService(Context.ROLE_SERVICE) as android.app.role.RoleManager
+                        val isHeld = roleManager.isRoleHeld(android.app.role.RoleManager.ROLE_CALL_SCREENING)
+                        result.success(isHeld)
+                    } else {
+                        result.success(false)
+                    }
+                }
+                "requestRole" -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        val roleManager = getSystemService(Context.ROLE_SERVICE) as android.app.role.RoleManager
+                        if (!roleManager.isRoleHeld(android.app.role.RoleManager.ROLE_CALL_SCREENING)) {
+                            val intent = roleManager.createRequestRoleIntent(android.app.role.RoleManager.ROLE_CALL_SCREENING)
+                            startActivityForResult(intent, REQUEST_CODE_CALL_SCREENING_ROLE)
+                            // Result will be handled in onActivityResult
+                            pendingRoleResult = result
+                        } else {
+                            result.success(true) // Already held
+                        }
+                    } else {
+                        result.success(false)
+                    }
+                }
+                else -> result.notImplemented()
+            }
+        }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_CALL_SCREENING_ROLE = 1001
+    }
+
+    private var pendingRoleResult: MethodChannel.Result? = null
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_CALL_SCREENING_ROLE) {
+            val granted = resultCode == RESULT_OK
+            pendingRoleResult?.success(granted)
+            pendingRoleResult = null
         }
     }
 

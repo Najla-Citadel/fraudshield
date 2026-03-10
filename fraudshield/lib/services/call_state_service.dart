@@ -1,4 +1,5 @@
 import 'package:phone_state/phone_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
@@ -10,15 +11,16 @@ import 'notification_service.dart';
 import 'api_service.dart';
 import 'risk_evaluator.dart';
 import 'scam_number_db.dart';
-import 'dart:convert';
+// Removed: import 'dart:convert';
 
-class CallStateService {
+class CallStateService with ChangeNotifier {
   static final CallStateService instance = CallStateService._internal();
   factory CallStateService() => instance;
   CallStateService._internal();
 
   DateTime? _callStartTime;
   bool _initialized = false;
+  bool _isEnabled = false;
   PhoneStateStatus? _lastStatus;
   String? _lastNumber;
   int? _lastScore;
@@ -26,20 +28,124 @@ class CallStateService {
   bool? _inContacts;
   String? _userPhoneNumber;
 
+  bool get isEnabled => _isEnabled;
+
   static const _attestationChannel =
       MethodChannel('com.citadel.fraudshield/call_attestation');
+  static const _callScreeningChannel =
+      EventChannel('com.citadel.fraudshield/call_screening');
+  static const _systemChannel =
+      MethodChannel('com.citadel.fraudshield/system');
+  static const _roleChannel =
+      MethodChannel('com.citadel.fraudshield/role');
+
+  /// Whether CallScreeningService is active (Android 10+)
+  bool _useCallScreeningService = false;
 
   void setUserPhoneNumber(String? number) {
     _userPhoneNumber = number;
     debugPrint('CallStateService: userPhoneNumber set to $_userPhoneNumber');
   }
 
+  /// Get the Android SDK version at runtime
+  Future<int> _getAndroidVersion() async {
+    try {
+      final version = await _systemChannel.invokeMethod('getAndroidVersion');
+      return version ?? 28;
+    } catch (e) {
+      debugPrint('CallStateService: Failed to get Android version: $e');
+      return 28; // Default to Android 9
+    }
+  }
+
+  /// Check if the app is the default call screening app
+  Future<bool> isCallScreeningRoleHeld() async {
+    try {
+      final androidVersion = await _getAndroidVersion();
+      if (androidVersion < 29) return false; // Not supported on Android 9
+
+      final result = await _roleChannel.invokeMethod('isRoleHeld');
+      return result ?? false;
+    } catch (e) {
+      debugPrint('CallStateService: Failed to check call screening role: $e');
+      return false;
+    }
+  }
+
+  /// Request the Call Screening role (shows system dialog)
+  Future<bool> requestCallScreeningRole() async {
+    try {
+      final androidVersion = await _getAndroidVersion();
+      if (androidVersion < 29) {
+        debugPrint('CallStateService: Call Screening not supported on Android < 10');
+        return false;
+      }
+
+      final result = await _roleChannel.invokeMethod('requestRole');
+      debugPrint('CallStateService: Call Screening role request result: $result');
+      return result ?? false;
+    } catch (e) {
+      debugPrint('CallStateService: Failed to request call screening role: $e');
+      return false;
+    }
+  }
+
   Future<void> init() async {
     if (_initialized) return;
     debugPrint('CallStateService: >>> STARTING INIT <<<');
 
-    // 1. Setup Listener IMMEDIATELY so we don't miss anything during permission flow
+    // Load enabled state
+    final prefs = await SharedPreferences.getInstance();
+    _isEnabled = prefs.getBool('caller_id_protection_enabled') ?? false;
+    debugPrint('CallStateService: Protection enabled state: $_isEnabled');
+
+    // Detect Android version for capability-based call monitoring
+    final androidVersion = await _getAndroidVersion();
+    _useCallScreeningService = androidVersion >= 29;
+    debugPrint(
+        'CallStateService: Android API $androidVersion, useCallScreeningService=$_useCallScreeningService');
+
+    // Check if Call Screening role is held (Android 10+)
+    if (_useCallScreeningService) {
+      final isRoleHeld = await isCallScreeningRoleHeld();
+      debugPrint('CallStateService: Call Screening role held: $isRoleHeld');
+
+      if (!isRoleHeld) {
+        debugPrint('CallStateService: ⚠️ Call Screening role not held - phone numbers may not be available');
+        debugPrint('CallStateService: ℹ️ Navigate to /caller-id-setup to enable');
+      }
+    }
+
+    // 1a. Android 10+: Use CallScreeningService for incoming call detection
+    //     (doesn't require READ_CALL_LOG permission)
+    if (_useCallScreeningService) {
+      _callScreeningChannel.receiveBroadcastStream().listen(
+        (event) async {
+          if (!_isEnabled) return;
+          if (event is Map && event['event'] == 'CALL_SCREENING') {
+            final phoneNumber = event['phoneNumber'] as String?;
+            final direction = event['callDirection'] as String?;
+
+            debugPrint(
+                'CallStateService: [CALL_SCREENING] Number=$phoneNumber Direction=$direction');
+
+            if (direction == 'INCOMING') {
+              _inContacts = await _isNumberInContacts(phoneNumber);
+              _handleIncomingCall(phoneNumber);
+            }
+          }
+        },
+        onError: (error) {
+          debugPrint('CallStateService: CallScreening stream error: $error');
+        },
+      );
+    }
+
+    // 1b. PhoneState listener for call lifecycle events
+    //     - Android 10+: Only handles OFFHOOK/DISCONNECTED (call answered/ended)
+    //     - Android 9:   Handles everything (RINGING + OFFHOOK + DISCONNECTED)
     PhoneState.stream.listen((event) async {
+      if (!_isEnabled) return;
       final statusStr = event.status.name.toUpperCase();
 
       // Deduplication Logic
@@ -66,6 +172,13 @@ class CallStateService {
           'CallStateService: [STREAM] Status=$statusStr Number=${event.number}');
 
       if (statusStr == 'RINGING' || statusStr == 'CALL_INCOMING') {
+        // On Android 10+, skip RINGING from phone_state (CallScreeningService handles it)
+        if (_useCallScreeningService) {
+          debugPrint(
+              'CallStateService: Skipping RINGING (handled by CallScreeningService)');
+          return;
+        }
+        // Android 9: phone_state handles everything
         _inContacts = await _isNumberInContacts(event.number);
         _handleIncomingCall(event.number);
       } else if (statusStr == 'OFFHOOK' || statusStr == 'CALL_STARTED') {
@@ -132,6 +245,22 @@ class CallStateService {
       await FlutterForegroundTask.stopService();
       debugPrint('CallStateService: Foreground Service STOPPED');
     }
+  }
+
+  Future<void> setProtectionEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('caller_id_protection_enabled', value);
+    _isEnabled = value;
+    
+    if (value) {
+      await startProtection();
+    } else {
+      await stopProtection();
+      await _dismissOverlay();
+    }
+    
+    notifyListeners();
+    debugPrint('CallStateService: Protection enabled set to: $value');
   }
 
   Future<void> _requestLaunchPermissions() async {
@@ -453,7 +582,12 @@ class CallStateService {
   }
 
   /// Manually trigger the ringing state for UI testing/simulation.
+  /// Only available in debug builds (guarded by kDebugMode).
   void simulateRinging(String number) {
+    if (!kDebugMode) {
+      debugPrint('CallStateService: simulateRinging only available in DEBUG mode');
+      return;
+    }
     debugPrint('CallStateService: [SIMULATE] Triggering RINGING for $number');
     _handleIncomingCall(number);
   }
