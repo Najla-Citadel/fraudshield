@@ -16,46 +16,87 @@ export const TIER_THRESHOLDS = {
 };
 
 export class GamificationService {
+    private static readonly DAILY_CAP = 100;
+
     /**
      * Awards points to a user and updates their current and total points.
      * Also checks for tier upgrades and badges.
+     * Enforces a daily cap of 100 points.
      */
     static async awardPoints(userId: string, amount: number, description: string): Promise<{
         newBalance: number;
         totalPoints: number;
         currentTier: Tier;
         newBadges: string[];
+        awardedAmount: number;
     }> {
         try {
-            // 1. Update Profile (points and totalPoints)
+            // 1. Fetch current profile to check daily cap
+            const currentProfile = await (prisma as any).profile.findUnique({
+                where: { userId }
+            });
+
+            if (!currentProfile) {
+                throw new Error('User profile not found');
+            }
+
+            // 2. Check for daily reset
+            const now = new Date();
+            const lastReset = new Date(currentProfile.lastPointsReset || 0);
+            const isDifferentDay = now.getDate() !== lastReset.getDate() || 
+                                 now.getMonth() !== lastReset.getMonth() || 
+                                 now.getFullYear() !== lastReset.getFullYear();
+
+            let dailyEarned = isDifferentDay ? 0 : currentProfile.dailyPointsEarned;
+            let awardedAmount = amount;
+
+            // 3. Enforce Daily Cap
+            if (dailyEarned >= this.DAILY_CAP) {
+                awardedAmount = 0;
+            } else if (dailyEarned + amount > this.DAILY_CAP) {
+                awardedAmount = this.DAILY_CAP - dailyEarned;
+            }
+
+            let finalDescription = description;
+            if (awardedAmount < amount) {
+                finalDescription += awardedAmount === 0 
+                    ? ' (Capped: Daily limit reached)' 
+                    : ` (Partially Capped: Daily limit reached)`;
+            }
+
+            // 4. Update Profile
             const profile = await (prisma as any).profile.update({
                 where: { userId },
                 data: {
-                    points: { increment: amount },
-                    totalPoints: { increment: amount }
+                    points: { increment: awardedAmount },
+                    totalPoints: { increment: awardedAmount },
+                    dailyPointsEarned: isDifferentDay ? awardedAmount : { increment: awardedAmount },
+                    lastPointsReset: now
                 }
             });
 
-            // 2. Log Transaction
+            // 5. Log Transaction (only if points were awarded, or log as 0 if capped?)
+            // We'll log even if 0 to show the user the limit was hit in history
             await (prisma as any).pointsTransaction.create({
                 data: {
                     userId,
-                    amount,
-                    description
+                    amount: awardedAmount,
+                    description: finalDescription
                 }
             });
 
-            // 3. Calculate Tier
+            // 6. Calculate Tier
             const currentTier = this.calculateTier(profile.totalPoints);
 
-            // 4. Evaluate Badges (existing logic)
+            // 7. Evaluate Badges
             const newBadges = await BadgeService.evaluateBadges(userId);
 
             return {
                 newBalance: profile.points,
                 totalPoints: profile.totalPoints,
                 currentTier,
-                newBadges
+                newBadges,
+                awardedAmount
             };
         } catch (error) {
             console.error('Error awarding points:', error);

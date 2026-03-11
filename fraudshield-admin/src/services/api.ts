@@ -97,7 +97,7 @@ export const adminService = {
     getUserById: (id: string) => api.get(`/admin/users/${id}`),
     updateUserRole: (id: string, role: string) => api.patch(`/admin/users/${id}/role`, { role }),
     updateUser: (id: string, data: any) => api.patch(`/admin/users/${id}`, data),
-    getReports: (page = 1, limit = 15) => api.get('/admin/reports', { params: { page, limit } }),
+    getReports: (page = 1, limit = 15, sortBy = 'newest') => api.get('/admin/reports', { params: { page, limit, sortBy } }),
     getReportById: (id: string) => api.get(`/admin/reports/${id}`),
     updateReportStatus: (id: string, status: string) => api.patch(`/admin/reports/${id}/status`, { status }),
     labelTransaction: (data: { txId: string; label: string; alertId?: string }) => api.post('/admin/label-transaction', data),
@@ -125,4 +125,5 @@ export const adminService = {
     deleteFraudLabel: (id: string) => api.delete(`/admin/fraud-labels/${id}`),
     getContentFlags: () => api.get('/admin/content-flags'),
     updateFlagStatus: (id: string, status: string) => api.patch(`/admin/content-flags/${id}`, { status }),
+    getGlobalEntities: (params: { type: string; search?: string; offset?: number; limit?: number }) => api.get('/admin/global-entities', { params }),
 };

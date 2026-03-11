@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
-import { ContentFilter } from '../utils/content-filter';
+import { ContentModerationService } from '../services/content-moderation.service';
 import { io } from '../server';
 
 export class CommentController {
@@ -23,9 +23,13 @@ export class CommentController {
                 return res.status(400).json({ message: 'Comment is too short' });
             }
 
-            const filterResult = ContentFilter.sanitize(trimmedText);
-            if (filterResult.blocked) {
-                return res.status(400).json({ message: filterResult.reason });
+            // AI and PII Moderation
+            const moderation = await ContentModerationService.screenContent(trimmedText);
+            if (moderation.isFlagged) {
+                return res.status(400).json({ 
+                    message: 'Comment blocked for safety/privacy', 
+                    reasons: moderation.reasons 
+                });
             }
 
             const comment = await (prisma as any).comment.create({

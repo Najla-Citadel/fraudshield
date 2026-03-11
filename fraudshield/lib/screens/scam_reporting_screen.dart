@@ -16,6 +16,7 @@ import '../l10n/app_localizations.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/tokens/typography.dart';
 import '../design_system/components/app_snackbar.dart';
+import 'report_details_screen.dart';
 
 class ScamReportingScreen extends StatefulWidget {
   final double? prefilledLat;
@@ -189,6 +190,58 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
 
   void _showError(String msg) {
     AppSnackBar.showError(context, msg);
+  }
+
+  void _showDuplicateDialog(String reportId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: DesignTokens.colors.backgroundDark,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(LucideIcons.copy, color: Colors.amber, size: 24),
+            SizedBox(width: 12),
+            Text('Duplicate Report',
+                style: TextStyle(color: DesignTokens.colors.textLight)),
+          ],
+        ),
+        content: Text(
+          'You have already reported this target in the last 24 hours. Would you like to view your existing report?',
+          style: TextStyle(
+              color: DesignTokens.colors.textLight.withValues(alpha: 0.7)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel',
+                style: TextStyle(
+                    color: DesignTokens.colors.textLight.withValues(alpha: 0.5))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DesignTokens.colors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportDetailsScreen(
+                    report: {'id': reportId},
+                  ),
+                ),
+              );
+            },
+            child: Text('View Existing Report'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _pickFile() async {
@@ -408,6 +461,16 @@ class _ScamReportingScreenState extends State<ScamReportingScreen> {
           _reportSent = true;
           _isSubmitting = false;
         });
+      }
+    } on ApiException catch (e) {
+      log('ApiException submitting report: ${e.statusCode} - ${e.message}');
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+        if (e.statusCode == 409 && e.data != null && e.data!['reportId'] != null) {
+          _showDuplicateDialog(e.data!['reportId']);
+        } else {
+          _showError(e.message);
+        }
       }
     } catch (e) {
       log('Error submitting report: $e');

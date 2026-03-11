@@ -259,25 +259,55 @@ export class AdminController {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 15;
+            const sortBy = req.query.sortBy as string || 'newest';
             const skip = (page - 1) * limit;
 
-            const [reports, total] = await Promise.all([
-                prisma.scamReport.findMany({
-                    where: { deletedAt: null },
-                    include: {
-                        user: {
-                            select: {
-                                fullName: true,
-                                email: true,
+            let reports: any[];
+            let total: number;
+
+            if (sortBy === 'flagged') {
+                // Use raw query to sort by flag count since it's not a direct relation in Prisma
+                reports = await prisma.$queryRaw`
+                    SELECT r.*, 
+                           u.email as "userEmail", 
+                           u."fullName" as "userFullName",
+                           (SELECT COUNT(*) FROM "ContentFlag" f WHERE f."targetId" = r.id AND f.type = 'report') as "flagCount"
+                    FROM "ScamReport" r
+                    LEFT JOIN "User" u ON r."userId" = u.id
+                    WHERE r."deletedAt" IS NULL
+                    ORDER BY "flagCount" DESC, r."createdAt" DESC
+                    LIMIT ${limit} OFFSET ${skip}
+                `;
+
+                // Map raw results to match Prisma include structure
+                reports = reports.map(r => ({
+                    ...r,
+                    user: {
+                        email: r.userEmail,
+                        fullName: r.userFullName
+                    }
+                }));
+
+                total = await prisma.scamReport.count({ where: { deletedAt: null } });
+            } else {
+                [reports, total] = await Promise.all([
+                    prisma.scamReport.findMany({
+                        where: { deletedAt: null },
+                        include: {
+                            user: {
+                                select: {
+                                    fullName: true,
+                                    email: true,
+                                }
                             }
-                        }
-                    },
-                    orderBy: { createdAt: 'desc' },
-                    skip,
-                    take: limit,
-                }),
-                prisma.scamReport.count({ where: { deletedAt: null } })
-            ]);
+                        },
+                        orderBy: { createdAt: 'desc' },
+                        skip,
+                        take: limit,
+                    }),
+                    prisma.scamReport.count({ where: { deletedAt: null } })
+                ]);
+            }
 
             res.json({
                 data: reports,
@@ -372,14 +402,124 @@ export class AdminController {
                     );
 
                     await AlertEngineService.dispatchLocalAlert(updatedReport);
+ 
+                    // Update ScamNumberCache with extracted entities
+                    const evidence = updatedReport.evidence as any;
+                    const extractedPhones: string[] = evidence?._extractedEntities?.phones || [];
 
-                    // Emit real-time update
-                    io.emit('new_public_report', {
-                        id: updatedReport.id,
-                        category: updatedReport.category,
-                        targetType: updatedReport.type,
-                        timestamp: updatedReport.createdAt,
-                    });
+                    for (const phone of [...new Set(extractedPhones)]) {
+                        const cleanPhone = phone.replace(/[^\d]/g, '');
+                        if (cleanPhone.length < 9) continue;
+
+                        const existing = await prisma.scamNumberCache.findUnique({
+                            where: { phoneNumber: cleanPhone }
+                        });
+
+                        const categories = existing ? (existing.categories as string[]) : [];
+                        if (!categories.includes(updatedReport.category)) {
+                            categories.push(updatedReport.category);
+                        }
+
+                        const newVerifiedCount = (existing?.verifiedCount || 0) + 1;
+                        const newRiskScore = Math.min(100, newVerifiedCount * 25);
+
+                        await prisma.scamNumberCache.upsert({
+                            where: { phoneNumber: cleanPhone },
+                            update: {
+                                reportCount: { increment: 1 },
+                                verifiedCount: { increment: 1 },
+                                riskScore: newRiskScore,
+                                categories: categories,
+                                lastReported: new Date(),
+                            },
+                            create: {
+                                phoneNumber: cleanPhone,
+                                reportCount: 1,
+                                verifiedCount: 1,
+                                riskScore: 25,
+                                categories: [updatedReport.category],
+                                lastReported: new Date(),
+                            },
+                        });
+                    }
+
+                    // Update ScamUrlCache
+                    const extractedUrls: string[] = evidence?._extractedEntities?.urls || [];
+                    for (const url of [...new Set(extractedUrls)]) {
+                        const existing = await prisma.scamUrlCache.findUnique({
+                            where: { url }
+                        });
+
+                        const categories = existing ? (existing.categories as string[]) : [];
+                        if (!categories.includes(updatedReport.category)) {
+                            categories.push(updatedReport.category);
+                        }
+
+                        const newVerifiedCount = (existing?.verifiedCount || 0) + 1;
+                        const newRiskScore = Math.min(100, newVerifiedCount * 25);
+
+                        await prisma.scamUrlCache.upsert({
+                            where: { url },
+                            update: {
+                                reportCount: { increment: 1 },
+                                verifiedCount: { increment: 1 },
+                                riskScore: newRiskScore,
+                                categories: categories,
+                                lastReported: new Date(),
+                            },
+                            create: {
+                                url,
+                                reportCount: 1,
+                                verifiedCount: 1,
+                                riskScore: 25,
+                                categories: [updatedReport.category],
+                                lastReported: new Date(),
+                            },
+                        });
+                    }
+
+                    // Update ScamBankCache
+                    const extractedBanks: string[] = evidence?._extractedEntities?.bankAccounts || [];
+                    for (const account of [...new Set(extractedBanks)]) {
+                        const existing = await prisma.scamBankCache.findUnique({
+                            where: { accountNumber: account }
+                        });
+
+                        const categories = existing ? (existing.categories as string[]) : [];
+                        if (!categories.includes(updatedReport.category)) {
+                            categories.push(updatedReport.category);
+                        }
+
+                        const newVerifiedCount = (existing?.verifiedCount || 0) + 1;
+                        const newRiskScore = Math.min(100, newVerifiedCount * 25);
+
+                        await prisma.scamBankCache.upsert({
+                            where: { accountNumber: account },
+                            update: {
+                                reportCount: { increment: 1 },
+                                verifiedCount: { increment: 1 },
+                                riskScore: newRiskScore,
+                                categories: categories,
+                                lastReported: new Date(),
+                            },
+                            create: {
+                                accountNumber: account,
+                                reportCount: 1,
+                                verifiedCount: 1,
+                                riskScore: 25,
+                                categories: [updatedReport.category],
+                                lastReported: new Date(),
+                            },
+                        });
+                    }
+
+                     // Emit real-time update
+                     io.emit('new_public_report', {
+                         id: updatedReport.id,
+                         category: updatedReport.category,
+                         targetType: updatedReport.type,
+                         timestamp: updatedReport.createdAt,
+                     });
                 } catch (err) {
                     console.error('❌ Failed to process approval side-effects:', err);
                 }
@@ -894,6 +1034,64 @@ export class AdminController {
                 orderBy: { createdAt: 'desc' },
             });
             res.json(flags);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async getGlobalEntities(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { type = 'phone', search = '', limit = '20', offset = '0' } = req.query;
+            const limitNum = Math.min(parseInt(limit as string, 10) || 20, 100);
+            const offsetNum = Math.max(parseInt(offset as string, 10) || 0, 0);
+
+            let results: any[] = [];
+            let total = 0;
+
+            const searchQuery = search as string;
+
+            if (type === 'phone') {
+                const where = searchQuery ? { phoneNumber: { contains: searchQuery } } : {};
+                [results, total] = await Promise.all([
+                    (prisma as any).scamNumberCache.findMany({
+                        where,
+                        orderBy: { lastReported: 'desc' },
+                        take: limitNum,
+                        skip: offsetNum,
+                    }),
+                    (prisma as any).scamNumberCache.count({ where }),
+                ]);
+            } else if (type === 'url') {
+                const where = searchQuery ? { url: { contains: searchQuery, mode: 'insensitive' } } : {};
+                [results, total] = await Promise.all([
+                    (prisma as any).scamUrlCache.findMany({
+                        where,
+                        orderBy: { lastReported: 'desc' },
+                        take: limitNum,
+                        skip: offsetNum,
+                    }),
+                    (prisma as any).scamUrlCache.count({ where }),
+                ]);
+            } else if (type === 'bank') {
+                const where = searchQuery ? { accountNumber: { contains: searchQuery } } : {};
+                [results, total] = await Promise.all([
+                    (prisma as any).scamBankCache.findMany({
+                        where,
+                        orderBy: { lastReported: 'desc' },
+                        take: limitNum,
+                        skip: offsetNum,
+                    }),
+                    (prisma as any).scamBankCache.count({ where }),
+                ]);
+            }
+
+            res.json({
+                results,
+                total,
+                hasMore: offsetNum + limitNum < total,
+                limit: limitNum,
+                offset: offsetNum,
+            });
         } catch (error) {
             next(error);
         }

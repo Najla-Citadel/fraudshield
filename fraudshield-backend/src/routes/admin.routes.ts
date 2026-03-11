@@ -26,6 +26,7 @@ router.patch('/reports/:id/status', AdminController.updateReportStatus);
 router.delete('/reports/:id', AdminController.deleteReport);
 router.get('/content-flags', AdminController.getContentFlags);
 router.patch('/content-flags/:id', AdminController.updateFlagStatus);
+router.get('/global-entities', AdminController.getGlobalEntities);
 
 // Subscription Plan Management
 router.get('/subscription-plans', AdminController.getSubscriptionPlans);

@@ -16,6 +16,7 @@ interface ScamReport {
         fullName: string | null;
         email: string;
     };
+    flagCount?: number;
 }
 
 const Reports = () => {
@@ -23,11 +24,12 @@ const Reports = () => {
     const [loading, setLoading] = useState(true);
     const [meta, setMeta] = useState({ page: 1, totalPages: 1, total: 0 });
     const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState('newest');
 
-    const fetchReports = async (page = 1) => {
+    const fetchReports = async (page = 1, sort = sortBy) => {
         setLoading(true);
         try {
-            const response = await adminService.getReports(page);
+            const response = await adminService.getReports(page, 15, sort);
             setReports(response.data.data);
             setMeta(response.data.meta);
         } catch (error) {
@@ -38,8 +40,8 @@ const Reports = () => {
     };
 
     useEffect(() => {
-        fetchReports(1);
-    }, []);
+        fetchReports(1, sortBy);
+    }, [sortBy]);
 
     const handleStatusUpdate = async (id: string, status: string) => {
         try {
@@ -76,6 +78,17 @@ const Reports = () => {
             <header className="mb-8">
                 <h2 className="text-3xl font-bold">Scam Report Management</h2>
                 <p className="text-slate-400">Review and verify reported scam activity</p>
+                <div className="mt-4 flex items-center space-x-4">
+                    <span className="text-sm text-slate-400">Sort by:</span>
+                    <select 
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="bg-navy-800 border border-navy-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-green/50"
+                    >
+                        <option value="newest">Newest First</option>
+                        <option value="flagged">Most Flagged</option>
+                    </select>
+                </div>
             </header>
 
             <div className="space-y-4">
@@ -102,6 +115,12 @@ const Reports = () => {
                                 {getStatusIcon(report.status)}
                                 <span>{report.status}</span>
                             </div>
+                            {report.flagCount && report.flagCount > 0 ? (
+                                <div className="ml-2 px-3 py-1 rounded-full text-xs font-bold uppercase bg-accent-red/20 text-accent-red border border-accent-red/30 flex items-center space-x-2">
+                                    <AlertCircle size={14} />
+                                    <span>{report.flagCount} Flags</span>
+                                </div>
+                            ) : null}
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

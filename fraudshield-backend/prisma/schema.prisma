@@ -63,9 +63,11 @@ model Profile {
   loginStreak    Int       @default(0)
   mailingAddress String?
   mobile         String?
-  preferredName  String?
-  totalPoints    Int       @default(0)
-  user           User      @relation(fields: [userId], references: [id])
+  preferredName    String?
+  totalPoints      Int       @default(0)
+  dailyPointsEarned Int      @default(0)
+  lastPointsReset  DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id])
 }
 
 model SubscriptionPlan {
@@ -340,6 +342,31 @@ enum AlertCategory {
   COMMUNITY
   MACAU_SCAM
   MULE_ACCOUNT
+}
+
+model ScamUrlCache {
+  url           String   @id
+  riskScore     Int
+  reportCount   Int
+  verifiedCount Int
+  categories    Json     @default("[]")
+  lastReported  DateTime
+  updatedAt     DateTime @updatedAt
+
+  @@index([lastReported])
+}
+
+model ScamBankCache {
+  accountNumber String   @id
+  bankName      String?
+  riskScore     Int
+  reportCount   Int
+  verifiedCount Int
+  categories    Json     @default("[]")
+  lastReported  DateTime
+  updatedAt     DateTime @updatedAt
+
+  @@index([lastReported])
 }
 
 model ContentFlag {

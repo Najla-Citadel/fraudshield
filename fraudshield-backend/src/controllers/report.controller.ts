@@ -90,7 +90,11 @@ export class ReportController {
             }
 
             // Whitelist allowed keys
-            const ALLOWED_EVIDENCE_KEYS = ['smsContent', 'message', 'callerName', 'screenshots', 'notes'];
+            const ALLOWED_EVIDENCE_KEYS = [
+                'smsContent', 'message', 'callerName', 'screenshots', 'notes',
+                'target_type', 'phone', 'bank_name', 'account_number', 'platform',
+                'handle', 'url', 'evidence_url', 'location_text'
+            ];
             if (evidence && typeof evidence === 'object') {
                 const keys = Object.keys(evidence);
                 const invalidKeys = keys.filter(k => !ALLOWED_EVIDENCE_KEYS.includes(k));
@@ -127,7 +131,7 @@ export class ReportController {
                     longitude,
                     evidence: {
                         ...(evidence || {}),
-                        _moderation: await ContentModerationService.screenReport(description),
+                        _moderation: await ContentModerationService.screenContent(description),
                         _extractedEntities: await ContentModerationService.extractEntities(description),
                         _device: (req as any).deviceId || 'unknown',
                     },

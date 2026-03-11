@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import Reports from './pages/Reports';
+import GlobalDatabase from './pages/GlobalDatabase';
 import Login from './pages/Login';
 import Subscriptions from './pages/Subscriptions';
 import Badges from './pages/Badges';
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/global-database"
+          element={
+            <ProtectedRoute>
+              <GlobalDatabase />
             </ProtectedRoute>
           }
         />

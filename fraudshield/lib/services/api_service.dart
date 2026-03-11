@@ -929,6 +929,15 @@ class ApiService {
                   ? (data['errors'] as List).map((e) => e['message']).join(', ')
                   : null))
           : response.body;
+
+      if (isJson && data is Map<String, dynamic>) {
+        throw ApiException(
+          message: message ?? '$method $path failed: ${response.statusCode}',
+          statusCode: response.statusCode,
+          data: data,
+        );
+      }
+
       throw Exception(
           message ?? '$method $path failed: ${response.statusCode}');
     }
@@ -1049,4 +1058,19 @@ class ApiService {
       rethrow; // Hard stop for security
     }
   }
+}
+
+class ApiException implements Exception {
+  final String message;
+  final int statusCode;
+  final Map<String, dynamic>? data;
+
+  ApiException({
+    required this.message,
+    required this.statusCode,
+    this.data,
+  });
+
+  @override
+  String toString() => message;
 }
