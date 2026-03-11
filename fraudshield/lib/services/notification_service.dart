@@ -155,9 +155,17 @@ class NotificationService extends ChangeNotifier {
     const fln.AndroidInitializationSettings initializationSettingsAndroid =
         fln.AndroidInitializationSettings('@mipmap/ic_launcher');
 
+    const fln.DarwinInitializationSettings initializationSettingsDarwin =
+        fln.DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+
     const fln.InitializationSettings initializationSettings =
         fln.InitializationSettings(
       android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
     );
 
     await _notificationsPlugin.initialize(
@@ -200,9 +208,17 @@ class NotificationService extends ChangeNotifier {
       ],
     );
 
+    const fln.DarwinNotificationDetails darwinPlatformChannelSpecifics =
+        fln.DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
     const fln.NotificationDetails platformChannelSpecifics =
         fln.NotificationDetails(
       android: androidPlatformChannelSpecifics,
+      iOS: darwinPlatformChannelSpecifics,
     );
 
     String title = 'Incoming Call: $number';
@@ -243,7 +259,10 @@ class NotificationService extends ChangeNotifier {
     );
 
     const fln.NotificationDetails platformChannelSpecifics =
-        fln.NotificationDetails(android: androidPlatformChannelSpecifics);
+        fln.NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: const fln.DarwinNotificationDetails(),
+    );
 
     await _notificationsPlugin.show(
       DateTime.now().millisecond,

@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/risk_evaluator.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
+import '../widgets/adaptive_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../design_system/tokens/design_tokens.dart';
 import '../design_system/tokens/typography.dart';
@@ -12,7 +13,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../design_system/components/app_loading_indicator.dart';
 import '../services/api_service.dart';
 import '../design_system/components/app_snackbar.dart';
-import '../widgets/adaptive_button.dart';
+import '../design_system/components/app_button.dart';
 
 class FraudCheckScreen extends StatefulWidget {
   final String? initialType;
@@ -146,298 +147,18 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
 
     if (!mounted) return;
     setState(() => _isLoading = false);
+    if (mounted) {
+      Navigator.pushNamed(
+        context,
+        '/fraud-check-result',
+        arguments: {
+          'result': result,
+          'searchValue': _inputController.text.trim(),
+        },
+      );
+    }
 
-    _showResultSheet(_inputController.text.trim(), result);
     _fetchHistory();
-  }
-
-  void _showResultSheet(String value, RiskResult result) {
-    bool feedbackSubmitted = false;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => Container(
-        margin: EdgeInsets.all(DesignTokens.spacing.lg),
-        child: GlassSurface(
-          padding: EdgeInsets.all(DesignTokens.spacing.xl),
-          borderRadius: 28,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.white24,
-                    borderRadius: BorderRadius.all(Radius.circular(2)),
-                  ),
-                ),
-              ),
-              SizedBox(height: 24),
-              _buildRiskHeader(result),
-              SizedBox(height: 24),
-              
-              // Score Meter
-              Center(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      height: 120,
-                      width: 120,
-                      child: CircularProgressIndicator(
-                        value: result.score / 100,
-                        strokeWidth: 10,
-                        backgroundColor: Colors.white.withOpacity(0.05),
-                        valueColor: AlwaysStoppedAnimation<Color>(_getRiskColor(result.level)),
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${result.score}',
-                          style: DesignTypography.h1.copyWith(fontSize: 32),
-                        ),
-                        Text(
-                          '/ 100',
-                          style: DesignTypography.caption.copyWith(color: Colors.white38),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 32),
-              
-              Text('ANALYZED INPUT',
-                  style: DesignTypography.bodyXs.copyWith(
-                    color: Colors.white38,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  )),
-              SizedBox(height: 8),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(value,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    )),
-              ),
-              SizedBox(height: 20),
-              
-              Text('ANALYSIS BREAKDOWN',
-                  style: DesignTypography.bodyXs.copyWith(
-                    color: Colors.white38,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  )),
-              SizedBox(height: 12),
-              ...result.reasons.map((r) => Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          r.contains('Safe') || r.contains('Verified')
-                              ? LucideIcons.checkCircle
-                              : LucideIcons.alertTriangle,
-                          size: 16,
-                          color: r.contains('Safe') || r.contains('Verified')
-                              ? DesignTokens.colors.accentGreen
-                              : Colors.amber,
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                            child: Text(r.replaceAll(RegExp(r'^[✅⚠️🤖]\s*'), ''),
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontSize: 13,
-                                  height: 1.4,
-                                ))),
-                      ],
-                    ),
-                  )),
-              SizedBox(height: 20),
-              
-              if (result.journalId != null) ...[
-                Text('WAS THIS HELPFUL?',
-                    style: DesignTypography.bodyXs.copyWith(
-                      color: Colors.white38,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    )),
-                SizedBox(height: 12),
-                StatefulBuilder(builder: (context, setSheetState) {
-                  return feedbackSubmitted 
-                    ? Container(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: DesignTokens.colors.accentGreen.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-                        ),
-                        child: Center(
-                          child: Text('Thank you for the feedback!',
-                              style: TextStyle(color: DesignTokens.colors.accentGreen, fontWeight: FontWeight.bold)),
-                        ),
-                      )
-                    : Row(
-                        children: [
-                          _feedbackButton(
-                            icon: LucideIcons.thumbsUp,
-                            label: 'Yes',
-                            onTap: () async {
-                              try {
-                                await ApiService.instance.submitLookupFeedback(
-                                  journalId: result.journalId!,
-                                  wasHelpful: true,
-                                );
-                                setSheetState(() => feedbackSubmitted = true);
-                              } catch (e) {
-                                 AppSnackBar.showError(context, 'Failed to submit feedback');
-                              }
-                            },
-                          ),
-                          SizedBox(width: 12),
-                          _feedbackButton(
-                            icon: LucideIcons.thumbsDown,
-                            label: 'No',
-                            onTap: () async {
-                              try {
-                                await ApiService.instance.submitLookupFeedback(
-                                  journalId: result.journalId!,
-                                  wasHelpful: false,
-                                );
-                                setSheetState(() => feedbackSubmitted = true);
-                              } catch (e) {
-                                 AppSnackBar.showError(context, 'Failed to submit feedback');
-                              }
-                            },
-                          ),
-                        ],
-                      );
-                }),
-                SizedBox(height: 30),
-              ],
-
-              Row(
-                children: [
-                  Expanded(
-                    child: AdaptiveButton(
-                      onPressed: () => Navigator.pop(context),
-                      text: result.level == 'low' ? 'Done' : 'Understood',
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _feedbackButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback? onTap,
-  }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.04),
-            borderRadius: BorderRadius.circular(DesignTokens.radii.md),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 16, color: onTap == null ? Colors.white24 : Colors.white70),
-              SizedBox(width: 8),
-              Text(label, style: TextStyle(
-                color: onTap == null ? Colors.white24 : Colors.white70,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              )),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRiskHeader(RiskResult result) {
-    Color color = _getRiskColor(result.level);
-    String label;
-    IconData icon;
-
-    switch (result.level) {
-      case 'low':
-        label = 'Secure Target';
-        icon = LucideIcons.shieldCheck;
-        break;
-      case 'medium':
-        label = 'Suspicious Activity';
-        icon = LucideIcons.alertTriangle;
-        break;
-      case 'high':
-      case 'critical':
-        label = 'Threat Detected';
-        icon = LucideIcons.shieldAlert;
-        break;
-      default:
-        label = 'Analysis Results';
-        icon = LucideIcons.helpCircle;
-    }
-
-    return Row(
-      children: [
-        Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 28),
-        ),
-        SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label,
-                style: DesignTypography.h3.copyWith(color: color)),
-            Text('Risk Level: ${result.level.toUpperCase()}',
-                style: DesignTypography.caption.copyWith(color: color.withOpacity(0.7))),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Color _getRiskColor(String level) {
-    switch (level) {
-      case 'low': return DesignTokens.colors.accentGreen;
-      case 'medium': return Colors.amber;
-      case 'high': 
-      case 'critical': return DesignTokens.colors.error;
-      default: return Colors.grey;
-    }
   }
 
   @override
@@ -445,40 +166,7 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     final colors = DesignTokens.colors;
     
     return ScreenScaffold(
-      title: 'Payment Security Hub',
-      actions: [
-        IconButton(
-          icon: Icon(LucideIcons.trash2, color: Colors.white38),
-          onPressed: () async {
-            if (_recentChecks.isEmpty) return;
-            
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (context) => AlertDialog(
-                backgroundColor: DesignTokens.colors.backgroundDark,
-                title: Text('Clear History?',
-                    style: TextStyle(color: Colors.white)),
-                content: Text('This will remove all recent payment check activity.',
-                    style: TextStyle(color: Colors.white70)),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text('Cancel')),
-                  TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('Clear',
-                          style: TextStyle(color: Colors.red))),
-                ],
-              ),
-            );
-            
-            if (confirm == true) {
-              _saveClearedTimestamp();
-              setState(() => _recentChecks = []);
-            }
-          },
-        ),
-      ],
+      title: AppLocalizations.of(context)!.fraudCheckTitle,
       body: AnimationLimiter(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(DesignTokens.spacing.xxl),
@@ -492,65 +180,41 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
               ),
               children: [
                 SecurityTipsCard(tips: [
-                  'Always verify the identity of the recipient before transferring money.',
-                  'Scammers often create a sense of urgency to pressure you.',
-                  'Fraudulent accounts are often recently created or "mule" accounts.',
+                  AppLocalizations.of(context)!.fraudTipOtp,
+                  AppLocalizations.of(context)!.fraudTipVerify,
+                  AppLocalizations.of(context)!.fraudTipReport,
                 ]),
                 const SizedBox(height: 28),
                 
-                // Smart Analyzer card
+                // Smart Input Area
                 GlassSurface(
                   borderRadius: 24,
                   padding: EdgeInsets.all(DesignTokens.spacing.xl),
-                  accentColor: colors.primary,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: colors.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(LucideIcons.search,
-                                    color: colors.primary, size: 20),
-                              ),
-                              SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Smart Analyzer',
-                                    style: DesignTypography.labelLg,
-                                  ),
-                                  Text(
-                                    'Phone or Bank Account',
-                                    style: DesignTypography.caption
-                                        .copyWith(color: Colors.white38),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          Text(
+                            AppLocalizations.of(context)!.fraudSmartInput,
+                            style: TextStyle(
+                              color: colors.textLight.withValues(alpha: 0.5),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
                           ),
-                          if (_detectedType == 'Payment' &&
-                              _inputController.text.isNotEmpty)
+                          if (_detectedType == 'Payment' && _inputController.text.isNotEmpty)
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: colors.primary.withOpacity(0.1),
-                                borderRadius:
-                                    BorderRadius.circular(DesignTokens.radii.xs),
-                                border: Border.all(
-                                    color: colors.primary.withOpacity(0.2)),
+                                color: colors.primary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
+                                border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
                               ),
                               child: Text(
-                                'DETECTED',
+                                AppLocalizations.of(context)!.fraudPhoneBankDetected,
                                 style: TextStyle(
                                   color: colors.primary,
                                   fontSize: 10,
@@ -560,57 +224,32 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                             ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      TextField(
+                      const SizedBox(height: 16),
+                      AdaptiveTextField(
                         controller: _inputController,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          hintText: 'Enter number to analyze...',
-                          hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.2)),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.03),
-                          prefixIcon: Icon(_detectedIcon,
-                              color: colors.primary.withOpacity(0.5), size: 18),
-                          suffixIcon: _inputController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: Icon(LucideIcons.xCircle,
-                                      color: Colors.white.withOpacity(0.2),
-                                      size: 18),
-                                  onPressed: () {
-                                    _inputController.clear();
-                                    setState(() {});
-                                  },
-                                )
-                              : null,
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide:
-                                BorderSide(color: Colors.white.withOpacity(0.05)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide(
-                                color: colors.primary.withOpacity(0.3)),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: DesignTokens.spacing.lg,
-                              vertical: 16),
-                        ),
+                        label: '', 
+                        placeholder: AppLocalizations.of(context)!.fraudHint,
+                        maxLines: 4,
+                        prefixIcon: _detectedIcon,
+                        filled: true,
+                        fillColor: Colors.white.withValues(alpha: 0.03),
                         onChanged: (_) => setState(() {}),
-                        style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontFamily: 'Courier',
-                            letterSpacing: 1.2),
-                      ),
-                      const SizedBox(height: 24),
-                      AdaptiveButton(
-                        text: 'Analyze Content',
-                        isLoading: _isLoading,
-                        onPressed: _check,
+                        suffixIcon: _inputController.text.isNotEmpty ? LucideIcons.xCircle : null,
                       ),
                     ],
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    label: _inputController.text.isEmpty
+                        ? AppLocalizations.of(context)!.fraudCheckNow
+                        : '${AppLocalizations.of(context)!.fraudAnalyze} Input',
+                    isLoading: _isLoading,
+                    onPressed: _check,
+                    variant: AppButtonVariant.primary,
                   ),
                 ),
                 
@@ -619,9 +258,25 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Recent Activity',
+                      AppLocalizations.of(context)!.fraudRecentActivity,
                       style: DesignTypography.h3.copyWith(color: colors.textLight),
                     ),
+                    if (_recentChecks.isNotEmpty)
+                      TextButton(
+                        onPressed: () {
+                          _saveClearedTimestamp();
+                          setState(() => _recentChecks = []);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: colors.textLight.withValues(alpha: 0.4),
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(50, 30),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.btnClear,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 16),
