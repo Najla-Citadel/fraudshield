@@ -12,6 +12,7 @@ subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
+
 subprojects {
     afterEvaluate {
         val android = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
@@ -23,10 +24,10 @@ subprojects {
                     val match = Regex("package=\"([^\"]+)\"").find(manifestContent)
                     if (match != null) {
                         namespace = match.groupValues[1]
-                    } else {
-                        namespace = "com.citadel.fraudshield.${project.name.replace("-", "_")}"
                     }
-                } else {
+                }
+                
+                if (namespace == null) {
                     namespace = "com.citadel.fraudshield.${project.name.replace("-", "_")}"
                 }
             }
@@ -43,6 +44,7 @@ subprojects {
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            @Suppress("DEPRECATION")
             kotlinOptions {
                 jvmTarget = "17"
             }
