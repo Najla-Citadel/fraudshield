@@ -192,7 +192,10 @@ export class ReportController {
             const report = await (prisma as any).scamReport.findUnique({
                 where: { id, deletedAt: null },
                 include: {
-                    verifications: true,
+                    verifications: {
+                        where: { userId },
+                        take: 1,
+                    },
                     user: {
                         select: {
                             profile: {
@@ -224,6 +227,8 @@ export class ReportController {
                 try { badges = JSON.parse(badges); } catch (e) { badges = []; }
             }
 
+            const myVerification = report.verifications?.[0];
+
             const response = {
                 ...report,
                 target: EncryptionUtils.decrypt(report.target || ''),
@@ -234,12 +239,13 @@ export class ReportController {
                 user: undefined, // Don't expose sensitive user info
                 userId: isOwner ? report.userId : undefined,
                 _count: {
-                    verifications: report.verifications.length,
-                    upvotes: report.verifications.filter((v: any) => v.isSame).length,
-                    downvotes: report.verifications.filter((v: any) => !v.isSame).length,
+                    verifications: report.upvoteCount + report.downvoteCount,
+                    upvotes: report.upvoteCount,
+                    downvotes: report.downvoteCount,
                 },
-                myVote: report.verifications.find((v: any) => v.userId === userId)?.isSame === true ? 'up' : 
-                         report.verifications.find((v: any) => v.userId === userId)?.isSame === false ? 'down' : null,
+                myVote: myVerification?.isSame === true ? 'up' :
+                         myVerification?.isSame === false ? 'down' : null,
+                verifications: undefined, // Don't expose raw verifications
             };
 
             res.json(response);
@@ -306,10 +312,6 @@ export class ReportController {
                 (prisma as any).scamReport.findMany({
                     where: whereClause,
                     include: {
-                        verifications: true,
-                        _count: {
-                            select: { verifications: true },
-                        },
                         user: {
                             select: {
                                 profile: {
@@ -324,7 +326,7 @@ export class ReportController {
                     orderBy: { createdAt: 'desc' },
                     take: limitNum,
                     skip: offsetNum,
-                }).then(reports => reports.map(r => ({ ...r, target: r.target }))), // Keep raw target for now, redact in final map
+                }),
                 (prisma as any).scamReport.count({ where: whereClause }),
             ]);
 
@@ -345,9 +347,9 @@ export class ReportController {
                         badges: Array.isArray(badges) ? badges : [],
                     },
                     _count: {
-                        verifications: report.verifications.length,
-                        upvotes: report.verifications.filter((v: any) => v.isSame).length,
-                        downvotes: report.verifications.filter((v: any) => !v.isSame).length,
+                        verifications: report.upvoteCount + report.downvoteCount,
+                        upvotes: report.upvoteCount,
+                        downvotes: report.downvoteCount,
                     },
                     user: undefined, // Don't expose user info
                     userId: undefined,
@@ -560,6 +562,15 @@ export class ReportController {
                 },
                 update: { isSame },
                 create: { reportId, userId, isSame },
+            });
+
+            // 2b. Update materialized vote counters
+            await (prisma as any).scamReport.update({
+                where: { id: reportId },
+                data: {
+                    upvoteCount: isSame ? { increment: 1 } : undefined,
+                    downvoteCount: !isSame ? { increment: 1 } : undefined,
+                },
             });
 
             // 3. Reward the verifier with Shield Points (with daily cap)

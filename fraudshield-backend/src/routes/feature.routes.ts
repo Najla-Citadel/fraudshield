@@ -4,7 +4,8 @@ import {
     PointsController,
     BehavioralController,
     SecurityScanController,
-    AppIntelligenceController
+    AppIntelligenceController,
+    ThreatDatabaseController
 } from '../controllers/feature.controller';
 import { BadgeController } from '../controllers/badge.controller';
 import { SafeBrowsingController } from '../controllers/safebrowsing.controller';
@@ -85,6 +86,7 @@ router.get('/security-scans', SecurityScanController.getMyScans);
 // Community Intelligence
 router.get('/apps/intelligence', AppIntelligenceController.getIntelligence);
 router.post('/apps/action', featureLimiter, AppIntelligenceController.recordAction);
+router.post('/apps/check-threats', featureLimiter, ThreatDatabaseController.checkPackages);
 
 // Macau Scam Check
 router.post('/check/macau-scam', authenticate, MacauScamController.evaluate);

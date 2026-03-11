@@ -3,6 +3,8 @@ import { prisma } from '../config/database';
 import { AuditService } from '../services/audit.service';
 import { GamificationService } from '../services/gamification.service';
 import { AlertEngineService } from '../services/alert-engine.service';
+import { ContentModerationService } from '../services/content-moderation.service';
+import { EncryptionUtils } from '../utils/encryption';
 import { io } from '../server';
 
 export class AdminController {
@@ -1002,6 +1004,154 @@ export class AdminController {
             });
 
             res.json({ message: 'Fraud label deleted successfully' });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async createAdvisory(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { category, description, target, type = 'link', source = 'official' } = req.body;
+            const adminId = (req.user as any).id;
+
+            if (!category || !description) {
+                return res.status(400).json({ message: 'Category and description are required' });
+            }
+
+            const validSources = ['official', 'law_enforcement'];
+            if (!validSources.includes(source)) {
+                return res.status(400).json({ message: `Source must be one of: ${validSources.join(', ')}` });
+            }
+
+            // Extract entities from description + target for intelligence pipeline
+            const extractedEntities = await ContentModerationService.extractEntities(
+                `${description} ${target || ''}`
+            );
+
+            // Encrypt target for searchable lookup (same as community reports)
+            const encryptedTarget = target ? EncryptionUtils.deterministicEncrypt(target) : null;
+
+            const advisory = await prisma.scamReport.create({
+                data: {
+                    userId: adminId,
+                    type,
+                    category,
+                    description,
+                    target: encryptedTarget,
+                    source,
+                    status: 'VERIFIED',
+                    isPublic: true,
+                    evidence: {
+                        _isAdvisory: true,
+                        _createdBy: adminId,
+                        _extractedEntities: extractedEntities,
+                    },
+                },
+            });
+
+            // Feed extracted entities into scam caches immediately (advisory is pre-approved)
+            try {
+                for (const phone of [...new Set(extractedEntities.phones)]) {
+                    const cleanPhone = phone.replace(/[^\d]/g, '');
+                    if (cleanPhone.length < 9) continue;
+
+                    const existing = await prisma.scamNumberCache.findUnique({
+                        where: { phoneNumber: cleanPhone }
+                    });
+                    const categories = existing ? (existing.categories as string[]) : [];
+                    if (!categories.includes(category)) categories.push(category);
+
+                    await prisma.scamNumberCache.upsert({
+                        where: { phoneNumber: cleanPhone },
+                        update: {
+                            reportCount: { increment: 1 },
+                            verifiedCount: { increment: 1 },
+                            riskScore: Math.min(100, (existing?.verifiedCount || 0 + 1) * 25),
+                            categories,
+                            lastReported: new Date(),
+                        },
+                        create: {
+                            phoneNumber: cleanPhone,
+                            reportCount: 1,
+                            verifiedCount: 1,
+                            riskScore: 50, // Official advisories start at higher risk
+                            categories: [category],
+                            lastReported: new Date(),
+                        },
+                    });
+                }
+
+                for (const url of [...new Set(extractedEntities.urls)]) {
+                    const existing = await prisma.scamUrlCache.findUnique({ where: { url } });
+                    const categories = existing ? (existing.categories as string[]) : [];
+                    if (!categories.includes(category)) categories.push(category);
+
+                    await prisma.scamUrlCache.upsert({
+                        where: { url },
+                        update: {
+                            reportCount: { increment: 1 },
+                            verifiedCount: { increment: 1 },
+                            riskScore: Math.min(100, (existing?.verifiedCount || 0 + 1) * 25),
+                            categories,
+                            lastReported: new Date(),
+                        },
+                        create: {
+                            url,
+                            reportCount: 1,
+                            verifiedCount: 1,
+                            riskScore: 50,
+                            categories: [category],
+                            lastReported: new Date(),
+                        },
+                    });
+                }
+
+                for (const account of [...new Set(extractedEntities.bankAccounts)]) {
+                    const existing = await prisma.scamBankCache.findUnique({ where: { accountNumber: account } });
+                    const categories = existing ? (existing.categories as string[]) : [];
+                    if (!categories.includes(category)) categories.push(category);
+
+                    await prisma.scamBankCache.upsert({
+                        where: { accountNumber: account },
+                        update: {
+                            reportCount: { increment: 1 },
+                            verifiedCount: { increment: 1 },
+                            riskScore: Math.min(100, (existing?.verifiedCount || 0 + 1) * 25),
+                            categories,
+                            lastReported: new Date(),
+                        },
+                        create: {
+                            accountNumber: account,
+                            reportCount: 1,
+                            verifiedCount: 1,
+                            riskScore: 50,
+                            categories: [category],
+                            lastReported: new Date(),
+                        },
+                    });
+                }
+            } catch (cacheErr) {
+                console.error('Failed to update scam caches for advisory:', cacheErr);
+            }
+
+            // Emit real-time notification
+            io.emit('new_public_report', {
+                id: advisory.id,
+                category: advisory.category,
+                targetType: advisory.type,
+                source,
+                timestamp: advisory.createdAt,
+            });
+
+            await AuditService.logAction({
+                adminId,
+                action: 'CREATE_ADVISORY',
+                targetType: 'ScamReport',
+                targetId: advisory.id,
+                payload: { category, description, source },
+            });
+
+            res.status(201).json(advisory);
         } catch (error) {
             next(error);
         }

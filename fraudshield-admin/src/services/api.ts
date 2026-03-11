@@ -126,4 +126,5 @@ export const adminService = {
     getContentFlags: () => api.get('/admin/content-flags'),
     updateFlagStatus: (id: string, status: string) => api.patch(`/admin/content-flags/${id}`, { status }),
     getGlobalEntities: (params: { type: string; search?: string; offset?: number; limit?: number }) => api.get('/admin/global-entities', { params }),
+    createAdvisory: (data: { category: string; description: string; target?: string; type?: string; source?: string }) => api.post('/admin/advisory', data),
 };

@@ -22,15 +22,20 @@ class ScamCard extends StatelessWidget {
     // Use status field from report data (VERIFIED / PENDING)
     final isVerified = report['status'] == 'VERIFIED';
     final verificationCount = (report['_count']?['verifications'] ?? 0) as int;
+    final source = report['source'] ?? 'community';
+    final isOfficial = source == 'official' || source == 'law_enforcement';
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: DesignTokens.spacing.xl, left: DesignTokens.spacing.lg, right: DesignTokens.spacing.lg),
         decoration: BoxDecoration(
-          color: Color(0xFF1E293B), // Slate 800
+          color: isOfficial ? Color(0xFF0F2942) : Color(0xFF1E293B),
           borderRadius: BorderRadius.circular(DesignTokens.radii.xl),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(
+            color: isOfficial ? Color(0xFF3B82F6).withOpacity(0.4) : Colors.white.withOpacity(0.1),
+            width: isOfficial ? 1.5 : 1,
+          ),
           boxShadow: DesignTokens.shadows.md,
         ),
         child: Padding(
@@ -47,13 +52,15 @@ class ScamCard extends StatelessWidget {
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: _getCategoryColor(report['category'])
-                          .withOpacity(0.2),
+                      color: isOfficial
+                          ? Color(0xFF3B82F6).withOpacity(0.2)
+                          : _getCategoryColor(report['category'])
+                              .withOpacity(0.2),
                       borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
                     ),
                     child: Icon(
-                      _getCategoryIcon(report['category']),
-                      color: _getCategoryColor(report['category']),
+                      isOfficial ? LucideIcons.shieldCheck : _getCategoryIcon(report['category']),
+                      color: isOfficial ? Color(0xFF3B82F6) : _getCategoryColor(report['category']),
                       size: 24,
                     ),
                   ),
@@ -132,10 +139,11 @@ class ScamCard extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '${_getTimeAgo(report['createdAt'])} • Community Member',
+                          '${_getTimeAgo(report['createdAt'])} • ${isOfficial ? (source == 'law_enforcement' ? 'Law Enforcement' : 'Official Advisory') : 'Community Member'}',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: isOfficial ? Color(0xFF60A5FA) : Colors.white.withOpacity(0.6),
                             fontSize: 12,
+                            fontWeight: isOfficial ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
                       ],

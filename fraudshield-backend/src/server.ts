@@ -5,6 +5,7 @@ import { initializeFirebase } from './config/firebase.config';
 import { AlertEngineService } from './services/alert-engine.service';
 import { AlertWorkerService } from './services/alert-worker.service';
 import { ScamNumberCacheService } from './services/scam-number-cache.service';
+import { DataRetentionService } from './services/data-retention.service';
 import logger from './utils/logger';
 
 const PORT = process.env.PORT || 3000;
@@ -58,6 +59,9 @@ const server = httpServer.listen(Number(PORT), '0.0.0.0', () => {
     ScamNumberCacheService.initialize().catch(err => {
         logger.error('❌ Failed to initialize Scam Number Cache Service:', err);
     });
+    DataRetentionService.initialize().catch(err => {
+        logger.error('❌ Failed to initialize Data Retention Service:', err);
+    });
 });
 
 // Graceful shutdown
@@ -66,6 +70,7 @@ process.on('SIGTERM', () => {
     server.close(async () => {
         await AlertWorkerService.shutdown();
         await ScamNumberCacheService.shutdown();
+        await DataRetentionService.shutdown();
         logger.info('HTTP server closed');
     });
 });
@@ -75,6 +80,7 @@ process.on('SIGINT', () => {
     server.close(async () => {
         await AlertWorkerService.shutdown();
         await ScamNumberCacheService.shutdown();
+        await DataRetentionService.shutdown();
         logger.info('HTTP server closed');
         process.exit(0);
     });

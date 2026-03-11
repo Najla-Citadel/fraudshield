@@ -105,6 +105,9 @@ model ScamReport {
   longitude     Float?
   targetType    String?
   deletedAt     DateTime?
+  upvoteCount   Int            @default(0)
+  downvoteCount Int            @default(0)
+  source        String         @default("community") // 'community' | 'official' | 'law_enforcement'
   comments      Comment[]
   user          User           @relation(fields: [userId], references: [id])
   verifications Verification[]
@@ -115,6 +118,7 @@ model ScamReport {
   @@index([status])
   @@index([target])
   @@index([targetType])
+  @@index([source])
 }
 
 model ScamNumberCache {

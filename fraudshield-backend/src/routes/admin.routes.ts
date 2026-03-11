@@ -24,6 +24,7 @@ router.get('/reports', AdminController.getReports);
 router.get('/reports/:id', AdminController.getReportById);
 router.patch('/reports/:id/status', AdminController.updateReportStatus);
 router.delete('/reports/:id', AdminController.deleteReport);
+router.post('/advisory', AdminController.createAdvisory);
 router.get('/content-flags', AdminController.getContentFlags);
 router.patch('/content-flags/:id', AdminController.updateFlagStatus);
 router.get('/global-entities', AdminController.getGlobalEntities);

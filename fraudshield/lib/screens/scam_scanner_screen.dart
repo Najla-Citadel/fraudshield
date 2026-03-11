@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'dart:async';
 import '../design_system/tokens/design_tokens.dart';
@@ -44,6 +45,41 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
     'Finalizing security report...'
   ];
 
+  static const Map<String, Map<String, String>> _reasonExplanations = {
+    'SMS + Internet in non-communication app (Critical OTP risk)': {
+      'title': 'High SMS Risk',
+      'explanation': 'This app can read your text messages and talk to the internet. This is a common pattern for "OTP Stealers" that hijack banking logins.',
+      'fix': 'Unless this is a bank app or messenger, you should uninstall it immediately.'
+    },
+    'Overlay permission enabled (Can capture screen content)': {
+      'title': 'Screen Overlay Detected',
+      'explanation': 'This app is allowed to draw over other apps. Malicious apps use this to create "Fake Login Screens" on top of your banking apps.',
+      'fix': 'Disable "Display over other apps" in Android settings or uninstall the app.'
+    },
+    'Active Accessibility Service (Can monitor screen and simulate clicks)': {
+      'title': 'Control Permission Active',
+      'explanation': 'Accessibility services allow an app to read EVERYTHING on your screen and simulate touches. Fraudsters use this to remotely control your phone.',
+      'fix': 'Go to Accessibility Settings and turn off this service for this app.'
+    },
+    'App from unknown source (Sideloaded)': {
+      'title': 'Unknown Source',
+      'explanation': 'This app was not installed via the Google Play Store or an official manufacturer store. Sideloaded apps bypass many security checks.',
+      'fix': 'Uninstall the app and reinstall it from the official Play Store if possible.'
+    },
+    'Critical Permission: Device Administrator (Can lock device or wipe data)': {
+      'title': 'Device Administrator',
+      'explanation': 'This app has administrative control over your device. It can lock you out or prevent you from uninstalling it.',
+      'fix': 'Remove "Device Admin" privileges in Security Settings before uninstalling.'
+    },
+    'Sensitive Permission: Read Call Log (Data exfiltration risk)': {
+      'title': 'Call Log Access',
+      'explanation': 'This app can see who you call and when. This data is often used for social engineering scams.',
+      'fix': 'Remove the "Call Logs" permission in App Settings.'
+    }
+  };
+
+  StreamSubscription? _progressSubscription;
+
   Future<void> _startScan() async {
     setState(() {
       _isScanning = true;
@@ -52,43 +88,53 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
       _currentStep = _steps[0];
     });
 
-    // Simulated progress for UI feedback while native scan runs
-    int stepIndex = 0;
-    Timer.periodic(const Duration(milliseconds: 1200), (timer) {
-      if (stepIndex < _steps.length - 1) {
-        stepIndex++;
-        if (mounted) {
-          setState(() {
-            _currentStep = _steps[stepIndex];
-            _progress = (stepIndex + 1) / _steps.length;
-          });
-        }
-      } else {
-        timer.cancel();
+    // Subscribe to native progress events
+    _progressSubscription = ScamScannerService.progressStream.listen((data) {
+      final double progress = data['progress'] as double? ?? 0.0;
+      final int processed = data['processed'] as int? ?? 0;
+      final int total = data['total'] as int? ?? 0;
+      
+      if (mounted) {
+        setState(() {
+          _progress = progress;
+          
+          // Map progress to logical steps for better DX
+          if (progress < 0.1) {
+            _currentStep = _steps[0]; // Initializing
+          } else if (progress < 0.4) {
+            _currentStep = 'Analysing $processed/ $total apps...';
+          } else if (progress < 0.7) {
+            _currentStep = _steps[2]; // Analyzing permissions
+          } else if (progress < 0.9) {
+            _currentStep = _steps[4]; // Cross-referencing
+          } else {
+            _currentStep = _steps[5]; // Finalizing
+          }
+        });
       }
     });
 
     try {
       final result = await ScamScannerService.startFullScan();
       
-      // Artificial delay to ensure user sees the "Finalizing" step
-      await Future.delayed(const Duration(seconds: 1));
-
       if (mounted) {
         setState(() {
           _isScanning = false;
           _isComplete = true;
           _result = result;
           _progress = 1.0;
+          _currentStep = 'Audit complete';
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _isScanning = false;
-          _currentStep = 'Error: ${e.toString()}';
+          _currentStep = _getErrorMessage(e);
         });
       }
+    } finally {
+      await _progressSubscription?.cancel();
     }
   }
 
@@ -249,14 +295,19 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
     // Calculate a summary score based on results
     int baseScore = 100;
     for (var app in result.riskyApps) {
-      baseScore -= app.score;
+      baseScore -= (app.score + app.scoreAdjustment).clamp(0, 100);
     }
     final finalScore = baseScore.clamp(0, 100);
+
+    final criticalThreats = result.riskyApps.where((app) => (app.score + app.scoreAdjustment) >= 80).toList();
+    final warnings = result.riskyApps.where((app) => (app.score + app.scoreAdjustment) < 80).toList();
+
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildScoreHero(finalScore),
+        _buildDeviceSignalsCard(result.deviceSignals),
         SizedBox(height: 32),
         Text(
           'Detailed Findings',
@@ -265,8 +316,31 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
         SizedBox(height: 16),
         if (isSafe)
           _buildSafeCard()
-        else
-          ...result.riskyApps.map((app) => _buildRiskyAppCard(app)).toList(),
+        else ...[
+          if (criticalThreats.isNotEmpty) ...[
+            Text(
+              'CRITICAL THREATS (${criticalThreats.length})',
+              style: TextStyle(color: DesignTokens.colors.error, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+            SizedBox(height: 12),
+            ...criticalThreats.map((app) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildRiskyAppCard(app),
+            )),
+            SizedBox(height: 16),
+          ],
+          if (warnings.isNotEmpty) ...[
+            Text(
+              'SECURITY WARNINGS (${warnings.length})',
+              style: TextStyle(color: DesignTokens.colors.warning, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+            SizedBox(height: 12),
+            ...warnings.map((app) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildRiskyAppCard(app),
+            )),
+          ],
+        ],
         SizedBox(height: 32),
         SizedBox(
           width: double.infinity,
@@ -277,6 +351,96 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDeviceSignalsCard(Map<String, dynamic> signals) {
+    if (signals.isEmpty) return const SizedBox.shrink();
+
+    final List<Widget> warnings = [];
+
+    if (signals['isRooted'] == true) {
+      warnings.add(_buildSignalWarning('Device is Rooted', 'Root access can allow malicious apps to bypass security controls.'));
+    }
+    if (signals['isEmulator'] == true) {
+      warnings.add(_buildSignalWarning('Running on Emulator', 'Fraudsters often use emulators to automate attacks or hide their identity.'));
+    }
+    if (signals['isFridaDetected'] == true) {
+      warnings.add(_buildSignalWarning('Hooking Framework Detected (Frida)', 'Active hooking tools can intercept sensitive data and bypass security.'));
+    }
+    if (signals['isXposedDetected'] == true) {
+      warnings.add(_buildSignalWarning('Hooking Framework Detected (Xposed)', 'Xposed framework can modify system and app behavior maliciously.'));
+    }
+    if (signals['untrustedImeCount'] != null && (signals['untrustedImeCount'] as int) > 0) {
+      final count = signals['untrustedImeCount'];
+      warnings.add(_buildSignalWarning('Untrusted Keyboard Detected ($count)', 'You have $count non-standard keyboard(s) enabled. These can act as keyloggers to steal your passwords.'));
+    }
+
+    if (warnings.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 24),
+      child: GlassSurface(
+        padding: EdgeInsets.all(DesignTokens.spacing.xl),
+        borderColor: DesignTokens.colors.warning.withOpacity(0.3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(LucideIcons.shieldAlert, color: DesignTokens.colors.warning, size: 20),
+                SizedBox(width: 12),
+                Text(
+                  'Device Security Signals',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...warnings,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignalWarning(String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(LucideIcons.alertCircle, color: DesignTokens.colors.warning, size: 16),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: DesignTokens.colors.warning,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.6),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -416,15 +580,37 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
               ),
             ],
             SizedBox(height: 12),
-            ...app.reasons.map((reason) => Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Row(
-                children: [
-                  Icon(LucideIcons.dot, color: DesignTokens.colors.error, size: 16),
-                  Expanded(child: Text(reason, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13))),
-                ],
-              ),
-            )).toList(),
+            ...app.reasons.map((reason) {
+              final info = _reasonExplanations[reason];
+              return Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: InkWell(
+                  onTap: info != null ? () => _showReasonExplanation(reason, info) : null,
+                  borderRadius: BorderRadius.circular(4),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(LucideIcons.dot, color: DesignTokens.colors.error, size: 16),
+                        Expanded(
+                          child: Text(
+                            reason, 
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7), 
+                              fontSize: 13,
+                              decoration: info != null ? TextDecoration.underline : null,
+                              decorationStyle: TextDecorationStyle.dotted,
+                            )
+                          )
+                        ),
+                        if (info != null)
+                          Icon(LucideIcons.helpCircle, color: Colors.white.withOpacity(0.3), size: 14),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
             SizedBox(height: 16),
             Row(
               children: [
@@ -450,83 +636,177 @@ class _ScamScannerScreenState extends State<ScamScannerScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) => Padding(
+      builder: (context) => SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: DesignTokens.spacing.xxl,
+              vertical: DesignTokens.spacing.xl,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Resolve Threat', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(app.name, style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                const SizedBox(height: 24),
+                ListTile(
+                  leading: Icon(LucideIcons.trash2, color: DesignTokens.colors.error),
+                  title: const Text('Uninstall Application', style: TextStyle(color: Colors.white)),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final success = await ScamScannerService.uninstallApp(app.packageName);
+                    if (success) {
+                      _showRescanPrompt();
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(LucideIcons.settings, color: Colors.white),
+                  title: const Text('App Settings', style: TextStyle(color: Colors.white)),
+                  subtitle: Text('Force stop or check permissions', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    ScamScannerService.openAppSettings(app.packageName);
+                  },
+                ),
+                const Divider(color: Colors.white10, height: 32),
+                Text('Community Intelligence', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12, letterSpacing: 1)),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: Icon(LucideIcons.thumbsUp, color: DesignTokens.colors.success),
+                  title: const Text('Flag as Safe', style: TextStyle(color: Colors.white)),
+                  subtitle: Text('I trust this application', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ApiService.instance.recordAppAction(app.packageName, 'SAFE');
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Thank you! Your feedback helps the community.')),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Action already recorded or failed.')),
+                        );
+                      }
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: Icon(LucideIcons.flag, color: DesignTokens.colors.error),
+                  title: const Text('Report as Threat', style: TextStyle(color: Colors.white)),
+                  subtitle: Text('This application is suspicious', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ApiService.instance.recordAppAction(app.packageName, 'REPORT');
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Threat reported to global database.')),
+                        );
+                      }
+                    } catch (e) {
+                       if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Action already recorded or failed.')),
+                        );
+                      }
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showReasonExplanation(String reason, Map<String, String> info) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: DesignTokens.colors.backgroundDark,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
         padding: EdgeInsets.all(DesignTokens.spacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Resolve Threat', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text(app.name, style: TextStyle(color: Colors.white.withOpacity(0.5))),
-            SizedBox(height: 24),
-            ListTile(
-              leading: Icon(LucideIcons.trash2, color: DesignTokens.colors.error),
-              title: Text('Uninstall Application', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                ScamScannerService.uninstallApp(app.packageName);
-              },
+            Row(
+              children: [
+                Icon(LucideIcons.info, color: DesignTokens.colors.error),
+                const SizedBox(width: 12),
+                Text(info['title']!, style: DesignTypography.h2),
+              ],
             ),
-            ListTile(
-              leading: Icon(LucideIcons.settings, color: Colors.white),
-              title: Text('App Settings', style: TextStyle(color: Colors.white)),
-              subtitle: Text('Force stop or check permissions', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
-              onTap: () {
-                Navigator.pop(context);
-                ScamScannerService.openAppSettings(app.packageName);
-              },
-            ),
-            const Divider(color: Colors.white10, height: 32),
-            Text('Community Intelligence', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12, letterSpacing: 1)),
             const SizedBox(height: 16),
-            ListTile(
-              leading: Icon(LucideIcons.thumbsUp, color: DesignTokens.colors.success),
-              title: Text('Flag as Safe', style: TextStyle(color: Colors.white)),
-              subtitle: Text('I trust this application', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
-              onTap: () async {
-                Navigator.pop(context);
-                try {
-                  await ApiService.instance.recordAppAction(app.packageName, 'SAFE');
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Thank you! Your feedback helps the community.')),
-                    );
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Action already recorded or failed.')),
-                    );
-                  }
-                }
-              },
+            Text(
+              info['explanation']!,
+              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 15, height: 1.5),
             ),
-            ListTile(
-              leading: Icon(LucideIcons.flag, color: DesignTokens.colors.error),
-              title: Text('Report as Threat', style: TextStyle(color: Colors.white)),
-              subtitle: Text('This application is suspicious', style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
-              onTap: () async {
-                Navigator.pop(context);
-                try {
-                  await ApiService.instance.recordAppAction(app.packageName, 'REPORT');
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Threat reported to global database.')),
-                    );
-                  }
-                } catch (e) {
-                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Action already recorded or failed.')),
-                    );
-                  }
-                }
-              },
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: DesignTokens.colors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: DesignTokens.colors.error.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('HOW TO FIX:', style: TextStyle(color: DesignTokens.colors.error, fontWeight: FontWeight.bold, fontSize: 12)),
+                  const SizedBox(height: 8),
+                  Text(info['fix']!, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                ],
+              ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 32),
+            AppButton(
+              label: 'GOT IT',
+              onPressed: () => Navigator.pop(context),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _showRescanPrompt() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Package removed. Recommended: Re-scan to verify safety.'),
+        action: SnackBarAction(
+          label: 'RE-SCAN',
+          textColor: DesignTokens.colors.accentGreen,
+          onPressed: _startScan,
+        ),
+        duration: const Duration(seconds: 10),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  String _getErrorMessage(Object e) {
+    if (e is PlatformException) {
+      switch (e.code) {
+        case 'SCAN_ERROR':
+          return 'Scanner was interrupted by the system. Please try again.';
+        case 'UNINSTALL_ERROR':
+          return 'Failed to initiate uninstallation. You may need to do it manually.';
+        case 'INTEGRITY_ERROR':
+          return 'Device integrity check failed. Scan may be incomplete.';
+        default:
+          return 'Security Error: ${e.message}';
+      }
+    }
+    return 'Unexpected Error: $e';
   }
 }

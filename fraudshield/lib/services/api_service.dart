@@ -210,7 +210,10 @@ class ApiService {
       await _checkCertificatePinning();
       final response = await http.post(
         Uri.parse('$baseUrl/auth/refresh'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Device-Id': _deviceId ?? 'unknown',
+        },
         body: jsonEncode({'refreshToken': _refreshToken}),
       );
 
@@ -684,6 +687,15 @@ class ApiService {
       'packageName': packageName,
       'action': action,
     });
+  }
+
+  Future<List<Map<String, dynamic>>> checkThreatDatabase(List<Map<String, String>> apps) async {
+    if (apps.isEmpty) return [];
+    final response = await post('/features/apps/check-threats', {
+      'apps': apps,
+    });
+    final matches = response['matches'] as List? ?? [];
+    return matches.cast<Map<String, dynamic>>();
   }
 
   Future<List<TrendingScam>> getTrendingScams() async {

@@ -280,3 +280,19 @@ export class AppIntelligenceController {
         }
     }
 }
+
+export class ThreatDatabaseController {
+    public static async checkPackages(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { apps } = req.body;
+            if (!apps || !Array.isArray(apps)) {
+                return res.status(400).json({ message: 'Invalid request: "apps" array (packageName and signature) is required.' });
+            }
+            const { ThreatDatabaseService } = await import('../services/threat-database.service');
+            const matches = ThreatDatabaseService.checkApps(apps);
+            res.json({ success: true, matches });
+        } catch (error) {
+            next(error);
+        }
+    }
+}
