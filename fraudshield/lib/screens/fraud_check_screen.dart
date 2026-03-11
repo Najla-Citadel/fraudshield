@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../l10n/app_localizations.dart';
 import '../services/risk_evaluator.dart';
 import '../services/recent_checks_service.dart';
 import '../widgets/glass_surface.dart';
 import '../widgets/security_tips_card.dart';
+import '../widgets/adaptive_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../design_system/tokens/design_tokens.dart';
+import '../design_system/tokens/typography.dart';
 import '../design_system/layouts/screen_scaffold.dart';
 import '../design_system/components/app_button.dart';
 import '../design_system/components/app_loading_indicator.dart';
@@ -34,7 +37,6 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   List<dynamic> _recentChecks = [];
   bool _isFetchingHistory = true;
   DateTime? _lastClearedAt;
-  RiskResult? _lastResult;
 
   @override
   void initState() {
@@ -104,20 +106,13 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
   void _onInputChanged() {
     final text = _inputController.text.trim();
     if (text.isEmpty) {
-      if (_detectedType != 'Phone / Bank' || _lastResult != null) {
+      if (_detectedType != 'Phone / Bank') {
         setState(() {
           _detectedType = 'Phone / Bank';
           _detectedIcon = Icons.payment_rounded;
-          _lastResult = null;
         });
       }
       return;
-    }
-
-    if (_lastResult != null) {
-      setState(() {
-        _lastResult = null;
-      });
     }
 
     String newType = 'Phone / Bank';
@@ -164,281 +159,152 @@ class _FraudCheckScreenState extends State<FraudCheckScreen>
     ));
 
     if (!mounted) return;
-    setState(() {
-      _isLoading = false;
-      _lastResult = result;
-    });
+    setState(() => _isLoading = false);
+
+    if (mounted) {
+      Navigator.pushNamed(
+        context,
+        '/fraud-check-result',
+        arguments: {
+          'result': result,
+          'searchValue': _inputController.text.trim(),
+        },
+      );
+    }
 
     _fetchHistory();
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = DesignTokens.colors;
+    
     return ScreenScaffold(
       title: AppLocalizations.of(context)!.fraudCheckTitle,
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SecurityTipsCard(tips: [
-              AppLocalizations.of(context)!.fraudTipOtp,
-              AppLocalizations.of(context)!.fraudTipVerify,
-              AppLocalizations.of(context)!.fraudTipReport,
-            ]),
-            SizedBox(height: 28),
-            GlassSurface(
-              borderRadius: 20,
-              padding: EdgeInsets.all(DesignTokens.spacing.xl),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: AnimationLimiter(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(DesignTokens.spacing.xxl),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: AnimationConfiguration.toStaggeredList(
+              duration: const Duration(milliseconds: 375),
+              childAnimationBuilder: (widget) => SlideAnimation(
+                verticalOffset: 30.0,
+                child: FadeInAnimation(child: widget),
+              ),
+              children: [
+                SecurityTipsCard(tips: [
+                  AppLocalizations.of(context)!.fraudTipOtp,
+                  AppLocalizations.of(context)!.fraudTipVerify,
+                  AppLocalizations.of(context)!.fraudTipReport,
+                ]),
+                const SizedBox(height: 28),
+                
+                // Smart Input Area
+                GlassSurface(
+                  borderRadius: 24,
+                  padding: EdgeInsets.all(DesignTokens.spacing.xl),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        AppLocalizations.of(context)!.fraudSmartInput,
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 12,
-                            letterSpacing: 0.8),
-                      ),
-                      if (_inputController.text.isNotEmpty &&
-                          _detectedType == 'Payment')
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: DesignTokens.spacing.sm, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: DesignTokens.colors.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
-                          ),
-                          child: Text(
-                            'Phone/Bank Detected',
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.fraudSmartInput,
                             style: TextStyle(
-                                color: DesignTokens.colors.primary,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold),
+                              color: colors.textLight.withValues(alpha: 0.5),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
                           ),
-                        ),
+                          if (_detectedType == 'Payment' && _inputController.text.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colors.primary.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
+                                border: Border.all(color: colors.primary.withValues(alpha: 0.3)),
+                              ),
+                              child: Text(
+                                AppLocalizations.of(context)!.fraudPhoneBankDetected,
+                                style: TextStyle(
+                                  color: colors.primary,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      AdaptiveTextField(
+                        controller: _inputController,
+                        label: '', // Label hidden to match screenshot
+                        placeholder: AppLocalizations.of(context)!.fraudHint,
+                        maxLines: 4,
+                        prefixIcon: _detectedIcon,
+                        filled: true,
+                        fillColor: Colors.white.withValues(alpha: 0.03),
+                        onChanged: (_) => setState(() {}),
+                        suffixIcon: _inputController.text.isNotEmpty ? LucideIcons.xCircle : null,
+                      ),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: _inputController,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 4,
-                    minLines: 1,
-                    decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.fraudHint,
-                      hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.25), fontSize: 15),
-                      prefixIcon:
-                          Icon(_detectedIcon, color: Colors.white38, size: 20),
-                      suffixIcon: _inputController.text.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(LucideIcons.xCircle,
-                                  color: Colors.white.withOpacity(0.3),
-                                  size: 18),
-                              onPressed: () {
-                                _inputController.clear();
-                                setState(() {});
-                              },
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: DesignTokens.spacing.lg, vertical: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                label: _inputController.text.isEmpty
-                    ? AppLocalizations.of(context)!.fraudCheckNow
-                    : '${AppLocalizations.of(context)!.fraudAnalyze} Input',
-                isLoading: _isLoading,
-                onPressed: _check,
-                variant: AppButtonVariant.primary,
-              ),
-            ),
-            if (_lastResult != null) ...[
-              SizedBox(height: 24),
-              _buildResultSection(),
-            ],
-            SizedBox(height: 28),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.fraudRecentActivity,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                ),
+                
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    label: _inputController.text.isEmpty
+                        ? AppLocalizations.of(context)!.fraudCheckNow
+                        : '${AppLocalizations.of(context)!.fraudAnalyze} Input',
+                    isLoading: _isLoading,
+                    onPressed: _check,
+                    variant: AppButtonVariant.primary,
                   ),
                 ),
-                if (_recentChecks.isNotEmpty)
-                  TextButton(
-                    onPressed: () {
-                      _saveClearedTimestamp();
-                      setState(() => _recentChecks = []);
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.white.withOpacity(0.4),
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                
+                
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.fraudRecentActivity,
+                      style: DesignTypography.h3.copyWith(color: colors.textLight),
                     ),
-                    child: Text(AppLocalizations.of(context)!.btnClear, style: const TextStyle(fontSize: 12)),
-                  ),
+                    if (_recentChecks.isNotEmpty)
+                      TextButton(
+                        onPressed: () {
+                          _saveClearedTimestamp();
+                          setState(() => _recentChecks = []);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: colors.textLight.withValues(alpha: 0.4),
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(50, 30),
+                        ),
+                        child: Text(
+                          AppLocalizations.of(context)!.btnClear,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildRecentActivity(),
+                const SizedBox(height: 100),
               ],
             ),
-            SizedBox(height: 16),
-            _buildRecentActivity(),
-            SizedBox(height: 100),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildResultSection() {
-    if (_lastResult == null) return SizedBox.shrink();
-    final isCritical = _lastResult!.level == 'critical';
-    final isHigh = _lastResult!.level == 'high';
-    final isMedium = _lastResult!.level == 'medium';
-    final Color riskColor = isCritical
-        ? Colors.purple
-        : isHigh
-            ? Color(0xFFEF4444)
-            : isMedium
-                ? Color(0xFFF59E0B)
-                : Color(0xFF22C55E);
-    final IconData riskIcon = isCritical
-        ? Icons.security_rounded
-        : isHigh
-            ? Icons.gpp_bad_rounded
-            : isMedium
-                ? Icons.gpp_maybe_rounded
-                : Icons.gpp_good_rounded;
-    final String riskLabel = isCritical
-        ? AppLocalizations.of(context)!.fraudCriticalThreat
-        : isHigh
-            ? AppLocalizations.of(context)!.fraudHighRisk
-            : isMedium
-                ? AppLocalizations.of(context)!.riskLevelSuspicious
-                : AppLocalizations.of(context)!.fraudLooksSafe;
-
-    return GlassSurface(
-      borderRadius: 24,
-      padding: EdgeInsets.all(DesignTokens.spacing.xxl),
-      borderColor: riskColor.withOpacity(0.3),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: riskColor.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(riskIcon, color: riskColor, size: 24),
-              ),
-              SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      riskLabel,
-                      style: TextStyle(
-                          color: riskColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.fraudAiAnalysisResult,
-                      style: TextStyle(
-                          color: Colors.white.withOpacity(0.4), fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 10, vertical: DesignTokens.spacing.xs),
-                decoration: BoxDecoration(
-                  color: riskColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(DesignTokens.radii.xs),
-                ),
-                child: Text(
-                  '${_lastResult!.score}/100',
-                  style: TextStyle(
-                      color: riskColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          AppDivider(height: 1),
-          SizedBox(height: 16),
-          ..._lastResult!.reasons.map((reason) => Padding(
-                padding: EdgeInsets.only(bottom: DesignTokens.spacing.sm),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      reason.startsWith('✅')
-                          ? LucideIcons.checkCircle
-                          : reason.startsWith('⚠️')
-                              ? LucideIcons.alertTriangle
-                              : LucideIcons.info,
-                      color: reason.startsWith('✅')
-                          ? DesignTokens.colors.success
-                          : reason.startsWith('⚠️')
-                              ? DesignTokens.colors.warning
-                              : Colors.white38,
-                      size: 14,
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        reason,
-                        style: TextStyle(
-                            color: Colors.white.withOpacity(0.7), fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-              )),
-          SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: LinearProgressIndicator(
-              value: _lastResult!.score / 100,
-              backgroundColor: Colors.white.withOpacity(0.05),
-              valueColor: AlwaysStoppedAnimation<Color>(riskColor),
-              borderRadius: BorderRadius.circular(DesignTokens.radii.sm),
-              minHeight: 6,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildRecentActivity() {
     if (_isFetchingHistory) {

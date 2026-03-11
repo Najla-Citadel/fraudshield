@@ -59,22 +59,30 @@ void overlayMain() {
 @pragma('vm:entry-point')
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (kDebugMode) {
-    debugPrint('--- FraudShield App Starting ---');
+  bool firebaseReady = false;
+  try {
+    await Firebase.initializeApp();
+    firebaseReady = true;
+  } catch (e) {
+    debugPrint('❌ Firebase Initialization Failed: $e');
   }
-  await Firebase.initializeApp();
 
-  // Pass all uncaught "fatal" errors from the framework to Crashlytics
-  FlutterError.onError = (errorDetails) {
-    FlutterError.dumpErrorToConsole(errorDetails);
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
+  if (firebaseReady) {
+    // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    FlutterError.onError = (errorDetails) {
+      FlutterError.dumpErrorToConsole(errorDetails);
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
 
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  } else {
+    // Fallback error reporting for when Firebase is not initialized
+    FlutterError.onError = FlutterError.dumpErrorToConsole;
+  }
 
   // 🛡️ Initialize Security Checks
   await SecurityService.instance.init();

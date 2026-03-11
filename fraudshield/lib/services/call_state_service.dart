@@ -248,7 +248,7 @@ class CallStateService {
     _fetchAndShowRisk(number);
   }
 
-  Future<bool> _isNumberInContacts(String? number) async {
+  /*Future<bool> _isNumberInContacts(String? number) async {
     if (number == null || number.isEmpty) return false;
     if (!await Permission.contacts.isGranted) {
       await Permission.contacts.request();
@@ -256,28 +256,35 @@ class CallStateService {
     if (!await Permission.contacts.isGranted) return false;
 
     try {
-      // Normalizing the incoming number for comparison (very basic)
-      final cleanIncoming = number.replaceAll(RegExp(r'[^0-9]'), '');
-      if (cleanIncoming.isEmpty) return false;
+      if (await FlutterContacts.requestPermission(readonly: true)) {
+  final contacts = await FlutterContacts.getContacts(withProperties: true);
+  final cleanIncoming = number.replaceAll(RegExp(r'[^0-9]'), '');
 
-      final contacts = await FlutterContacts.getContacts(withProperties: true);
-      for (final contact in contacts) {
-        for (final phone in contact.phones) {
-          final cleanPhone = phone.number.replaceAll(RegExp(r'[^0-9]'), '');
-          if (cleanPhone.endsWith(cleanIncoming) ||
-              cleanIncoming.endsWith(cleanPhone)) {
-            debugPrint(
-                'CallStateService: Match found in contacts: ${contact.displayName}');
-            return true;
+
+        for (final contact in contacts) {
+          for (final phone in contact.phones) {
+            final cleanPhone = phone.number.replaceAll(RegExp(r'[^0-9]'), '');
+
+            if (cleanPhone.endsWith(cleanIncoming) ||
+                cleanIncoming.endsWith(cleanPhone)) {
+              debugPrint(
+                  'CallStateService: Match found in contacts: ${contact.displayName}');
+              return true;
+            }
           }
         }
+      } else {
+        debugPrint('Contacts permission not granted');
       }
     } catch (e) {
-      debugPrint('CallStateService: Error checking contacts: $e');
-    }
+  debugPrint('CallStateService: Error checking contacts: $e');
+}
     return false;
-  }
+  }*/
 
+Future<bool> _isNumberInContacts(String? number) async {
+  return false;
+}
   Future<void> _fetchAndShowRisk(String? number) async {
     final displayNumber =
         (number == null || number.isEmpty) ? 'Unknown Number' : number;

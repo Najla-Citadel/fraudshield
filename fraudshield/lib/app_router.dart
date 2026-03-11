@@ -17,6 +17,8 @@ import 'screens/security_alert_screen.dart';
 import 'screens/voice_detection_screen.dart';
 import 'screens/subscription_screen.dart';
 import 'screens/scam_reporting_screen.dart';
+import 'screens/fraud_check_result_screen.dart';
+import 'services/risk_evaluator.dart';
 import 'services/scam_scanner_service.dart';
 
 class AppRouter {
@@ -66,6 +68,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SubscriptionScreen());
       case '/report':
         return MaterialPageRoute(builder: (_) => const ScamReportingScreen());
+      case '/fraud-check-result':
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => FraudCheckResultScreen(
+            result: args?['result'] as RiskResult,
+            searchValue: args?['searchValue'] as String,
+          ),
+        );
       default:
         return MaterialPageRoute(builder: (_) => const RootScreen());
     }
